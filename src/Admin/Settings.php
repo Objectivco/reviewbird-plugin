@@ -126,6 +126,11 @@ class Settings {
 			delete_transient( 'reviewapp_oauth_success' );
 		}
 
+		if ( $error = get_transient( 'reviewapp_oauth_error' ) ) {
+			echo '<div class="notice notice-error"><p>' . esc_html( $error ) . '</p></div>';
+			delete_transient( 'reviewapp_oauth_error' );
+		}
+
 		if ( isset( $_GET['settings-updated'] ) ) {
 			add_settings_error(
 				'reviewapp_messages',
@@ -229,8 +234,6 @@ class Settings {
 	public function render_connection_section() {
 		echo '<p>' . esc_html__( 'Connect your WordPress site to ReviewApp to start collecting and displaying reviews.', 'reviewapp-reviews' ) . '</p>';
 	}
-
-
 
 	/**
 	 * Render OAuth connect field.

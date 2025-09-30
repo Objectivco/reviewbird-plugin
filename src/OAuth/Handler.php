@@ -33,6 +33,14 @@ class Handler {
 			wp_die( esc_html__( 'Insufficient permissions', 'reviewapp-reviews' ) );
 		}
 
+		$client_id = reviewapp_ensure_oauth_client();
+
+		if ( is_wp_error( $client_id ) ) {
+			set_transient( 'reviewapp_oauth_error', $client_id->get_error_message(), 60 );
+			wp_safe_redirect( admin_url( 'options-general.php?page=reviewapp-settings' ) );
+			exit;
+		}
+
 		$state        = wp_generate_uuid4();
 		$redirect_uri = admin_url( 'admin.php?page=reviewapp-settings' );
 		$callback_url = add_query_arg( 'reviewapp_oauth_callback', '1', $redirect_uri );
@@ -51,7 +59,7 @@ class Handler {
 
         // Build OAuth URL with PKCE parameters.
         $oauth_params = array(
-            'client_id'              => reviewapp_get_oauth_client_id(),
+            'client_id'              => $client_id,
             'redirect_uri'           => $callback_url,
             'response_type'          => 'code',
             'state'                  => $state,
@@ -115,8 +123,17 @@ class Handler {
 		}
 
 		// Exchange authorization code for access token using Action Scheduler.
+		$client_id = reviewapp_get_oauth_client_id();
+
 		if ( function_exists( 'as_enqueue_async_action' ) ) {
-			as_enqueue_async_action( 'reviewapp_process_oauth_token', array( 'code' => $code, 'code_verifier' => $code_verifier ) );
+			as_enqueue_async_action(
+				'reviewapp_process_oauth_token',
+				array(
+					'code'          => $code,
+					'code_verifier' => $code_verifier,
+					'client_id'     => $client_id,
+				)
+			);
 			
 			add_action( 'admin_notices', function() {
 				echo '<div class="notice notice-info"><p>' . 
@@ -125,7 +142,7 @@ class Handler {
 			});
 		} else {
 			// Fallback to immediate processing if Action Scheduler not available.
-			$this->process_oauth_token( $code, $code_verifier );
+			$this->process_oauth_token( $code, $code_verifier, $client_id );
 		}
 
 		// Clean up OAuth state.
@@ -137,15 +154,25 @@ class Handler {
 	 *
 	 * @param string $code Authorization code.
 	 * @param string $code_verifier PKCE code verifier.
+	 * @param string $client_id OAuth client identifier.
 	 */
-	public function process_oauth_token( $code, $code_verifier = '' ) {
-		$callback_url = add_query_arg( 'reviewapp_oauth_callback', '1', admin_url( 'admin.php?page=reviewapp-settings' ) );
+	public function process_oauth_token( $code, $code_verifier = '', $client_id = '' ) {
+		$callback_url = reviewapp_get_oauth_callback_url();
+
+		if ( empty( $client_id ) ) {
+			$client_id = reviewapp_get_oauth_client_id();
+		}
+
+		if ( empty( $client_id ) ) {
+			error_log( 'ReviewApp: OAuth client ID missing during token exchange.' );
+			return;
+		}
 
         $token_params = array(
             'grant_type'    => 'authorization_code',
             'code'          => $code,
             'redirect_uri'  => $callback_url,
-            'client_id'     => reviewapp_get_oauth_client_id(),
+            'client_id'     => $client_id,
             'code_verifier' => $code_verifier,
         );
 
@@ -178,11 +205,9 @@ class Handler {
 		$store_token = $token_data['access_token'];
 		update_option( 'reviewapp_store_token', $store_token );
 
-		// Extract and store store ID.
-		$api_client = new Client();
-		$store_id = $api_client->get_store_id_from_token( $store_token );
-		if ( $store_id ) {
-			update_option( 'reviewapp_store_id', $store_id );
+		// Store store ID from token response.
+		if ( isset( $token_data['store_id'] ) ) {
+			update_option( 'reviewapp_store_id', $token_data['store_id'] );
 		}
 
 		// Configure media domains.

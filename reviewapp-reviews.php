@@ -62,13 +62,6 @@ define( 'REVIEWAPP_OAUTH_URL_STAGING', 'https://staging.reviewapp.com/oauth' );
 define( 'REVIEWAPP_OAUTH_URL_DEVELOPMENT', 'https://reviewapp.test/oauth' );
 
 /**
- * OAuth Client IDs for different environments.
- */
-define( 'REVIEWAPP_OAUTH_CLIENT_ID_PRODUCTION', '' ); // To be defined later
-define( 'REVIEWAPP_OAUTH_CLIENT_ID_STAGING', '' ); // To be defined later  
-define( 'REVIEWAPP_OAUTH_CLIENT_ID_DEVELOPMENT', '01999bdc-973a-71fa-9ef7-4d27f82d4348' );
-
-/**
  * Determine the current environment.
  * 
  * @return string 'production', 'staging', or 'development'
@@ -136,21 +129,66 @@ function reviewapp_get_oauth_url() {
 }
 
 /**
- * Get the appropriate OAuth client ID based on environment.
+ * Build an environment-specific option key.
  *
- * @return string The OAuth client ID for the current environment.
+ * @param string $key Base key name.
+ * @return string Environment-scoped key name.
+ */
+function reviewapp_get_env_option_key( $key ) {
+	return sprintf( 'reviewapp_%s_%s', $key, reviewapp_get_environment() );
+}
+
+/**
+ * Get the OAuth callback URL used during authorization.
+ *
+ * @return string Callback URL.
+ */
+function reviewapp_get_oauth_callback_url() {
+	return add_query_arg( 'reviewapp_oauth_callback', '1', admin_url( 'admin.php?page=reviewapp-settings' ) );
+}
+
+/**
+ * Retrieve the stored OAuth client ID for the current environment.
+ *
+ * @return string Stored client ID or empty string if not set.
+ */
+function reviewapp_get_stored_oauth_client_id() {
+	$client_id = get_option( reviewapp_get_env_option_key( 'oauth_client_id' ) );
+
+	if ( ! $client_id ) {
+		$client_id = apply_filters( 'reviewapp_oauth_client_id', '' );
+	}
+
+	return is_string( $client_id ) ? $client_id : '';
+}
+
+/**
+ * Persist the OAuth client ID for the current environment.
+ *
+ * @param string $client_id OAuth client identifier.
+ * @return void
+ */
+function reviewapp_store_oauth_client_id( $client_id ) {
+	update_option( reviewapp_get_env_option_key( 'oauth_client_id' ), sanitize_text_field( $client_id ) );
+}
+
+/**
+ * Get the OAuth client identifier. For WordPress integration, we use a single public client.
+ *
+ * @return string Client ID.
  */
 function reviewapp_get_oauth_client_id() {
-	$environment = reviewapp_get_environment();
-	
-	switch ( $environment ) {
+	// Use a single public OAuth client for all WordPress sites
+	switch ( reviewapp_get_environment() ) {
 		case 'production':
-			return REVIEWAPP_OAUTH_CLIENT_ID_PRODUCTION;
+			// TODO: Configure production OAuth client ID after creating OAuth client in production ReviewApp
+			return '';
 		case 'staging':
-			return REVIEWAPP_OAUTH_CLIENT_ID_STAGING;
+			// TODO: Configure staging OAuth client ID after creating OAuth client in staging ReviewApp
+			return '';
 		case 'development':
 		default:
-			return REVIEWAPP_OAUTH_CLIENT_ID_DEVELOPMENT;
+			return '01999bdc-973a-71fa-9ef7-4d27f82d4348'; // Development client
 	}
 }
 

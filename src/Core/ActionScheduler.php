@@ -30,6 +30,9 @@ class ActionScheduler {
 		// OAuth cleanup.
 		add_action( 'reviewapp_cleanup_oauth_states', array( Handler::class, 'cleanup_expired_oauth_states' ) );
 
+		// OAuth token processing.
+		add_action( 'reviewapp_process_oauth_token', array( new Handler(), 'process_oauth_token' ), 10, 3 );
+
 		// Media domain configuration.
 		add_action( 'reviewapp_configure_domains', array( self::class, 'configure_domains' ) );
 
