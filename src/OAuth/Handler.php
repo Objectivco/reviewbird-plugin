@@ -122,10 +122,13 @@ class Handler {
 			return;
 		}
 
-		// Exchange authorization code for access token using Action Scheduler.
+		// Exchange authorization code for access token immediately so the user gets instant feedback.
 		$client_id = reviewapp_get_oauth_client_id();
 
-		if ( function_exists( 'as_enqueue_async_action' ) ) {
+		$processed = $this->process_oauth_token( $code, $code_verifier, $client_id );
+
+		if ( ! $processed && function_exists( 'as_enqueue_async_action' ) ) {
+			// Schedule a retry in the background if Action Scheduler is available.
 			as_enqueue_async_action(
 				'reviewapp_process_oauth_token',
 				array(
@@ -134,19 +137,20 @@ class Handler {
 					'client_id'     => $client_id,
 				)
 			);
-			
-			add_action( 'admin_notices', function() {
-				echo '<div class="notice notice-info"><p>' . 
-					 esc_html__( 'Processing ReviewApp connection...', 'reviewapp-reviews' ) . 
-					 '</p></div>';
-			});
-		} else {
-			// Fallback to immediate processing if Action Scheduler not available.
-			$this->process_oauth_token( $code, $code_verifier, $client_id );
 		}
 
 		// Clean up OAuth state.
 		$this->cleanup_oauth_state( $state );
+
+		// Redirect back to the settings page without the OAuth query parameters.
+		$redirect_url = menu_page_url( 'reviewapp-settings', false );
+		if ( empty( $redirect_url ) ) {
+			$redirect_url = admin_url( 'admin.php?page=reviewapp-settings' );
+		}
+		$redirect_url = remove_query_arg( array( 'code', 'state', 'reviewapp_oauth_callback', 'error', 'error_description' ), $redirect_url );
+
+		wp_safe_redirect( $redirect_url );
+		exit;
 	}
 
 	/**
@@ -165,57 +169,109 @@ class Handler {
 
 		if ( empty( $client_id ) ) {
 			error_log( 'ReviewApp: OAuth client ID missing during token exchange.' );
-			return;
+			delete_transient( 'reviewapp_oauth_success' );
+			set_transient( 'reviewapp_oauth_error', __( 'ReviewApp OAuth client configuration is missing. Please contact support.', 'reviewapp-reviews' ), 60 );
+			return false;
 		}
 
-        $token_params = array(
-            'grant_type'    => 'authorization_code',
-            'code'          => $code,
-            'redirect_uri'  => $callback_url,
-            'client_id'     => $client_id,
-            'code_verifier' => $code_verifier,
-        );
+		$token_params = array(
+			'grant_type'    => 'authorization_code',
+			'code'          => $code,
+			'redirect_uri'  => $callback_url,
+			'client_id'     => $client_id,
+			'code_verifier' => $code_verifier,
+		);
 
 		$response = wp_remote_post(
 			reviewapp_get_oauth_url() . '/token',
 			array(
-				'body'    => $token_params,
-				'headers' => array(
+				'body'       => $token_params,
+				'headers'    => array(
 					'Accept' => 'application/json',
 				),
-				'timeout' => 30,
+				'timeout'    => 30,
+				'sslverify'  => false, // Disable SSL verification for local development environments
 			)
 		);
 
 		if ( is_wp_error( $response ) ) {
 			error_log( 'ReviewApp OAuth token exchange failed: ' . $response->get_error_message() );
-			return;
+			delete_transient( 'reviewapp_oauth_success' );
+			set_transient(
+				'reviewapp_oauth_error',
+				sprintf(
+					__( 'Unable to connect to ReviewApp: %s', 'reviewapp-reviews' ),
+					wp_strip_all_tags( $response->get_error_message() )
+				),
+				60
+			);
+			return false;
 		}
 
 		$response_code = wp_remote_retrieve_response_code( $response );
 		$body          = wp_remote_retrieve_body( $response );
 		$token_data    = json_decode( $body, true );
 
-		if ( $response_code !== 200 || ! isset( $token_data['access_token'] ) ) {
+		if ( 200 !== $response_code || ! is_array( $token_data ) || empty( $token_data['access_token'] ) ) {
 			error_log( 'ReviewApp OAuth token exchange failed: Invalid response' );
-			return;
+			delete_transient( 'reviewapp_oauth_success' );
+
+			$error_message = '';
+			if ( isset( $token_data['error_description'] ) ) {
+				$error_message = sanitize_text_field( $token_data['error_description'] );
+			} elseif ( isset( $token_data['message'] ) ) {
+				$error_message = sanitize_text_field( $token_data['message'] );
+			} else {
+				$error_message = __( 'ReviewApp returned an unexpected response during the OAuth exchange. Please try again.', 'reviewapp-reviews' );
+			}
+
+			set_transient( 'reviewapp_oauth_error', $error_message, 60 );
+			return false;
 		}
 
 		// Store the access token (this will be the store token).
-		$store_token = $token_data['access_token'];
+		$store_token = sanitize_text_field( $token_data['access_token'] );
+
+		if ( empty( $store_token ) ) {
+			delete_transient( 'reviewapp_oauth_success' );
+			set_transient( 'reviewapp_oauth_error', __( 'ReviewApp returned an empty store token.', 'reviewapp-reviews' ), 60 );
+			return false;
+		}
+
 		update_option( 'reviewapp_store_token', $store_token );
 
-		// Store store ID from token response.
+		// Store store ID from token response or derive it from the token.
+		$store_id = 0;
 		if ( isset( $token_data['store_id'] ) ) {
-			update_option( 'reviewapp_store_id', $token_data['store_id'] );
+			$store_id = absint( $token_data['store_id'] );
+		}
+
+		$api_client = new Client();
+
+		if ( ! $store_id ) {
+			$store_id = $api_client->get_store_id_from_token( $store_token );
+		}
+
+		if ( $store_id ) {
+			update_option( 'reviewapp_store_id', $store_id );
 		}
 
 		// Configure media domains.
-		$domains = array( parse_url( get_site_url(), PHP_URL_HOST ) );
-		$api_client->configure_media_domains( $domains );
+		$domains = array_filter( array_unique( array( parse_url( get_site_url(), PHP_URL_HOST ) ) ) );
+
+		if ( ! empty( $domains ) ) {
+			$configure_result = $api_client->configure_media_domains( $domains );
+
+			if ( is_wp_error( $configure_result ) ) {
+				error_log( 'ReviewApp: Failed to configure media domains: ' . $configure_result->get_error_message() );
+			}
+		}
 
 		// Set connection success flag for admin notice.
+		delete_transient( 'reviewapp_oauth_error' );
 		set_transient( 'reviewapp_oauth_success', true, 300 );
+
+		return true;
 	}
 
 	/**

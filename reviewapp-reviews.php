@@ -193,6 +193,30 @@ function reviewapp_get_oauth_client_id() {
 }
 
 /**
+ * Ensure an OAuth client identifier is available for the current environment.
+ *
+ * @return string|\WP_Error
+ */
+function reviewapp_ensure_oauth_client() {
+	$client_id = reviewapp_get_oauth_client_id();
+
+	if ( ! empty( $client_id ) ) {
+		return $client_id;
+	}
+
+	$stored_client_id = reviewapp_get_stored_oauth_client_id();
+
+	if ( ! empty( $stored_client_id ) ) {
+		return $stored_client_id;
+	}
+
+	return new \WP_Error(
+		'reviewapp_missing_client',
+		__( 'ReviewApp OAuth client is not configured for this environment. Please contact support.', 'reviewapp-reviews' )
+	);
+}
+
+/**
  * Load Composer autoloader.
  */
 require_once REVIEWAPP_PLUGIN_DIR . 'vendor/autoload.php';
