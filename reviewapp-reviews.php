@@ -194,47 +194,108 @@ function reviewapp_store_oauth_client_id( $client_id ) {
 }
 
 /**
- * Get the OAuth client identifier. For WordPress integration, we use a single public client.
+ * Get the OAuth client identifier by checking storage or registering a new client.
  *
  * @return string Client ID.
  */
 function reviewapp_get_oauth_client_id() {
-	// Use a single public OAuth client for all WordPress sites
-	switch ( reviewapp_get_environment() ) {
-		case 'production':
-			// TODO: Configure production OAuth client ID after creating OAuth client in production ReviewApp
-			return '';
-		case 'staging':
-			// TODO: Configure staging OAuth client ID after creating OAuth client in staging ReviewApp
-			return '';
-		case 'development':
-		default:
-			return '01999bdc-973a-71fa-9ef7-4d27f82d4348'; // Development client
+	$stored_client_id = reviewapp_get_stored_oauth_client_id();
+	
+	if ( ! empty( $stored_client_id ) ) {
+		return $stored_client_id;
 	}
+	
+	return '';
+}
+
+/**
+ * Register this WordPress site as an OAuth client with ReviewApp.
+ *
+ * @return string|\WP_Error Client ID on success, WP_Error on failure.
+ */
+function reviewapp_register_oauth_client() {
+	$current_user = wp_get_current_user();
+	
+	if ( ! $current_user || ! $current_user->user_email ) {
+		return new \WP_Error(
+			'reviewapp_no_user',
+			__( 'No user email found. Please ensure you are logged in.', 'reviewapp-reviews' )
+		);
+	}
+	
+	$response = wp_remote_post(
+		reviewapp_get_api_url() . '/api/oauth/register-client',
+		array(
+			'body' => wp_json_encode( array(
+				'domain' => get_site_url(),
+				'site_name' => get_bloginfo( 'name' ),
+				'admin_email' => $current_user->user_email,
+			) ),
+			'headers' => array(
+				'Content-Type' => 'application/json',
+			),
+			'timeout' => 30,
+			'sslverify' => ! reviewapp_should_disable_ssl_verify(),
+		)
+	);
+	
+	if ( is_wp_error( $response ) ) {
+		return new \WP_Error(
+			'reviewapp_register_failed',
+			sprintf(
+				__( 'Failed to register OAuth client: %s', 'reviewapp-reviews' ),
+				$response->get_error_message()
+			)
+		);
+	}
+	
+	$response_code = wp_remote_retrieve_response_code( $response );
+	$body = wp_remote_retrieve_body( $response );
+	$data = json_decode( $body, true );
+	
+	if ( $response_code === 404 && isset( $data['message'] ) ) {
+		return new \WP_Error(
+			'reviewapp_account_not_found',
+			sprintf(
+				__( 'ReviewApp account not found. Please sign up at %s with the email %s first, then try connecting again.', 'reviewapp-reviews' ),
+				reviewapp_get_api_url(),
+				$current_user->user_email
+			)
+		);
+	}
+	
+	if ( $response_code >= 400 ) {
+		return new \WP_Error(
+			'reviewapp_register_error',
+			isset( $data['message'] ) ? $data['message'] : __( 'Failed to register OAuth client.', 'reviewapp-reviews' )
+		);
+	}
+	
+	if ( empty( $data['client_id'] ) ) {
+		return new \WP_Error(
+			'reviewapp_invalid_response',
+			__( 'Invalid response from ReviewApp API.', 'reviewapp-reviews' )
+		);
+	}
+	
+	reviewapp_store_oauth_client_id( $data['client_id'] );
+	
+	return $data['client_id'];
 }
 
 /**
  * Ensure an OAuth client identifier is available for the current environment.
  *
- * @return string|\WP_Error
+ * @return string|\WP_Error Client ID on success, WP_Error on failure.
  */
 function reviewapp_ensure_oauth_client() {
-	$client_id = reviewapp_get_oauth_client_id();
-
-	if ( ! empty( $client_id ) ) {
-		return $client_id;
-	}
-
 	$stored_client_id = reviewapp_get_stored_oauth_client_id();
 
 	if ( ! empty( $stored_client_id ) ) {
 		return $stored_client_id;
 	}
 
-	return new \WP_Error(
-		'reviewapp_missing_client',
-		__( 'ReviewApp OAuth client is not configured for this environment. Please contact support.', 'reviewapp-reviews' )
-	);
+	return reviewapp_register_oauth_client();
 }
 
 /**
