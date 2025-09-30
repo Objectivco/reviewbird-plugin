@@ -66,7 +66,7 @@ define( 'REVIEWAPP_OAUTH_URL_DEVELOPMENT', 'https://reviewapp.test/oauth' );
  */
 define( 'REVIEWAPP_OAUTH_CLIENT_ID_PRODUCTION', '' ); // To be defined later
 define( 'REVIEWAPP_OAUTH_CLIENT_ID_STAGING', '' ); // To be defined later  
-define( 'REVIEWAPP_OAUTH_CLIENT_ID_DEVELOPMENT', '4fb4de08-afa9-4944-bbc0-2cc696ecbd68' );
+define( 'REVIEWAPP_OAUTH_CLIENT_ID_DEVELOPMENT', '01999bdc-973a-71fa-9ef7-4d27f82d4348' );
 
 /**
  * Determine the current environment.
