@@ -37,21 +37,27 @@ class Handler {
 		$redirect_uri = admin_url( 'admin.php?page=reviewapp-settings' );
 		$callback_url = add_query_arg( 'reviewapp_oauth_callback', '1', $redirect_uri );
 
-		// Store OAuth state in database for security.
-		$this->store_oauth_state( $state, $redirect_uri );
+		// Generate PKCE parameters for OAuth security.
+		$code_verifier = $this->generate_code_verifier();
+		$code_challenge = $this->generate_code_challenge( $code_verifier );
+
+		// Store OAuth state and code verifier in database for security.
+		$this->store_oauth_state( $state, $redirect_uri, $code_verifier );
 
 		// Schedule cleanup of expired states using Action Scheduler.
 		if ( function_exists( 'as_schedule_single_action' ) && ! as_next_scheduled_action( 'reviewapp_cleanup_oauth_states' ) ) {
 			as_schedule_single_action( time() + self::STATE_EXPIRATION, 'reviewapp_cleanup_oauth_states' );
 		}
 
-        // Build OAuth URL.
+        // Build OAuth URL with PKCE parameters.
         $oauth_params = array(
-            'client_id'     => reviewapp_get_oauth_client_id(),
-            'redirect_uri'  => $callback_url,
-            'response_type' => 'code',
-            'state'         => $state,
-            'scope'         => 'store:manage',
+            'client_id'              => reviewapp_get_oauth_client_id(),
+            'redirect_uri'           => $callback_url,
+            'response_type'          => 'code',
+            'state'                  => $state,
+            'scope'                  => 'store:manage',
+            'code_challenge'         => $code_challenge,
+            'code_challenge_method'  => 'S256',
         );
 
 		$oauth_url = reviewapp_get_oauth_url() . '/authorize?' . http_build_query( $oauth_params );
@@ -97,8 +103,9 @@ class Handler {
 			return;
 		}
 
-		// Verify OAuth state for security.
-		if ( ! $this->verify_oauth_state( $state ) ) {
+		// Verify OAuth state for security and get code verifier.
+		$code_verifier = $this->verify_oauth_state( $state );
+		if ( ! $code_verifier ) {
 			add_action( 'admin_notices', function() {
 				echo '<div class="notice notice-error"><p>' . 
 					 esc_html__( 'Invalid OAuth state. Please try again.', 'reviewapp-reviews' ) . 
@@ -109,7 +116,7 @@ class Handler {
 
 		// Exchange authorization code for access token using Action Scheduler.
 		if ( function_exists( 'as_enqueue_async_action' ) ) {
-			as_enqueue_async_action( 'reviewapp_process_oauth_token', array( 'code' => $code ) );
+			as_enqueue_async_action( 'reviewapp_process_oauth_token', array( 'code' => $code, 'code_verifier' => $code_verifier ) );
 			
 			add_action( 'admin_notices', function() {
 				echo '<div class="notice notice-info"><p>' . 
@@ -118,7 +125,7 @@ class Handler {
 			});
 		} else {
 			// Fallback to immediate processing if Action Scheduler not available.
-			$this->process_oauth_token( $code );
+			$this->process_oauth_token( $code, $code_verifier );
 		}
 
 		// Clean up OAuth state.
@@ -129,15 +136,17 @@ class Handler {
 	 * Process OAuth token exchange (Action Scheduler callback).
 	 *
 	 * @param string $code Authorization code.
+	 * @param string $code_verifier PKCE code verifier.
 	 */
-	public function process_oauth_token( $code ) {
+	public function process_oauth_token( $code, $code_verifier = '' ) {
 		$callback_url = add_query_arg( 'reviewapp_oauth_callback', '1', admin_url( 'admin.php?page=reviewapp-settings' ) );
 
         $token_params = array(
-            'grant_type'   => 'authorization_code',
-            'code'         => $code,
-            'redirect_uri' => $callback_url,
-            'client_id'    => reviewapp_get_oauth_client_id(),
+            'grant_type'    => 'authorization_code',
+            'code'          => $code,
+            'redirect_uri'  => $callback_url,
+            'client_id'     => reviewapp_get_oauth_client_id(),
+            'code_verifier' => $code_verifier,
         );
 
 		$response = wp_remote_post(
@@ -189,8 +198,9 @@ class Handler {
 	 *
 	 * @param string $state        OAuth state.
 	 * @param string $redirect_uri Redirect URI.
+	 * @param string $code_verifier PKCE code verifier.
 	 */
-	private function store_oauth_state( $state, $redirect_uri ) {
+	private function store_oauth_state( $state, $redirect_uri, $code_verifier = '' ) {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'reviewapp_oauth_states';
@@ -200,12 +210,13 @@ class Handler {
 		$wpdb->insert(
 			$table_name,
 			array(
-				'state'        => $state,
-				'redirect_uri' => $redirect_uri,
-				'user_id'      => $user_id,
-				'expires_at'   => $expires_at,
+				'state'         => $state,
+				'redirect_uri'  => $redirect_uri,
+				'user_id'       => $user_id,
+				'code_verifier' => $code_verifier,
+				'expires_at'    => $expires_at,
 			),
-			array( '%s', '%s', '%d', '%s' )
+			array( '%s', '%s', '%d', '%s', '%s' )
 		);
 	}
 
@@ -213,7 +224,7 @@ class Handler {
 	 * Verify OAuth state.
 	 *
 	 * @param string $state OAuth state to verify.
-	 * @return bool True if valid, false otherwise.
+	 * @return string|false Code verifier if valid, false otherwise.
 	 */
 	private function verify_oauth_state( $state ) {
 		global $wpdb;
@@ -231,7 +242,7 @@ class Handler {
 			)
 		);
 
-		return $result !== null;
+		return $result ? $result->code_verifier : false;
 	}
 
 	/**
@@ -266,5 +277,27 @@ class Handler {
 				$now
 			)
 		);
+	}
+
+	/**
+	 * Generate PKCE code verifier.
+	 *
+	 * @return string Base64 URL-safe encoded random string.
+	 */
+	private function generate_code_verifier() {
+		// Generate random bytes and create base64url encoded string.
+		$random_bytes = wp_generate_password( 32, false );
+		return rtrim( strtr( base64_encode( $random_bytes ), '+/', '-_' ), '=' );
+	}
+
+	/**
+	 * Generate PKCE code challenge from code verifier.
+	 *
+	 * @param string $code_verifier Code verifier.
+	 * @return string Base64 URL-safe encoded SHA256 hash.
+	 */
+	private function generate_code_challenge( $code_verifier ) {
+		$challenge = hash( 'sha256', $code_verifier, true );
+		return rtrim( strtr( base64_encode( $challenge ), '+/', '-_' ), '=' );
 	}
 }

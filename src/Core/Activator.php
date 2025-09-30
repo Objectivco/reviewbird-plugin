@@ -68,6 +68,7 @@ class Activator {
 			state varchar(255) NOT NULL,
 			redirect_uri text NOT NULL,
 			user_id bigint(20) UNSIGNED DEFAULT NULL,
+			code_verifier varchar(255) DEFAULT NULL,
 			created_at datetime DEFAULT CURRENT_TIMESTAMP,
 			expires_at datetime NOT NULL,
 			PRIMARY KEY  (id),
