@@ -1,0 +1,205 @@
+<?php
+/**
+ * The core plugin class.
+ *
+ * @package ReviewApp
+ */
+
+namespace ReviewApp\Core;
+
+use ReviewApp\Admin\Settings;
+use ReviewApp\Api\Client;
+use ReviewApp\Core\ActionScheduler;
+use ReviewApp\Integration\WooCommerce;
+use ReviewApp\OAuth\Handler;
+
+/**
+ * The core plugin class.
+ *
+ * This is used to define internationalization, admin-specific hooks, and
+ * public-facing site hooks.
+ */
+class Plugin {
+
+	/**
+	 * The unique identifier of this plugin.
+	 *
+	 * @var string
+	 */
+	protected $plugin_name;
+
+	/**
+	 * The current version of the plugin.
+	 *
+	 * @var string
+	 */
+	protected $version;
+
+	/**
+	 * Initialize the plugin.
+	 */
+	public function __construct() {
+		$this->plugin_name = 'reviewapp-reviews';
+		$this->version     = REVIEWAPP_VERSION;
+	}
+
+	/**
+	 * Run the plugin.
+	 */
+	public function run() {
+		$this->load_textdomain();
+		$this->init_hooks();
+	}
+
+	/**
+	 * Load plugin textdomain.
+	 */
+	private function load_textdomain() {
+		add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
+	}
+
+	/**
+	 * Load the plugin text domain for translation.
+	 */
+	public function load_plugin_textdomain() {
+		load_plugin_textdomain(
+			REVIEWAPP_TEXT_DOMAIN,
+			false,
+			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
+		);
+	}
+
+	/**
+	 * Initialize plugin hooks.
+	 */
+	private function init_hooks() {
+		// Initialize Action Scheduler integration.
+		ActionScheduler::init();
+		// Admin hooks.
+		if ( is_admin() ) {
+			$settings = new Settings();
+			add_action( 'admin_menu', array( $settings, 'add_admin_menu' ) );
+			add_action( 'admin_init', array( $settings, 'init_settings' ) );
+			add_action( 'admin_enqueue_scripts', array( $settings, 'enqueue_scripts' ) );
+		}
+
+		// OAuth hooks.
+		$oauth_handler = new Handler();
+		add_action( 'init', array( $oauth_handler, 'handle_oauth_callback' ) );
+		add_action( 'wp_ajax_reviewapp_start_oauth', array( $oauth_handler, 'start_oauth_flow' ) );
+
+		// Public hooks.
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_scripts' ) );
+		add_shortcode( 'reviewapp_widget', array( $this, 'widget_shortcode' ) );
+
+		// WooCommerce integration.
+		if ( class_exists( 'WooCommerce' ) ) {
+			$woocommerce = new WooCommerce();
+			
+			// Product sync hooks.
+			add_action( 'woocommerce_new_product', array( $woocommerce, 'sync_product' ) );
+			add_action( 'woocommerce_update_product', array( $woocommerce, 'sync_product' ) );
+
+			// Review sync hooks.
+			add_action( 'comment_post', array( $woocommerce, 'sync_review' ) );
+			add_action( 'wp_set_comment_status', array( $woocommerce, 'sync_review_status' ), 10, 2 );
+			add_action( 'delete_comment', array( $woocommerce, 'delete_review' ) );
+
+			// Order event hooks.
+			add_action( 'woocommerce_order_status_changed', array( $woocommerce, 'track_order_event' ), 10, 3 );
+
+			// Widget integration - opinionated default with filter override.
+			if ( apply_filters( 'reviewapp_auto_inject_widgets', true ) ) {
+				$widget_hook = apply_filters( 'reviewapp_widget_hook', 'woocommerce_after_single_product_summary' );
+				$widget_priority = apply_filters( 'reviewapp_widget_priority', 20 );
+				
+				add_action( $widget_hook, array( $woocommerce, 'add_widget_to_product_page' ), $widget_priority );
+			}
+		}
+	}
+
+	/**
+	 * Enqueue public scripts and styles.
+	 */
+	public function enqueue_public_scripts() {
+		// Only load on product pages or pages with shortcode.
+		if ( is_product() || $this->has_reviewapp_shortcode() ) {
+			wp_enqueue_script(
+				'reviewapp-widget',
+				reviewapp_get_api_url() . '/js/reviewapp-widget.js',
+				array(),
+				$this->version,
+				true
+			);
+		}
+	}
+
+	/**
+	 * Check if current page has ReviewApp shortcode.
+	 *
+	 * @return bool
+	 */
+	private function has_reviewapp_shortcode() {
+		global $post;
+		
+		if ( ! $post ) {
+			return false;
+		}
+		
+		return has_shortcode( $post->post_content, 'reviewapp_widget' );
+	}
+
+	/**
+	 * Handle ReviewApp widget shortcode.
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string
+	 */
+	public function widget_shortcode( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'product_id' => '',
+			),
+			$atts,
+			'reviewapp_widget'
+		);
+
+		if ( ! $atts['product_id'] ) {
+			return '<p>' . esc_html__( 'ReviewApp: Product ID is required.', 'reviewapp-reviews' ) . '</p>';
+		}
+
+		$api_client = new Client();
+		$store_id = $api_client->get_store_id_for_frontend();
+
+		if ( ! $store_id ) {
+			return '<p>' . esc_html__( 'ReviewApp: Store not connected.', 'reviewapp-reviews' ) . '</p>';
+		}
+
+		$widget_id = 'reviewapp-widget-' . uniqid();
+
+		return sprintf(
+			'<div id="%s" data-store-id="%s" data-product-key="%s"></div><script>if(typeof ReviewApp !== "undefined") ReviewApp.init();</script>',
+			esc_attr( $widget_id ),
+			esc_attr( $store_id ),
+			esc_attr( $atts['product_id'] )
+		);
+	}
+
+	/**
+	 * Get plugin name.
+	 *
+	 * @return string
+	 */
+	public function get_plugin_name() {
+		return $this->plugin_name;
+	}
+
+	/**
+	 * Get plugin version.
+	 *
+	 * @return string
+	 */
+	public function get_version() {
+		return $this->version;
+	}
+}

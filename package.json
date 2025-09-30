@@ -1,0 +1,31 @@
+{
+	"name": "reviewapp-reviews",
+	"version": "1.0.0",
+	"description": "WordPress plugin for ReviewApp integration",
+	"main": "index.js",
+	"scripts": {
+		"build": "wp-scripts build",
+		"dev": "wp-scripts start",
+		"lint:js": "wp-scripts lint-js",
+		"lint:css": "wp-scripts lint-style",
+		"lint:php": "phpcs --standard=WordPress .",
+		"format:php": "phpcbf --standard=WordPress .",
+		"test": "wp-scripts test-unit-js"
+	},
+	"keywords": [
+		"wordpress",
+		"plugin",
+		"reviews",
+		"woocommerce"
+	],
+	"author": "ReviewApp",
+	"license": "GPL-2.0-or-later",
+	"devDependencies": {
+		"@wordpress/scripts": "^26.0.0"
+	},
+	"dependencies": {
+		"@wordpress/element": "^5.0.0",
+		"@wordpress/components": "^25.0.0",
+		"@wordpress/api-fetch": "^6.0.0"
+	}
+}

@@ -1,0 +1,32 @@
+/**
+ * ReviewApp Admin Styles
+ */
+
+.reviewapp-admin-header {
+    background: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.reviewapp-status {
+    font-weight: bold;
+    
+    &.reviewapp-status-connected {
+        color: #46b450;
+    }
+    
+    &.reviewapp-status-disconnected {
+        color: #dc3232;
+    }
+    
+    &.reviewapp-status-error {
+        color: #ffb900;
+    }
+}
+
+.reviewapp-connected {
+    color: #46b450;
+    font-weight: bold;
+}
