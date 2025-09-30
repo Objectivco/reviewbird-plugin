@@ -62,6 +62,13 @@ define( 'REVIEWAPP_OAUTH_URL_STAGING', 'https://staging.reviewapp.com/oauth' );
 define( 'REVIEWAPP_OAUTH_URL_DEVELOPMENT', 'https://reviewapp.test/oauth' );
 
 /**
+ * OAuth Client IDs for different environments.
+ */
+define( 'REVIEWAPP_OAUTH_CLIENT_ID_PRODUCTION', '' ); // To be defined later
+define( 'REVIEWAPP_OAUTH_CLIENT_ID_STAGING', '' ); // To be defined later  
+define( 'REVIEWAPP_OAUTH_CLIENT_ID_DEVELOPMENT', '4fb4de08-afa9-4944-bbc0-2cc696ecbd68' );
+
+/**
  * Determine the current environment.
  * 
  * @return string 'production', 'staging', or 'development'
@@ -125,6 +132,25 @@ function reviewapp_get_oauth_url() {
 		case 'development':
 		default:
 			return REVIEWAPP_OAUTH_URL_DEVELOPMENT;
+	}
+}
+
+/**
+ * Get the appropriate OAuth client ID based on environment.
+ *
+ * @return string The OAuth client ID for the current environment.
+ */
+function reviewapp_get_oauth_client_id() {
+	$environment = reviewapp_get_environment();
+	
+	switch ( $environment ) {
+		case 'production':
+			return REVIEWAPP_OAUTH_CLIENT_ID_PRODUCTION;
+		case 'staging':
+			return REVIEWAPP_OAUTH_CLIENT_ID_STAGING;
+		case 'development':
+		default:
+			return REVIEWAPP_OAUTH_CLIENT_ID_DEVELOPMENT;
 	}
 }
 

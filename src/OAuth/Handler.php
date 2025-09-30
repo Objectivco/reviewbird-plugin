@@ -45,14 +45,14 @@ class Handler {
 			as_schedule_single_action( time() + self::STATE_EXPIRATION, 'reviewapp_cleanup_oauth_states' );
 		}
 
-		// Build OAuth URL.
-		$oauth_params = array(
-			'client_id'     => 'wordpress-plugin',
-			'redirect_uri'  => $callback_url,
-			'response_type' => 'code',
-			'state'         => $state,
-			'scope'         => 'store:manage',
-		);
+        // Build OAuth URL.
+        $oauth_params = array(
+            'client_id'     => reviewapp_get_oauth_client_id(),
+            'redirect_uri'  => $callback_url,
+            'response_type' => 'code',
+            'state'         => $state,
+            'scope'         => 'store:manage',
+        );
 
 		$oauth_url = reviewapp_get_oauth_url() . '/authorize?' . http_build_query( $oauth_params );
 
@@ -133,12 +133,12 @@ class Handler {
 	public function process_oauth_token( $code ) {
 		$callback_url = add_query_arg( 'reviewapp_oauth_callback', '1', admin_url( 'admin.php?page=reviewapp-settings' ) );
 
-		$token_params = array(
-			'grant_type'   => 'authorization_code',
-			'code'         => $code,
-			'redirect_uri' => $callback_url,
-			'client_id'    => 'wordpress-plugin',
-		);
+        $token_params = array(
+            'grant_type'   => 'authorization_code',
+            'code'         => $code,
+            'redirect_uri' => $callback_url,
+            'client_id'    => reviewapp_get_oauth_client_id(),
+        );
 
 		$response = wp_remote_post(
 			reviewapp_get_oauth_url() . '/token',
