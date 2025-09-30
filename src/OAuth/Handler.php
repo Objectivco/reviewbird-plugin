@@ -88,12 +88,12 @@ class Handler {
 		if ( isset( $_GET['error'] ) ) {
 			$error_description = sanitize_text_field( $_GET['error_description'] ?? 'Unknown error' );
 			add_action( 'admin_notices', function() use ( $error_description ) {
-				echo '<div class="notice notice-error"><p>' . 
-					 sprintf( 
+				echo '<div class="notice notice-error"><p>' .
+					 sprintf(
 						/* translators: %s: Error description */
-						esc_html__( 'ReviewApp connection failed: %s', 'reviewapp-reviews' ), 
-						esc_html( $error_description ) 
-					) . 
+						esc_html__( 'ReviewApp connection failed: %s', 'reviewapp-reviews' ),
+						esc_html( $error_description )
+					) .
 					 '</p></div>';
 			});
 			return;
@@ -104,8 +104,8 @@ class Handler {
 
 		if ( ! $code || ! $state ) {
 			add_action( 'admin_notices', function() {
-				echo '<div class="notice notice-error"><p>' . 
-					 esc_html__( 'Invalid OAuth callback parameters', 'reviewapp-reviews' ) . 
+				echo '<div class="notice notice-error"><p>' .
+					 esc_html__( 'Invalid OAuth callback parameters', 'reviewapp-reviews' ) .
 					 '</p></div>';
 			});
 			return;
@@ -115,8 +115,8 @@ class Handler {
 		$code_verifier = $this->verify_oauth_state( $state );
 		if ( ! $code_verifier ) {
 			add_action( 'admin_notices', function() {
-				echo '<div class="notice notice-error"><p>' . 
-					 esc_html__( 'Invalid OAuth state. Please try again.', 'reviewapp-reviews' ) . 
+				echo '<div class="notice notice-error"><p>' .
+					 esc_html__( 'Invalid OAuth state. Please try again.', 'reviewapp-reviews' ) .
 					 '</p></div>';
 			});
 			return;
@@ -190,7 +190,7 @@ class Handler {
 					'Accept' => 'application/json',
 				),
 				'timeout'    => 30,
-				'sslverify'  => false, // Disable SSL verification for local development environments
+				'sslverify'  => ! reviewapp_should_disable_ssl_verify(),
 			)
 		);
 
@@ -208,7 +208,7 @@ class Handler {
 			return false;
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code = wp_remote_retrieve_response_code( $response, array( 'sslverify' => ! reviewapp_should_disable_ssl_verify() ) );
 		$body          = wp_remote_retrieve_body( $response );
 		$token_data    = json_decode( $body, true );
 

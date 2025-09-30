@@ -52,6 +52,7 @@ class Client {
 			),
 			'timeout' => 30,
 			'method'  => strtoupper( $method ),
+            'sslverify' => ! reviewapp_should_disable_ssl_verify()
 		);
 
 		if ( in_array( $method, array( 'POST', 'PUT', 'PATCH' ), true ) && $data ) {
@@ -66,13 +67,13 @@ class Client {
 			return $response;
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code = wp_remote_retrieve_response_code( $response, array( 'sslverify' => ! reviewapp_should_disable_ssl_verify() ) );
 		$body          = wp_remote_retrieve_body( $response );
 		$decoded       = json_decode( $body, true );
 
 		if ( $response_code >= 400 ) {
-			$error_message = isset( $decoded['message'] ) 
-				? $decoded['message'] 
+			$error_message = isset( $decoded['message'] )
+				? $decoded['message']
 				: __( 'API request failed', 'reviewapp-reviews' );
 
 			$this->log_error( 'API Error', $error_message, $endpoint, $response_code );

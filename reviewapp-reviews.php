@@ -148,6 +148,27 @@ function reviewapp_get_oauth_callback_url() {
 }
 
 /**
+ * Determine if SSL verification should be disabled for HTTP requests.
+ *
+ * @return bool True to disable SSL verification, false to enable it.
+ */
+function reviewapp_should_disable_ssl_verify() {
+	$environment = reviewapp_get_environment();
+	
+	// Always disable SSL verification in development/local environments
+	if ( 'development' === $environment ) {
+		return true;
+	}
+	
+	// Allow override via constant
+	if ( defined( 'REVIEWAPP_DISABLE_SSL_VERIFY' ) ) {
+		return (bool) REVIEWAPP_DISABLE_SSL_VERIFY;
+	}
+	
+	return false;
+}
+
+/**
  * Retrieve the stored OAuth client ID for the current environment.
  *
  * @return string Stored client ID or empty string if not set.
