@@ -172,6 +172,15 @@ class Settings {
 		// Allow empty token to disconnect.
 		if ( empty( $token ) ) {
 			delete_option( 'reviewapp_store_id' );
+			delete_option( reviewapp_get_env_option_key( 'oauth_client_id' ) );
+			
+			add_settings_error(
+				'reviewapp_store_token',
+				'disconnected',
+				__( 'Successfully disconnected from ReviewApp.', 'reviewapp-reviews' ),
+				'success'
+			);
+			
 			return '';
 		}
 
@@ -279,8 +288,16 @@ class Settings {
 		
 		function reviewappDisconnect() {
 			if (confirm('<?php echo esc_js( __( 'Are you sure you want to disconnect from ReviewApp?', 'reviewapp-reviews' ) ); ?>')) {
-				document.getElementById('reviewapp_store_token').value = '';
-				document.querySelector('form').submit();
+				var tokenField = document.getElementById('reviewapp_store_token');
+				if (tokenField) {
+					tokenField.value = '';
+				}
+				var form = document.querySelector('form[action="options.php"]');
+				if (form) {
+					form.submit();
+				} else {
+					alert('<?php echo esc_js( __( 'Could not find settings form. Please clear the Store Token field manually and save.', 'reviewapp-reviews' ) ); ?>');
+				}
 			}
 		}
 		</script>
