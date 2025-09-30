@@ -294,7 +294,10 @@ class Settings {
 				}
 				var form = document.querySelector('form[action="options.php"]');
 				if (form) {
-					form.submit();
+					var submitButton = form.querySelector('input[type="submit"]');
+					if (submitButton) {
+						submitButton.click();
+					}
 				} else {
 					alert('<?php echo esc_js( __( 'Could not find settings form. Please clear the Store Token field manually and save.', 'reviewapp-reviews' ) ); ?>');
 				}
