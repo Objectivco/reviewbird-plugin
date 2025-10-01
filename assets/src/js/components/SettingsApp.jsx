@@ -2,6 +2,7 @@ import { useState, useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 import ConnectionPanel from './ConnectionPanel';
+import SyncPanel from './SyncPanel';
 import LoadingSpinner from './LoadingSpinner';
 
 export default function SettingsApp() {
@@ -75,11 +76,15 @@ export default function SettingsApp() {
 				</div>
 			)}
 
-			<ConnectionPanel
-				settings={settings}
-				onSave={saveSettings}
-				saving={saving}
-			/>
+			<div className="space-y-6">
+				<ConnectionPanel
+					settings={settings}
+					onSave={saveSettings}
+					saving={saving}
+				/>
+
+				<SyncPanel isConnected={settings?.connection_status === 'connected'} />
+			</div>
 		</div>
 	);
 }

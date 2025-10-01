@@ -7,6 +7,7 @@
 
 namespace ReviewApp\Api;
 
+use ReviewApp\Integration\ProductSync;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -35,6 +36,26 @@ class SettingsController {
 					'permission_callback' => array( $this, 'check_permissions' ),
 					'args'                => $this->get_settings_schema(),
 				),
+			)
+		);
+
+		register_rest_route(
+			'reviewapp/v1',
+			'/sync/status',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_sync_status' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'reviewapp/v1',
+			'/sync/start',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'start_sync' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
 			)
 		);
 	}
@@ -137,6 +158,37 @@ class SettingsController {
 		}
 
 		return $this->get_settings();
+	}
+
+	/**
+	 * Get sync status.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function get_sync_status() {
+		$product_sync = new ProductSync();
+		$status       = $product_sync->get_sync_status();
+
+		return rest_ensure_response( $status );
+	}
+
+	/**
+	 * Start product sync.
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function start_sync() {
+		$product_sync = new ProductSync();
+		$result       = $product_sync->start_sync();
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		return rest_ensure_response( array(
+			'success' => true,
+			'message' => __( 'Product sync started', 'reviewapp-reviews' ),
+		) );
 	}
 
 	/**

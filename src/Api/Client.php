@@ -76,7 +76,16 @@ class Client {
 				? $decoded['message']
 				: __( 'API request failed', 'reviewapp-reviews' );
 
-			$this->log_error( 'API Error', $error_message, $endpoint, $response_code );
+			$this->log_error( 
+				'API Error', 
+				$error_message, 
+				$endpoint, 
+				$response_code,
+				array(
+					'response_body' => $body,
+					'decoded_response' => $decoded,
+				)
+			);
 
 			return new \WP_Error(
 				'reviewapp_api_error',
@@ -84,6 +93,22 @@ class Client {
 				array(
 					'status'   => $response_code,
 					'response' => $decoded,
+				)
+			);
+		}
+
+		// Log any errors in successful responses (partial failures)
+		if ( isset( $decoded['errors'] ) && ! empty( $decoded['errors'] ) && function_exists( 'wc_get_logger' ) ) {
+			$logger = wc_get_logger();
+			$logger->warning(
+				sprintf(
+					'API request to %s returned %d errors in response',
+					$endpoint,
+					count( $decoded['errors'] )
+				),
+				array( 
+					'source' => 'reviewapp',
+					'errors' => $decoded['errors'],
 				)
 			);
 		}
@@ -168,6 +193,16 @@ class Client {
 	 */
 	public function sync_product( $product_data ) {
 		return $this->request( '/api/products.upsert', $product_data, 'POST' );
+	}
+
+	/**
+	 * Upsert multiple products.
+	 *
+	 * @param array $products_data Array of product data.
+	 * @return array|\WP_Error API response or WP_Error on failure.
+	 */
+	public function upsert_products( $products_data ) {
+		return $this->request( '/api/products.upsert', array( 'products' => $products_data ), 'POST' );
 	}
 
 	/**
@@ -314,9 +349,9 @@ class Client {
 	 * @param string $endpoint API endpoint.
 	 * @param int    $code     Optional. HTTP response code.
 	 */
-	private function log_error( $type, $message, $endpoint, $code = null ) {
+	private function log_error( $type, $message, $endpoint, $code = null, $context = array() ) {
 		$log_message = sprintf(
-			'ReviewApp %s: %s [Endpoint: %s]',
+			'%s: %s [Endpoint: %s]',
 			$type,
 			$message,
 			$endpoint
@@ -326,6 +361,15 @@ class Client {
 			$log_message .= sprintf( ' [Code: %d]', $code );
 		}
 
-		error_log( $log_message );
+		// Use WooCommerce logger if available
+		if ( function_exists( 'wc_get_logger' ) ) {
+			$logger = wc_get_logger();
+			$logger->error( 
+				$log_message,
+				array_merge( array( 'source' => 'reviewapp' ), $context )
+			);
+		} else {
+			error_log( 'ReviewApp: ' . $log_message );
+		}
 	}
 }
