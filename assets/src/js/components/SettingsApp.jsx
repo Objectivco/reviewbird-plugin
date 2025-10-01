@@ -3,17 +3,31 @@ import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 import ConnectionPanel from './ConnectionPanel';
 import SyncPanel from './SyncPanel';
+import ReviewSyncPanel from './ReviewSyncPanel';
 import LoadingSpinner from './LoadingSpinner';
 
 export default function SettingsApp() {
 	const [settings, setSettings] = useState(null);
+	const [productSyncStatus, setProductSyncStatus] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [error, setError] = useState(null);
 
 	useEffect(() => {
 		loadSettings();
+		loadProductSyncStatus();
 	}, []);
+
+	const loadProductSyncStatus = async () => {
+		try {
+			const data = await apiFetch({
+				path: '/reviewapp/v1/sync/status',
+			});
+			setProductSyncStatus(data);
+		} catch (err) {
+			console.error('Failed to load product sync status:', err);
+		}
+	};
 
 	const loadSettings = async () => {
 		try {
@@ -84,6 +98,11 @@ export default function SettingsApp() {
 				/>
 
 				<SyncPanel isConnected={settings?.connection_status === 'connected'} />
+
+				<ReviewSyncPanel 
+					isConnected={settings?.connection_status === 'connected'}
+					productsAreSynced={productSyncStatus && !productSyncStatus.needs_sync}
+				/>
 			</div>
 		</div>
 	);
