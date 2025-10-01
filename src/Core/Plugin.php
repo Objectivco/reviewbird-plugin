@@ -9,6 +9,7 @@ namespace ReviewApp\Core;
 
 use ReviewApp\Admin\Settings;
 use ReviewApp\Api\Client;
+use ReviewApp\Api\RatingsController;
 use ReviewApp\Api\SettingsController;
 use ReviewApp\Core\ActionScheduler;
 use ReviewApp\Integration\ProductSync;
@@ -260,6 +261,18 @@ class Plugin {
 	public function register_rest_routes() {
 		$settings_controller = new SettingsController();
 		$settings_controller->register_routes();
+
+		$ratings_controller = new RatingsController();
+		
+		register_rest_route(
+			'reviewapp/v1',
+			'/ratings/update',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $ratings_controller, 'update_ratings' ),
+				'permission_callback' => array( 'ReviewApp\Api\RatingsController', 'permission_callback' ),
+			)
+		);
 	}
 
 }

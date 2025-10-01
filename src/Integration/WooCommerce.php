@@ -391,4 +391,24 @@ class WooCommerce {
 
 		echo $widget_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped above.
 	}
+
+	/**
+	 * Update product rating metadata.
+	 *
+	 * @param int   $product_id   WooCommerce product ID.
+	 * @param float $avg_stars    Average rating (0-5).
+	 * @param int   $review_count Number of reviews.
+	 */
+	public function update_product_rating_meta( $product_id, $avg_stars, $review_count ) {
+		$product_id = absint( $product_id );
+		
+		if ( ! $product_id ) {
+			return;
+		}
+
+		update_post_meta( $product_id, '_reviewapp_avg_stars', floatval( $avg_stars ) );
+		update_post_meta( $product_id, '_reviewapp_reviews_count', intval( $review_count ) );
+
+		do_action( 'reviewapp_rating_updated', $product_id, $avg_stars, $review_count );
+	}
 }
