@@ -135,6 +135,18 @@ class Plugin {
 				$this->version,
 				true
 			);
+
+			// Pass configuration to widget JavaScript.
+			wp_localize_script(
+				'reviewapp-widget',
+				'ReviewAppConfig',
+				array(
+					'apiUrl' => reviewapp_get_api_url(),
+					'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+					'storeId' => get_option( 'reviewapp_store_id' ),
+					'widgetPrefix' => 'reviewapp-widget-',
+				)
+			);
 		}
 	}
 
