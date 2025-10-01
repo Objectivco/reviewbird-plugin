@@ -256,7 +256,6 @@ class ReviewSync {
 				'email' => $comment->comment_author_email,
 			),
 			'rating'              => $rating ? absint( $rating ) : 5,
-			'title'               => '', // WooCommerce doesn't have review titles by default
 			'body'                => $comment->comment_content,
 			'status'              => '1' === $comment->comment_approved ? 'approved' : 'pending',
 			'verified_purchase'   => $verified_purchase,

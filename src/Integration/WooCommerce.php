@@ -93,9 +93,9 @@ class WooCommerce {
 				'email' => $comment->comment_author_email,
 			),
 			'rating'              => get_comment_meta( $comment_id, 'rating', true ) ?: 5,
-			'title'               => '', // WooCommerce doesn't have review titles by default.
 			'body'                => $comment->comment_content,
 			'status'              => $comment->comment_approved ? 'approved' : 'pending',
+			'verified_purchase'   => (bool) get_comment_meta( $comment_id, 'verified', true ),
 			'created_at'          => gmdate( 'c', strtotime( $comment->comment_date_gmt ) ),
 		);
 
