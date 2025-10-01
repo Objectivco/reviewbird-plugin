@@ -44,6 +44,10 @@ class WooCommerce {
 			return;
 		}
 
+		// Determine in_store status based on product status
+		$post_status = get_post_status( $product_id );
+		$in_store = in_array( $post_status, array( 'publish' ), true );
+
 		$product_data = array(
 			'external_id' => (string) $product_id,
 			'sku'         => $product->get_sku(),
@@ -51,6 +55,7 @@ class WooCommerce {
 			'slugs'       => array( $product->get_slug() ),
 			'url'         => get_permalink( $product_id ),
 			'image'       => wp_get_attachment_url( $product->get_image_id() ),
+			'in_store'    => $in_store,
 		);
 
 		// Use Action Scheduler for reliable background processing.
@@ -70,6 +75,100 @@ class WooCommerce {
 					)
 				);
 			}
+		}
+	}
+
+	/**
+	 * Handle product meta updates.
+	 *
+	 * @param int    $meta_id     Meta ID.
+	 * @param int    $object_id   Post ID.
+	 * @param string $meta_key    Meta key.
+	 * @param mixed  $meta_value  Meta value.
+	 */
+	public function handle_product_meta_update( $meta_id, $object_id, $meta_key, $meta_value ) {
+		// Only process product posts
+		if ( 'product' !== get_post_type( $object_id ) ) {
+			return;
+		}
+
+		// Re-sync product on relevant meta changes
+		$relevant_meta_keys = array( '_price', '_regular_price', '_sale_price', '_stock_status', '_manage_stock', '_stock' );
+		if ( in_array( $meta_key, $relevant_meta_keys, true ) ) {
+			$this->sync_product( $object_id );
+		}
+	}
+
+	/**
+	 * Handle product duplication.
+	 *
+	 * @param int $duplicate_id ID of the duplicated product.
+	 * @param int $original_id  ID of the original product.
+	 */
+	public function handle_product_duplicate( $duplicate_id, $original_id ) {
+		// Sync the new duplicate as a separate product
+		$this->sync_product( $duplicate_id );
+	}
+
+	/**
+	 * Handle product being trashed.
+	 *
+	 * @param int $product_id Product ID.
+	 */
+	public function handle_product_trash( $product_id ) {
+		// Only process product posts
+		if ( 'product' !== get_post_type( $product_id ) ) {
+			return;
+		}
+
+		// Re-sync with in_store = false
+		$this->sync_product( $product_id );
+	}
+
+	/**
+	 * Handle product being untrashed (restored).
+	 *
+	 * @param int $product_id Product ID.
+	 */
+	public function handle_product_untrash( $product_id ) {
+		// Only process product posts
+		if ( 'product' !== get_post_type( $product_id ) ) {
+			return;
+		}
+
+		// Re-sync with updated in_store status
+		$this->sync_product( $product_id );
+	}
+
+	/**
+	 * Handle product being permanently deleted.
+	 *
+	 * @param int $product_id Product ID.
+	 */
+	public function handle_product_delete( $product_id ) {
+		// Only process product posts
+		if ( 'product' !== get_post_type( $product_id ) ) {
+			return;
+		}
+
+		// Mark product as deleted in ReviewApp (in_store = false)
+		$product_data = array(
+			'external_id' => (string) $product_id,
+			'in_store'    => false,
+			'active'      => false,
+		);
+
+		$result = $this->api_client->sync_product( $product_data );
+		
+		if ( is_wp_error( $result ) ) {
+			error_log(
+				sprintf(
+					/* translators: 1: Product ID, 2: Error message */
+					__( 'ReviewApp: Failed to mark product %1$d as deleted: %2$s', 'reviewapp-reviews' ),
+					$product_id,
+					$result->get_error_message()
+				)
+			);
 		}
 	}
 

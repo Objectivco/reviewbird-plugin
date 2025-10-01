@@ -109,6 +109,14 @@ class Plugin {
 			// Product sync hooks.
 			add_action( 'woocommerce_new_product', array( $woocommerce, 'sync_product' ) );
 			add_action( 'woocommerce_update_product', array( $woocommerce, 'sync_product' ) );
+			
+			// Product lifecycle hooks.
+			add_action( 'added_post_meta', array( $woocommerce, 'handle_product_meta_update' ), 10, 4 );
+			add_action( 'updated_post_meta', array( $woocommerce, 'handle_product_meta_update' ), 10, 4 );
+			add_action( 'woocommerce_product_duplicate', array( $woocommerce, 'handle_product_duplicate' ), 10, 2 );
+			add_action( 'wp_trash_post', array( $woocommerce, 'handle_product_trash' ) );
+			add_action( 'untrash_post', array( $woocommerce, 'handle_product_untrash' ) );
+			add_action( 'before_delete_post', array( $woocommerce, 'handle_product_delete' ) );
 
 			// Review sync hooks.
 			add_action( 'comment_post', array( $woocommerce, 'sync_review' ) );
