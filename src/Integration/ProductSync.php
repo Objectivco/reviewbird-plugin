@@ -144,7 +144,6 @@ class ProductSync {
 		$status         = $this->get_sync_status();
 		$synced_count   = 0;
 		$failed_count   = 0;
-		$products_data  = array();
 
 		foreach ( $product_ids as $product_id ) {
 			$product = wc_get_product( $product_id );
@@ -172,62 +171,31 @@ class ProductSync {
 				continue;
 			}
 
-			$products_data[] = $product_data;
-		}
-
-		// Bulk sync products
-		if ( ! empty( $products_data ) ) {
-			$result = $this->api_client->upsert_products( $products_data );
+			// Sync individual product
+			$result = $this->api_client->sync_product( $product_data );
 
 			if ( is_wp_error( $result ) ) {
-				$failed_count += count( $products_data );
+				$failed_count++;
 				$this->logger->error(
-					sprintf( 'Batch %d sync failed: %s', $batch_index, $result->get_error_message() ),
-					array( 'source' => 'reviewapp', 'batch' => $batch_index, 'error_data' => $result->get_error_data() )
+					sprintf( 
+						'Failed to sync product %d (%s) in batch %d: %s',
+						$product_id,
+						$product->get_name(),
+						$batch_index,
+						$result->get_error_message()
+					),
+					array( 
+						'source' => 'reviewapp',
+						'product_id' => $product_id,
+						'product_name' => $product->get_name(),
+						'batch' => $batch_index,
+						'error_data' => $result->get_error_data(),
+					)
 				);
 			} else {
-				// Check for partial failures in response
-				if ( isset( $result['errors'] ) && ! empty( $result['errors'] ) ) {
-					// Log individual product errors
-					foreach ( $result['errors'] as $error ) {
-						$this->logger->error(
-							sprintf( 
-								'Product sync error in batch %d: %s (Product: %s)',
-								$batch_index,
-								$error['message'] ?? 'Unknown error',
-								$error['external_id'] ?? 'unknown'
-							),
-							array( 'source' => 'reviewapp', 'error_detail' => $error )
-						);
-					}
-					$failed_count += count( $result['errors'] );
-					$synced_count += count( $products_data ) - count( $result['errors'] );
-				} else {
-					$synced_count += count( $products_data );
-				}
-
-				// Mark successfully synced products
-				$failed_external_ids = array();
-				if ( isset( $result['errors'] ) ) {
-					$failed_external_ids = array_column( $result['errors'], 'external_id' );
-				}
-
-				foreach ( $product_ids as $product_id ) {
-					if ( ! in_array( (string) $product_id, $failed_external_ids, true ) ) {
-						update_post_meta( $product_id, self::SYNCED_META_KEY, time() );
-					}
-				}
-				
-				$this->logger->info(
-					sprintf( 
-						'Batch %d processed: %d synced, %d failed out of %d total',
-						$batch_index,
-						$synced_count,
-						isset( $result['errors'] ) ? count( $result['errors'] ) : 0,
-						count( $products_data )
-					),
-					array( 'source' => 'reviewapp' )
-				);
+				// Successfully synced
+				$synced_count++;
+				update_post_meta( $product_id, self::SYNCED_META_KEY, time() );
 			}
 		}
 
@@ -308,9 +276,11 @@ class ProductSync {
 			}
 		}
 
-		// Handle variations for variable products
+		// Handle variations - required by API (min:1)
 		$variations = array();
+		
 		if ( $product->is_type( 'variable' ) ) {
+			// Variable product: get all variations
 			$variation_ids = $product->get_children();
 			foreach ( $variation_ids as $variation_id ) {
 				$variation = wc_get_product( $variation_id );
@@ -342,11 +312,23 @@ class ProductSync {
 
 				$variations[] = $variation_data;
 			}
+		} else {
+			// Simple product: create a single variation representing the product itself
+			$variations[] = array(
+				'external_id' => (string) $product_id,
+				'slug'        => $product->get_slug(),
+				'sku'         => $product->get_sku() ?: null,
+				'barcode'     => get_post_meta( $product_id, '_barcode', true ) ?: null,
+				'title'       => $product->get_name(),
+				'image'       => wp_get_attachment_url( $product->get_image_id() ) ?: null,
+				'price'       => $product->get_price() ? (float) $product->get_price() : null,
+				'attributes'  => array(),
+				'active'      => $product->is_purchasable(),
+			);
 		}
 
-		if ( ! empty( $variations ) ) {
-			$data['variations'] = $variations;
-		}
+		// Variations are always required (min:1)
+		$data['variations'] = $variations;
 
 		return $data;
 	}

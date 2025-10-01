@@ -196,16 +196,6 @@ class Client {
 	}
 
 	/**
-	 * Upsert multiple products.
-	 *
-	 * @param array $products_data Array of product data.
-	 * @return array|\WP_Error API response or WP_Error on failure.
-	 */
-	public function upsert_products( $products_data ) {
-		return $this->request( '/api/products.upsert', array( 'products' => $products_data ), 'POST' );
-	}
-
-	/**
 	 * Queue product sync using Action Scheduler.
 	 *
 	 * @param array $product_data Product data.
