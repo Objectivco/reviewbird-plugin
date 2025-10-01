@@ -12,6 +12,7 @@ use ReviewApp\Api\Client;
 use ReviewApp\Api\SettingsController;
 use ReviewApp\Core\ActionScheduler;
 use ReviewApp\Integration\ProductSync;
+use ReviewApp\Integration\ReviewSync;
 use ReviewApp\Integration\WooCommerce;
 use ReviewApp\OAuth\Handler;
 
@@ -97,8 +98,9 @@ class Plugin {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_scripts' ) );
 		add_shortcode( 'reviewapp_widget', array( $this, 'widget_shortcode' ) );
 
-		// Product sync Action Scheduler hooks.
+		// Sync Action Scheduler hooks.
 		add_action( 'reviewapp_sync_product_batch', array( $this, 'process_sync_batch' ), 10, 2 );
+		add_action( 'reviewapp_sync_review_batch', array( $this, 'process_review_sync_batch' ), 10, 2 );
 
 		// WooCommerce integration.
 		if ( class_exists( 'WooCommerce' ) ) {
@@ -135,6 +137,17 @@ class Plugin {
 	public function process_sync_batch( $batch, $batch_index ) {
 		$product_sync = new ProductSync();
 		$product_sync->process_batch( $batch, $batch_index );
+	}
+
+	/**
+	 * Process review sync batch via Action Scheduler.
+	 *
+	 * @param array $batch       Array of review comment IDs.
+	 * @param int   $batch_index Batch index number.
+	 */
+	public function process_review_sync_batch( $batch, $batch_index ) {
+		$review_sync = new ReviewSync();
+		$review_sync->process_batch( $batch, $batch_index );
 	}
 
 	/**
