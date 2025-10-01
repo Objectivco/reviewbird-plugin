@@ -88,10 +88,6 @@ class Plugin {
 		add_action( 'init', array( $oauth_handler, 'handle_oauth_callback' ) );
 		add_action( 'wp_ajax_reviewapp_start_oauth', array( $oauth_handler, 'start_oauth_flow' ) );
 
-		// Widget token AJAX hooks (for logged in and non-logged-in users).
-		add_action( 'wp_ajax_reviewapp_mint_widget_token', array( $this, 'ajax_mint_widget_token' ) );
-		add_action( 'wp_ajax_nopriv_reviewapp_mint_widget_token', array( $this, 'ajax_mint_widget_token' ) );
-
 		// Public hooks.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_scripts' ) );
 		add_shortcode( 'reviewapp_widget', array( $this, 'widget_shortcode' ) );
@@ -142,7 +138,6 @@ class Plugin {
 				'ReviewAppConfig',
 				array(
 					'apiUrl' => reviewapp_get_api_url(),
-					'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 					'storeId' => get_option( 'reviewapp_store_id' ),
 					'widgetPrefix' => 'reviewapp-widget-',
 				)
@@ -219,36 +214,5 @@ class Plugin {
 		return $this->version;
 	}
 
-	/**
-	 * AJAX handler to mint a widget token.
-	 * Bypasses page cache since it's an AJAX request.
-	 */
-	public function ajax_mint_widget_token() {
-		$store_id = get_option( 'reviewapp_store_id' );
-		$store_token = get_option( 'reviewapp_store_token' );
-		
-		if ( ! $store_id || ! $store_token ) {
-			wp_send_json_error( array( 'message' => 'Store not configured' ), 500 );
-		}
-		
-		$product_id = isset( $_POST['product_id'] ) ? sanitize_text_field( $_POST['product_id'] ) : null;
-		
-		$api_client = new Client();
-		$response = $api_client->request( '/api/widget-token/mint', array(
-			'store_id' => $store_id,
-			'origin' => get_site_url(),
-			'product_id' => $product_id
-		), 'POST' );
-		
-		if ( is_wp_error( $response ) ) {
-			wp_send_json_error( array(
-				'message' => 'Failed to mint token: ' . $response->get_error_message()
-			), 500 );
-		}
-		
-		wp_send_json_success( array(
-			'token' => $response['token'],
-			'expires_at' => $response['expires_at']
-		) );
-	}
+
 }
