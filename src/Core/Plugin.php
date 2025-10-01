@@ -9,6 +9,7 @@ namespace ReviewApp\Core;
 
 use ReviewApp\Admin\Settings;
 use ReviewApp\Api\Client;
+use ReviewApp\Api\SettingsController;
 use ReviewApp\Core\ActionScheduler;
 use ReviewApp\Integration\WooCommerce;
 use ReviewApp\OAuth\Handler;
@@ -75,11 +76,14 @@ class Plugin {
 	private function init_hooks() {
 		// Initialize Action Scheduler integration.
 		ActionScheduler::init();
+		
+		// REST API routes.
+		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
+		
 		// Admin hooks.
 		if ( is_admin() ) {
 			$settings = new Settings();
 			add_action( 'admin_menu', array( $settings, 'add_admin_menu' ) );
-			add_action( 'admin_init', array( $settings, 'init_settings' ) );
 			add_action( 'admin_enqueue_scripts', array( $settings, 'enqueue_scripts' ) );
 		}
 
@@ -214,5 +218,12 @@ class Plugin {
 		return $this->version;
 	}
 
+	/**
+	 * Register REST API routes.
+	 */
+	public function register_rest_routes() {
+		$settings_controller = new SettingsController();
+		$settings_controller->register_routes();
+	}
 
 }

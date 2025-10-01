@@ -2,14 +2,13 @@
  * ReviewApp Admin JavaScript
  */
 
-(function($) {
-    'use strict';
+import { render } from '@wordpress/element';
+import '../scss/admin.scss';
+import SettingsApp from './components/SettingsApp';
 
-    $(document).ready(function() {
-        // OAuth connection handlers are in the PHP for security
-        console.log('ReviewApp Admin loaded');
-        
-        // Add any admin-specific JavaScript here
-    });
-
-})(jQuery);
+document.addEventListener('DOMContentLoaded', () => {
+	const root = document.getElementById('reviewapp-settings-root');
+	if (root) {
+		render(<SettingsApp />, root);
+	}
+});
