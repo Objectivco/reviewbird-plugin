@@ -344,13 +344,15 @@ class WooCommerce {
 	 */
 	public function add_widget_to_product_page() {
 		global $product;
-		
+
 		if ( ! $product ) {
 			return;
 		}
 
 		$store_id = $this->api_client->get_store_id_for_frontend();
 		if ( ! $store_id ) {
+			// Add HTML comment for debugging
+			echo '<!-- ReviewApp: Widget not displayed. Store ID not configured. Please connect your ReviewApp account in WP Admin > ReviewApp > Settings -->';
 			return;
 		}
 
