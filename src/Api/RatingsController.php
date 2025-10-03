@@ -136,4 +136,85 @@ class RatingsController {
 
 		return true;
 	}
+
+	/**
+	 * Check if a customer is a verified purchaser of a product.
+	 *
+	 * @param WP_REST_Request $request The REST API request.
+	 * @return WP_REST_Response|WP_Error Response or error.
+	 */
+	public function check_verified_purchase( WP_REST_Request $request ) {
+		$product_id     = $request->get_param( 'product_id' );
+		$customer_email = $request->get_param( 'customer_email' );
+
+		if ( empty( $product_id ) ) {
+			return new WP_Error(
+				'missing_product_id',
+				__( 'Product ID is required', 'reviewapp-reviews' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		if ( empty( $customer_email ) ) {
+			return new WP_Error(
+				'missing_email',
+				__( 'Customer email is required', 'reviewapp-reviews' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		if ( ! is_email( $customer_email ) ) {
+			return new WP_Error(
+				'invalid_email',
+				__( 'Invalid email address', 'reviewapp-reviews' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		$product_id = absint( $product_id );
+
+		if ( ! $product_id ) {
+			return new WP_Error(
+				'invalid_product_id',
+				__( 'Invalid product ID', 'reviewapp-reviews' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		if ( 'product' !== get_post_type( $product_id ) ) {
+			return new WP_Error(
+				'product_not_found',
+				__( 'Product not found', 'reviewapp-reviews' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		// Check if customer bought product using email (user_id = null).
+		$verified_purchase = false;
+		if ( function_exists( 'wc_customer_bought_product' ) ) {
+			$verified_purchase = wc_customer_bought_product( null, $customer_email, $product_id );
+		}
+
+		if ( function_exists( 'wc_get_logger' ) ) {
+			$logger = wc_get_logger();
+			$logger->debug(
+				sprintf(
+					'Verified purchase check for product %d, email %s: %s',
+					$product_id,
+					$customer_email,
+					$verified_purchase ? 'true' : 'false'
+				),
+				array( 'source' => 'reviewapp' )
+			);
+		}
+
+		return new WP_REST_Response(
+			array(
+				'product_id'        => $product_id,
+				'customer_email'    => $customer_email,
+				'verified_purchase' => (bool) $verified_purchase,
+			),
+			200
+		);
+	}
 }

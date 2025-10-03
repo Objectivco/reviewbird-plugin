@@ -263,13 +263,23 @@ class Plugin {
 		$settings_controller->register_routes();
 
 		$ratings_controller = new RatingsController();
-		
+
 		register_rest_route(
 			'reviewapp/v1',
 			'/ratings/update',
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $ratings_controller, 'update_ratings' ),
+				'permission_callback' => array( 'ReviewApp\Api\RatingsController', 'permission_callback' ),
+			)
+		);
+
+		register_rest_route(
+			'reviewapp/v1',
+			'/verified-purchase/check',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $ratings_controller, 'check_verified_purchase' ),
 				'permission_callback' => array( 'ReviewApp\Api\RatingsController', 'permission_callback' ),
 			)
 		);
