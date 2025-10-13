@@ -9,6 +9,7 @@ namespace ReviewApp\Core;
 
 use ReviewApp\Admin\Settings;
 use ReviewApp\Api\Client;
+use ReviewApp\Api\CouponController;
 use ReviewApp\Api\RatingsController;
 use ReviewApp\Api\SettingsController;
 use ReviewApp\Core\ActionScheduler;
@@ -283,6 +284,10 @@ class Plugin {
 				'permission_callback' => array( 'ReviewApp\Api\RatingsController', 'permission_callback' ),
 			)
 		);
+
+		// Coupon controller routes
+		$coupon_controller = new CouponController();
+		$coupon_controller->register_routes();
 	}
 
 }
