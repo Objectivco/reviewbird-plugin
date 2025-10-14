@@ -164,7 +164,15 @@ class CouponController {
 
         $coupon->save();
 
-        return $coupon->get_id();
+        // WooCommerce converts coupon codes to lowercase via sanitize_title()
+        // We need to manually update the post_title to preserve uppercase
+        $coupon_id = $coupon->get_id();
+        wp_update_post([
+            'ID' => $coupon_id,
+            'post_title' => strtoupper($new_code),
+        ]);
+
+        return $coupon_id;
     }
 
     /**
@@ -199,6 +207,14 @@ class CouponController {
 
         $coupon->save();
 
-        return $coupon->get_id();
+        // WooCommerce converts coupon codes to lowercase via sanitize_title()
+        // We need to manually update the post_title to preserve uppercase
+        $coupon_id = $coupon->get_id();
+        wp_update_post([
+            'ID' => $coupon_id,
+            'post_title' => strtoupper($code),
+        ]);
+
+        return $coupon_id;
     }
 }
