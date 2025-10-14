@@ -13,6 +13,7 @@ use ReviewApp\Api\CouponController;
 use ReviewApp\Api\RatingsController;
 use ReviewApp\Api\SettingsController;
 use ReviewApp\Core\ActionScheduler;
+use ReviewApp\Integration\OrderSync;
 use ReviewApp\Integration\ProductSync;
 use ReviewApp\Integration\ReviewSync;
 use ReviewApp\Integration\WooCommerce;
@@ -107,11 +108,12 @@ class Plugin {
 		// WooCommerce integration.
 		if ( class_exists( 'WooCommerce' ) ) {
 			$woocommerce = new WooCommerce();
-			
+			$api_client = new Client();
+
 			// Product sync hooks.
 			add_action( 'woocommerce_new_product', array( $woocommerce, 'sync_product' ) );
 			add_action( 'woocommerce_update_product', array( $woocommerce, 'sync_product' ) );
-			
+
 			// Product lifecycle hooks.
 			add_action( 'added_post_meta', array( $woocommerce, 'handle_product_meta_update' ), 10, 4 );
 			add_action( 'updated_post_meta', array( $woocommerce, 'handle_product_meta_update' ), 10, 4 );
@@ -128,11 +130,15 @@ class Plugin {
 			// Order event hooks.
 			add_action( 'woocommerce_order_status_changed', array( $woocommerce, 'track_order_event' ), 10, 3 );
 
+			// Order sync for review requests.
+			$order_sync = new OrderSync( $api_client );
+			$order_sync->init();
+
 			// Widget integration - opinionated default with filter override.
 			if ( apply_filters( 'reviewapp_auto_inject_widgets', true ) ) {
 				$widget_hook = apply_filters( 'reviewapp_widget_hook', 'woocommerce_after_single_product_summary' );
 				$widget_priority = apply_filters( 'reviewapp_widget_priority', 20 );
-				
+
 				add_action( $widget_hook, array( $woocommerce, 'add_widget_to_product_page' ), $widget_priority );
 			}
 		}

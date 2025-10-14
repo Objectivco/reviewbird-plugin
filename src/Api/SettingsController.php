@@ -105,12 +105,18 @@ class SettingsController {
 			$connection_status = is_wp_error( $result ) ? 'error' : 'connected';
 		}
 
+		// Get WooCommerce order statuses
+		$order_statuses = \ReviewApp\Integration\OrderSync::get_order_statuses();
+
 		return rest_ensure_response(
 			array(
-				'store_token'       => $token,
-				'store_id'          => get_option( 'reviewapp_store_id', '' ),
-				'connection_status' => $connection_status,
-				'oauth_nonce'       => wp_create_nonce( 'reviewapp_oauth_start' ),
+				'store_token'                           => $token,
+				'store_id'                              => get_option( 'reviewapp_store_id', '' ),
+				'connection_status'                     => $connection_status,
+				'oauth_nonce'                           => wp_create_nonce( 'reviewapp_oauth_start' ),
+				'review_requests_enabled'               => (bool) get_option( 'reviewapp_review_requests_enabled', false ),
+				'review_request_trigger_status'         => get_option( 'reviewapp_review_request_trigger_status', 'completed' ),
+				'available_order_statuses'              => $order_statuses,
 			)
 		);
 	}
@@ -123,6 +129,16 @@ class SettingsController {
 	 */
 	public function update_settings( $request ) {
 		$token = sanitize_text_field( $request->get_param( 'store_token' ) );
+
+		// Update review request settings if provided
+		if ( $request->has_param( 'review_requests_enabled' ) ) {
+			update_option( 'reviewapp_review_requests_enabled', (bool) $request->get_param( 'review_requests_enabled' ) );
+		}
+
+		if ( $request->has_param( 'review_request_trigger_status' ) ) {
+			$trigger_status = sanitize_text_field( $request->get_param( 'review_request_trigger_status' ) );
+			update_option( 'reviewapp_review_request_trigger_status', $trigger_status );
+		}
 
 		// Allow empty token to disconnect.
 		if ( empty( $token ) ) {
@@ -250,7 +266,16 @@ class SettingsController {
 	 */
 	private function get_settings_schema() {
 		return array(
-			'store_token' => array(
+			'store_token'                   => array(
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+				'validate_callback' => 'rest_validate_request_arg',
+			),
+			'review_requests_enabled'       => array(
+				'type'              => 'boolean',
+				'validate_callback' => 'rest_validate_request_arg',
+			),
+			'review_request_trigger_status' => array(
 				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_text_field',
 				'validate_callback' => 'rest_validate_request_arg',
