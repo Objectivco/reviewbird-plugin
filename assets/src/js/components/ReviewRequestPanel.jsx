@@ -2,32 +2,19 @@ import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 export default function ReviewRequestPanel({ settings, onSave, saving, isConnected }) {
-	const [localSettings, setLocalSettings] = useState({
-		review_requests_enabled: settings?.review_requests_enabled || false,
-		review_request_trigger_status: settings?.review_request_trigger_status || 'completed',
-	});
-
-	const handleToggle = async (e) => {
-		const enabled = e.target.checked;
-		setLocalSettings({ ...localSettings, review_requests_enabled: enabled });
-
-		try {
-			await onSave({ review_requests_enabled: enabled });
-		} catch (err) {
-			// Error handled by parent
-			setLocalSettings({ ...localSettings, review_requests_enabled: !enabled });
-		}
-	};
+	const [triggerStatus, setTriggerStatus] = useState(
+		settings?.review_request_trigger_status || 'completed'
+	);
 
 	const handleStatusChange = async (e) => {
 		const status = e.target.value;
-		setLocalSettings({ ...localSettings, review_request_trigger_status: status });
+		setTriggerStatus(status);
 
 		try {
 			await onSave({ review_request_trigger_status: status });
 		} catch (err) {
-			// Error handled by parent
-			setLocalSettings({ ...localSettings, review_request_trigger_status: settings?.review_request_trigger_status || 'completed' });
+			// Error handled by parent - revert to previous value
+			setTriggerStatus(settings?.review_request_trigger_status || 'completed');
 		}
 	};
 
@@ -44,48 +31,19 @@ export default function ReviewRequestPanel({ settings, onSave, saving, isConnect
 			</div>
 
 			<div className="px-6 py-5 space-y-6">
-				<div className="space-y-4">
-					<div className="flex items-start justify-between">
-						<div className="flex-1">
-							<label htmlFor="review-requests-enabled" className="block text-sm font-medium text-gray-900 mb-1">
-								{__('Enable Review Requests', 'reviewapp-reviews')}
-							</label>
-							<p className="text-sm text-gray-600">
-								{__('Automatically send review request emails to customers after their orders are fulfilled', 'reviewapp-reviews')}
-							</p>
-						</div>
-						<div className="ml-4 flex-shrink-0">
-							<button
-								type="button"
-								role="switch"
-								aria-checked={localSettings.review_requests_enabled}
-								id="review-requests-enabled"
-								onClick={handleToggle}
-								disabled={saving}
-								className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
-									localSettings.review_requests_enabled ? 'bg-indigo-600' : 'bg-gray-200'
-								}`}
-							>
-								<span
-									className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-										localSettings.review_requests_enabled ? 'translate-x-5' : 'translate-x-0'
-									}`}
-								/>
-							</button>
-						</div>
-					</div>
+				<div>
+					<p className="text-sm text-gray-600 mb-4">
+						{__('Review request emails are automatically sent to customers after their orders are fulfilled. Configure which order status triggers the emails below.', 'reviewapp-reviews')}
+					</p>
 
-					{localSettings.review_requests_enabled && (
-						<div className="pt-4 border-t border-gray-200">
+					<div className="space-y-4">
+						<div>
 							<label htmlFor="trigger-status" className="block text-sm font-medium text-gray-900 mb-2">
-								{__('Trigger Status', 'reviewapp-reviews')}
+								{__('Fulfilled Order Status', 'reviewapp-reviews')}
 							</label>
-							<p className="text-sm text-gray-600 mb-3">
-								{__('Select which order status should trigger review request emails to be scheduled', 'reviewapp-reviews')}
-							</p>
 							<select
 								id="trigger-status"
-								value={localSettings.review_request_trigger_status}
+								value={triggerStatus}
 								onChange={handleStatusChange}
 								disabled={saving}
 								className="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -96,13 +54,11 @@ export default function ReviewRequestPanel({ settings, onSave, saving, isConnect
 									</option>
 								))}
 							</select>
-							<p className="mt-2 text-xs text-gray-500">
-								{__('When an order reaches this status, a review request email will be scheduled', 'reviewapp-reviews')}
+							<p className="mt-2 text-sm text-gray-500">
+								{__('When an order reaches this status, a review request email will be scheduled to be sent a few days later.', 'reviewapp-reviews')}
 							</p>
 						</div>
-					)}
 
-					{localSettings.review_requests_enabled && (
 						<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
 							<div className="flex">
 								<svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -114,7 +70,7 @@ export default function ReviewRequestPanel({ settings, onSave, saving, isConnect
 									</h3>
 									<div className="mt-2 text-sm text-blue-700">
 										<ul className="list-disc pl-5 space-y-1">
-											<li>{__('Review requests are sent a few days after the order is fulfilled', 'reviewapp-reviews')}</li>
+											<li>{__('Review requests are sent a few days after the order reaches the selected status', 'reviewapp-reviews')}</li>
 											<li>{__('Customers can review up to 3 products per email', 'reviewapp-reviews')}</li>
 											<li>{__('Reminder emails are sent automatically if no review is submitted', 'reviewapp-reviews')}</li>
 											<li>{__('Products already reviewed are excluded from future reminders', 'reviewapp-reviews')}</li>
@@ -123,7 +79,7 @@ export default function ReviewRequestPanel({ settings, onSave, saving, isConnect
 								</div>
 							</div>
 						</div>
-					)}
+					</div>
 				</div>
 			</div>
 		</div>
