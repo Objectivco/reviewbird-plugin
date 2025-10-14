@@ -156,6 +156,15 @@ class OrderSync {
 		// Check if product has been synced before (using same meta key as ProductSync)
 		$last_synced = get_post_meta( $product_id, '_reviewapp_synced', true );
 
+		// Check old meta key and update to new one if found
+		if ( ! $last_synced ) {
+			$old_synced = get_post_meta( $product_id, '_reviewapp_last_synced', true );
+			if ( $old_synced ) {
+				update_post_meta( $product_id, '_reviewapp_synced', $old_synced );
+				$last_synced = $old_synced;
+			}
+		}
+
 		// If synced within last 24 hours, skip
 		if ( $last_synced && ( time() - $last_synced ) < DAY_IN_SECONDS ) {
 			return;
