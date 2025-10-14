@@ -99,7 +99,7 @@ class OrderSync {
 		);
 
 		try {
-			$response = $this->api_client->post( '/orders.event', $payload );
+			$response = $this->api_client->track_order_event( $payload );
 
 			if ( is_wp_error( $response ) ) {
 				error_log( 'ReviewApp: Failed to push order event: ' . $response->get_error_message() );
