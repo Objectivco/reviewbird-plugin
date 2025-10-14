@@ -4,6 +4,7 @@ import { __ } from '@wordpress/i18n';
 import ConnectionPanel from './ConnectionPanel';
 import SyncPanel from './SyncPanel';
 import ReviewSyncPanel from './ReviewSyncPanel';
+import ReviewRequestPanel from './ReviewRequestPanel';
 import LoadingSpinner from './LoadingSpinner';
 
 export default function SettingsApp() {
@@ -99,9 +100,16 @@ export default function SettingsApp() {
 
 				<SyncPanel isConnected={settings?.connection_status === 'connected'} />
 
-				<ReviewSyncPanel 
+				<ReviewSyncPanel
 					isConnected={settings?.connection_status === 'connected'}
 					productsAreSynced={productSyncStatus && !productSyncStatus.needs_sync}
+				/>
+
+				<ReviewRequestPanel
+					settings={settings}
+					onSave={saveSettings}
+					saving={saving}
+					isConnected={settings?.connection_status === 'connected'}
 				/>
 			</div>
 		</div>
