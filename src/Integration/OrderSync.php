@@ -153,8 +153,8 @@ class OrderSync {
 	 * @param int $product_id WooCommerce product ID.
 	 */
 	private function ensure_product_synced( $product_id ) {
-		// Check if product has been synced before
-		$last_synced = get_post_meta( $product_id, '_reviewapp_last_synced', true );
+		// Check if product has been synced before (using same meta key as ProductSync)
+		$last_synced = get_post_meta( $product_id, '_reviewapp_synced', true );
 
 		// If synced within last 24 hours, skip
 		if ( $last_synced && ( time() - $last_synced ) < DAY_IN_SECONDS ) {
@@ -208,8 +208,8 @@ class OrderSync {
 		$result = $this->api_client->sync_product( $product_data );
 
 		if ( ! is_wp_error( $result ) ) {
-			// Update last synced timestamp
-			update_post_meta( $product_id, '_reviewapp_last_synced', time() );
+			// Update synced timestamp (using same meta key as ProductSync)
+			update_post_meta( $product_id, '_reviewapp_synced', time() );
 			error_log( 'ReviewApp: Auto-synced product #' . $product_id . ' during order processing' );
 		} else {
 			error_log( 'ReviewApp: Failed to auto-sync product #' . $product_id . ': ' . $result->get_error_message() );
