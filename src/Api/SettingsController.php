@@ -114,7 +114,6 @@ class SettingsController {
 				'store_id'                              => get_option( 'reviewapp_store_id', '' ),
 				'connection_status'                     => $connection_status,
 				'oauth_nonce'                           => wp_create_nonce( 'reviewapp_oauth_start' ),
-				'review_requests_enabled'               => (bool) get_option( 'reviewapp_review_requests_enabled', true ),
 				'review_request_trigger_status'         => get_option( 'reviewapp_review_request_trigger_status', 'completed' ),
 				'available_order_statuses'              => $order_statuses,
 				'orders_synced_count'                   => (int) get_option( 'reviewapp_orders_synced_count', 0 ),
@@ -130,11 +129,7 @@ class SettingsController {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function update_settings( $request ) {
-		// Update review request settings if provided
-		if ( $request->has_param( 'review_requests_enabled' ) ) {
-			update_option( 'reviewapp_review_requests_enabled', (bool) $request->get_param( 'review_requests_enabled' ) );
-		}
-
+		// Update review request trigger status if provided
 		if ( $request->has_param( 'review_request_trigger_status' ) ) {
 			$trigger_status = sanitize_text_field( $request->get_param( 'review_request_trigger_status' ) );
 			update_option( 'reviewapp_review_request_trigger_status', $trigger_status );
@@ -276,10 +271,6 @@ class SettingsController {
 			'store_token'                   => array(
 				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_text_field',
-				'validate_callback' => 'rest_validate_request_arg',
-			),
-			'review_requests_enabled'       => array(
-				'type'              => 'boolean',
 				'validate_callback' => 'rest_validate_request_arg',
 			),
 			'review_request_trigger_status' => array(

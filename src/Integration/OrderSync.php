@@ -47,11 +47,6 @@ class OrderSync {
 	 * @param \WC_Order $order   Order object.
 	 */
 	public function handle_order_status_change( $order_id, $old_status, $new_status, $order ) {
-		// Check if review requests are enabled
-		if ( ! get_option( 'reviewapp_review_requests_enabled', false ) ) {
-			return;
-		}
-
 		// Get the trigger status from settings
 		$trigger_status = get_option( 'reviewapp_review_request_trigger_status', 'completed' );
 
