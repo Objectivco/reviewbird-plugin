@@ -167,40 +167,91 @@ class OrderSync {
 			return;
 		}
 
-		// Build product sync data
+		// Build complete product sync data matching ProductSync format
 		$product_data = array(
 			'external_id' => (string) $product_id,
 			'slug'        => $product->get_slug(),
+			'sku'         => $product->get_sku() ?: null,
 			'title'       => $product->get_name(),
 			'url'         => get_permalink( $product_id ),
-			'image'       => wp_get_attachment_url( $product->get_image_id() ),
-			'active'      => true,
+			'image'       => wp_get_attachment_url( $product->get_image_id() ) ?: null,
+			'vendor'      => null,
+			'category'    => null,
+			'tags'        => array(),
+			'description' => $product->get_description() ?: $product->get_short_description(),
+			'images'      => array(),
 			'in_stock'    => $product->is_in_stock(),
 			'variations'  => array(),
 		);
 
+		// Get categories
+		$categories = get_the_terms( $product_id, 'product_cat' );
+		if ( $categories && ! is_wp_error( $categories ) ) {
+			$product_data['category'] = $categories[0]->name;
+		}
+
+		// Get tags
+		$tags = get_the_terms( $product_id, 'product_tag' );
+		if ( $tags && ! is_wp_error( $tags ) ) {
+			$product_data['tags'] = wp_list_pluck( $tags, 'name' );
+		}
+
+		// Get gallery images
+		$gallery_ids = $product->get_gallery_image_ids();
+		if ( ! empty( $gallery_ids ) ) {
+			foreach ( $gallery_ids as $image_id ) {
+				$image_url = wp_get_attachment_url( $image_id );
+				if ( $image_url ) {
+					$product_data['images'][] = $image_url;
+				}
+			}
+		}
+
 		// Add variations for variable products
 		if ( $product->is_type( 'variable' ) ) {
-			$variations = $product->get_available_variations();
-			foreach ( $variations as $variation_data ) {
-				$variation = wc_get_product( $variation_data['variation_id'] );
-				if ( $variation ) {
-					$product_data['variations'][] = array(
-						'external_id' => (string) $variation->get_id(),
-						'sku'         => $variation->get_sku(),
-						'title'       => implode( ', ', $variation->get_variation_attributes() ),
-						'price'       => (float) $variation->get_price(),
-						'active'      => true,
-					);
+			$variation_ids = $product->get_children();
+			foreach ( $variation_ids as $variation_id ) {
+				$variation = wc_get_product( $variation_id );
+				if ( ! $variation ) {
+					continue;
 				}
+
+				$variation_data = array(
+					'external_id' => (string) $variation_id,
+					'slug'        => $variation->get_slug(),
+					'sku'         => $variation->get_sku() ?: null,
+					'barcode'     => get_post_meta( $variation_id, '_barcode', true ) ?: null,
+					'title'       => $variation->get_name(),
+					'image'       => wp_get_attachment_url( $variation->get_image_id() ) ?: null,
+					'price'       => $variation->get_price() ? (float) $variation->get_price() : null,
+					'attributes'  => array(),
+					'active'      => $variation->is_purchasable(),
+				);
+
+				// Get variation attributes
+				$attributes = $variation->get_variation_attributes();
+				if ( ! empty( $attributes ) ) {
+					foreach ( $attributes as $key => $value ) {
+						// Remove 'attribute_' prefix if present
+						$clean_key                           = str_replace( 'attribute_', '', $key );
+						$variation_data['attributes'][ $clean_key ] = $value;
+					}
+				}
+
+				$product_data['variations'][] = $variation_data;
 			}
 		} else {
 			// For simple products, add a single variation
 			$product_data['variations'][] = array(
 				'external_id' => (string) $product_id,
-				'sku'         => $product->get_sku(),
-				'price'       => (float) $product->get_price(),
-				'active'      => true,
+				'slug'        => $product->get_slug(),
+				'sku'         => $product->get_sku() ?: null,
+				'barcode'     => get_post_meta( $product_id, '_barcode', true ) ?: null,
+				'title'       => $product->get_name(),
+				'image'       => wp_get_attachment_url( $product->get_image_id() ) ?: null,
+				'price'       => $product->get_price() ? (float) $product->get_price() : null,
+				'attributes'  => array(),
+				'active'      => $product->is_purchasable(),
 			);
 		}
 
