@@ -117,6 +117,8 @@ class SettingsController {
 				'review_requests_enabled'               => (bool) get_option( 'reviewapp_review_requests_enabled', true ),
 				'review_request_trigger_status'         => get_option( 'reviewapp_review_request_trigger_status', 'completed' ),
 				'available_order_statuses'              => $order_statuses,
+				'orders_synced_count'                   => (int) get_option( 'reviewapp_orders_synced_count', 0 ),
+				'orders_last_synced'                    => (int) get_option( 'reviewapp_orders_last_synced', 0 ),
 			)
 		);
 	}

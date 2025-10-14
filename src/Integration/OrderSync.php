@@ -110,6 +110,11 @@ class OrderSync {
 				error_log( 'ReviewApp: Failed to push order event: ' . $response->get_error_message() );
 			} else {
 				error_log( 'ReviewApp: Order event pushed successfully for order #' . $order->get_id() );
+
+				// Update sync stats
+				$synced_count = (int) get_option( 'reviewapp_orders_synced_count', 0 );
+				update_option( 'reviewapp_orders_synced_count', $synced_count + 1 );
+				update_option( 'reviewapp_orders_last_synced', time() );
 			}
 		} catch ( \Exception $e ) {
 			error_log( 'ReviewApp: Exception pushing order event: ' . $e->getMessage() );
