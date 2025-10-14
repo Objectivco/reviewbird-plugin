@@ -164,15 +164,7 @@ class CouponController {
 
         $coupon->save();
 
-        // WooCommerce converts coupon codes to lowercase via sanitize_title()
-        // We need to manually update the post_title to preserve uppercase
-        $coupon_id = $coupon->get_id();
-        wp_update_post([
-            'ID' => $coupon_id,
-            'post_title' => strtoupper($new_code),
-        ]);
-
-        return $coupon_id;
+        return $this->force_uppercase_code($coupon->get_id(), $new_code);
     }
 
     /**
@@ -207,9 +199,16 @@ class CouponController {
 
         $coupon->save();
 
-        // WooCommerce converts coupon codes to lowercase via sanitize_title()
-        // We need to manually update the post_title to preserve uppercase
-        $coupon_id = $coupon->get_id();
+        return $this->force_uppercase_code($coupon->get_id(), $code);
+    }
+
+    /**
+     * Force coupon code to uppercase by directly updating post_title
+     *
+     * WooCommerce's set_code() uses sanitize_title() which converts to lowercase.
+     * This bypasses that sanitization to preserve uppercase codes.
+     */
+    private function force_uppercase_code($coupon_id, $code) {
         wp_update_post([
             'ID' => $coupon_id,
             'post_title' => strtoupper($code),
