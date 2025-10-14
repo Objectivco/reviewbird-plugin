@@ -134,7 +134,7 @@ class CouponController {
 
         // Create new coupon with same settings as template
         $coupon = new \WC_Coupon();
-        $coupon->set_code($new_code);
+        $coupon->set_code(strtoupper($new_code));
 
         // Clone all settings from template
         $coupon->set_discount_type($template_coupon->get_discount_type());
@@ -181,7 +181,7 @@ class CouponController {
         }
 
         $coupon = new \WC_Coupon();
-        $coupon->set_code($code);
+        $coupon->set_code(strtoupper($code));
         $coupon->set_discount_type($discount_type); // 'percent' or 'fixed_cart'
         $coupon->set_amount(floatval($amount));
 
