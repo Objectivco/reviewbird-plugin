@@ -10,6 +10,7 @@ namespace ReviewApp\Core;
 use ReviewApp\Admin\Settings;
 use ReviewApp\Api\Client;
 use ReviewApp\Api\CouponController;
+use ReviewApp\Api\ProductEndpoint;
 use ReviewApp\Api\RatingsController;
 use ReviewApp\Api\SettingsController;
 use ReviewApp\Core\ActionScheduler;
@@ -294,6 +295,18 @@ class Plugin {
 		// Coupon controller routes
 		$coupon_controller = new CouponController();
 		$coupon_controller->register_routes();
+
+		// Product endpoint for ReviewApp to fetch product data
+		$product_endpoint = new ProductEndpoint();
+		register_rest_route(
+			'reviewapp/v1',
+			'/products/(?P<external_id>\d+)',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $product_endpoint, 'get_product' ),
+				'permission_callback' => array( 'ReviewApp\Api\ProductEndpoint', 'permission_callback' ),
+			)
+		);
 	}
 
 }
