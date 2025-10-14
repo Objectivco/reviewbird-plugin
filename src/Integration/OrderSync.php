@@ -73,8 +73,14 @@ class OrderSync {
 				continue;
 			}
 
+			// Get the actual product ID (for variable products, we need the parent)
+			$product_id = $product->get_parent_id() ? $product->get_parent_id() : $product->get_id();
+
+			// Sync product if it hasn't been synced yet
+			$this->ensure_product_synced( $product_id );
+
 			$line_item = array(
-				'product_external_id' => (string) $product->get_id(),
+				'product_external_id' => (string) $product_id,
 				'quantity'            => $item->get_quantity(),
 				'price'               => (float) $item->get_total(),
 			);
@@ -139,5 +145,74 @@ class OrderSync {
 		}
 
 		return $clean_statuses;
+	}
+
+	/**
+	 * Ensure product is synced to ReviewApp before including in order.
+	 *
+	 * @param int $product_id WooCommerce product ID.
+	 */
+	private function ensure_product_synced( $product_id ) {
+		// Check if product has been synced before
+		$last_synced = get_post_meta( $product_id, '_reviewapp_last_synced', true );
+
+		// If synced within last 24 hours, skip
+		if ( $last_synced && ( time() - $last_synced ) < DAY_IN_SECONDS ) {
+			return;
+		}
+
+		// Get product data
+		$product = wc_get_product( $product_id );
+		if ( ! $product ) {
+			return;
+		}
+
+		// Build product sync data
+		$product_data = array(
+			'external_id' => (string) $product_id,
+			'slug'        => $product->get_slug(),
+			'title'       => $product->get_name(),
+			'url'         => get_permalink( $product_id ),
+			'image'       => wp_get_attachment_url( $product->get_image_id() ),
+			'active'      => true,
+			'in_stock'    => $product->is_in_stock(),
+			'variations'  => array(),
+		);
+
+		// Add variations for variable products
+		if ( $product->is_type( 'variable' ) ) {
+			$variations = $product->get_available_variations();
+			foreach ( $variations as $variation_data ) {
+				$variation = wc_get_product( $variation_data['variation_id'] );
+				if ( $variation ) {
+					$product_data['variations'][] = array(
+						'external_id' => (string) $variation->get_id(),
+						'sku'         => $variation->get_sku(),
+						'title'       => implode( ', ', $variation->get_variation_attributes() ),
+						'price'       => (float) $variation->get_price(),
+						'active'      => true,
+					);
+				}
+			}
+		} else {
+			// For simple products, add a single variation
+			$product_data['variations'][] = array(
+				'external_id' => (string) $product_id,
+				'sku'         => $product->get_sku(),
+				'price'       => (float) $product->get_price(),
+				'active'      => true,
+			);
+		}
+
+		// Sync product to ReviewApp
+		$result = $this->api_client->sync_product( $product_data );
+
+		if ( ! is_wp_error( $result ) ) {
+			// Update last synced timestamp
+			update_post_meta( $product_id, '_reviewapp_last_synced', time() );
+			error_log( 'ReviewApp: Auto-synced product #' . $product_id . ' during order processing' );
+		} else {
+			error_log( 'ReviewApp: Failed to auto-sync product #' . $product_id . ': ' . $result->get_error_message() );
+		}
 	}
 }
