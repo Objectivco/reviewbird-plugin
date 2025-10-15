@@ -51,19 +51,19 @@ define( 'REVIEWAPP_TEXT_DOMAIN', 'reviewapp-reviews' );
  * ReviewApp API URLs for different environments.
  */
 define( 'REVIEWAPP_API_URL_PRODUCTION', 'https://app.reviewapp.com' );
-define( 'REVIEWAPP_API_URL_STAGING', 'https://staging.reviewapp.com' );
+define( 'REVIEWAPP_API_URL_STAGING', 'https://reviewapp.us-1.sharedwithexpose.com' );
 define( 'REVIEWAPP_API_URL_DEVELOPMENT', 'https://reviewapp.test' );
 
 /**
  * ReviewApp OAuth URLs for different environments.
  */
 define( 'REVIEWAPP_OAUTH_URL_PRODUCTION', 'https://app.reviewapp.com/oauth' );
-define( 'REVIEWAPP_OAUTH_URL_STAGING', 'https://staging.reviewapp.com/oauth' );
+define( 'REVIEWAPP_OAUTH_URL_STAGING', 'https://reviewapp.us-1.sharedwithexpose.com/oauth' );
 define( 'REVIEWAPP_OAUTH_URL_DEVELOPMENT', 'https://reviewapp.test/oauth' );
 
 /**
  * Determine the current environment.
- * 
+ *
  * @return string 'production', 'staging', or 'development'
  */
 function reviewapp_get_environment() {
@@ -71,7 +71,7 @@ function reviewapp_get_environment() {
 	if ( defined( 'REVIEWAPP_ENVIRONMENT' ) ) {
 		return REVIEWAPP_ENVIRONMENT;
 	}
-	
+
 	// Fall back to WordPress environment type.
 	if ( defined( 'WP_ENVIRONMENT_TYPE' ) ) {
 		switch ( WP_ENVIRONMENT_TYPE ) {
@@ -85,7 +85,7 @@ function reviewapp_get_environment() {
 				return 'development';
 		}
 	}
-	
+
 	// Default to development for safety.
 	return 'development';
 }
@@ -97,7 +97,7 @@ function reviewapp_get_environment() {
  */
 function reviewapp_get_api_url() {
 	$environment = reviewapp_get_environment();
-	
+
 	switch ( $environment ) {
 		case 'production':
 			return REVIEWAPP_API_URL_PRODUCTION;
@@ -116,7 +116,7 @@ function reviewapp_get_api_url() {
  */
 function reviewapp_get_oauth_url() {
 	$environment = reviewapp_get_environment();
-	
+
 	switch ( $environment ) {
 		case 'production':
 			return REVIEWAPP_OAUTH_URL_PRODUCTION;
@@ -154,17 +154,17 @@ function reviewapp_get_oauth_callback_url() {
  */
 function reviewapp_should_disable_ssl_verify() {
 	$environment = reviewapp_get_environment();
-	
+
 	// Always disable SSL verification in development/local environments
 	if ( 'development' === $environment ) {
 		return true;
 	}
-	
+
 	// Allow override via constant
 	if ( defined( 'REVIEWAPP_DISABLE_SSL_VERIFY' ) ) {
 		return (bool) REVIEWAPP_DISABLE_SSL_VERIFY;
 	}
-	
+
 	return false;
 }
 
@@ -200,11 +200,11 @@ function reviewapp_store_oauth_client_id( $client_id ) {
  */
 function reviewapp_get_oauth_client_id() {
 	$stored_client_id = reviewapp_get_stored_oauth_client_id();
-	
+
 	if ( ! empty( $stored_client_id ) ) {
 		return $stored_client_id;
 	}
-	
+
 	return '';
 }
 
@@ -215,14 +215,14 @@ function reviewapp_get_oauth_client_id() {
  */
 function reviewapp_register_oauth_client() {
 	$current_user = wp_get_current_user();
-	
+
 	if ( ! $current_user || ! $current_user->user_email ) {
 		return new \WP_Error(
 			'reviewapp_no_user',
 			__( 'No user email found. Please ensure you are logged in.', 'reviewapp-reviews' )
 		);
 	}
-	
+
 	$response = wp_remote_post(
 		reviewapp_get_api_url() . '/api/oauth/register-client',
 		array(
@@ -238,7 +238,7 @@ function reviewapp_register_oauth_client() {
 			'sslverify' => ! reviewapp_should_disable_ssl_verify(),
 		)
 	);
-	
+
 	if ( is_wp_error( $response ) ) {
 		return new \WP_Error(
 			'reviewapp_register_failed',
@@ -248,11 +248,11 @@ function reviewapp_register_oauth_client() {
 			)
 		);
 	}
-	
+
 	$response_code = wp_remote_retrieve_response_code( $response );
 	$body = wp_remote_retrieve_body( $response );
 	$data = json_decode( $body, true );
-	
+
 	if ( $response_code === 404 && isset( $data['message'] ) ) {
 		return new \WP_Error(
 			'reviewapp_account_not_found',
@@ -263,23 +263,23 @@ function reviewapp_register_oauth_client() {
 			)
 		);
 	}
-	
+
 	if ( $response_code >= 400 ) {
 		return new \WP_Error(
 			'reviewapp_register_error',
 			isset( $data['message'] ) ? $data['message'] : __( 'Failed to register OAuth client.', 'reviewapp-reviews' )
 		);
 	}
-	
+
 	if ( empty( $data['client_id'] ) ) {
 		return new \WP_Error(
 			'reviewapp_invalid_response',
 			__( 'Invalid response from ReviewApp API.', 'reviewapp-reviews' )
 		);
 	}
-	
+
 	reviewapp_store_oauth_client_id( $data['client_id'] );
-	
+
 	return $data['client_id'];
 }
 
