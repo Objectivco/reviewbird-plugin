@@ -51,14 +51,14 @@ define( 'REVIEWAPP_TEXT_DOMAIN', 'reviewapp-reviews' );
  * ReviewApp API URLs for different environments.
  */
 define( 'REVIEWAPP_API_URL_PRODUCTION', 'https://app.reviewapp.com' );
-define( 'REVIEWAPP_API_URL_STAGING', 'https://reviewapp.us-1.sharedwithexpose.com' );
+define( 'REVIEWAPP_API_URL_STAGING', 'https://reviewapp.sharedwithexpose.com' );
 define( 'REVIEWAPP_API_URL_DEVELOPMENT', 'https://reviewapp.test' );
 
 /**
  * ReviewApp OAuth URLs for different environments.
  */
 define( 'REVIEWAPP_OAUTH_URL_PRODUCTION', 'https://app.reviewapp.com/oauth' );
-define( 'REVIEWAPP_OAUTH_URL_STAGING', 'https://reviewapp.us-1.sharedwithexpose.com/oauth' );
+define( 'REVIEWAPP_OAUTH_URL_STAGING', 'https://reviewapp.sharedwithexpose.com/oauth' );
 define( 'REVIEWAPP_OAUTH_URL_DEVELOPMENT', 'https://reviewapp.test/oauth' );
 
 /**
