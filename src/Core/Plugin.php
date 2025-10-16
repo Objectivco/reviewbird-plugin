@@ -135,6 +135,9 @@ class Plugin {
 			$order_sync = new OrderSync( $api_client );
 			$order_sync->init();
 
+			// Schema markup for SEO - add to wp_head on product pages.
+			add_action( 'wp_head', array( $woocommerce, 'output_product_schema' ), 5 );
+
 			// Widget integration - opinionated default with filter override.
 			if ( apply_filters( 'reviewapp_auto_inject_widgets', true ) ) {
 				$widget_hook = apply_filters( 'reviewapp_widget_hook', 'woocommerce_after_single_product_summary' );

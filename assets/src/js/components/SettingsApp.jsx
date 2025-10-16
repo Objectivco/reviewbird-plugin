@@ -5,6 +5,7 @@ import ConnectionPanel from './ConnectionPanel';
 import SyncPanel from './SyncPanel';
 import ReviewSyncPanel from './ReviewSyncPanel';
 import ReviewRequestPanel from './ReviewRequestPanel';
+import SchemaPanel from './SchemaPanel';
 import LoadingSpinner from './LoadingSpinner';
 
 export default function SettingsApp() {
@@ -110,6 +111,12 @@ export default function SettingsApp() {
 					onSave={saveSettings}
 					saving={saving}
 					isConnected={settings?.connection_status === 'connected'}
+				/>
+
+				<SchemaPanel
+					settings={settings}
+					onSave={saveSettings}
+					saving={saving}
 				/>
 			</div>
 		</div>

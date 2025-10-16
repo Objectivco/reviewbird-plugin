@@ -15,6 +15,13 @@ use ReviewApp\Api\Client;
 class Settings {
 
 	/**
+	 * Initialize admin hooks.
+	 */
+	public function __construct() {
+		add_action( 'wp_ajax_reviewapp_update_schema_setting', array( $this, 'handle_schema_setting_update' ) );
+	}
+
+	/**
 	 * Add admin menu.
 	 */
 	public function add_admin_menu() {
@@ -53,10 +60,11 @@ class Settings {
 			'reviewapp-admin',
 			'reviewappAdmin',
 			array(
-				'restUrl'   => rest_url( 'reviewapp/v1' ),
-				'nonce'     => wp_create_nonce( 'wp_rest' ),
-				'apiUrl'    => reviewapp_get_api_url(),
-				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
+				'restUrl'      => rest_url( 'reviewapp/v1' ),
+				'nonce'        => wp_create_nonce( 'reviewapp_admin_nonce' ),
+				'apiUrl'       => reviewapp_get_api_url(),
+				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
+				'enableSchema' => get_option( 'reviewapp_enable_schema', 'yes' ) === 'yes',
 			)
 		);
 
@@ -77,6 +85,35 @@ class Settings {
 			<div id="reviewapp-settings-root"></div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Handle AJAX request to update schema setting.
+	 */
+	public function handle_schema_setting_update() {
+		// Check nonce.
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'reviewapp_admin_nonce' ) ) {
+			wp_send_json_error( __( 'Invalid security token', 'reviewapp-reviews' ), 403 );
+		}
+
+		// Check permissions.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'Insufficient permissions', 'reviewapp-reviews' ), 403 );
+		}
+
+		// Get and validate the value.
+		$enable_schema = isset( $_POST['enable_schema'] ) && $_POST['enable_schema'] === '1';
+
+		// Update the option.
+		update_option( 'reviewapp_enable_schema', $enable_schema ? 'yes' : 'no' );
+
+		// Return success.
+		wp_send_json_success(
+			array(
+				'enable_schema' => $enable_schema,
+				'message'       => __( 'Schema setting updated successfully', 'reviewapp-reviews' ),
+			)
+		);
 	}
 
 }

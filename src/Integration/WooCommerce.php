@@ -403,7 +403,7 @@ class WooCommerce {
 	 */
 	public function update_product_rating_meta( $product_id, $avg_stars, $review_count ) {
 		$product_id = absint( $product_id );
-		
+
 		if ( ! $product_id ) {
 			return;
 		}
@@ -411,6 +411,33 @@ class WooCommerce {
 		update_post_meta( $product_id, '_reviewapp_avg_stars', floatval( $avg_stars ) );
 		update_post_meta( $product_id, '_reviewapp_reviews_count', intval( $review_count ) );
 
+		// Clear schema cache when ratings are updated.
+		delete_transient( 'reviewapp_schema_reviews_' . $product_id );
+
 		do_action( 'reviewapp_rating_updated', $product_id, $avg_stars, $review_count );
+	}
+
+	/**
+	 * Output product schema markup in head.
+	 */
+	public function output_product_schema() {
+		if ( ! is_product() ) {
+			return;
+		}
+
+		// Get product ID from the current post.
+		$product_id = get_the_ID();
+		if ( ! $product_id ) {
+			return;
+		}
+
+		// Verify this is actually a product.
+		if ( 'product' !== get_post_type( $product_id ) ) {
+			return;
+		}
+
+		// Load schema markup class.
+		$schema_markup = new SchemaMarkup();
+		$schema_markup->output_product_schema( $product_id );
 	}
 }
