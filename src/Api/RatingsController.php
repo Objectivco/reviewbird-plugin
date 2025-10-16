@@ -191,30 +191,61 @@ class RatingsController {
 
 		// Check if customer bought product using email (user_id = null).
 		$verified_purchase = false;
+		$location          = null;
+
 		if ( function_exists( 'wc_customer_bought_product' ) ) {
 			$verified_purchase = wc_customer_bought_product( null, $customer_email, $product_id );
+		}
+
+		// Get customer's location using WC_Customer.
+		if ( class_exists( 'WC_Customer' ) ) {
+			// Try to get user ID by email.
+			$user = get_user_by( 'email', $customer_email );
+
+			if ( $user ) {
+				// Load customer from user ID.
+				$customer = new WC_Customer( $user->ID );
+			} else {
+				// Create guest customer object.
+				$customer = new WC_Customer( 0 );
+				$customer->set_email( $customer_email );
+			}
+
+			// Get billing country code.
+			$country_code = $customer->get_billing_country();
+
+			// Convert to country name using WooCommerce's country list.
+			if ( ! empty( $country_code ) && function_exists( 'WC' ) && isset( WC()->countries ) ) {
+				$countries = WC()->countries->get_countries();
+				$location  = isset( $countries[ $country_code ] ) ? $countries[ $country_code ] : null;
+			}
 		}
 
 		if ( function_exists( 'wc_get_logger' ) ) {
 			$logger = wc_get_logger();
 			$logger->debug(
 				sprintf(
-					'Verified purchase check for product %d, email %s: %s',
+					'Verified purchase check for product %d, email %s: %s, location: %s',
 					$product_id,
 					$customer_email,
-					$verified_purchase ? 'true' : 'false'
+					$verified_purchase ? 'true' : 'false',
+					$location ? $location : 'none'
 				),
 				array( 'source' => 'reviewapp' )
 			);
 		}
 
-		return new WP_REST_Response(
-			array(
-				'product_id'        => $product_id,
-				'customer_email'    => $customer_email,
-				'verified_purchase' => (bool) $verified_purchase,
-			),
-			200
+		$response = array(
+			'product_id'        => $product_id,
+			'customer_email'    => $customer_email,
+			'verified_purchase' => (bool) $verified_purchase,
 		);
+
+		// Only include location if we found one.
+		if ( ! empty( $location ) ) {
+			$response['location'] = $location;
+		}
+
+		return new WP_REST_Response( $response, 200 );
 	}
 }
