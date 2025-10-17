@@ -332,6 +332,36 @@ class Client {
 	}
 
 	/**
+	 * Update store locale information (timezone, language, country).
+	 *
+	 * @param string|null $timezone WordPress timezone string.
+	 * @param string|null $language WordPress locale string.
+	 * @param string|null $country  2-character country code from WooCommerce.
+	 * @return array|\WP_Error API response or WP_Error on failure.
+	 */
+	public function update_store_locale( $timezone = null, $language = null, $country = null ) {
+		$data = array_filter(
+			array(
+				'timezone' => $timezone,
+				'language' => $language,
+				'country'  => $country,
+			),
+			function( $value ) {
+				return ! is_null( $value ) && '' !== $value;
+			}
+		);
+
+		if ( empty( $data ) ) {
+			return new \WP_Error(
+				'no_data',
+				__( 'No locale data provided', 'reviewapp-reviews' )
+			);
+		}
+
+		return $this->request( '/api/stores/locale', $data, 'PUT' );
+	}
+
+	/**
 	 * Log API errors for debugging.
 	 *
 	 * @param string $type     Error type.

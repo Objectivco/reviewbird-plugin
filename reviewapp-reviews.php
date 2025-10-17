@@ -223,6 +223,15 @@ function reviewapp_register_oauth_client() {
 		);
 	}
 
+	// Get WooCommerce country if available
+	$country = null;
+	if ( class_exists( 'WooCommerce' ) && function_exists( 'WC' ) ) {
+		$wc_countries = WC()->countries;
+		if ( $wc_countries ) {
+			$country = $wc_countries->get_base_country();
+		}
+	}
+
 	$response = wp_remote_post(
 		reviewapp_get_api_url() . '/api/oauth/register-client',
 		array(
@@ -230,6 +239,9 @@ function reviewapp_register_oauth_client() {
 				'domain' => get_site_url(),
 				'site_name' => get_bloginfo( 'name' ),
 				'admin_email' => $current_user->user_email,
+				'timezone' => wp_timezone_string(),
+				'language' => get_locale(),
+				'country' => $country,
 			) ),
 			'headers' => array(
 				'Content-Type' => 'application/json',

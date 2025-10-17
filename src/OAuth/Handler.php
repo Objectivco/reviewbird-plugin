@@ -267,6 +267,25 @@ class Handler {
 			}
 		}
 
+		// Update store locale information.
+		$timezone = wp_timezone_string();
+		$language = get_locale();
+		$country = null;
+
+		// Get WooCommerce country if available.
+		if ( class_exists( 'WooCommerce' ) && function_exists( 'WC' ) ) {
+			$wc_countries = WC()->countries;
+			if ( $wc_countries ) {
+				$country = $wc_countries->get_base_country();
+			}
+		}
+
+		$locale_result = $api_client->update_store_locale( $timezone, $language, $country );
+
+		if ( is_wp_error( $locale_result ) ) {
+			error_log( 'ReviewApp: Failed to update store locale: ' . $locale_result->get_error_message() );
+		}
+
 		// Set connection success flag for admin notice.
 		delete_transient( 'reviewapp_oauth_error' );
 		set_transient( 'reviewapp_oauth_success', true, 300 );
