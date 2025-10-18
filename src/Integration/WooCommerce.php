@@ -361,7 +361,7 @@ class WooCommerce {
 			return;
 		}
 
-		$widget_id = 'reviewapp-widget-' . $product->get_id();
+		$widget_id = 'reviewapp-widget-container-' . $product->get_id();
 
 		// Allow developers to customize widget attributes.
 		$widget_attrs = apply_filters(

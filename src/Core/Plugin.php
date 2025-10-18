@@ -200,7 +200,7 @@ class Plugin {
 				array(
 					'apiUrl' => reviewapp_get_api_url(),
 					'storeId' => get_option( 'reviewapp_store_id' ),
-					'widgetPrefix' => 'reviewapp-widget-',
+					'widgetPrefix' => 'reviewapp-widget-container-',
 				)
 			);
 		}
