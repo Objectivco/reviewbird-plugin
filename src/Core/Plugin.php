@@ -176,9 +176,18 @@ class Plugin {
 	public function enqueue_public_scripts() {
 		// Only load on product pages or pages with shortcode.
 		if ( is_product() || $this->has_reviewapp_shortcode() ) {
+			// Enqueue the new modular TypeScript widget CSS.
+			wp_enqueue_style(
+				'reviewapp-widget',
+				reviewapp_get_api_url() . '/build/review-widget.css',
+				array(),
+				$this->version
+			);
+
+			// Enqueue the new modular TypeScript widget JS.
 			wp_enqueue_script(
 				'reviewapp-widget',
-				reviewapp_get_api_url() . '/js/reviewapp-widget.js',
+				reviewapp_get_api_url() . '/build/review-widget.js',
 				array(),
 				$this->version,
 				true
