@@ -2,10 +2,10 @@
 /**
  * Plugin deactivation handler.
  *
- * @package ReviewApp
+ * @package ReviewBop
  */
 
-namespace ReviewApp\Core;
+namespace ReviewBop\Core;
 
 /**
  * Plugin deactivation handler.
@@ -17,9 +17,9 @@ class Deactivator {
 	 */
 	public static function deactivate() {
 		// Clean up scheduled events.
-		wp_clear_scheduled_hook( 'reviewapp_sync_products' );
-		wp_clear_scheduled_hook( 'reviewapp_sync_reviews' );
-		wp_clear_scheduled_hook( 'reviewapp_cleanup_oauth_states' );
+		wp_clear_scheduled_hook( 'reviewbop_sync_products' );
+		wp_clear_scheduled_hook( 'reviewbop_sync_reviews' );
+		wp_clear_scheduled_hook( 'reviewbop_cleanup_oauth_states' );
 
 		// Clean up expired OAuth states.
 		self::cleanup_oauth_states();
@@ -34,7 +34,7 @@ class Deactivator {
 	private static function cleanup_oauth_states() {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'reviewapp_oauth_states';
+		$table_name = $wpdb->prefix . 'reviewbop_oauth_states';
 		
 		// Delete expired states.
 		$wpdb->query(

@@ -2,23 +2,23 @@
 /**
  * The core plugin class.
  *
- * @package ReviewApp
+ * @package ReviewBop
  */
 
-namespace ReviewApp\Core;
+namespace ReviewBop\Core;
 
-use ReviewApp\Admin\Settings;
-use ReviewApp\Api\Client;
-use ReviewApp\Api\CouponController;
-use ReviewApp\Api\ProductEndpoint;
-use ReviewApp\Api\RatingsController;
-use ReviewApp\Api\SettingsController;
-use ReviewApp\Core\ActionScheduler;
-use ReviewApp\Integration\OrderSync;
-use ReviewApp\Integration\ProductSync;
-use ReviewApp\Integration\ReviewSync;
-use ReviewApp\Integration\WooCommerce;
-use ReviewApp\OAuth\Handler;
+use ReviewBop\Admin\Settings;
+use ReviewBop\Api\Client;
+use ReviewBop\Api\CouponController;
+use ReviewBop\Api\ProductEndpoint;
+use ReviewBop\Api\RatingsController;
+use ReviewBop\Api\SettingsController;
+use ReviewBop\Core\ActionScheduler;
+use ReviewBop\Integration\OrderSync;
+use ReviewBop\Integration\ProductSync;
+use ReviewBop\Integration\ReviewSync;
+use ReviewBop\Integration\WooCommerce;
+use ReviewBop\OAuth\Handler;
 
 /**
  * The core plugin class.
@@ -46,8 +46,8 @@ class Plugin {
 	 * Initialize the plugin.
 	 */
 	public function __construct() {
-		$this->plugin_name = 'reviewapp-reviews';
-		$this->version     = REVIEWAPP_VERSION;
+		$this->plugin_name = 'reviewbop-reviews';
+		$this->version     = REVIEWBOP_VERSION;
 	}
 
 	/**
@@ -70,7 +70,7 @@ class Plugin {
 	 */
 	public function load_plugin_textdomain() {
 		load_plugin_textdomain(
-			REVIEWAPP_TEXT_DOMAIN,
+			REVIEWBOP_TEXT_DOMAIN,
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);
@@ -96,15 +96,15 @@ class Plugin {
 		// OAuth hooks.
 		$oauth_handler = new Handler();
 		add_action( 'init', array( $oauth_handler, 'handle_oauth_callback' ) );
-		add_action( 'wp_ajax_reviewapp_start_oauth', array( $oauth_handler, 'start_oauth_flow' ) );
+		add_action( 'wp_ajax_reviewbop_start_oauth', array( $oauth_handler, 'start_oauth_flow' ) );
 
 		// Public hooks.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_scripts' ) );
-		add_shortcode( 'reviewapp_widget', array( $this, 'widget_shortcode' ) );
+		add_shortcode( 'reviewbop_widget', array( $this, 'widget_shortcode' ) );
 
 		// Sync Action Scheduler hooks.
-		add_action( 'reviewapp_sync_product_batch', array( $this, 'process_sync_batch' ), 10, 2 );
-		add_action( 'reviewapp_sync_review_batch', array( $this, 'process_review_sync_batch' ), 10, 2 );
+		add_action( 'reviewbop_sync_product_batch', array( $this, 'process_sync_batch' ), 10, 2 );
+		add_action( 'reviewbop_sync_review_batch', array( $this, 'process_review_sync_batch' ), 10, 2 );
 
 		// WooCommerce integration.
 		if ( class_exists( 'WooCommerce' ) ) {
@@ -139,9 +139,9 @@ class Plugin {
 			add_action( 'wp_head', array( $woocommerce, 'output_product_schema' ), 5 );
 
 			// Widget integration - opinionated default with filter override.
-			if ( apply_filters( 'reviewapp_auto_inject_widgets', true ) ) {
-				$widget_hook = apply_filters( 'reviewapp_widget_hook', 'woocommerce_after_single_product_summary' );
-				$widget_priority = apply_filters( 'reviewapp_widget_priority', 20 );
+			if ( apply_filters( 'reviewbop_auto_inject_widgets', true ) ) {
+				$widget_hook = apply_filters( 'reviewbop_widget_hook', 'woocommerce_after_single_product_summary' );
+				$widget_priority = apply_filters( 'reviewbop_widget_priority', 20 );
 
 				add_action( $widget_hook, array( $woocommerce, 'add_widget_to_product_page' ), $widget_priority );
 			}
@@ -175,19 +175,19 @@ class Plugin {
 	 */
 	public function enqueue_public_scripts() {
 		// Only load on product pages or pages with shortcode.
-		if ( is_product() || $this->has_reviewapp_shortcode() ) {
+		if ( is_product() || $this->has_reviewbop_shortcode() ) {
 			// Enqueue the new modular TypeScript widget CSS.
 			wp_enqueue_style(
-				'reviewapp-widget',
-				reviewapp_get_api_url() . '/build/review-widget.css',
+				'reviewbop-widget',
+				reviewbop_get_api_url() . '/build/review-widget.css',
 				array(),
 				$this->version
 			);
 
 			// Enqueue the new modular TypeScript widget JS.
 			wp_enqueue_script(
-				'reviewapp-widget',
-				reviewapp_get_api_url() . '/build/review-widget.js',
+				'reviewbop-widget',
+				reviewbop_get_api_url() . '/build/review-widget.js',
 				array(),
 				$this->version,
 				true
@@ -195,34 +195,34 @@ class Plugin {
 
 			// Pass configuration to widget JavaScript.
 			wp_localize_script(
-				'reviewapp-widget',
-				'ReviewAppConfig',
+				'reviewbop-widget',
+				'ReviewBopConfig',
 				array(
-					'apiUrl' => reviewapp_get_api_url(),
-					'storeId' => get_option( 'reviewapp_store_id' ),
-					'widgetPrefix' => 'reviewapp-widget-container-',
+					'apiUrl' => reviewbop_get_api_url(),
+					'storeId' => get_option( 'reviewbop_store_id' ),
+					'widgetPrefix' => 'reviewbop-widget-container-',
 				)
 			);
 		}
 	}
 
 	/**
-	 * Check if current page has ReviewApp shortcode.
+	 * Check if current page has ReviewBop shortcode.
 	 *
 	 * @return bool
 	 */
-	private function has_reviewapp_shortcode() {
+	private function has_reviewbop_shortcode() {
 		global $post;
-		
+
 		if ( ! $post ) {
 			return false;
 		}
-		
-		return has_shortcode( $post->post_content, 'reviewapp_widget' );
+
+		return has_shortcode( $post->post_content, 'reviewbop_widget' );
 	}
 
 	/**
-	 * Handle ReviewApp widget shortcode.
+	 * Handle ReviewBop widget shortcode.
 	 *
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -233,24 +233,24 @@ class Plugin {
 				'product_id' => '',
 			),
 			$atts,
-			'reviewapp_widget'
+			'reviewbop_widget'
 		);
 
 		if ( ! $atts['product_id'] ) {
-			return '<p>' . esc_html__( 'ReviewApp: Product ID is required.', 'reviewapp-reviews' ) . '</p>';
+			return '<p>' . esc_html__( 'ReviewBop: Product ID is required.', 'reviewbop-reviews' ) . '</p>';
 		}
 
 		$api_client = new Client();
 		$store_id = $api_client->get_store_id_for_frontend();
 
 		if ( ! $store_id ) {
-			return '<p>' . esc_html__( 'ReviewApp: Store not connected.', 'reviewapp-reviews' ) . '</p>';
+			return '<p>' . esc_html__( 'ReviewBop: Store not connected.', 'reviewbop-reviews' ) . '</p>';
 		}
 
-		$widget_id = 'reviewapp-widget-' . uniqid();
+		$widget_id = 'reviewbop-widget-' . uniqid();
 
 		return sprintf(
-			'<div id="%s" data-store-id="%s" data-product-key="%s"></div><script>if(typeof ReviewApp !== "undefined") ReviewApp.init();</script>',
+			'<div id="%s" data-store-id="%s" data-product-key="%s"></div><script>if(typeof ReviewBop !== "undefined") ReviewBop.init();</script>',
 			esc_attr( $widget_id ),
 			esc_attr( $store_id ),
 			esc_attr( $atts['product_id'] )
@@ -285,22 +285,22 @@ class Plugin {
 		$ratings_controller = new RatingsController();
 
 		register_rest_route(
-			'reviewapp/v1',
+			'reviewbop/v1',
 			'/ratings/update',
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $ratings_controller, 'update_ratings' ),
-				'permission_callback' => array( 'ReviewApp\Api\RatingsController', 'permission_callback' ),
+				'permission_callback' => array( 'ReviewBop\Api\RatingsController', 'permission_callback' ),
 			)
 		);
 
 		register_rest_route(
-			'reviewapp/v1',
+			'reviewbop/v1',
 			'/verified-purchase/check',
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $ratings_controller, 'check_verified_purchase' ),
-				'permission_callback' => array( 'ReviewApp\Api\RatingsController', 'permission_callback' ),
+				'permission_callback' => array( 'ReviewBop\Api\RatingsController', 'permission_callback' ),
 			)
 		);
 
@@ -308,15 +308,15 @@ class Plugin {
 		$coupon_controller = new CouponController();
 		$coupon_controller->register_routes();
 
-		// Product endpoint for ReviewApp to fetch product data
+		// Product endpoint for ReviewBop to fetch product data
 		$product_endpoint = new ProductEndpoint();
 		register_rest_route(
-			'reviewapp/v1',
+			'reviewbop/v1',
 			'/products/(?P<external_id>\d+)',
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( $product_endpoint, 'get_product' ),
-				'permission_callback' => array( 'ReviewApp\Api\ProductEndpoint', 'permission_callback' ),
+				'permission_callback' => array( 'ReviewBop\Api\ProductEndpoint', 'permission_callback' ),
 			)
 		);
 	}

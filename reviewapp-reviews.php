@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name: ReviewApp Reviews
- * Plugin URI: https://reviewapp.com
- * Description: Connect your WooCommerce store to ReviewApp for advanced review collection and display.
+ * Plugin Name: ReviewBop Reviews
+ * Plugin URI: https://reviewbop.com
+ * Description: Connect your WooCommerce store to ReviewBop for advanced review collection and display.
  * Version: 1.0.0
- * Author: ReviewApp
- * Author URI: https://reviewapp.com
- * Text Domain: reviewapp-reviews
+ * Author: ReviewBop
+ * Author URI: https://reviewbop.com
+ * Text Domain: reviewbop-reviews
  * Domain Path: /languages
  * Requires at least: 5.0
  * Tested up to: 6.4
@@ -25,51 +25,51 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Currently plugin version.
  */
-define( 'REVIEWAPP_VERSION', '1.0.0' );
+define( 'REVIEWBOP_VERSION', '1.0.0' );
 
 /**
  * Plugin directory path.
  */
-define( 'REVIEWAPP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'REVIEWBOP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
 /**
  * Plugin directory URL.
  */
-define( 'REVIEWAPP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'REVIEWBOP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 /**
  * Plugin basename.
  */
-define( 'REVIEWAPP_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'REVIEWBOP_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 /**
  * Text domain for translations.
  */
-define( 'REVIEWAPP_TEXT_DOMAIN', 'reviewapp-reviews' );
+define( 'REVIEWBOP_TEXT_DOMAIN', 'reviewbop-reviews' );
 
 /**
- * ReviewApp API URLs for different environments.
+ * ReviewBop API URLs for different environments.
  */
-define( 'REVIEWAPP_API_URL_PRODUCTION', 'https://app.reviewapp.com' );
-define( 'REVIEWAPP_API_URL_STAGING', 'https://c96323be0adb.ngrok-free.app' );
-define( 'REVIEWAPP_API_URL_DEVELOPMENT', 'https://reviewapp.test' );
+define( 'REVIEWBOP_API_URL_PRODUCTION', 'https://app.reviewbop.com' );
+define( 'REVIEWBOP_API_URL_STAGING', 'https://c96323be0adb.ngrok-free.app' );
+define( 'REVIEWBOP_API_URL_DEVELOPMENT', 'https://reviewbop.test' );
 
 /**
- * ReviewApp OAuth URLs for different environments.
+ * ReviewBop OAuth URLs for different environments.
  */
-define( 'REVIEWAPP_OAUTH_URL_PRODUCTION', 'https://app.reviewapp.com/oauth' );
-define( 'REVIEWAPP_OAUTH_URL_STAGING', 'https://c96323be0adb.ngrok-free.app/oauth' );
-define( 'REVIEWAPP_OAUTH_URL_DEVELOPMENT', 'https://reviewapp.test/oauth' );
+define( 'REVIEWBOP_OAUTH_URL_PRODUCTION', 'https://app.reviewbop.com/oauth' );
+define( 'REVIEWBOP_OAUTH_URL_STAGING', 'https://c96323be0adb.ngrok-free.app/oauth' );
+define( 'REVIEWBOP_OAUTH_URL_DEVELOPMENT', 'https://reviewbop.test/oauth' );
 
 /**
  * Determine the current environment.
  *
  * @return string 'production', 'staging', or 'development'
  */
-function reviewapp_get_environment() {
+function reviewbop_get_environment() {
 	// Check for explicit environment constant first.
-	if ( defined( 'REVIEWAPP_ENVIRONMENT' ) ) {
-		return REVIEWAPP_ENVIRONMENT;
+	if ( defined( 'REVIEWBOP_ENVIRONMENT' ) ) {
+		return REVIEWBOP_ENVIRONMENT;
 	}
 
 	// Fall back to WordPress environment type.
@@ -95,17 +95,17 @@ function reviewapp_get_environment() {
  *
  * @return string The API URL for the current environment.
  */
-function reviewapp_get_api_url() {
-	$environment = reviewapp_get_environment();
+function reviewbop_get_api_url() {
+	$environment = reviewbop_get_environment();
 
 	switch ( $environment ) {
 		case 'production':
-			return REVIEWAPP_API_URL_PRODUCTION;
+			return REVIEWBOP_API_URL_PRODUCTION;
 		case 'staging':
-			return REVIEWAPP_API_URL_STAGING;
+			return REVIEWBOP_API_URL_STAGING;
 		case 'development':
 		default:
-			return REVIEWAPP_API_URL_DEVELOPMENT;
+			return REVIEWBOP_API_URL_DEVELOPMENT;
 	}
 }
 
@@ -114,17 +114,17 @@ function reviewapp_get_api_url() {
  *
  * @return string The OAuth URL for the current environment.
  */
-function reviewapp_get_oauth_url() {
-	$environment = reviewapp_get_environment();
+function reviewbop_get_oauth_url() {
+	$environment = reviewbop_get_environment();
 
 	switch ( $environment ) {
 		case 'production':
-			return REVIEWAPP_OAUTH_URL_PRODUCTION;
+			return REVIEWBOP_OAUTH_URL_PRODUCTION;
 		case 'staging':
-			return REVIEWAPP_OAUTH_URL_STAGING;
+			return REVIEWBOP_OAUTH_URL_STAGING;
 		case 'development':
 		default:
-			return REVIEWAPP_OAUTH_URL_DEVELOPMENT;
+			return REVIEWBOP_OAUTH_URL_DEVELOPMENT;
 	}
 }
 
@@ -134,8 +134,8 @@ function reviewapp_get_oauth_url() {
  * @param string $key Base key name.
  * @return string Environment-scoped key name.
  */
-function reviewapp_get_env_option_key( $key ) {
-	return sprintf( 'reviewapp_%s_%s', $key, reviewapp_get_environment() );
+function reviewbop_get_env_option_key( $key ) {
+	return sprintf( 'reviewbop_%s_%s', $key, reviewbop_get_environment() );
 }
 
 /**
@@ -143,8 +143,8 @@ function reviewapp_get_env_option_key( $key ) {
  *
  * @return string Callback URL.
  */
-function reviewapp_get_oauth_callback_url() {
-	return add_query_arg( 'reviewapp_oauth_callback', '1', admin_url( 'admin.php?page=reviewapp-settings' ) );
+function reviewbop_get_oauth_callback_url() {
+	return add_query_arg( 'reviewbop_oauth_callback', '1', admin_url( 'admin.php?page=reviewbop-settings' ) );
 }
 
 /**
@@ -152,8 +152,8 @@ function reviewapp_get_oauth_callback_url() {
  *
  * @return bool True to disable SSL verification, false to enable it.
  */
-function reviewapp_should_disable_ssl_verify() {
-	$environment = reviewapp_get_environment();
+function reviewbop_should_disable_ssl_verify() {
+	$environment = reviewbop_get_environment();
 
 	// Always disable SSL verification in development/local environments
 	if ( 'development' === $environment ) {
@@ -161,8 +161,8 @@ function reviewapp_should_disable_ssl_verify() {
 	}
 
 	// Allow override via constant
-	if ( defined( 'REVIEWAPP_DISABLE_SSL_VERIFY' ) ) {
-		return (bool) REVIEWAPP_DISABLE_SSL_VERIFY;
+	if ( defined( 'REVIEWBOP_DISABLE_SSL_VERIFY' ) ) {
+		return (bool) REVIEWBOP_DISABLE_SSL_VERIFY;
 	}
 
 	return false;
@@ -173,11 +173,11 @@ function reviewapp_should_disable_ssl_verify() {
  *
  * @return string Stored client ID or empty string if not set.
  */
-function reviewapp_get_stored_oauth_client_id() {
-	$client_id = get_option( reviewapp_get_env_option_key( 'oauth_client_id' ) );
+function reviewbop_get_stored_oauth_client_id() {
+	$client_id = get_option( reviewbop_get_env_option_key( 'oauth_client_id' ) );
 
 	if ( ! $client_id ) {
-		$client_id = apply_filters( 'reviewapp_oauth_client_id', '' );
+		$client_id = apply_filters( 'reviewbop_oauth_client_id', '' );
 	}
 
 	return is_string( $client_id ) ? $client_id : '';
@@ -189,8 +189,8 @@ function reviewapp_get_stored_oauth_client_id() {
  * @param string $client_id OAuth client identifier.
  * @return void
  */
-function reviewapp_store_oauth_client_id( $client_id ) {
-	update_option( reviewapp_get_env_option_key( 'oauth_client_id' ), sanitize_text_field( $client_id ) );
+function reviewbop_store_oauth_client_id( $client_id ) {
+	update_option( reviewbop_get_env_option_key( 'oauth_client_id' ), sanitize_text_field( $client_id ) );
 }
 
 /**
@@ -198,8 +198,8 @@ function reviewapp_store_oauth_client_id( $client_id ) {
  *
  * @return string Client ID.
  */
-function reviewapp_get_oauth_client_id() {
-	$stored_client_id = reviewapp_get_stored_oauth_client_id();
+function reviewbop_get_oauth_client_id() {
+	$stored_client_id = reviewbop_get_stored_oauth_client_id();
 
 	if ( ! empty( $stored_client_id ) ) {
 		return $stored_client_id;
@@ -209,17 +209,17 @@ function reviewapp_get_oauth_client_id() {
 }
 
 /**
- * Register this WordPress site as an OAuth client with ReviewApp.
+ * Register this WordPress site as an OAuth client with ReviewBop.
  *
  * @return string|\WP_Error Client ID on success, WP_Error on failure.
  */
-function reviewapp_register_oauth_client() {
+function reviewbop_register_oauth_client() {
 	$current_user = wp_get_current_user();
 
 	if ( ! $current_user || ! $current_user->user_email ) {
 		return new \WP_Error(
-			'reviewapp_no_user',
-			__( 'No user email found. Please ensure you are logged in.', 'reviewapp-reviews' )
+			'reviewbop_no_user',
+			__( 'No user email found. Please ensure you are logged in.', 'reviewbop-reviews' )
 		);
 	}
 
@@ -233,7 +233,7 @@ function reviewapp_register_oauth_client() {
 	}
 
 	$response = wp_remote_post(
-		reviewapp_get_api_url() . '/api/oauth/register-client',
+		reviewbop_get_api_url() . '/api/oauth/register-client',
 		array(
 			'body' => wp_json_encode( array(
 				'domain' => get_site_url(),
@@ -247,15 +247,15 @@ function reviewapp_register_oauth_client() {
 				'Content-Type' => 'application/json',
 			),
 			'timeout' => 30,
-			'sslverify' => ! reviewapp_should_disable_ssl_verify(),
+			'sslverify' => ! reviewbop_should_disable_ssl_verify(),
 		)
 	);
 
 	if ( is_wp_error( $response ) ) {
 		return new \WP_Error(
-			'reviewapp_register_failed',
+			'reviewbop_register_failed',
 			sprintf(
-				__( 'Failed to register OAuth client: %s', 'reviewapp-reviews' ),
+				__( 'Failed to register OAuth client: %s', 'reviewbop-reviews' ),
 				$response->get_error_message()
 			)
 		);
@@ -267,10 +267,10 @@ function reviewapp_register_oauth_client() {
 
 	if ( $response_code === 404 && isset( $data['message'] ) ) {
 		return new \WP_Error(
-			'reviewapp_account_not_found',
+			'reviewbop_account_not_found',
 			sprintf(
-				__( 'ReviewApp account not found. Please sign up at %s with the email %s first, then try connecting again.', 'reviewapp-reviews' ),
-				reviewapp_get_api_url(),
+				__( 'ReviewBop account not found. Please sign up at %s with the email %s first, then try connecting again.', 'reviewbop-reviews' ),
+				reviewbop_get_api_url(),
 				$current_user->user_email
 			)
 		);
@@ -278,19 +278,19 @@ function reviewapp_register_oauth_client() {
 
 	if ( $response_code >= 400 ) {
 		return new \WP_Error(
-			'reviewapp_register_error',
-			isset( $data['message'] ) ? $data['message'] : __( 'Failed to register OAuth client.', 'reviewapp-reviews' )
+			'reviewbop_register_error',
+			isset( $data['message'] ) ? $data['message'] : __( 'Failed to register OAuth client.', 'reviewbop-reviews' )
 		);
 	}
 
 	if ( empty( $data['client_id'] ) ) {
 		return new \WP_Error(
-			'reviewapp_invalid_response',
-			__( 'Invalid response from ReviewApp API.', 'reviewapp-reviews' )
+			'reviewbop_invalid_response',
+			__( 'Invalid response from ReviewBop API.', 'reviewbop-reviews' )
 		);
 	}
 
-	reviewapp_store_oauth_client_id( $data['client_id'] );
+	reviewbop_store_oauth_client_id( $data['client_id'] );
 
 	return $data['client_id'];
 }
@@ -300,44 +300,44 @@ function reviewapp_register_oauth_client() {
  *
  * @return string|\WP_Error Client ID on success, WP_Error on failure.
  */
-function reviewapp_ensure_oauth_client() {
-	$stored_client_id = reviewapp_get_stored_oauth_client_id();
+function reviewbop_ensure_oauth_client() {
+	$stored_client_id = reviewbop_get_stored_oauth_client_id();
 
 	if ( ! empty( $stored_client_id ) ) {
 		return $stored_client_id;
 	}
 
-	return reviewapp_register_oauth_client();
+	return reviewbop_register_oauth_client();
 }
 
 /**
  * Load Composer autoloader.
  */
-require_once REVIEWAPP_PLUGIN_DIR . 'vendor/autoload.php';
+require_once REVIEWBOP_PLUGIN_DIR . 'vendor/autoload.php';
 
 /**
  * The code that runs during plugin activation.
  */
-function activate_reviewapp() {
-	\ReviewApp\Core\Activator::activate();
+function activate_reviewbop() {
+	\ReviewBop\Core\Activator::activate();
 }
 
 /**
  * The code that runs during plugin deactivation.
  */
-function deactivate_reviewapp() {
-	\ReviewApp\Core\Deactivator::deactivate();
+function deactivate_reviewbop() {
+	\ReviewBop\Core\Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_reviewapp' );
-register_deactivation_hook( __FILE__, 'deactivate_reviewapp' );
+register_activation_hook( __FILE__, 'activate_reviewbop' );
+register_deactivation_hook( __FILE__, 'deactivate_reviewbop' );
 
 /**
  * Begins execution of the plugin.
  */
-function run_reviewapp() {
-	$plugin = new \ReviewApp\Core\Plugin();
+function run_reviewbop() {
+	$plugin = new \ReviewBop\Core\Plugin();
 	$plugin->run();
 }
 
-run_reviewapp();
+run_reviewbop();

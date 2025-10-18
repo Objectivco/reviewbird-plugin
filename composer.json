@@ -1,12 +1,12 @@
 {
-    "name": "reviewapp/wordpress-plugin",
-    "description": "WordPress plugin for ReviewApp integration",
+    "name": "reviewbop/wordpress-plugin",
+    "description": "WordPress plugin for ReviewBop integration",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "authors": [
         {
-            "name": "ReviewApp",
-            "email": "support@reviewapp.com"
+            "name": "ReviewBop",
+            "email": "support@reviewbop.com"
         }
     ],
     "require": {
@@ -19,12 +19,12 @@
     },
     "autoload": {
         "psr-4": {
-            "ReviewApp\\": "src/"
+            "ReviewBop\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "ReviewApp\\Tests\\": "tests/"
+            "ReviewBop\\Tests\\": "tests/"
         }
     },
     "scripts": {

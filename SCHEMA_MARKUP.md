@@ -1,8 +1,8 @@
-# ReviewApp Schema Markup Feature
+# ReviewBop Schema Markup Feature
 
 ## Overview
 
-The ReviewApp WordPress plugin automatically adds Google-compliant structured data (JSON-LD schema) to WooCommerce product pages. This enables rich snippets in search results, displaying star ratings, review counts, and other product information directly in Google search results.
+The ReviewBop WordPress plugin automatically adds Google-compliant structured data (JSON-LD schema) to WooCommerce product pages. This enables rich snippets in search results, displaying star ratings, review counts, and other product information directly in Google search results.
 
 ## Features
 
@@ -70,8 +70,8 @@ The plugin outputs JSON-LD structured data in the `<head>` section of product pa
 
 - WordPress 5.0+
 - WooCommerce 5.0+
-- ReviewApp plugin connected to a ReviewApp store
-- Products must have reviews in ReviewApp
+- ReviewBop plugin connected to a ReviewBop store
+- Products must have reviews in ReviewBop
 
 ## Configuration
 
@@ -80,7 +80,7 @@ The plugin outputs JSON-LD structured data in the `<head>` section of product pa
 By default, schema markup is enabled. You can enable or disable it in two ways:
 
 **Via Plugin Dashboard (Recommended):**
-1. Go to WordPress Admin > Settings > ReviewApp (`/wp-admin/options-general.php?page=reviewapp-settings`)
+1. Go to WordPress Admin > Settings > ReviewBop (`/wp-admin/options-general.php?page=reviewbop-settings`)
 2. Scroll to the "SEO Schema Markup" section
 3. Toggle the switch to enable or disable schema markup
 4. The setting is saved automatically
@@ -89,21 +89,21 @@ By default, schema markup is enabled. You can enable or disable it in two ways:
 To programmatically disable it, add this to your theme's `functions.php`:
 
 ```php
-add_filter( 'reviewapp_enable_schema', '__return_false' );
+add_filter( 'reviewbop_enable_schema', '__return_false' );
 ```
 
 Or set the WordPress option:
 
 ```php
-update_option( 'reviewapp_enable_schema', 'no' );
+update_option( 'reviewbop_enable_schema', 'no' );
 ```
 
 ### Customize Schema Output
 
-You can modify the schema data before output using the `reviewapp_product_schema` filter:
+You can modify the schema data before output using the `reviewbop_product_schema` filter:
 
 ```php
-add_filter( 'reviewapp_product_schema', function( $schema, $product_id ) {
+add_filter( 'reviewbop_product_schema', function( $schema, $product_id ) {
     // Add custom properties
     $schema['additionalProperty'] = 'value';
 
@@ -125,7 +125,7 @@ The plugin attempts to detect product brands from multiple sources:
 To add custom brand detection:
 
 ```php
-add_filter( 'reviewapp_product_schema', function( $schema, $product_id ) {
+add_filter( 'reviewbop_product_schema', function( $schema, $product_id ) {
     $product = wc_get_product( $product_id );
 
     // Get brand from custom source
@@ -149,14 +149,14 @@ add_filter( 'reviewapp_product_schema', function( $schema, $product_id ) {
 Review data is cached for 4 hours (14400 seconds) using WordPress transients. The cache key format is:
 
 ```
-reviewapp_schema_reviews_{product_id}
+reviewbop_schema_reviews_{product_id}
 ```
 
 ### Cache Invalidation
 
 Cache is automatically cleared when:
 
-1. Product ratings are updated via the ReviewApp webhook
+1. Product ratings are updated via the ReviewBop webhook
 2. Manual invalidation using the `clear_schema_cache()` method
 
 ### Manual Cache Clearing
@@ -164,7 +164,7 @@ Cache is automatically cleared when:
 To manually clear the schema cache for a product:
 
 ```php
-$schema_markup = new \ReviewApp\Integration\SchemaMarkup();
+$schema_markup = new \ReviewBop\Integration\SchemaMarkup();
 $schema_markup->clear_schema_cache( $product_id );
 ```
 
@@ -172,8 +172,8 @@ Or clear all schema caches:
 
 ```php
 global $wpdb;
-$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_reviewapp_schema_reviews_%'" );
-$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_timeout_reviewapp_schema_reviews_%'" );
+$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_reviewbop_schema_reviews_%'" );
+$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_timeout_reviewbop_schema_reviews_%'" );
 ```
 
 ## Stock Status Mapping
@@ -216,13 +216,13 @@ WooCommerce stock status is mapped to Schema.org availability:
 
 1. **Check if WooCommerce is active**: Schema only outputs on WooCommerce product pages
 2. **Verify product page**: Ensure you're viewing a single product page, not a shop page
-3. **Check option**: Verify `reviewapp_enable_schema` option is set to 'yes'
+3. **Check option**: Verify `reviewbop_enable_schema` option is set to 'yes'
 4. **Theme compatibility**: Some themes may remove `wp_head` hook
 
 ### No Reviews in Schema
 
-1. **Check API connection**: Ensure ReviewApp store is connected
-2. **Verify reviews exist**: Product must have approved reviews in ReviewApp
+1. **Check API connection**: Ensure ReviewBop store is connected
+2. **Verify reviews exist**: Product must have approved reviews in ReviewBop
 3. **Check cache**: Clear schema cache and reload the page
 4. **API timeout**: If API is slow, increase timeout in `SchemaMarkup.php`
 
@@ -252,23 +252,23 @@ WooCommerce stock status is mapped to Schema.org availability:
 
 ```php
 // Before schema is output
-do_action( 'reviewapp_before_schema_output', $product_id );
+do_action( 'reviewbop_before_schema_output', $product_id );
 
 // After schema is output
-do_action( 'reviewapp_after_schema_output', $product_id );
+do_action( 'reviewbop_after_schema_output', $product_id );
 ```
 
 ### Filters
 
 ```php
 // Modify entire schema
-apply_filters( 'reviewapp_product_schema', $schema, $product_id );
+apply_filters( 'reviewbop_product_schema', $schema, $product_id );
 
 // Modify cache duration (in seconds, default is 4 hours)
-apply_filters( 'reviewapp_schema_cache_duration', 4 * HOUR_IN_SECONDS );
+apply_filters( 'reviewbop_schema_cache_duration', 4 * HOUR_IN_SECONDS );
 
 // Modify number of reviews to include
-apply_filters( 'reviewapp_schema_review_limit', 10 );
+apply_filters( 'reviewbop_schema_review_limit', 10 );
 ```
 
 ## Support
@@ -277,7 +277,7 @@ For issues or questions about schema markup:
 
 1. Check [Google's Structured Data Guidelines](https://developers.google.com/search/docs/appearance/structured-data/product)
 2. Test with [Google Rich Results Test](https://search.google.com/test/rich-results)
-3. Contact ReviewApp support for API-related issues
+3. Contact ReviewBop support for API-related issues
 4. Check WordPress error logs for PHP errors
 
 ## Version History

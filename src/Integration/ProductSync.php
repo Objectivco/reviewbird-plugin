@@ -1,13 +1,13 @@
 <?php
 /**
- * Product sync manager for ReviewApp.
+ * Product sync manager for ReviewBop.
  *
- * @package ReviewApp
+ * @package ReviewBop
  */
 
-namespace ReviewApp\Integration;
+namespace ReviewBop\Integration;
 
-use ReviewApp\Api\Client;
+use ReviewBop\Api\Client;
 use WC_Logger;
 
 /**
@@ -18,12 +18,12 @@ class ProductSync {
 	/**
 	 * Option name for sync status.
 	 */
-	const SYNC_STATUS_OPTION = 'reviewapp_sync_status';
+	const SYNC_STATUS_OPTION = 'reviewbop_sync_status';
 
 	/**
 	 * Meta key for synced products.
 	 */
-	const SYNCED_META_KEY = '_reviewapp_synced';
+	const SYNCED_META_KEY = '_reviewbop_synced';
 
 	/**
 	 * Batch size for sync operations.
@@ -88,14 +88,14 @@ class ProductSync {
 		// Check if sync is already running
 		$status = $this->get_sync_status();
 		if ( $status['is_syncing'] ) {
-			return new \WP_Error( 'sync_in_progress', __( 'Sync is already in progress', 'reviewapp-reviews' ) );
+			return new \WP_Error( 'sync_in_progress', __( 'Sync is already in progress', 'reviewbop-reviews' ) );
 		}
 
 		// Get all products with reviews
 		$product_ids = $this->get_products_with_reviews();
 
 		if ( empty( $product_ids ) ) {
-			return new \WP_Error( 'no_products', __( 'No products with reviews found', 'reviewapp-reviews' ) );
+			return new \WP_Error( 'no_products', __( 'No products with reviews found', 'reviewbop-reviews' ) );
 		}
 
 		// Initialize sync status
@@ -116,9 +116,9 @@ class ProductSync {
 			if ( function_exists( 'as_schedule_single_action' ) ) {
 				as_schedule_single_action(
 					time() + ( $batch_index * 5 ), // Stagger batches by 5 seconds
-					'reviewapp_sync_product_batch',
+					'reviewbop_sync_product_batch',
 					array( 'batch' => $batch, 'batch_index' => $batch_index ),
-					'reviewapp-sync'
+					'reviewbop-sync'
 				);
 			} else {
 				// Fallback: process immediately without Action Scheduler
@@ -128,7 +128,7 @@ class ProductSync {
 
 		$this->logger->info( 
 			sprintf( 'Product sync started: %d products in %d batches', $total_products, count( $batches ) ),
-			array( 'source' => 'reviewapp' )
+			array( 'source' => 'reviewbop' )
 		);
 
 		return true;
@@ -151,7 +151,7 @@ class ProductSync {
 				$failed_count++;
 				$this->logger->error(
 					sprintf( 'Product %d not found', $product_id ),
-					array( 'source' => 'reviewapp', 'product_id' => $product_id )
+					array( 'source' => 'reviewbop', 'product_id' => $product_id )
 				);
 				continue;
 			}
@@ -163,7 +163,7 @@ class ProductSync {
 				$this->logger->error(
 					sprintf( 'Failed to build data for product %d (%s): %s', $product_id, $product->get_name(), $product_data->get_error_message() ),
 					array( 
-						'source' => 'reviewapp',
+						'source' => 'reviewbop',
 						'product_id' => $product_id,
 						'product_name' => $product->get_name(),
 					)
@@ -185,7 +185,7 @@ class ProductSync {
 						$result->get_error_message()
 					),
 					array( 
-						'source' => 'reviewapp',
+						'source' => 'reviewbop',
 						'product_id' => $product_id,
 						'product_name' => $product->get_name(),
 						'batch' => $batch_index,
@@ -217,7 +217,7 @@ class ProductSync {
 					$status['failed_products'],
 					$status['total_products']
 				),
-				array( 'source' => 'reviewapp' )
+				array( 'source' => 'reviewbop' )
 			);
 		}
 
@@ -232,7 +232,7 @@ class ProductSync {
 	 */
 	private function build_product_data( $product ) {
 		if ( ! $product ) {
-			return new \WP_Error( 'invalid_product', __( 'Invalid product', 'reviewapp-reviews' ) );
+			return new \WP_Error( 'invalid_product', __( 'Invalid product', 'reviewbop-reviews' ) );
 		}
 
 		$product_id = $product->get_id();
@@ -399,7 +399,7 @@ class ProductSync {
 		
 		$this->logger->info(
 			'Sync status reset',
-			array( 'source' => 'reviewapp' )
+			array( 'source' => 'reviewbop' )
 		);
 	}
 
@@ -418,7 +418,7 @@ class ProductSync {
 
 		$this->logger->info(
 			sprintf( 'Cleared sync meta for %d products', $deleted ),
-			array( 'source' => 'reviewapp' )
+			array( 'source' => 'reviewbop' )
 		);
 
 		return $deleted;

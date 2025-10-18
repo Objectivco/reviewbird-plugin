@@ -25,12 +25,12 @@ export default function SyncPanel({ isConnected }) {
 
 	const loadSyncStatus = async () => {
 		try {
-			const data = await apiFetch({ path: '/reviewapp/v1/sync/status' });
+			const data = await apiFetch({ path: '/reviewbop/v1/sync/status' });
 			setSyncStatus(data);
 			setError(null);
 		} catch (err) {
 			console.error('Failed to load sync status:', err);
-			setError(err.message || __('Failed to load sync status', 'reviewapp-reviews'));
+			setError(err.message || __('Failed to load sync status', 'reviewbop-reviews'));
 		} finally {
 			setLoading(false);
 		}
@@ -41,13 +41,13 @@ export default function SyncPanel({ isConnected }) {
 		setError(null);
 		try {
 			await apiFetch({
-				path: '/reviewapp/v1/sync/start',
+				path: '/reviewbop/v1/sync/start',
 				method: 'POST',
 			});
 			// Reload status immediately
 			await loadSyncStatus();
 		} catch (err) {
-			setError(err.message || __('Failed to start sync', 'reviewapp-reviews'));
+			setError(err.message || __('Failed to start sync', 'reviewbop-reviews'));
 		} finally {
 			setSyncing(false);
 		}
@@ -76,7 +76,7 @@ export default function SyncPanel({ isConnected }) {
 		<div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
 			<div className="px-6 py-5 border-b border-gray-200 bg-gray-50">
 				<h2 className="text-xl font-semibold text-gray-900">
-					{__('Product Sync', 'reviewapp-reviews')}
+					{__('Product Sync', 'reviewbop-reviews')}
 				</h2>
 			</div>
 
@@ -98,7 +98,7 @@ export default function SyncPanel({ isConnected }) {
 					<div className="space-y-4">
 						<div className="flex items-center justify-between text-sm">
 							<span className="font-medium text-gray-700">
-								{__('Syncing products...', 'reviewapp-reviews')}
+								{__('Syncing products...', 'reviewbop-reviews')}
 							</span>
 							<span className="text-gray-600">
 								{syncStatus.synced_products} / {syncStatus.total_products}
@@ -125,7 +125,7 @@ export default function SyncPanel({ isConnected }) {
 								</svg>
 								<div className="ml-3">
 									<p className="text-sm text-blue-800">
-										{__('Sync in progress. This may take a few minutes...', 'reviewapp-reviews')}
+										{__('Sync in progress. This may take a few minutes...', 'reviewbop-reviews')}
 									</p>
 								</div>
 							</div>
@@ -139,7 +139,7 @@ export default function SyncPanel({ isConnected }) {
 									{syncStatus?.total_products || 0}
 								</div>
 								<div className="text-sm text-gray-600">
-									{__('Products with reviews', 'reviewapp-reviews')}
+									{__('Products with reviews', 'reviewbop-reviews')}
 								</div>
 							</div>
 
@@ -148,7 +148,7 @@ export default function SyncPanel({ isConnected }) {
 									{syncStatus?.synced_products || 0}
 								</div>
 								<div className="text-sm text-green-700">
-									{__('Synced', 'reviewapp-reviews')}
+									{__('Synced', 'reviewbop-reviews')}
 								</div>
 							</div>
 
@@ -158,7 +158,7 @@ export default function SyncPanel({ isConnected }) {
 										{syncStatus.failed_products}
 									</div>
 									<div className="text-sm text-red-700">
-										{__('Failed', 'reviewapp-reviews')}
+										{__('Failed', 'reviewbop-reviews')}
 									</div>
 								</div>
 							)}
@@ -166,7 +166,7 @@ export default function SyncPanel({ isConnected }) {
 
 						{syncStatus?.last_sync && (
 							<p className="text-sm text-gray-600">
-								{__('Last synced:', 'reviewapp-reviews')}{' '}
+								{__('Last synced:', 'reviewbop-reviews')}{' '}
 								{new Date(syncStatus.last_sync * 1000).toLocaleString()}
 							</p>
 						)}
@@ -180,10 +180,10 @@ export default function SyncPanel({ isConnected }) {
 										</svg>
 										<div className="ml-3">
 											<h3 className="text-sm font-medium text-yellow-800">
-												{__('Sync Required', 'reviewapp-reviews')}
+												{__('Sync Required', 'reviewbop-reviews')}
 											</h3>
 											<p className="text-sm text-yellow-700 mt-1">
-												{__('You have products with reviews that need to be synced to ReviewApp.', 'reviewapp-reviews')}
+												{__('You have products with reviews that need to be synced to ReviewBop.', 'reviewbop-reviews')}
 											</p>
 										</div>
 									</div>
@@ -195,7 +195,7 @@ export default function SyncPanel({ isConnected }) {
 									disabled={syncing || syncStatus?.total_products === 0}
 									className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm border border-transparent rounded shadow-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 								>
-									{syncing ? __('Starting sync...', 'reviewapp-reviews') : __('Sync Products', 'reviewapp-reviews')}
+									{syncing ? __('Starting sync...', 'reviewbop-reviews') : __('Sync Products', 'reviewbop-reviews')}
 								</button>
 							</>
 						) : (
@@ -206,7 +206,7 @@ export default function SyncPanel({ isConnected }) {
 									</svg>
 									<div className="ml-3">
 										<p className="text-sm text-green-800">
-											{__('All products are synced', 'reviewapp-reviews')}
+											{__('All products are synced', 'reviewbop-reviews')}
 										</p>
 									</div>
 								</div>

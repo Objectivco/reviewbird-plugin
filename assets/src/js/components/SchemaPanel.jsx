@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 
 export default function SchemaPanel({ settings, onSave, saving }) {
 	const [enableSchema, setEnableSchema] = useState(
-		window.reviewappAdmin?.enableSchema !== undefined ? window.reviewappAdmin.enableSchema : true
+		window.reviewbopAdmin?.enableSchema !== undefined ? window.reviewbopAdmin.enableSchema : true
 	);
 	const [isSaving, setIsSaving] = useState(false);
 
@@ -14,11 +14,11 @@ export default function SchemaPanel({ settings, onSave, saving }) {
 		try {
 			// Update WordPress option directly via admin-ajax
 			const formData = new FormData();
-			formData.append('action', 'reviewapp_update_schema_setting');
-			formData.append('nonce', window.reviewappAdmin.nonce);
+			formData.append('action', 'reviewbop_update_schema_setting');
+			formData.append('nonce', window.reviewbopAdmin.nonce);
 			formData.append('enable_schema', newValue ? '1' : '0');
 
-			const response = await fetch(window.reviewappAdmin.ajaxUrl, {
+			const response = await fetch(window.reviewbopAdmin.ajaxUrl, {
 				method: 'POST',
 				body: formData,
 			});
@@ -32,7 +32,7 @@ export default function SchemaPanel({ settings, onSave, saving }) {
 			}
 		} catch (err) {
 			console.error('Failed to update schema setting:', err);
-			alert(__('Failed to update schema setting. Please try again.', 'reviewapp-reviews'));
+			alert(__('Failed to update schema setting. Please try again.', 'reviewbop-reviews'));
 		} finally {
 			setIsSaving(false);
 		}
@@ -43,10 +43,10 @@ export default function SchemaPanel({ settings, onSave, saving }) {
 			<div className="flex items-start justify-between">
 				<div className="flex-1">
 					<h2 className="text-lg font-semibold text-gray-900">
-						{__('SEO Schema Markup', 'reviewapp-reviews')}
+						{__('SEO Schema Markup', 'reviewbop-reviews')}
 					</h2>
 					<p className="mt-1 text-sm text-gray-600">
-						{__('Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results.', 'reviewapp-reviews')}
+						{__('Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results.', 'reviewbop-reviews')}
 					</p>
 
 					<div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -55,12 +55,12 @@ export default function SchemaPanel({ settings, onSave, saving }) {
 								<path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
 							</svg>
 							<div className="ml-3 text-sm text-blue-800">
-								<p className="font-medium">{__('What is Schema Markup?', 'reviewapp-reviews')}</p>
+								<p className="font-medium">{__('What is Schema Markup?', 'reviewbop-reviews')}</p>
 								<ul className="mt-2 space-y-1">
-									<li>• {__('Displays star ratings in Google search results', 'reviewapp-reviews')}</li>
-									<li>• {__('Shows review counts and product information', 'reviewapp-reviews')}</li>
-									<li>• {__('Can increase click-through rates by up to 30%', 'reviewapp-reviews')}</li>
-									<li>• {__('Reviews are cached for 4 hours for optimal performance', 'reviewapp-reviews')}</li>
+									<li>• {__('Displays star ratings in Google search results', 'reviewbop-reviews')}</li>
+									<li>• {__('Shows review counts and product information', 'reviewbop-reviews')}</li>
+									<li>• {__('Can increase click-through rates by up to 30%', 'reviewbop-reviews')}</li>
+									<li>• {__('Reviews are cached for 4 hours for optimal performance', 'reviewbop-reviews')}</li>
 								</ul>
 							</div>
 						</div>
@@ -101,7 +101,7 @@ export default function SchemaPanel({ settings, onSave, saving }) {
 						/>
 					</button>
 					<p className="mt-2 text-xs text-gray-500 text-right" style={{ margin: '8px 0 0 0', fontSize: '12px', lineHeight: '1.4' }}>
-						{enableSchema ? __('Enabled', 'reviewapp-reviews') : __('Disabled', 'reviewapp-reviews')}
+						{enableSchema ? __('Enabled', 'reviewbop-reviews') : __('Disabled', 'reviewbop-reviews')}
 					</p>
 				</div>
 			</div>
@@ -109,7 +109,7 @@ export default function SchemaPanel({ settings, onSave, saving }) {
 			{enableSchema && (
 				<div className="mt-4 pt-4 border-t border-gray-200">
 					<p className="text-sm text-gray-600">
-						{__('Schema markup is active on all WooCommerce product pages.', 'reviewapp-reviews')}
+						{__('Schema markup is active on all WooCommerce product pages.', 'reviewbop-reviews')}
 					</p>
 					<div className="mt-3 space-y-2">
 						<a
@@ -118,7 +118,7 @@ export default function SchemaPanel({ settings, onSave, saving }) {
 							rel="noopener noreferrer"
 							className="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-700"
 						>
-							{__('Test with Google Rich Results', 'reviewapp-reviews')}
+							{__('Test with Google Rich Results', 'reviewbop-reviews')}
 							<svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
 							</svg>
@@ -130,7 +130,7 @@ export default function SchemaPanel({ settings, onSave, saving }) {
 							rel="noopener noreferrer"
 							className="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-700"
 						>
-							{__('Validate Schema', 'reviewapp-reviews')}
+							{__('Validate Schema', 'reviewbop-reviews')}
 							<svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
 							</svg>

@@ -1,12 +1,12 @@
-# ReviewApp WordPress Plugin
+# ReviewBop WordPress Plugin
 
-Connect your WooCommerce store to ReviewApp for advanced review collection and display.
+Connect your WooCommerce store to ReviewBop for advanced review collection and display.
 
 ## Features
 
-- **OAuth Integration**: Seamless connection to ReviewApp dashboard
+- **OAuth Integration**: Seamless connection to ReviewBop dashboard
 - **Automatic Widget Injection**: Review widgets automatically appear on product pages  
-- **Real-time Sync**: Products, reviews, and orders sync automatically to ReviewApp
+- **Real-time Sync**: Products, reviews, and orders sync automatically to ReviewBop
 - **Action Scheduler**: Reliable background processing using WooCommerce's Action Scheduler
 - **Security First**: Store tokens never exposed to frontend, proper capability checks
 - **Developer Friendly**: Extensive filter system for customization
@@ -20,30 +20,30 @@ Connect your WooCommerce store to ReviewApp for advanced review collection and d
 ## Installation
 
 ### From WordPress.org (Coming Soon)
-1. Search for "ReviewApp Reviews" in your WordPress admin
+1. Search for "ReviewBop Reviews" in your WordPress admin
 2. Install and activate the plugin
-3. Go to Settings > ReviewApp to connect your store
+3. Go to Settings > ReviewBop to connect your store
 
 ### Manual Installation
 1. Download the plugin files
-2. Upload to your `/wp-content/plugins/reviewapp-reviews/` directory
+2. Upload to your `/wp-content/plugins/reviewbop-reviews/` directory
 3. Activate the plugin through the WordPress admin
-4. Go to Settings > ReviewApp to connect your store
+4. Go to Settings > ReviewBop to connect your store
 
 ## Getting Started
 
-1. **Connect Your Store**: Click "Connect to ReviewApp" in Settings > ReviewApp
-2. **Create ReviewApp Account**: If you don't have one, you'll be guided to create an account
-3. **Authorize Connection**: Grant the plugin access to your ReviewApp store
+1. **Connect Your Store**: Click "Connect to ReviewBop" in Settings > ReviewBop
+2. **Create ReviewBop Account**: If you don't have one, you'll be guided to create an account
+3. **Authorize Connection**: Grant the plugin access to your ReviewBop store
 4. **Widgets Appear Automatically**: Review widgets will automatically appear on all product pages
 
 ## Environment Configuration
 
-The plugin automatically detects your environment and uses the appropriate ReviewApp servers:
+The plugin automatically detects your environment and uses the appropriate ReviewBop servers:
 
-- **Development**: `https://reviewapp.test` (for local development)
-- **Staging**: `https://staging.reviewapp.com` (when ready)  
-- **Production**: `https://app.reviewapp.com` (live site)
+- **Development**: `https://reviewbop.test` (for local development)
+- **Staging**: `https://staging.reviewbop.com` (when ready)  
+- **Production**: `https://app.reviewbop.com` (live site)
 
 You can override this by defining a constant in your `wp-config.php`:
 
@@ -59,18 +59,18 @@ The plugin uses opinionated defaults but provides extensive customization throug
 ### Disable Auto-Injection
 ```php
 // Disable automatic widget injection
-add_filter('reviewapp_auto_inject_widgets', '__return_false');
+add_filter('reviewbop_auto_inject_widgets', '__return_false');
 ```
 
 ### Change Widget Placement
 ```php
 // Change where widgets appear
-add_filter('reviewapp_widget_hook', function() {
+add_filter('reviewbop_widget_hook', function() {
     return 'woocommerce_single_product_summary'; // Different hook
 });
 
 // Change widget priority  
-add_filter('reviewapp_widget_priority', function() {
+add_filter('reviewbop_widget_priority', function() {
     return 15; // Earlier in the page
 });
 ```
@@ -78,7 +78,7 @@ add_filter('reviewapp_widget_priority', function() {
 ### Conditional Widget Display
 ```php
 // Hide widgets for specific products
-add_filter('reviewapp_show_widget_for_product', function($show, $product) {
+add_filter('reviewbop_show_widget_for_product', function($show, $product) {
     // Don't show on virtual/downloadable products
     return !$product->is_virtual() && !$product->is_downloadable();
 }, 10, 2);
@@ -87,7 +87,7 @@ add_filter('reviewapp_show_widget_for_product', function($show, $product) {
 ### Custom Widget Attributes
 ```php
 // Add custom data attributes
-add_filter('reviewapp_widget_attributes', function($attrs, $product) {
+add_filter('reviewbop_widget_attributes', function($attrs, $product) {
     $attrs['custom-category'] = $product->get_category_ids()[0] ?? '';
     return $attrs;
 }, 10, 2);
@@ -96,7 +96,7 @@ add_filter('reviewapp_widget_attributes', function($attrs, $product) {
 ### Complete Widget Customization
 ```php
 // Replace widget HTML entirely
-add_filter('reviewapp_widget_html', function($html, $product, $widget_id, $attrs) {
+add_filter('reviewbop_widget_html', function($html, $product, $widget_id, $attrs) {
     return sprintf(
         '<div class="my-custom-reviews" id="%s" data-product="%s"></div>',
         esc_attr($widget_id),
@@ -156,19 +156,19 @@ npm run test            # JavaScript tests
 - Ensure Action Scheduler is functioning (WooCommerce > Status > Scheduled Actions)
 
 ### Widget Not Appearing  
-- Verify connection status in Settings > ReviewApp
+- Verify connection status in Settings > ReviewBop
 - Check that WooCommerce is active and you're on a product page
 - Ensure the theme supports the `woocommerce_after_single_product_summary` hook
 
 ### Development Setup
 - Set `REVIEWAPP_ENVIRONMENT` to `'development'` in wp-config.php
-- Ensure your local ReviewApp instance is running at `https://reviewapp.test`
+- Ensure your local ReviewBop instance is running at `https://reviewbop.test`
 
 ## Changelog
 
 ### 1.0.0
 - Initial release
-- OAuth integration with ReviewApp
+- OAuth integration with ReviewBop
 - Automatic widget injection  
 - Product/review/order synchronization
 - Action Scheduler integration
@@ -176,6 +176,6 @@ npm run test            # JavaScript tests
 
 ## Support
 
-- **Documentation**: [ReviewApp Plugin Docs](https://docs.reviewapp.com/wordpress)  
-- **Support**: [ReviewApp Support](https://reviewapp.com/support)
-- **Issues**: [GitHub Issues](https://github.com/reviewapp/wordpress-plugin/issues)
+- **Documentation**: [ReviewBop Plugin Docs](https://docs.reviewbop.com/wordpress)  
+- **Support**: [ReviewBop Support](https://reviewbop.com/support)
+- **Issues**: [GitHub Issues](https://github.com/reviewbop/wordpress-plugin/issues)

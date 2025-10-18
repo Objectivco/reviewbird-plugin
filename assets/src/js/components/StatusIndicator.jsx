@@ -6,17 +6,17 @@ export default function StatusIndicator({ status, storeId }) {
 		connected: {
 			color: 'green',
 			icon: '●',
-			label: __('Connected', 'reviewapp-reviews'),
+			label: __('Connected', 'reviewbop-reviews'),
 		},
 		disconnected: {
 			color: 'gray',
 			icon: '●',
-			label: __('Not Connected', 'reviewapp-reviews'),
+			label: __('Not Connected', 'reviewbop-reviews'),
 		},
 		error: {
 			color: 'red',
 			icon: '●',
-			label: __('Connection Error', 'reviewapp-reviews'),
+			label: __('Connection Error', 'reviewbop-reviews'),
 		},
 	};
 

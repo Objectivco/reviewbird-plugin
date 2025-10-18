@@ -7,12 +7,12 @@ export default function ConnectionPanel({ settings, onSave, saving }) {
 		// Create a form and submit it via POST to start OAuth flow
 		const form = document.createElement('form');
 		form.method = 'POST';
-		form.action = window.reviewappAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
+		form.action = window.reviewbopAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 		
 		const actionField = document.createElement('input');
 		actionField.type = 'hidden';
 		actionField.name = 'action';
-		actionField.value = 'reviewapp_start_oauth';
+		actionField.value = 'reviewbop_start_oauth';
 		form.appendChild(actionField);
 		
 		const nonceField = document.createElement('input');
@@ -26,7 +26,7 @@ export default function ConnectionPanel({ settings, onSave, saving }) {
 	};
 
 	const handleDisconnect = async () => {
-		if (confirm(__('Are you sure you want to disconnect from ReviewApp?', 'reviewapp-reviews'))) {
+		if (confirm(__('Are you sure you want to disconnect from ReviewBop?', 'reviewbop-reviews'))) {
 			try {
 				await onSave({ store_token: '' });
 			} catch (err) {
@@ -41,7 +41,7 @@ export default function ConnectionPanel({ settings, onSave, saving }) {
 		<div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
 			<div className="px-6 py-5 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
 				<h2 className="text-xl font-semibold text-gray-900">
-					{__('Connection', 'reviewapp-reviews')}
+					{__('Connection', 'reviewbop-reviews')}
 				</h2>
 				<StatusIndicator
 					status={settings?.connection_status}
@@ -58,17 +58,17 @@ export default function ConnectionPanel({ settings, onSave, saving }) {
 							</svg>
 						</div>
 						<h3 className="text-lg font-medium text-gray-900 mb-2">
-							{__('Connect to ReviewApp', 'reviewapp-reviews')}
+							{__('Connect to ReviewBop', 'reviewbop-reviews')}
 						</h3>
 						<p className="text-gray-600 mb-6 max-w-md mx-auto">
-							{__('Start collecting and displaying reviews by connecting your store to ReviewApp', 'reviewapp-reviews')}
+							{__('Start collecting and displaying reviews by connecting your store to ReviewBop', 'reviewbop-reviews')}
 						</p>
 						<Button
 							variant="primary"
 							onClick={handleOAuthConnect}
 							className="!bg-indigo-600 hover:!bg-indigo-700 !text-white !px-8 !py-3 !text-base !h-auto !font-medium"
 						>
-							{__('Connect Now', 'reviewapp-reviews')}
+							{__('Connect Now', 'reviewbop-reviews')}
 						</Button>
 					</div>
 				) : (
@@ -80,11 +80,11 @@ export default function ConnectionPanel({ settings, onSave, saving }) {
 								</svg>
 								<div className="ml-3">
 									<h3 className="text-sm font-medium text-green-800">
-										{__('Your store is connected', 'reviewapp-reviews')}
+										{__('Your store is connected', 'reviewbop-reviews')}
 									</h3>
 									{settings.store_id && (
 										<p className="text-sm text-green-700 mt-1">
-											{__('Store ID:', 'reviewapp-reviews')} <code className="font-mono">{settings.store_id}</code>
+											{__('Store ID:', 'reviewbop-reviews')} <code className="font-mono">{settings.store_id}</code>
 										</p>
 									)}
 								</div>
@@ -98,7 +98,7 @@ export default function ConnectionPanel({ settings, onSave, saving }) {
 							className="inline-flex items-center justify-center px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 text-sm border border-red-200 hover:border-red-300 rounded shadow-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
 							style={{ boxShadow: 'none' }}
 						>
-							{__('Disconnect', 'reviewapp-reviews')}
+							{__('Disconnect', 'reviewbop-reviews')}
 						</button>
 					</div>
 				)}

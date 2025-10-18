@@ -1,11 +1,11 @@
 <?php
 /**
- * Product REST API endpoint for ReviewApp.
+ * Product REST API endpoint for ReviewBop.
  *
- * @package ReviewApp
+ * @package ReviewBop
  */
 
-namespace ReviewApp\Api;
+namespace ReviewBop\Api;
 
 use WP_REST_Request;
 use WP_REST_Response;
@@ -28,7 +28,7 @@ class ProductEndpoint {
 		if ( empty( $external_id ) ) {
 			return new WP_Error(
 				'missing_external_id',
-				__( 'External ID is required', 'reviewapp-reviews' ),
+				__( 'External ID is required', 'reviewbop-reviews' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -39,7 +39,7 @@ class ProductEndpoint {
 		if ( ! $product_id ) {
 			return new WP_Error(
 				'invalid_product_id',
-				__( 'Invalid product ID', 'reviewapp-reviews' ),
+				__( 'Invalid product ID', 'reviewbop-reviews' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -48,7 +48,7 @@ class ProductEndpoint {
 		if ( ! function_exists( 'wc_get_product' ) ) {
 			return new WP_Error(
 				'woocommerce_not_active',
-				__( 'WooCommerce is not active', 'reviewapp-reviews' ),
+				__( 'WooCommerce is not active', 'reviewbop-reviews' ),
 				array( 'status' => 500 )
 			);
 		}
@@ -58,12 +58,12 @@ class ProductEndpoint {
 		if ( ! $product ) {
 			return new WP_Error(
 				'product_not_found',
-				__( 'Product not found', 'reviewapp-reviews' ),
+				__( 'Product not found', 'reviewbop-reviews' ),
 				array( 'status' => 404 )
 			);
 		}
 
-		// Return product data in ReviewApp format
+		// Return product data in ReviewBop format
 		$product_data = array(
 			'external_id' => (string) $product->get_id(),
 			'slug'        => $product->get_slug(),
@@ -83,11 +83,11 @@ class ProductEndpoint {
 			$logger = wc_get_logger();
 			$logger->info(
 				sprintf(
-					'Product data fetched for ReviewApp: %s (ID: %d)',
+					'Product data fetched for ReviewBop: %s (ID: %d)',
 					$product->get_name(),
 					$product->get_id()
 				),
-				array( 'source' => 'reviewapp' )
+				array( 'source' => 'reviewbop' )
 			);
 		}
 
@@ -162,7 +162,7 @@ class ProductEndpoint {
 		if ( empty( $auth_header ) ) {
 			return new WP_Error(
 				'missing_auth',
-				__( 'Authorization header is required', 'reviewapp-reviews' ),
+				__( 'Authorization header is required', 'reviewbop-reviews' ),
 				array( 'status' => 401 )
 			);
 		}
@@ -171,18 +171,18 @@ class ProductEndpoint {
 		if ( ! preg_match( '/^Bearer\s+(\S+)$/', $auth_header, $matches ) ) {
 			return new WP_Error(
 				'invalid_auth_format',
-				__( 'Invalid Authorization header format', 'reviewapp-reviews' ),
+				__( 'Invalid Authorization header format', 'reviewbop-reviews' ),
 				array( 'status' => 401 )
 			);
 		}
 
 		$provided_token = $matches[1];
-		$stored_token   = get_option( 'reviewapp_store_token' );
+		$stored_token   = get_option( 'reviewbop_store_token' );
 
 		if ( empty( $stored_token ) ) {
 			return new WP_Error(
 				'no_token_configured',
-				__( 'ReviewApp store token not configured', 'reviewapp-reviews' ),
+				__( 'ReviewBop store token not configured', 'reviewbop-reviews' ),
 				array( 'status' => 500 )
 			);
 		}
@@ -191,7 +191,7 @@ class ProductEndpoint {
 		if ( ! hash_equals( $stored_token, $provided_token ) ) {
 			return new WP_Error(
 				'invalid_token',
-				__( 'Invalid authentication token', 'reviewapp-reviews' ),
+				__( 'Invalid authentication token', 'reviewbop-reviews' ),
 				array( 'status' => 403 )
 			);
 		}

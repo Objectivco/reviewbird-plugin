@@ -32,11 +32,11 @@ function ConnectionPanel({
     // Create a form and submit it via POST to start OAuth flow
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = window.reviewappAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
+    form.action = window.reviewbopAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
     const actionField = document.createElement('input');
     actionField.type = 'hidden';
     actionField.name = 'action';
-    actionField.value = 'reviewapp_start_oauth';
+    actionField.value = 'reviewbop_start_oauth';
     form.appendChild(actionField);
     const nonceField = document.createElement('input');
     nonceField.type = 'hidden';
@@ -47,7 +47,7 @@ function ConnectionPanel({
     form.submit();
   };
   const handleDisconnect = async () => {
-    if (confirm((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Are you sure you want to disconnect from ReviewApp?', 'reviewapp-reviews'))) {
+    if (confirm((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Are you sure you want to disconnect from ReviewBop?', 'reviewbop-reviews'))) {
       try {
         await onSave({
           store_token: ''
@@ -64,7 +64,7 @@ function ConnectionPanel({
     className: "px-6 py-5 border-b border-gray-200 bg-gray-50 flex items-center justify-between"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", {
     className: "text-xl font-semibold text-gray-900"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Connection', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_StatusIndicator__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Connection', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_StatusIndicator__WEBPACK_IMPORTED_MODULE_3__["default"], {
     status: settings?.connection_status,
     storeId: settings?.store_id
   })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -85,13 +85,13 @@ function ConnectionPanel({
     d: "M13 10V3L4 14h7v7l9-11h-7z"
   }))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", {
     className: "text-lg font-medium text-gray-900 mb-2"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Connect to ReviewApp', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Connect to ReviewBop', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-gray-600 mb-6 max-w-md mx-auto"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Start collecting and displaying reviews by connecting your store to ReviewApp', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Start collecting and displaying reviews by connecting your store to ReviewBop', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
     variant: "primary",
     onClick: handleOAuthConnect,
     className: "!bg-indigo-600 hover:!bg-indigo-700 !text-white !px-8 !py-3 !text-base !h-auto !font-medium"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Connect Now', 'reviewapp-reviews'))) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Connect Now', 'reviewbop-reviews'))) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "space-y-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "bg-green-50 border border-green-200 rounded-lg p-4"
@@ -109,9 +109,9 @@ function ConnectionPanel({
     className: "ml-3"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", {
     className: "text-sm font-medium text-green-800"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Your store is connected', 'reviewapp-reviews')), settings.store_id && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Your store is connected', 'reviewbop-reviews')), settings.store_id && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-sm text-green-700 mt-1"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Store ID:', 'reviewapp-reviews'), " ", (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("code", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Store ID:', 'reviewbop-reviews'), " ", (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("code", {
     className: "font-mono"
   }, settings.store_id))))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     type: "button",
@@ -121,7 +121,7 @@ function ConnectionPanel({
     style: {
       boxShadow: 'none'
     }
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Disconnect', 'reviewapp-reviews')))));
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Disconnect', 'reviewbop-reviews')))));
 }
 
 /***/ }),
@@ -152,7 +152,7 @@ function LoadingSpinner() {
     className: "inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "mt-4 text-gray-600"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Loading...', 'reviewapp-reviews'))));
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Loading...', 'reviewbop-reviews'))));
 }
 
 /***/ }),
@@ -205,16 +205,16 @@ function ReviewRequestPanel({
     className: "px-6 py-5 border-b border-gray-200 bg-gray-50"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", {
     className: "text-xl font-semibold text-gray-900"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Review Requests', 'reviewapp-reviews'))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Review Requests', 'reviewbop-reviews'))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "px-6 py-5 space-y-6"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-sm text-gray-600 mb-4"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Review request emails are automatically sent to customers after their orders are fulfilled. Configure which order status triggers the emails below.', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Review request emails are automatically sent to customers after their orders are fulfilled. Configure which order status triggers the emails below.', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "space-y-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {
     htmlFor: "trigger-status",
     className: "block text-sm font-medium text-gray-900 mb-2"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Fulfilled Order Status', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Fulfilled Order Status', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("select", {
     id: "trigger-status",
     value: triggerStatus,
     onChange: handleStatusChange,
@@ -225,15 +225,15 @@ function ReviewRequestPanel({
     value: value
   }, label))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "mt-2 text-sm text-gray-500"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('When an order reaches this status, a review request email will be scheduled.', 'reviewapp-reviews'))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('When an order reaches this status, a review request email will be scheduled.', 'reviewbop-reviews'))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "bg-gray-50 rounded-lg p-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "text-2xl font-bold text-gray-900"
   }, settings?.orders_synced_count || 0), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "text-sm text-gray-600"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Synced Orders', 'reviewapp-reviews')), settings?.orders_last_synced > 0 && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Synced Orders', 'reviewbop-reviews')), settings?.orders_last_synced > 0 && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-xs text-gray-500 mt-1"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Last synced:', 'reviewapp-reviews'), ' ', new Date(settings.orders_last_synced * 1000).toLocaleString()))))));
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Last synced:', 'reviewbop-reviews'), ' ', new Date(settings.orders_last_synced * 1000).toLocaleString()))))));
 }
 
 /***/ }),
@@ -285,13 +285,13 @@ function ReviewSyncPanel({
   const loadSyncStatus = async () => {
     try {
       const data = await _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default()({
-        path: '/reviewapp/v1/sync/reviews/status'
+        path: '/reviewbop/v1/sync/reviews/status'
       });
       setSyncStatus(data);
       setError(null);
     } catch (err) {
       console.error('Failed to load review sync status:', err);
-      setError(err.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed to load review sync status', 'reviewapp-reviews'));
+      setError(err.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed to load review sync status', 'reviewbop-reviews'));
     } finally {
       setLoading(false);
     }
@@ -301,13 +301,13 @@ function ReviewSyncPanel({
     setError(null);
     try {
       await _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default()({
-        path: '/reviewapp/v1/sync/reviews/start',
+        path: '/reviewbop/v1/sync/reviews/start',
         method: 'POST'
       });
       // Reload status immediately
       await loadSyncStatus();
     } catch (err) {
-      setError(err.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed to start review sync', 'reviewapp-reviews'));
+      setError(err.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed to start review sync', 'reviewbop-reviews'));
     } finally {
       setSyncing(false);
     }
@@ -334,7 +334,7 @@ function ReviewSyncPanel({
     className: "px-6 py-5 border-b border-gray-200 bg-gray-50"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", {
     className: "text-xl font-semibold text-gray-900"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Review Sync', 'reviewapp-reviews'))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Review Sync', 'reviewbop-reviews'))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "px-6 py-5 space-y-6"
   }, !productsAreSynced && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4"
@@ -352,9 +352,9 @@ function ReviewSyncPanel({
     className: "ml-3"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", {
     className: "text-sm font-medium text-yellow-800"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Products Must Be Synced First', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Products Must Be Synced First', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-sm text-yellow-700 mt-1"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Please sync your products before syncing reviews. Reviews are linked to products.', 'reviewapp-reviews'))))), error && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Please sync your products before syncing reviews. Reviews are linked to products.', 'reviewbop-reviews'))))), error && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "bg-red-50 border border-red-200 rounded-lg p-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "flex"
@@ -376,7 +376,7 @@ function ReviewSyncPanel({
     className: "flex items-center justify-between text-sm"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "font-medium text-gray-700"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Syncing reviews...', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Syncing reviews...', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "text-gray-600"
   }, syncStatus.synced_reviews, " / ", syncStatus.total_reviews)), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "relative"
@@ -412,7 +412,7 @@ function ReviewSyncPanel({
     className: "ml-3"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-sm text-blue-800"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync in progress. This may take a few minutes...', 'reviewapp-reviews')))))) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync in progress. This may take a few minutes...', 'reviewbop-reviews')))))) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "space-y-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "grid grid-cols-3 gap-4"
@@ -422,21 +422,21 @@ function ReviewSyncPanel({
     className: "text-2xl font-bold text-gray-900"
   }, syncStatus?.total_reviews || 0), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "text-sm text-gray-600"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Approved reviews', 'reviewapp-reviews'))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Approved reviews', 'reviewbop-reviews'))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "bg-green-50 rounded-lg p-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "text-2xl font-bold text-green-900"
   }, syncStatus?.synced_reviews || 0), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "text-sm text-green-700"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Synced', 'reviewapp-reviews'))), syncStatus?.failed_reviews > 0 && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Synced', 'reviewbop-reviews'))), syncStatus?.failed_reviews > 0 && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "bg-red-50 rounded-lg p-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "text-2xl font-bold text-red-900"
   }, syncStatus.failed_reviews), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "text-sm text-red-700"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed', 'reviewapp-reviews')))), syncStatus?.last_sync && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed', 'reviewbop-reviews')))), syncStatus?.last_sync && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-sm text-gray-600"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Last synced:', 'reviewapp-reviews'), ' ', new Date(syncStatus.last_sync * 1000).toLocaleString()), syncStatus?.needs_sync && productsAreSynced ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Last synced:', 'reviewbop-reviews'), ' ', new Date(syncStatus.last_sync * 1000).toLocaleString()), syncStatus?.needs_sync && productsAreSynced ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "flex"
@@ -452,14 +452,14 @@ function ReviewSyncPanel({
     className: "ml-3"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", {
     className: "text-sm font-medium text-yellow-800"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync Required', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync Required', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-sm text-yellow-700 mt-1"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('You have approved reviews that need to be synced to ReviewApp.', 'reviewapp-reviews'))))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('You have approved reviews that need to be synced to ReviewBop.', 'reviewbop-reviews'))))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     type: "button",
     onClick: startSync,
     disabled: isDisabled,
     className: "inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm border border-transparent rounded shadow-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-  }, syncing ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Starting sync...', 'reviewapp-reviews') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync Reviews', 'reviewapp-reviews'))) : productsAreSynced && !syncStatus?.needs_sync ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, syncing ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Starting sync...', 'reviewbop-reviews') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync Reviews', 'reviewbop-reviews'))) : productsAreSynced && !syncStatus?.needs_sync ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "bg-green-50 border border-green-200 rounded-lg p-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "flex"
@@ -475,9 +475,9 @@ function ReviewSyncPanel({
     className: "ml-3"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-sm text-green-800"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('All reviews are synced', 'reviewapp-reviews'))))) : null, !productsAreSynced && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('All reviews are synced', 'reviewbop-reviews'))))) : null, !productsAreSynced && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-xs text-gray-500"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync products first to enable review sync', 'reviewapp-reviews')))));
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync products first to enable review sync', 'reviewbop-reviews')))));
 }
 
 /***/ }),
@@ -507,7 +507,7 @@ function SchemaPanel({
   onSave,
   saving
 }) {
-  const [enableSchema, setEnableSchema] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(window.reviewappAdmin?.enableSchema !== undefined ? window.reviewappAdmin.enableSchema : true);
+  const [enableSchema, setEnableSchema] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(window.reviewbopAdmin?.enableSchema !== undefined ? window.reviewbopAdmin.enableSchema : true);
   const [isSaving, setIsSaving] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const handleToggle = async () => {
     setIsSaving(true);
@@ -515,10 +515,10 @@ function SchemaPanel({
     try {
       // Update WordPress option directly via admin-ajax
       const formData = new FormData();
-      formData.append('action', 'reviewapp_update_schema_setting');
-      formData.append('nonce', window.reviewappAdmin.nonce);
+      formData.append('action', 'reviewbop_update_schema_setting');
+      formData.append('nonce', window.reviewbopAdmin.nonce);
       formData.append('enable_schema', newValue ? '1' : '0');
-      const response = await fetch(window.reviewappAdmin.ajaxUrl, {
+      const response = await fetch(window.reviewbopAdmin.ajaxUrl, {
         method: 'POST',
         body: formData
       });
@@ -530,7 +530,7 @@ function SchemaPanel({
       }
     } catch (err) {
       console.error('Failed to update schema setting:', err);
-      alert((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed to update schema setting. Please try again.', 'reviewapp-reviews'));
+      alert((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed to update schema setting. Please try again.', 'reviewbop-reviews'));
     } finally {
       setIsSaving(false);
     }
@@ -543,9 +543,9 @@ function SchemaPanel({
     className: "flex-1"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", {
     className: "text-lg font-semibold text-gray-900"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('SEO Schema Markup', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('SEO Schema Markup', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "mt-1 text-sm text-gray-600"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results.', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results.', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "flex"
@@ -561,9 +561,9 @@ function SchemaPanel({
     className: "ml-3 text-sm text-blue-800"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "font-medium"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('What is Schema Markup?', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("ul", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('What is Schema Markup?', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("ul", {
     className: "mt-2 space-y-1"
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, "\u2022 ", (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Displays star ratings in Google search results', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, "\u2022 ", (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Shows review counts and product information', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, "\u2022 ", (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Can increase click-through rates by up to 30%', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, "\u2022 ", (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Reviews are cached for 4 hours for optimal performance', 'reviewapp-reviews'))))))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, "\u2022 ", (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Displays star ratings in Google search results', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, "\u2022 ", (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Shows review counts and product information', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, "\u2022 ", (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Can increase click-through rates by up to 30%', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, "\u2022 ", (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Reviews are cached for 4 hours for optimal performance', 'reviewbop-reviews'))))))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "ml-6"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     type: "button",
@@ -597,18 +597,18 @@ function SchemaPanel({
       fontSize: '12px',
       lineHeight: '1.4'
     }
-  }, enableSchema ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Enabled', 'reviewapp-reviews') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Disabled', 'reviewapp-reviews')))), enableSchema && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, enableSchema ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Enabled', 'reviewbop-reviews') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Disabled', 'reviewbop-reviews')))), enableSchema && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "mt-4 pt-4 border-t border-gray-200"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-sm text-gray-600"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Schema markup is active on all WooCommerce product pages.', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Schema markup is active on all WooCommerce product pages.', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "mt-3 space-y-2"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
     href: "https://search.google.com/test/rich-results",
     target: "_blank",
     rel: "noopener noreferrer",
     className: "inline-flex items-center text-sm text-indigo-600 hover:text-indigo-700"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Test with Google Rich Results', 'reviewapp-reviews'), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Test with Google Rich Results', 'reviewbop-reviews'), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
     className: "ml-1 w-4 h-4",
     fill: "none",
     stroke: "currentColor",
@@ -625,7 +625,7 @@ function SchemaPanel({
     target: "_blank",
     rel: "noopener noreferrer",
     className: "inline-flex items-center text-sm text-indigo-600 hover:text-indigo-700"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Validate Schema', 'reviewapp-reviews'), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Validate Schema', 'reviewbop-reviews'), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
     className: "ml-1 w-4 h-4",
     fill: "none",
     stroke: "currentColor",
@@ -688,7 +688,7 @@ function SettingsApp() {
   const loadProductSyncStatus = async () => {
     try {
       const data = await _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()({
-        path: '/reviewapp/v1/sync/status'
+        path: '/reviewbop/v1/sync/status'
       });
       setProductSyncStatus(data);
     } catch (err) {
@@ -698,13 +698,13 @@ function SettingsApp() {
   const loadSettings = async () => {
     try {
       const data = await _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()({
-        path: '/reviewapp/v1/settings'
+        path: '/reviewbop/v1/settings'
       });
       setSettings(data);
       setError(null);
     } catch (err) {
       console.error('Failed to load settings:', err);
-      setError(err.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Failed to load settings', 'reviewapp-reviews'));
+      setError(err.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Failed to load settings', 'reviewbop-reviews'));
     } finally {
       setLoading(false);
     }
@@ -714,13 +714,13 @@ function SettingsApp() {
     setError(null);
     try {
       const data = await _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()({
-        path: '/reviewapp/v1/settings',
+        path: '/reviewbop/v1/settings',
         method: 'POST',
         data: newSettings
       });
       setSettings(data);
     } catch (err) {
-      setError(err.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Failed to save settings', 'reviewapp-reviews'));
+      setError(err.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Failed to save settings', 'reviewbop-reviews'));
       throw err;
     } finally {
       setSaving(false);
@@ -735,9 +735,9 @@ function SettingsApp() {
     className: "mb-8"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h1", {
     className: "text-3xl font-bold text-gray-900"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('ReviewApp Settings', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('ReviewBop Settings', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "mt-2 text-gray-600"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Connect your WooCommerce store to ReviewApp for advanced review collection and display.', 'reviewapp-reviews'))), error && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Connect your WooCommerce store to ReviewBop for advanced review collection and display.', 'reviewbop-reviews'))), error && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "mb-6 bg-red-50 border border-red-200 rounded-lg p-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "flex"
@@ -806,17 +806,17 @@ function StatusIndicator({
     connected: {
       color: 'green',
       icon: '●',
-      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Connected', 'reviewapp-reviews')
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Connected', 'reviewbop-reviews')
     },
     disconnected: {
       color: 'gray',
       icon: '●',
-      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Not Connected', 'reviewapp-reviews')
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Not Connected', 'reviewbop-reviews')
     },
     error: {
       color: 'red',
       icon: '●',
-      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Connection Error', 'reviewapp-reviews')
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Connection Error', 'reviewbop-reviews')
     }
   };
   const config = statusConfig[status] || statusConfig.disconnected;
@@ -882,13 +882,13 @@ function SyncPanel({
   const loadSyncStatus = async () => {
     try {
       const data = await _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_4___default()({
-        path: '/reviewapp/v1/sync/status'
+        path: '/reviewbop/v1/sync/status'
       });
       setSyncStatus(data);
       setError(null);
     } catch (err) {
       console.error('Failed to load sync status:', err);
-      setError(err.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed to load sync status', 'reviewapp-reviews'));
+      setError(err.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed to load sync status', 'reviewbop-reviews'));
     } finally {
       setLoading(false);
     }
@@ -898,13 +898,13 @@ function SyncPanel({
     setError(null);
     try {
       await _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_4___default()({
-        path: '/reviewapp/v1/sync/start',
+        path: '/reviewbop/v1/sync/start',
         method: 'POST'
       });
       // Reload status immediately
       await loadSyncStatus();
     } catch (err) {
-      setError(err.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed to start sync', 'reviewapp-reviews'));
+      setError(err.message || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed to start sync', 'reviewbop-reviews'));
     } finally {
       setSyncing(false);
     }
@@ -930,7 +930,7 @@ function SyncPanel({
     className: "px-6 py-5 border-b border-gray-200 bg-gray-50"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", {
     className: "text-xl font-semibold text-gray-900"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Product Sync', 'reviewapp-reviews'))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Product Sync', 'reviewbop-reviews'))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "px-6 py-5 space-y-6"
   }, error && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "bg-red-50 border border-red-200 rounded-lg p-4"
@@ -954,7 +954,7 @@ function SyncPanel({
     className: "flex items-center justify-between text-sm"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "font-medium text-gray-700"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Syncing products...', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Syncing products...', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "text-gray-600"
   }, syncStatus.synced_products, " / ", syncStatus.total_products)), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "relative"
@@ -990,7 +990,7 @@ function SyncPanel({
     className: "ml-3"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-sm text-blue-800"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync in progress. This may take a few minutes...', 'reviewapp-reviews')))))) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync in progress. This may take a few minutes...', 'reviewbop-reviews')))))) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "space-y-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "grid grid-cols-3 gap-4"
@@ -1000,21 +1000,21 @@ function SyncPanel({
     className: "text-2xl font-bold text-gray-900"
   }, syncStatus?.total_products || 0), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "text-sm text-gray-600"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Products with reviews', 'reviewapp-reviews'))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Products with reviews', 'reviewbop-reviews'))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "bg-green-50 rounded-lg p-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "text-2xl font-bold text-green-900"
   }, syncStatus?.synced_products || 0), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "text-sm text-green-700"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Synced', 'reviewapp-reviews'))), syncStatus?.failed_products > 0 && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Synced', 'reviewbop-reviews'))), syncStatus?.failed_products > 0 && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "bg-red-50 rounded-lg p-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "text-2xl font-bold text-red-900"
   }, syncStatus.failed_products), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "text-sm text-red-700"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed', 'reviewapp-reviews')))), syncStatus?.last_sync && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Failed', 'reviewbop-reviews')))), syncStatus?.last_sync && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-sm text-gray-600"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Last synced:', 'reviewapp-reviews'), ' ', new Date(syncStatus.last_sync * 1000).toLocaleString()), syncStatus?.needs_sync ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Last synced:', 'reviewbop-reviews'), ' ', new Date(syncStatus.last_sync * 1000).toLocaleString()), syncStatus?.needs_sync ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "flex"
@@ -1030,14 +1030,14 @@ function SyncPanel({
     className: "ml-3"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", {
     className: "text-sm font-medium text-yellow-800"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync Required', 'reviewapp-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync Required', 'reviewbop-reviews')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-sm text-yellow-700 mt-1"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('You have products with reviews that need to be synced to ReviewApp.', 'reviewapp-reviews'))))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('You have products with reviews that need to be synced to ReviewBop.', 'reviewbop-reviews'))))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     type: "button",
     onClick: startSync,
     disabled: syncing || syncStatus?.total_products === 0,
     className: "inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm border border-transparent rounded shadow-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-  }, syncing ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Starting sync...', 'reviewapp-reviews') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync Products', 'reviewapp-reviews'))) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, syncing ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Starting sync...', 'reviewbop-reviews') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sync Products', 'reviewbop-reviews'))) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "bg-green-50 border border-green-200 rounded-lg p-4"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "flex"
@@ -1053,7 +1053,7 @@ function SyncPanel({
     className: "ml-3"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "text-sm text-green-800"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('All products are synced', 'reviewapp-reviews'))))))));
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('All products are synced', 'reviewbop-reviews'))))))));
 }
 
 /***/ }),
@@ -1297,14 +1297,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_SettingsApp__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/SettingsApp */ "./assets/src/js/components/SettingsApp.jsx");
 
 /**
- * ReviewApp Admin JavaScript
+ * ReviewBop Admin JavaScript
  */
 
 
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  const root = document.getElementById('reviewapp-settings-root');
+  const root = document.getElementById('reviewbop-settings-root');
   if (root) {
     (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.render)((0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_SettingsApp__WEBPACK_IMPORTED_MODULE_3__["default"], null), root);
   }

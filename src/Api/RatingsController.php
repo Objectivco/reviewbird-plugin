@@ -1,11 +1,11 @@
 <?php
 /**
- * Ratings REST API controller for ReviewApp.
+ * Ratings REST API controller for ReviewBop.
  *
- * @package ReviewApp
+ * @package ReviewBop
  */
 
-namespace ReviewApp\Api;
+namespace ReviewBop\Api;
 
 use WP_REST_Request;
 use WP_REST_Response;
@@ -17,7 +17,7 @@ use WP_Error;
 class RatingsController {
 
 	/**
-	 * Update product ratings from ReviewApp.
+	 * Update product ratings from ReviewBop.
 	 *
 	 * @param WP_REST_Request $request The REST API request.
 	 * @return WP_REST_Response|WP_Error Response or error.
@@ -30,7 +30,7 @@ class RatingsController {
 		if ( empty( $product_external_id ) ) {
 			return new WP_Error(
 				'missing_product_id',
-				__( 'Product external ID is required', 'reviewapp-reviews' ),
+				__( 'Product external ID is required', 'reviewbop-reviews' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -38,7 +38,7 @@ class RatingsController {
 		if ( ! is_numeric( $avg_stars ) || $avg_stars < 0 || $avg_stars > 5 ) {
 			return new WP_Error(
 				'invalid_rating',
-				__( 'Average stars must be a number between 0 and 5', 'reviewapp-reviews' ),
+				__( 'Average stars must be a number between 0 and 5', 'reviewbop-reviews' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -46,7 +46,7 @@ class RatingsController {
 		if ( ! is_numeric( $review_count ) || $review_count < 0 ) {
 			return new WP_Error(
 				'invalid_count',
-				__( 'Review count must be a non-negative number', 'reviewapp-reviews' ),
+				__( 'Review count must be a non-negative number', 'reviewbop-reviews' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -56,7 +56,7 @@ class RatingsController {
 		if ( ! $product_id ) {
 			return new WP_Error(
 				'invalid_product_id',
-				__( 'Invalid product ID', 'reviewapp-reviews' ),
+				__( 'Invalid product ID', 'reviewbop-reviews' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -64,15 +64,15 @@ class RatingsController {
 		if ( 'product' !== get_post_type( $product_id ) ) {
 			return new WP_Error(
 				'product_not_found',
-				__( 'Product not found', 'reviewapp-reviews' ),
+				__( 'Product not found', 'reviewbop-reviews' ),
 				array( 'status' => 404 )
 			);
 		}
 
-		update_post_meta( $product_id, '_reviewapp_avg_stars', floatval( $avg_stars ) );
-		update_post_meta( $product_id, '_reviewapp_reviews_count', intval( $review_count ) );
+		update_post_meta( $product_id, '_reviewbop_avg_stars', floatval( $avg_stars ) );
+		update_post_meta( $product_id, '_reviewbop_reviews_count', intval( $review_count ) );
 
-		do_action( 'reviewapp_rating_updated', $product_id, $avg_stars, $review_count );
+		do_action( 'reviewbop_rating_updated', $product_id, $avg_stars, $review_count );
 
 		if ( function_exists( 'wc_get_logger' ) ) {
 			$logger = wc_get_logger();
@@ -83,7 +83,7 @@ class RatingsController {
 					$avg_stars,
 					$review_count
 				),
-				array( 'source' => 'reviewapp' )
+				array( 'source' => 'reviewbop' )
 			);
 		}
 
@@ -110,18 +110,18 @@ class RatingsController {
 		if ( empty( $auth_header ) ) {
 			return new WP_Error(
 				'missing_auth',
-				__( 'Authorization header is required', 'reviewapp-reviews' ),
+				__( 'Authorization header is required', 'reviewbop-reviews' ),
 				array( 'status' => 401 )
 			);
 		}
 
 		$provided_token = str_replace( 'Bearer ', '', $auth_header );
-		$stored_token   = get_option( 'reviewapp_store_token' );
+		$stored_token   = get_option( 'reviewbop_store_token' );
 
 		if ( empty( $stored_token ) ) {
 			return new WP_Error(
 				'no_token_configured',
-				__( 'ReviewApp store token not configured', 'reviewapp-reviews' ),
+				__( 'ReviewBop store token not configured', 'reviewbop-reviews' ),
 				array( 'status' => 401 )
 			);
 		}
@@ -129,7 +129,7 @@ class RatingsController {
 		if ( $provided_token !== $stored_token ) {
 			return new WP_Error(
 				'invalid_token',
-				__( 'Invalid authentication token', 'reviewapp-reviews' ),
+				__( 'Invalid authentication token', 'reviewbop-reviews' ),
 				array( 'status' => 401 )
 			);
 		}
@@ -150,7 +150,7 @@ class RatingsController {
 		if ( empty( $product_id ) ) {
 			return new WP_Error(
 				'missing_product_id',
-				__( 'Product ID is required', 'reviewapp-reviews' ),
+				__( 'Product ID is required', 'reviewbop-reviews' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -158,7 +158,7 @@ class RatingsController {
 		if ( empty( $customer_email ) ) {
 			return new WP_Error(
 				'missing_email',
-				__( 'Customer email is required', 'reviewapp-reviews' ),
+				__( 'Customer email is required', 'reviewbop-reviews' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -166,7 +166,7 @@ class RatingsController {
 		if ( ! is_email( $customer_email ) ) {
 			return new WP_Error(
 				'invalid_email',
-				__( 'Invalid email address', 'reviewapp-reviews' ),
+				__( 'Invalid email address', 'reviewbop-reviews' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -176,7 +176,7 @@ class RatingsController {
 		if ( ! $product_id ) {
 			return new WP_Error(
 				'invalid_product_id',
-				__( 'Invalid product ID', 'reviewapp-reviews' ),
+				__( 'Invalid product ID', 'reviewbop-reviews' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -184,7 +184,7 @@ class RatingsController {
 		if ( 'product' !== get_post_type( $product_id ) ) {
 			return new WP_Error(
 				'product_not_found',
-				__( 'Product not found', 'reviewapp-reviews' ),
+				__( 'Product not found', 'reviewbop-reviews' ),
 				array( 'status' => 404 )
 			);
 		}
@@ -231,7 +231,7 @@ class RatingsController {
 					$verified_purchase ? 'true' : 'false',
 					$location ? $location : 'none'
 				),
-				array( 'source' => 'reviewapp' )
+				array( 'source' => 'reviewbop' )
 			);
 		}
 

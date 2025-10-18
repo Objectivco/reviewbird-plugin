@@ -23,7 +23,7 @@ export default function SettingsApp() {
 	const loadProductSyncStatus = async () => {
 		try {
 			const data = await apiFetch({
-				path: '/reviewapp/v1/sync/status',
+				path: '/reviewbop/v1/sync/status',
 			});
 			setProductSyncStatus(data);
 		} catch (err) {
@@ -34,13 +34,13 @@ export default function SettingsApp() {
 	const loadSettings = async () => {
 		try {
 			const data = await apiFetch({
-				path: '/reviewapp/v1/settings',
+				path: '/reviewbop/v1/settings',
 			});
 			setSettings(data);
 			setError(null);
 		} catch (err) {
 			console.error('Failed to load settings:', err);
-			setError(err.message || __('Failed to load settings', 'reviewapp-reviews'));
+			setError(err.message || __('Failed to load settings', 'reviewbop-reviews'));
 		} finally {
 			setLoading(false);
 		}
@@ -51,13 +51,13 @@ export default function SettingsApp() {
 		setError(null);
 		try {
 			const data = await apiFetch({
-				path: '/reviewapp/v1/settings',
+				path: '/reviewbop/v1/settings',
 				method: 'POST',
 				data: newSettings,
 			});
 			setSettings(data);
 		} catch (err) {
-			setError(err.message || __('Failed to save settings', 'reviewapp-reviews'));
+			setError(err.message || __('Failed to save settings', 'reviewbop-reviews'));
 			throw err;
 		} finally {
 			setSaving(false);
@@ -72,10 +72,10 @@ export default function SettingsApp() {
 		<div className="max-w-4xl mx-auto py-8">
 			<header className="mb-8">
 				<h1 className="text-3xl font-bold text-gray-900">
-					{__('ReviewApp Settings', 'reviewapp-reviews')}
+					{__('ReviewBop Settings', 'reviewbop-reviews')}
 				</h1>
 				<p className="mt-2 text-gray-600">
-					{__('Connect your WooCommerce store to ReviewApp for advanced review collection and display.', 'reviewapp-reviews')}
+					{__('Connect your WooCommerce store to ReviewBop for advanced review collection and display.', 'reviewbop-reviews')}
 				</p>
 			</header>
 

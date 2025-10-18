@@ -26,20 +26,20 @@ export default function ReviewRequestPanel({ settings, onSave, saving, isConnect
 		<div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
 			<div className="px-6 py-5 border-b border-gray-200 bg-gray-50">
 				<h2 className="text-xl font-semibold text-gray-900">
-					{__('Review Requests', 'reviewapp-reviews')}
+					{__('Review Requests', 'reviewbop-reviews')}
 				</h2>
 			</div>
 
 			<div className="px-6 py-5 space-y-6">
 				<div>
 					<p className="text-sm text-gray-600 mb-4">
-						{__('Review request emails are automatically sent to customers after their orders are fulfilled. Configure which order status triggers the emails below.', 'reviewapp-reviews')}
+						{__('Review request emails are automatically sent to customers after their orders are fulfilled. Configure which order status triggers the emails below.', 'reviewbop-reviews')}
 					</p>
 
 					<div className="space-y-4">
 						<div>
 							<label htmlFor="trigger-status" className="block text-sm font-medium text-gray-900 mb-2">
-								{__('Fulfilled Order Status', 'reviewapp-reviews')}
+								{__('Fulfilled Order Status', 'reviewbop-reviews')}
 							</label>
 							<select
 								id="trigger-status"
@@ -55,7 +55,7 @@ export default function ReviewRequestPanel({ settings, onSave, saving, isConnect
 								))}
 							</select>
 							<p className="mt-2 text-sm text-gray-500">
-								{__('When an order reaches this status, a review request email will be scheduled.', 'reviewapp-reviews')}
+								{__('When an order reaches this status, a review request email will be scheduled.', 'reviewbop-reviews')}
 							</p>
 						</div>
 
@@ -64,11 +64,11 @@ export default function ReviewRequestPanel({ settings, onSave, saving, isConnect
 								{settings?.orders_synced_count || 0}
 							</div>
 							<div className="text-sm text-gray-600">
-								{__('Synced Orders', 'reviewapp-reviews')}
+								{__('Synced Orders', 'reviewbop-reviews')}
 							</div>
 							{settings?.orders_last_synced > 0 && (
 								<p className="text-xs text-gray-500 mt-1">
-									{__('Last synced:', 'reviewapp-reviews')}{' '}
+									{__('Last synced:', 'reviewbop-reviews')}{' '}
 									{new Date(settings.orders_last_synced * 1000).toLocaleString()}
 								</p>
 							)}

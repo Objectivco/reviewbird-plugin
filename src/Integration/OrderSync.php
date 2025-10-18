@@ -1,13 +1,13 @@
 <?php
 /**
- * Order synchronization with ReviewApp API.
+ * Order synchronization with ReviewBop API.
  *
- * @package ReviewApp
+ * @package ReviewBop
  */
 
-namespace ReviewApp\Integration;
+namespace ReviewBop\Integration;
 
-use ReviewApp\Api\Client;
+use ReviewBop\Api\Client;
 
 /**
  * Order Sync integration.
@@ -48,19 +48,19 @@ class OrderSync {
 	 */
 	public function handle_order_status_change( $order_id, $old_status, $new_status, $order ) {
 		// Get the trigger status from settings
-		$trigger_status = get_option( 'reviewapp_review_request_trigger_status', 'completed' );
+		$trigger_status = get_option( 'reviewbop_review_request_trigger_status', 'completed' );
 
 		// Check if new status matches trigger
 		if ( $new_status !== $trigger_status ) {
 			return;
 		}
 
-		// Push order event to ReviewApp
+		// Push order event to ReviewBop
 		$this->push_order_event( $order );
 	}
 
 	/**
-	 * Push order event to ReviewApp API.
+	 * Push order event to ReviewBop API.
 	 *
 	 * @param \WC_Order $order Order object.
 	 */
@@ -108,17 +108,17 @@ class OrderSync {
 			$response = $this->api_client->track_order_event( $payload );
 
 			if ( is_wp_error( $response ) ) {
-				error_log( 'ReviewApp: Failed to push order event: ' . $response->get_error_message() );
+				error_log( 'ReviewBop: Failed to push order event: ' . $response->get_error_message() );
 			} else {
-				error_log( 'ReviewApp: Order event pushed successfully for order #' . $order->get_id() );
+				error_log( 'ReviewBop: Order event pushed successfully for order #' . $order->get_id() );
 
 				// Update sync stats
-				$synced_count = (int) get_option( 'reviewapp_orders_synced_count', 0 );
-				update_option( 'reviewapp_orders_synced_count', $synced_count + 1 );
-				update_option( 'reviewapp_orders_last_synced', time() );
+				$synced_count = (int) get_option( 'reviewbop_orders_synced_count', 0 );
+				update_option( 'reviewbop_orders_synced_count', $synced_count + 1 );
+				update_option( 'reviewbop_orders_last_synced', time() );
 			}
 		} catch ( \Exception $e ) {
-			error_log( 'ReviewApp: Exception pushing order event: ' . $e->getMessage() );
+			error_log( 'ReviewBop: Exception pushing order event: ' . $e->getMessage() );
 		}
 	}
 
@@ -130,8 +130,8 @@ class OrderSync {
 	public static function get_order_statuses() {
 		if ( ! function_exists( 'wc_get_order_statuses' ) ) {
 			return array(
-				'completed'  => __( 'Completed', 'reviewapp-reviews' ),
-				'processing' => __( 'Processing', 'reviewapp-reviews' ),
+				'completed'  => __( 'Completed', 'reviewbop-reviews' ),
+				'processing' => __( 'Processing', 'reviewbop-reviews' ),
 			);
 		}
 
@@ -148,13 +148,13 @@ class OrderSync {
 	}
 
 	/**
-	 * Ensure product is synced to ReviewApp before including in order.
+	 * Ensure product is synced to ReviewBop before including in order.
 	 *
 	 * @param int $product_id WooCommerce product ID.
 	 */
 	private function ensure_product_synced( $product_id ) {
 		// Check if product has been synced before (using same meta key as ProductSync)
-		$last_synced = get_post_meta( $product_id, '_reviewapp_synced', true );
+		$last_synced = get_post_meta( $product_id, '_reviewbop_synced', true );
 
 		// If synced within last 24 hours, skip
 		if ( $last_synced && ( time() - $last_synced ) < DAY_IN_SECONDS ) {
@@ -255,15 +255,15 @@ class OrderSync {
 			);
 		}
 
-		// Sync product to ReviewApp
+		// Sync product to ReviewBop
 		$result = $this->api_client->sync_product( $product_data );
 
 		if ( ! is_wp_error( $result ) ) {
 			// Update synced timestamp (using same meta key as ProductSync)
-			update_post_meta( $product_id, '_reviewapp_synced', time() );
-			error_log( 'ReviewApp: Auto-synced product #' . $product_id . ' during order processing' );
+			update_post_meta( $product_id, '_reviewbop_synced', time() );
+			error_log( 'ReviewBop: Auto-synced product #' . $product_id . ' during order processing' );
 		} else {
-			error_log( 'ReviewApp: Failed to auto-sync product #' . $product_id . ': ' . $result->get_error_message() );
+			error_log( 'ReviewBop: Failed to auto-sync product #' . $product_id . ': ' . $result->get_error_message() );
 		}
 	}
 }

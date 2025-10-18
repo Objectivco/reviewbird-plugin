@@ -1,13 +1,13 @@
 <?php
 /**
- * Review sync manager for ReviewApp.
+ * Review sync manager for ReviewBop.
  *
- * @package ReviewApp
+ * @package ReviewBop
  */
 
-namespace ReviewApp\Integration;
+namespace ReviewBop\Integration;
 
-use ReviewApp\Api\Client;
+use ReviewBop\Api\Client;
 use WC_Logger;
 
 /**
@@ -18,12 +18,12 @@ class ReviewSync {
 	/**
 	 * Option name for sync status.
 	 */
-	const SYNC_STATUS_OPTION = 'reviewapp_review_sync_status';
+	const SYNC_STATUS_OPTION = 'reviewbop_review_sync_status';
 
 	/**
 	 * Meta key for synced reviews.
 	 */
-	const SYNCED_META_KEY = '_reviewapp_synced';
+	const SYNCED_META_KEY = '_reviewbop_synced';
 
 	/**
 	 * Batch size for sync operations.
@@ -88,14 +88,14 @@ class ReviewSync {
 		// Check if sync is already running
 		$status = $this->get_sync_status();
 		if ( $status['is_syncing'] ) {
-			return new \WP_Error( 'sync_in_progress', __( 'Sync is already in progress', 'reviewapp-reviews' ) );
+			return new \WP_Error( 'sync_in_progress', __( 'Sync is already in progress', 'reviewbop-reviews' ) );
 		}
 
 		// Get all approved reviews
 		$review_ids = $this->get_approved_reviews();
 
 		if ( empty( $review_ids ) ) {
-			return new \WP_Error( 'no_reviews', __( 'No approved reviews found', 'reviewapp-reviews' ) );
+			return new \WP_Error( 'no_reviews', __( 'No approved reviews found', 'reviewbop-reviews' ) );
 		}
 
 		// Initialize sync status
@@ -116,9 +116,9 @@ class ReviewSync {
 			if ( function_exists( 'as_schedule_single_action' ) ) {
 				as_schedule_single_action(
 					time() + ( $batch_index * 3 ), // Stagger batches by 3 seconds
-					'reviewapp_sync_review_batch',
+					'reviewbop_sync_review_batch',
 					array( 'batch' => $batch, 'batch_index' => $batch_index ),
-					'reviewapp-sync'
+					'reviewbop-sync'
 				);
 			} else {
 				// Fallback: process immediately without Action Scheduler
@@ -128,7 +128,7 @@ class ReviewSync {
 
 		$this->logger->info( 
 			sprintf( 'Review sync started: %d reviews in %d batches', $total_reviews, count( $batches ) ),
-			array( 'source' => 'reviewapp' )
+			array( 'source' => 'reviewbop' )
 		);
 
 		return true;
@@ -151,7 +151,7 @@ class ReviewSync {
 				$failed_count++;
 				$this->logger->error(
 					sprintf( 'Review %d not found or not a review', $comment_id ),
-					array( 'source' => 'reviewapp', 'comment_id' => $comment_id )
+					array( 'source' => 'reviewbop', 'comment_id' => $comment_id )
 				);
 				continue;
 			}
@@ -163,7 +163,7 @@ class ReviewSync {
 				$this->logger->error(
 					sprintf( 'Failed to build data for review %d: %s', $comment_id, $review_data->get_error_message() ),
 					array( 
-						'source' => 'reviewapp',
+						'source' => 'reviewbop',
 						'comment_id' => $comment_id,
 					)
 				);
@@ -183,7 +183,7 @@ class ReviewSync {
 						$result->get_error_message()
 					),
 					array( 
-						'source' => 'reviewapp',
+						'source' => 'reviewbop',
 						'comment_id' => $comment_id,
 						'batch' => $batch_index,
 						'error_data' => $result->get_error_data(),
@@ -214,7 +214,7 @@ class ReviewSync {
 					$status['failed_reviews'],
 					$status['total_reviews']
 				),
-				array( 'source' => 'reviewapp' )
+				array( 'source' => 'reviewbop' )
 			);
 		}
 
@@ -227,7 +227,7 @@ class ReviewSync {
 				$synced_count,
 				$failed_count
 			),
-			array( 'source' => 'reviewapp' )
+			array( 'source' => 'reviewbop' )
 		);
 	}
 
@@ -239,7 +239,7 @@ class ReviewSync {
 	 */
 	private function build_review_data( $comment ) {
 		if ( ! $comment ) {
-			return new \WP_Error( 'invalid_comment', __( 'Invalid comment', 'reviewapp-reviews' ) );
+			return new \WP_Error( 'invalid_comment', __( 'Invalid comment', 'reviewbop-reviews' ) );
 		}
 
 		$product_id = $comment->comment_post_ID;
@@ -331,7 +331,7 @@ class ReviewSync {
 		
 		$this->logger->info(
 			'Review sync status reset',
-			array( 'source' => 'reviewapp' )
+			array( 'source' => 'reviewbop' )
 		);
 	}
 
@@ -350,7 +350,7 @@ class ReviewSync {
 
 		$this->logger->info(
 			sprintf( 'Cleared sync meta for %d reviews', $deleted ),
-			array( 'source' => 'reviewapp' )
+			array( 'source' => 'reviewbop' )
 		);
 
 		return $deleted;

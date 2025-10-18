@@ -2,12 +2,12 @@
 /**
  * Plugin activation handler.
  *
- * @package ReviewApp
+ * @package ReviewBop
  */
 
-namespace ReviewApp\Core;
+namespace ReviewBop\Core;
 
-use ReviewApp\Api\Client;
+use ReviewBop\Api\Client;
 
 /**
  * Plugin activation handler.
@@ -21,7 +21,7 @@ class Activator {
 		// No default options needed - using opinionated defaults
 
 		// Configure media domains if store is already connected.
-		$store_token = get_option( 'reviewapp_store_token' );
+		$store_token = get_option( 'reviewbop_store_token' );
 		if ( $store_token ) {
 			self::configure_media_domains();
 		}
@@ -40,7 +40,7 @@ class Activator {
 		$domains = array( parse_url( get_site_url(), PHP_URL_HOST ) );
 
 		// Add environment-specific domains.
-		$environment = reviewapp_get_environment();
+		$environment = reviewbop_get_environment();
 		if ( 'staging' === $environment ) {
 			$domains[] = 'staging.' . parse_url( get_site_url(), PHP_URL_HOST );
 		}
@@ -49,7 +49,7 @@ class Activator {
 		$result = $api_client->configure_media_domains( array_unique( $domains ) );
 
 		if ( is_wp_error( $result ) ) {
-			error_log( 'ReviewApp: Failed to configure media domains during activation: ' . $result->get_error_message() );
+			error_log( 'ReviewBop: Failed to configure media domains during activation: ' . $result->get_error_message() );
 		}
 	}
 
@@ -59,7 +59,7 @@ class Activator {
 	private static function create_oauth_table() {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'reviewapp_oauth_states';
+		$table_name = $wpdb->prefix . 'reviewbop_oauth_states';
 
 		$charset_collate = $wpdb->get_charset_collate();
 

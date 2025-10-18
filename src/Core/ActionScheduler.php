@@ -1,14 +1,14 @@
 <?php
 /**
- * Action Scheduler integration for ReviewApp.
+ * Action Scheduler integration for ReviewBop.
  *
- * @package ReviewApp
+ * @package ReviewBop
  */
 
-namespace ReviewApp\Core;
+namespace ReviewBop\Core;
 
-use ReviewApp\Api\Client;
-use ReviewApp\OAuth\Handler;
+use ReviewBop\Api\Client;
+use ReviewBop\OAuth\Handler;
 
 /**
  * Action Scheduler integration.
@@ -25,23 +25,23 @@ class ActionScheduler {
 		}
 
 		// API request processing.
-		add_action( 'reviewapp_process_api_request', array( self::class, 'process_api_request' ), 10, 3 );
+		add_action( 'reviewbop_process_api_request', array( self::class, 'process_api_request' ), 10, 3 );
 
 		// OAuth cleanup.
-		add_action( 'reviewapp_cleanup_oauth_states', array( Handler::class, 'cleanup_expired_oauth_states' ) );
+		add_action( 'reviewbop_cleanup_oauth_states', array( Handler::class, 'cleanup_expired_oauth_states' ) );
 
 		// OAuth token processing.
-		add_action( 'reviewapp_process_oauth_token', array( new Handler(), 'process_oauth_token' ), 10, 3 );
+		add_action( 'reviewbop_process_oauth_token', array( new Handler(), 'process_oauth_token' ), 10, 3 );
 
 		// Media domain configuration.
-		add_action( 'reviewapp_configure_domains', array( self::class, 'configure_domains' ) );
+		add_action( 'reviewbop_configure_domains', array( self::class, 'configure_domains' ) );
 
 		// Review deletion.
-		add_action( 'reviewapp_delete_review', array( self::class, 'delete_review' ) );
+		add_action( 'reviewbop_delete_review', array( self::class, 'delete_review' ) );
 
 		// Schedule recurring cleanup if not already scheduled.
-		if ( ! as_next_scheduled_action( 'reviewapp_cleanup_oauth_states' ) ) {
-			as_schedule_recurring_action( time(), DAY_IN_SECONDS, 'reviewapp_cleanup_oauth_states' );
+		if ( ! as_next_scheduled_action( 'reviewbop_cleanup_oauth_states' ) ) {
+			as_schedule_recurring_action( time(), DAY_IN_SECONDS, 'reviewbop_cleanup_oauth_states' );
 		}
 	}
 
@@ -72,7 +72,7 @@ class ActionScheduler {
 		$result = $api_client->configure_media_domains( $domains );
 
 		if ( is_wp_error( $result ) ) {
-			error_log( 'ReviewApp: Failed to configure media domains: ' . $result->get_error_message() );
+			error_log( 'ReviewBop: Failed to configure media domains: ' . $result->get_error_message() );
 		}
 	}
 
@@ -86,7 +86,7 @@ class ActionScheduler {
 		$result = $api_client->delete_review( $delete_data );
 
 		if ( is_wp_error( $result ) ) {
-			error_log( 'ReviewApp: Failed to delete review: ' . $result->get_error_message() );
+			error_log( 'ReviewBop: Failed to delete review: ' . $result->get_error_message() );
 		}
 	}
 }
