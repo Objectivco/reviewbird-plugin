@@ -142,8 +142,8 @@ class Plugin {
 			// Schema markup for SEO - add to wp_head on product pages.
 			add_action( 'wp_head', array( $woocommerce, 'output_product_schema' ), 5 );
 
-			// Template override - use ReviewBop template for reviews.
-			add_filter( 'woocommerce_locate_template', array( $this, 'locate_template' ), 10, 3 );
+			// Template override - use ReviewBop template for product reviews.
+			add_filter( 'comments_template', array( $this, 'comments_template_loader' ), 50 );
 		}
 	}
 
@@ -321,22 +321,22 @@ class Plugin {
 	}
 
 	/**
-	 * Locate template.
+	 * Load comments template for products.
 	 *
-	 * Locate the ReviewBop templates and return the path to the file.
+	 * Override the comments template for WooCommerce products to use ReviewBop widget.
 	 *
-	 * @param string $template      Template path.
-	 * @param string $template_name Template name.
-	 * @param string $template_path Template path.
+	 * @param string $template Template path.
 	 * @return string Template file path.
 	 */
-	public function locate_template( $template, $template_name, $template_path ) {
-		$plugin_template_path = plugin_dir_path( dirname( __FILE__, 2 ) ) . 'templates/';
+	public function comments_template_loader( $template ) {
+		if ( get_post_type() !== 'product' ) {
+			return $template;
+		}
 
-		$file = $plugin_template_path . $template_name;
+		$reviewbop_template = plugin_dir_path( dirname( __FILE__ ) ) . 'templates/woocommerce/single-product-reviews.php';
 
-		if ( file_exists( $file ) ) {
-			return $file;
+		if ( file_exists( $reviewbop_template ) ) {
+			return $reviewbop_template;
 		}
 
 		return $template;
