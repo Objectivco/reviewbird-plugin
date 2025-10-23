@@ -1,11 +1,15 @@
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-export default function SchemaPanel({ settings, onSave, saving }) {
+export default function SchemaPanel({ settings, onSave, saving, isConnected }) {
 	const [enableSchema, setEnableSchema] = useState(
 		window.reviewbopAdmin?.enableSchema !== undefined ? window.reviewbopAdmin.enableSchema : true
 	);
 	const [isSaving, setIsSaving] = useState(false);
+
+	if (!isConnected) {
+		return null;
+	}
 
 	const handleToggle = async () => {
 		setIsSaving(true);

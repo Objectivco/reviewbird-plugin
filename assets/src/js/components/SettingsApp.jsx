@@ -117,6 +117,7 @@ export default function SettingsApp() {
 					settings={settings}
 					onSave={saveSettings}
 					saving={saving}
+					isConnected={settings?.connection_status === 'connected'}
 				/>
 			</div>
 		</div>
