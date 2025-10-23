@@ -333,7 +333,7 @@ class Plugin {
 			return $template;
 		}
 
-		$reviewbop_template = plugin_dir_path( dirname( __FILE__ ) ) . 'templates/woocommerce/single-product-reviews.php';
+		$reviewbop_template = trailingslashit( REVIEWBOP_PLUGIN_DIR ) . 'templates/woocommerce/single-product-reviews.php';
 
 		if ( file_exists( $reviewbop_template ) ) {
 			return $reviewbop_template;
