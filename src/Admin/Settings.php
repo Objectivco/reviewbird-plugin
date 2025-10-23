@@ -19,6 +19,42 @@ class Settings {
 	 */
 	public function __construct() {
 		add_action( 'wp_ajax_reviewbop_update_schema_setting', array( $this, 'handle_schema_setting_update' ) );
+		add_action( 'admin_notices', array( $this, 'display_oauth_notices' ) );
+	}
+
+	/**
+	 * Display OAuth success/error notices from transients.
+	 */
+	public function display_oauth_notices() {
+		$screen = get_current_screen();
+		if ( ! $screen || 'settings_page_reviewbop-settings' !== $screen->id ) {
+			return;
+		}
+
+		// Check for OAuth error.
+		$error = get_transient( 'reviewbop_oauth_error' );
+		if ( $error ) {
+			?>
+			<div class="notice notice-error is-dismissible">
+				<p>
+					<strong><?php esc_html_e( 'ReviewBop Connection Error:', 'reviewbop-reviews' ); ?></strong>
+					<?php echo esc_html( $error ); ?>
+				</p>
+			</div>
+			<?php
+			delete_transient( 'reviewbop_oauth_error' );
+		}
+
+		// Check for OAuth success.
+		$success = get_transient( 'reviewbop_oauth_success' );
+		if ( $success ) {
+			?>
+			<div class="notice notice-success is-dismissible">
+				<p><?php esc_html_e( 'Successfully connected to ReviewBop!', 'reviewbop-reviews' ); ?></p>
+			</div>
+			<?php
+			delete_transient( 'reviewbop_oauth_success' );
+		}
 	}
 
 	/**
