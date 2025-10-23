@@ -51,14 +51,14 @@ define( 'REVIEWBOP_TEXT_DOMAIN', 'reviewbop-reviews' );
  * ReviewBop API URLs for different environments.
  */
 define( 'REVIEWBOP_API_URL_PRODUCTION', 'https://app.reviewbop.com' );
-define( 'REVIEWBOP_API_URL_STAGING', 'https://c96323be0adb.ngrok-free.app' );
+define( 'REVIEWBOP_API_URL_STAGING', 'https://6d4e16252666.ngrok-free.app' );
 define( 'REVIEWBOP_API_URL_DEVELOPMENT', 'https://reviewbop.test' );
 
 /**
  * ReviewBop OAuth URLs for different environments.
  */
 define( 'REVIEWBOP_OAUTH_URL_PRODUCTION', 'https://app.reviewbop.com/oauth' );
-define( 'REVIEWBOP_OAUTH_URL_STAGING', 'https://c96323be0adb.ngrok-free.app/oauth' );
+define( 'REVIEWBOP_OAUTH_URL_STAGING', 'https://6d4e16252666.ngrok-free.app/oauth' );
 define( 'REVIEWBOP_OAUTH_URL_DEVELOPMENT', 'https://reviewbop.test/oauth' );
 
 /**
