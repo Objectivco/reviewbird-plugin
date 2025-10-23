@@ -98,26 +98,25 @@ class RatingOverride {
 	 * Override product rating counts distribution.
 	 *
 	 * WooCommerce expects an array with keys 1-5 and count values.
-	 * Since ReviewBop doesn't send distribution data yet, we return
-	 * an empty array to avoid showing incorrect distributions.
+	 * ReviewBop sends the actual rating distribution from approved reviews.
 	 *
 	 * @param array      $rating_counts Default rating counts.
 	 * @param WC_Product $product       Product object.
 	 * @return array Rating counts.
 	 */
 	public function override_rating_counts( $rating_counts, $product ) {
-		$product_id        = $product->get_id();
-		$reviewbop_count   = get_post_meta( $product_id, '_reviewbop_reviews_count', true );
+		$product_id             = $product->get_id();
+		$reviewbop_rating_counts = get_post_meta( $product_id, '_reviewbop_rating_counts', true );
 
-		// If ReviewBop has data for this product, return empty distribution
-		// to avoid showing WooCommerce's native distribution
-		if ( ! empty( $reviewbop_count ) || $reviewbop_count === '0' || $reviewbop_count === 0 ) {
+		// If ReviewBop has rating distribution data, use it
+		if ( ! empty( $reviewbop_rating_counts ) && is_array( $reviewbop_rating_counts ) ) {
+			// Ensure all keys 1-5 exist
 			return array(
-				1 => 0,
-				2 => 0,
-				3 => 0,
-				4 => 0,
-				5 => 0,
+				1 => intval( $reviewbop_rating_counts[1] ?? 0 ),
+				2 => intval( $reviewbop_rating_counts[2] ?? 0 ),
+				3 => intval( $reviewbop_rating_counts[3] ?? 0 ),
+				4 => intval( $reviewbop_rating_counts[4] ?? 0 ),
+				5 => intval( $reviewbop_rating_counts[5] ?? 0 ),
 			);
 		}
 

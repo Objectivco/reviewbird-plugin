@@ -26,6 +26,7 @@ class RatingsController {
 		$product_external_id = $request->get_param( 'product_external_id' );
 		$avg_stars           = $request->get_param( 'avg_stars' );
 		$review_count        = $request->get_param( 'review_count' );
+		$rating_counts       = $request->get_param( 'rating_counts' );
 
 		if ( empty( $product_external_id ) ) {
 			return new WP_Error(
@@ -51,6 +52,14 @@ class RatingsController {
 			);
 		}
 
+		if ( ! empty( $rating_counts ) && ! is_array( $rating_counts ) ) {
+			return new WP_Error(
+				'invalid_rating_counts',
+				__( 'Rating counts must be an array', 'reviewbop-reviews' ),
+				array( 'status' => 400 )
+			);
+		}
+
 		$product_id = absint( $product_external_id );
 
 		if ( ! $product_id ) {
@@ -71,6 +80,11 @@ class RatingsController {
 
 		update_post_meta( $product_id, '_reviewbop_avg_stars', floatval( $avg_stars ) );
 		update_post_meta( $product_id, '_reviewbop_reviews_count', intval( $review_count ) );
+
+		// Store rating distribution if provided
+		if ( ! empty( $rating_counts ) && is_array( $rating_counts ) ) {
+			update_post_meta( $product_id, '_reviewbop_rating_counts', $rating_counts );
+		}
 
 		// Clear WooCommerce product cache to force re-fetch of ratings
 		if ( function_exists( 'wc_delete_product_transients' ) ) {
