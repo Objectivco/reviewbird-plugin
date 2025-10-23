@@ -184,13 +184,45 @@ function reviewbop_get_stored_oauth_client_id() {
 }
 
 /**
- * Persist the OAuth client ID for the current environment.
+ * Persist the OAuth client ID and domain for the current environment.
  *
  * @param string $client_id OAuth client identifier.
  * @return void
  */
 function reviewbop_store_oauth_client_id( $client_id ) {
 	update_option( reviewbop_get_env_option_key( 'oauth_client_id' ), sanitize_text_field( $client_id ) );
+	update_option( reviewbop_get_env_option_key( 'oauth_client_domain' ), get_site_url() );
+}
+
+/**
+ * Get the stored OAuth client domain for the current environment.
+ *
+ * @return string Stored domain or empty string if not set.
+ */
+function reviewbop_get_stored_oauth_client_domain() {
+	return get_option( reviewbop_get_env_option_key( 'oauth_client_domain' ), '' );
+}
+
+/**
+ * Check if the stored OAuth client ID is valid for the current domain.
+ *
+ * @return bool True if valid, false if domain has changed or not set.
+ */
+function reviewbop_is_oauth_client_valid() {
+	$stored_domain = reviewbop_get_stored_oauth_client_domain();
+	$current_domain = get_site_url();
+
+	return ! empty( $stored_domain ) && $stored_domain === $current_domain;
+}
+
+/**
+ * Clear the stored OAuth client ID and domain (used when domain changes).
+ *
+ * @return void
+ */
+function reviewbop_clear_oauth_client() {
+	delete_option( reviewbop_get_env_option_key( 'oauth_client_id' ) );
+	delete_option( reviewbop_get_env_option_key( 'oauth_client_domain' ) );
 }
 
 /**

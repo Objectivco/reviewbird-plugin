@@ -33,6 +33,12 @@ class Handler {
 			wp_die( esc_html__( 'Insufficient permissions', 'reviewbop-reviews' ) );
 		}
 
+		// Check if the stored OAuth client is for a different domain (e.g., ngrok URL changed).
+		// If so, clear it to force re-registration with the new domain.
+		if ( ! reviewbop_is_oauth_client_valid() ) {
+			reviewbop_clear_oauth_client();
+		}
+
 		$client_id = reviewbop_ensure_oauth_client();
 
 		if ( is_wp_error( $client_id ) ) {
@@ -333,6 +339,12 @@ class Handler {
 		$user_id    = get_current_user_id();
 		$now        = current_time( 'mysql', true );
 
+		// Debug logging
+		error_log( 'ReviewBop OAuth state verification:' );
+		error_log( '  State: ' . $state );
+		error_log( '  Current User ID: ' . $user_id );
+		error_log( '  Current Time: ' . $now );
+
 		$result = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM $table_name WHERE state = %s AND user_id = %d AND expires_at > %s",
@@ -341,6 +353,24 @@ class Handler {
 				$now
 			)
 		);
+
+		if ( $result ) {
+			error_log( '  State found - User ID: ' . $result->user_id . ', Expires: ' . $result->expires_at );
+		} else {
+			error_log( '  State NOT found or expired' );
+			// Try to find the state without user_id check
+			$any_result = $wpdb->get_row(
+				$wpdb->prepare(
+					"SELECT * FROM $table_name WHERE state = %s",
+					$state
+				)
+			);
+			if ( $any_result ) {
+				error_log( '  State exists but with User ID: ' . $any_result->user_id . ' (current: ' . $user_id . ')' );
+			} else {
+				error_log( '  State does not exist in database at all' );
+			}
+		}
 
 		return $result ? $result->code_verifier : false;
 	}
