@@ -397,15 +397,6 @@ class WooCommerce {
 	}
 
 	/**
-	 * Add widget to product page.
-	 *
-	 * @deprecated Use render_widget() instead. Kept for backwards compatibility.
-	 */
-	public function add_widget_to_product_page() {
-		$this->render_widget();
-	}
-
-	/**
 	 * Update product rating metadata.
 	 *
 	 * @param int   $product_id   WooCommerce product ID.
