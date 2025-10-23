@@ -148,6 +148,10 @@ class SettingsController {
 			delete_option( 'reviewbop_store_id' );
 			delete_option( reviewbop_get_env_option_key( 'oauth_client_id' ) );
 
+			// Clear sync status so it rechecks when reconnected
+			delete_option( 'reviewbop_sync_status' );
+			delete_option( 'reviewbop_review_sync_status' );
+
 			return $this->get_settings();
 		}
 
