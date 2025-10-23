@@ -142,13 +142,8 @@ class Plugin {
 			// Schema markup for SEO - add to wp_head on product pages.
 			add_action( 'wp_head', array( $woocommerce, 'output_product_schema' ), 5 );
 
-			// Widget integration - opinionated default with filter override.
-			if ( apply_filters( 'reviewbop_auto_inject_widgets', true ) ) {
-				$widget_hook = apply_filters( 'reviewbop_widget_hook', 'woocommerce_after_single_product_summary' );
-				$widget_priority = apply_filters( 'reviewbop_widget_priority', 20 );
-
-				add_action( $widget_hook, array( $woocommerce, 'add_widget_to_product_page' ), $widget_priority );
-			}
+			// Template override - use ReviewBop template for reviews.
+			add_filter( 'woocommerce_locate_template', array( $this, 'locate_template' ), 10, 3 );
 		}
 	}
 
@@ -323,6 +318,28 @@ class Plugin {
 				'permission_callback' => array( 'ReviewBop\Api\ProductEndpoint', 'permission_callback' ),
 			)
 		);
+	}
+
+	/**
+	 * Locate template.
+	 *
+	 * Locate the ReviewBop templates and return the path to the file.
+	 *
+	 * @param string $template      Template path.
+	 * @param string $template_name Template name.
+	 * @param string $template_path Template path.
+	 * @return string Template file path.
+	 */
+	public function locate_template( $template, $template_name, $template_path ) {
+		$plugin_template_path = plugin_dir_path( dirname( __FILE__, 2 ) ) . 'templates/';
+
+		$file = $plugin_template_path . $template_name;
+
+		if ( file_exists( $file ) ) {
+			return $file;
+		}
+
+		return $template;
 	}
 
 }

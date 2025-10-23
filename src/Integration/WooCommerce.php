@@ -340,9 +340,11 @@ class WooCommerce {
 	}
 
 	/**
-	 * Add review widget to product page.
+	 * Render the ReviewBop widget.
+	 *
+	 * This method can be called from templates or hooks to display the widget.
 	 */
-	public function add_widget_to_product_page() {
+	public function render_widget() {
 		global $product;
 
 		if ( ! $product ) {
@@ -392,6 +394,15 @@ class WooCommerce {
 		);
 
 		echo $widget_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped above.
+	}
+
+	/**
+	 * Add widget to product page.
+	 *
+	 * @deprecated Use render_widget() instead. Kept for backwards compatibility.
+	 */
+	public function add_widget_to_product_page() {
+		$this->render_widget();
 	}
 
 	/**
