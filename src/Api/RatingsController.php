@@ -72,6 +72,11 @@ class RatingsController {
 		update_post_meta( $product_id, '_reviewbop_avg_stars', floatval( $avg_stars ) );
 		update_post_meta( $product_id, '_reviewbop_reviews_count', intval( $review_count ) );
 
+		// Clear WooCommerce product cache to force re-fetch of ratings
+		if ( function_exists( 'wc_delete_product_transients' ) ) {
+			wc_delete_product_transients( $product_id );
+		}
+
 		do_action( 'reviewbop_rating_updated', $product_id, $avg_stars, $review_count );
 
 		if ( function_exists( 'wc_get_logger' ) ) {

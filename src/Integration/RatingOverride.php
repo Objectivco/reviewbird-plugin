@@ -57,7 +57,7 @@ class RatingOverride {
 		$product_id      = $product->get_id();
 		$reviewbop_stars = get_post_meta( $product_id, '_reviewbop_avg_stars', true );
 
-		if ( $reviewbop_stars !== '' && $reviewbop_stars !== false ) {
+		if ( ! empty( $reviewbop_stars ) ) {
 			return floatval( $reviewbop_stars );
 		}
 
@@ -75,7 +75,7 @@ class RatingOverride {
 		$product_id        = $product->get_id();
 		$reviewbop_count   = get_post_meta( $product_id, '_reviewbop_reviews_count', true );
 
-		if ( $reviewbop_count !== '' && $reviewbop_count !== false ) {
+		if ( ! empty( $reviewbop_count ) || $reviewbop_count === '0' || $reviewbop_count === 0 ) {
 			return intval( $reviewbop_count );
 		}
 
@@ -111,7 +111,7 @@ class RatingOverride {
 
 		// If ReviewBop has data for this product, return empty distribution
 		// to avoid showing WooCommerce's native distribution
-		if ( $reviewbop_count !== '' && $reviewbop_count !== false ) {
+		if ( ! empty( $reviewbop_count ) || $reviewbop_count === '0' || $reviewbop_count === 0 ) {
 			return array(
 				1 => 0,
 				2 => 0,
