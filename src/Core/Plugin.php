@@ -16,6 +16,7 @@ use ReviewBop\Api\SettingsController;
 use ReviewBop\Core\ActionScheduler;
 use ReviewBop\Integration\OrderSync;
 use ReviewBop\Integration\ProductSync;
+use ReviewBop\Integration\RatingOverride;
 use ReviewBop\Integration\ReviewSync;
 use ReviewBop\Integration\WooCommerce;
 use ReviewBop\OAuth\Handler;
@@ -110,6 +111,9 @@ class Plugin {
 		if ( class_exists( 'WooCommerce' ) ) {
 			$woocommerce = new WooCommerce();
 			$api_client = new Client();
+
+			// Rating override integration.
+			new RatingOverride();
 
 			// Product sync hooks.
 			add_action( 'woocommerce_new_product', array( $woocommerce, 'sync_product' ) );
