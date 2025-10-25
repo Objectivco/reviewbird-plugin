@@ -151,6 +151,15 @@ class SettingsController {
 			// Clear sync status so it rechecks when reconnected
 			delete_option( 'reviewbop_sync_status' );
 			delete_option( 'reviewbop_review_sync_status' );
+			delete_option( 'reviewbop_orders_synced_count' );
+			delete_option( 'reviewbop_orders_last_synced' );
+
+			// Clear all synced metadata from products and reviews
+			$product_sync = new ProductSync();
+			$product_sync->clear_synced_meta();
+
+			$review_sync = new ReviewSync();
+			$review_sync->clear_synced_meta();
 
 			return $this->get_settings();
 		}
