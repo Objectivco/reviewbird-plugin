@@ -175,7 +175,7 @@ class Plugin {
 	public function enqueue_public_scripts() {
 		// Only load on product pages or pages with shortcode.
 		if ( is_product() || $this->has_reviewbop_shortcode() ) {
-			// Enqueue the new modular TypeScript widget CSS.
+			// Enqueue the widget CSS.
 			wp_enqueue_style(
 				'reviewbop-widget',
 				reviewbop_get_api_url() . '/build/review-widget.css',
@@ -183,10 +183,10 @@ class Plugin {
 				$this->version
 			);
 
-			// Enqueue the new modular TypeScript widget JS.
+			// Enqueue the new Svelte widget JS.
 			wp_enqueue_script(
 				'reviewbop-widget',
-				reviewbop_get_api_url() . '/build/review-widget.js',
+				reviewbop_get_api_url() . '/build/review-widget-v2.js',
 				array(),
 				$this->version,
 				true
