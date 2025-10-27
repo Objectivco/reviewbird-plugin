@@ -6,8 +6,8 @@ module.exports = {
 	theme: {
 		extend: {
 			colors: {
-				'reviewbop-primary': '#4f46e5',
-				'reviewbop-secondary': '#0ea5e9',
+				'reviewbird-primary': '#4f46e5',
+				'reviewbird-secondary': '#0ea5e9',
 			},
 		},
 	},

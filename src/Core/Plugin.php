@@ -2,24 +2,24 @@
 /**
  * The core plugin class.
  *
- * @package ReviewBop
+ * @package reviewbird
  */
 
-namespace ReviewBop\Core;
+namespace reviewbird\Core;
 
-use ReviewBop\Admin\Settings;
-use ReviewBop\Api\Client;
-use ReviewBop\Api\CouponController;
-use ReviewBop\Api\ProductEndpoint;
-use ReviewBop\Api\RatingsController;
-use ReviewBop\Api\SettingsController;
-use ReviewBop\Core\ActionScheduler;
-use ReviewBop\Integration\OrderSync;
-use ReviewBop\Integration\ProductSync;
-use ReviewBop\Integration\RatingOverride;
-use ReviewBop\Integration\ReviewSync;
-use ReviewBop\Integration\WooCommerce;
-use ReviewBop\OAuth\Handler;
+use reviewbird\Admin\Settings;
+use reviewbird\Api\Client;
+use reviewbird\Api\CouponController;
+use reviewbird\Api\ProductEndpoint;
+use reviewbird\Api\RatingsController;
+use reviewbird\Api\SettingsController;
+use reviewbird\Core\ActionScheduler;
+use reviewbird\Integration\OrderSync;
+use reviewbird\Integration\ProductSync;
+use reviewbird\Integration\RatingOverride;
+use reviewbird\Integration\ReviewSync;
+use reviewbird\Integration\WooCommerce;
+use reviewbird\OAuth\Handler;
 
 /**
  * The core plugin class.
@@ -47,8 +47,8 @@ class Plugin {
 	 * Initialize the plugin.
 	 */
 	public function __construct() {
-		$this->plugin_name = 'reviewbop-reviews';
-		$this->version     = REVIEWBOP_VERSION;
+		$this->plugin_name = 'reviewbird-reviews';
+		$this->version     = REVIEWBIRD_VERSION;
 	}
 
 	/**
@@ -71,7 +71,7 @@ class Plugin {
 	 */
 	public function load_plugin_textdomain() {
 		load_plugin_textdomain(
-			REVIEWBOP_TEXT_DOMAIN,
+			REVIEWBIRD_TEXT_DOMAIN,
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);
@@ -97,15 +97,15 @@ class Plugin {
 		// OAuth hooks.
 		$oauth_handler = new Handler();
 		add_action( 'init', array( $oauth_handler, 'handle_oauth_callback' ) );
-		add_action( 'wp_ajax_reviewbop_start_oauth', array( $oauth_handler, 'start_oauth_flow' ) );
+		add_action( 'wp_ajax_reviewbird_start_oauth', array( $oauth_handler, 'start_oauth_flow' ) );
 
 		// Public hooks.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_scripts' ) );
-		add_shortcode( 'reviewbop_widget', array( $this, 'widget_shortcode' ) );
+		add_shortcode( 'reviewbird_widget', array( $this, 'widget_shortcode' ) );
 
 		// Sync Action Scheduler hooks.
-		add_action( 'reviewbop_sync_product_batch', array( $this, 'process_sync_batch' ), 10, 2 );
-		add_action( 'reviewbop_sync_review_batch', array( $this, 'process_review_sync_batch' ), 10, 2 );
+		add_action( 'reviewbird_sync_product_batch', array( $this, 'process_sync_batch' ), 10, 2 );
+		add_action( 'reviewbird_sync_review_batch', array( $this, 'process_review_sync_batch' ), 10, 2 );
 
 		// WooCommerce integration.
 		if ( class_exists( 'WooCommerce' ) ) {
@@ -142,7 +142,7 @@ class Plugin {
 			// Schema markup for SEO - add to wp_head on product pages.
 			add_action( 'wp_head', array( $woocommerce, 'output_product_schema' ), 5 );
 
-			// Template override - use ReviewBop template for product reviews.
+			// Template override - use reviewbird template for product reviews.
 			add_filter( 'comments_template', array( $this, 'comments_template_loader' ), 50 );
 		}
 	}
@@ -174,19 +174,19 @@ class Plugin {
 	 */
 	public function enqueue_public_scripts() {
 		// Only load on product pages or pages with shortcode.
-		if ( is_product() || $this->has_reviewbop_shortcode() ) {
+		if ( is_product() || $this->has_reviewbird_shortcode() ) {
 			// Enqueue the widget CSS.
 			wp_enqueue_style(
-				'reviewbop-widget',
-				reviewbop_get_api_url() . '/build/review-widget.css',
+				'reviewbird-widget',
+				reviewbird_get_api_url() . '/build/review-widget.css',
 				array(),
 				$this->version
 			);
 
 			// Enqueue the new Svelte widget JS.
 			wp_enqueue_script(
-				'reviewbop-widget',
-				reviewbop_get_api_url() . '/build/review-widget-v2.js',
+				'reviewbird-widget',
+				reviewbird_get_api_url() . '/build/review-widget-v2.js',
 				array(),
 				$this->version,
 				true
@@ -194,34 +194,34 @@ class Plugin {
 
 			// Pass configuration to widget JavaScript.
 			wp_localize_script(
-				'reviewbop-widget',
-				'ReviewBopConfig',
+				'reviewbird-widget',
+				'reviewbirdConfig',
 				array(
-					'apiUrl' => reviewbop_get_api_url(),
-					'storeId' => get_option( 'reviewbop_store_id' ),
-					'widgetPrefix' => 'reviewbop-widget-container-',
+					'apiUrl' => reviewbird_get_api_url(),
+					'storeId' => get_option( 'reviewbird_store_id' ),
+					'widgetPrefix' => 'reviewbird-widget-container-',
 				)
 			);
 		}
 	}
 
 	/**
-	 * Check if current page has ReviewBop shortcode.
+	 * Check if current page has reviewbird shortcode.
 	 *
 	 * @return bool
 	 */
-	private function has_reviewbop_shortcode() {
+	private function has_reviewbird_shortcode() {
 		global $post;
 
 		if ( ! $post ) {
 			return false;
 		}
 
-		return has_shortcode( $post->post_content, 'reviewbop_widget' );
+		return has_shortcode( $post->post_content, 'reviewbird_widget' );
 	}
 
 	/**
-	 * Handle ReviewBop widget shortcode.
+	 * Handle reviewbird widget shortcode.
 	 *
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -232,24 +232,24 @@ class Plugin {
 				'product_id' => '',
 			),
 			$atts,
-			'reviewbop_widget'
+			'reviewbird_widget'
 		);
 
 		if ( ! $atts['product_id'] ) {
-			return '<p>' . esc_html__( 'ReviewBop: Product ID is required.', 'reviewbop-reviews' ) . '</p>';
+			return '<p>' . esc_html__( 'reviewbird: Product ID is required.', 'reviewbird-reviews' ) . '</p>';
 		}
 
 		$api_client = new Client();
 		$store_id = $api_client->get_store_id_for_frontend();
 
 		if ( ! $store_id ) {
-			return '<p>' . esc_html__( 'ReviewBop: Store not connected.', 'reviewbop-reviews' ) . '</p>';
+			return '<p>' . esc_html__( 'reviewbird: Store not connected.', 'reviewbird-reviews' ) . '</p>';
 		}
 
-		$widget_id = 'reviewbop-widget-' . uniqid();
+		$widget_id = 'reviewbird-widget-' . uniqid();
 
 		return sprintf(
-			'<div id="%s" data-store-id="%s" data-product-key="%s"></div><script>if(typeof ReviewBop !== "undefined") ReviewBop.init();</script>',
+			'<div id="%s" data-store-id="%s" data-product-key="%s"></div><script>if(typeof reviewbird !== "undefined") reviewbird.init();</script>',
 			esc_attr( $widget_id ),
 			esc_attr( $store_id ),
 			esc_attr( $atts['product_id'] )
@@ -284,22 +284,22 @@ class Plugin {
 		$ratings_controller = new RatingsController();
 
 		register_rest_route(
-			'reviewbop/v1',
+			'reviewbird/v1',
 			'/ratings/update',
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $ratings_controller, 'update_ratings' ),
-				'permission_callback' => array( 'ReviewBop\Api\RatingsController', 'permission_callback' ),
+				'permission_callback' => array( 'reviewbird\Api\RatingsController', 'permission_callback' ),
 			)
 		);
 
 		register_rest_route(
-			'reviewbop/v1',
+			'reviewbird/v1',
 			'/verified-purchase/check',
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $ratings_controller, 'check_verified_purchase' ),
-				'permission_callback' => array( 'ReviewBop\Api\RatingsController', 'permission_callback' ),
+				'permission_callback' => array( 'reviewbird\Api\RatingsController', 'permission_callback' ),
 			)
 		);
 
@@ -307,15 +307,15 @@ class Plugin {
 		$coupon_controller = new CouponController();
 		$coupon_controller->register_routes();
 
-		// Product endpoint for ReviewBop to fetch product data
+		// Product endpoint for reviewbird to fetch product data
 		$product_endpoint = new ProductEndpoint();
 		register_rest_route(
-			'reviewbop/v1',
+			'reviewbird/v1',
 			'/products/(?P<external_id>\d+)',
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( $product_endpoint, 'get_product' ),
-				'permission_callback' => array( 'ReviewBop\Api\ProductEndpoint', 'permission_callback' ),
+				'permission_callback' => array( 'reviewbird\Api\ProductEndpoint', 'permission_callback' ),
 			)
 		);
 	}
@@ -323,7 +323,7 @@ class Plugin {
 	/**
 	 * Load comments template for products.
 	 *
-	 * Override the comments template for WooCommerce products to use ReviewBop widget.
+	 * Override the comments template for WooCommerce products to use reviewbird widget.
 	 *
 	 * @param string $template Template path.
 	 * @return string Template file path.
@@ -333,10 +333,10 @@ class Plugin {
 			return $template;
 		}
 
-		$reviewbop_template = trailingslashit( REVIEWBOP_PLUGIN_DIR ) . 'templates/woocommerce/single-product-reviews.php';
+		$reviewbird_template = trailingslashit( REVIEWBIRD_PLUGIN_DIR ) . 'templates/woocommerce/single-product-reviews.php';
 
-		if ( file_exists( $reviewbop_template ) ) {
-			return $reviewbop_template;
+		if ( file_exists( $reviewbird_template ) ) {
+			return $reviewbird_template;
 		}
 
 		return $template;

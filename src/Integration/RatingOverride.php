@@ -1,13 +1,13 @@
 <?php
 /**
- * Rating override integration for ReviewBop.
+ * Rating override integration for reviewbird.
  *
- * Overrides WooCommerce product ratings with ReviewBop cached values.
+ * Overrides WooCommerce product ratings with reviewbird cached values.
  *
- * @package ReviewBop
+ * @package reviewbird
  */
 
-namespace ReviewBop\Integration;
+namespace reviewbird\Integration;
 
 /**
  * Rating override class.
@@ -37,12 +37,12 @@ class RatingOverride {
 	}
 
 	/**
-	 * Check if store is connected to ReviewBop.
+	 * Check if store is connected to reviewbird.
 	 *
 	 * @return bool True if connected, false otherwise.
 	 */
 	private function is_store_connected(): bool {
-		$token = get_option( 'reviewbop_store_token' );
+		$token = get_option( 'reviewbird_store_token' );
 		return ! empty( $token );
 	}
 
@@ -55,10 +55,10 @@ class RatingOverride {
 	 */
 	public function override_average_rating( $average_rating, $product ) {
 		$product_id      = $product->get_id();
-		$reviewbop_stars = get_post_meta( $product_id, '_reviewbop_avg_stars', true );
+		$reviewbird_stars = get_post_meta( $product_id, '_reviewbird_avg_stars', true );
 
-		if ( ! empty( $reviewbop_stars ) ) {
-			return floatval( $reviewbop_stars );
+		if ( ! empty( $reviewbird_stars ) ) {
+			return floatval( $reviewbird_stars );
 		}
 
 		return $average_rating;
@@ -73,10 +73,10 @@ class RatingOverride {
 	 */
 	public function override_rating_count( $rating_count, $product ) {
 		$product_id        = $product->get_id();
-		$reviewbop_count   = get_post_meta( $product_id, '_reviewbop_reviews_count', true );
+		$reviewbird_count   = get_post_meta( $product_id, '_reviewbird_reviews_count', true );
 
-		if ( ! empty( $reviewbop_count ) || $reviewbop_count === '0' || $reviewbop_count === 0 ) {
-			return intval( $reviewbop_count );
+		if ( ! empty( $reviewbird_count ) || $reviewbird_count === '0' || $reviewbird_count === 0 ) {
+			return intval( $reviewbird_count );
 		}
 
 		return $rating_count;
@@ -98,7 +98,7 @@ class RatingOverride {
 	 * Override product rating counts distribution.
 	 *
 	 * WooCommerce expects an array with keys 1-5 and count values.
-	 * ReviewBop sends the actual rating distribution from approved reviews.
+	 * reviewbird sends the actual rating distribution from approved reviews.
 	 *
 	 * @param array      $rating_counts Default rating counts.
 	 * @param WC_Product $product       Product object.
@@ -106,17 +106,17 @@ class RatingOverride {
 	 */
 	public function override_rating_counts( $rating_counts, $product ) {
 		$product_id             = $product->get_id();
-		$reviewbop_rating_counts = get_post_meta( $product_id, '_reviewbop_rating_counts', true );
+		$reviewbird_rating_counts = get_post_meta( $product_id, '_reviewbird_rating_counts', true );
 
-		// If ReviewBop has rating distribution data, use it
-		if ( ! empty( $reviewbop_rating_counts ) && is_array( $reviewbop_rating_counts ) ) {
+		// If reviewbird has rating distribution data, use it
+		if ( ! empty( $reviewbird_rating_counts ) && is_array( $reviewbird_rating_counts ) ) {
 			// Ensure all keys 1-5 exist
 			return array(
-				1 => intval( $reviewbop_rating_counts[1] ?? 0 ),
-				2 => intval( $reviewbop_rating_counts[2] ?? 0 ),
-				3 => intval( $reviewbop_rating_counts[3] ?? 0 ),
-				4 => intval( $reviewbop_rating_counts[4] ?? 0 ),
-				5 => intval( $reviewbop_rating_counts[5] ?? 0 ),
+				1 => intval( $reviewbird_rating_counts[1] ?? 0 ),
+				2 => intval( $reviewbird_rating_counts[2] ?? 0 ),
+				3 => intval( $reviewbird_rating_counts[3] ?? 0 ),
+				4 => intval( $reviewbird_rating_counts[4] ?? 0 ),
+				5 => intval( $reviewbird_rating_counts[5] ?? 0 ),
 			);
 		}
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace ReviewBop\Api;
+namespace reviewbird\Api;
 
 use WP_REST_Request;
 use WP_REST_Response;
@@ -11,7 +11,7 @@ class CouponController {
      * Register REST API routes
      */
     public function register_routes() {
-        register_rest_route('reviewbop/v1', '/coupons/create', [
+        register_rest_route('reviewbird/v1', '/coupons/create', [
             'methods' => 'POST',
             'callback' => [$this, 'create_coupon'],
             'permission_callback' => [$this, 'check_store_token'],
@@ -33,7 +33,7 @@ class CouponController {
         }
 
         // Get saved store token from settings
-        $saved_token = get_option('reviewbop_store_token');
+        $saved_token = get_option('reviewbird_store_token');
 
         if (empty($saved_token)) {
             return new WP_Error(
@@ -158,9 +158,9 @@ class CouponController {
             $coupon->set_date_expires($expiry_date);
         }
 
-        // Add metadata to track this is from ReviewBop
-        $coupon->add_meta_data('_reviewbop_generated', true);
-        $coupon->add_meta_data('_reviewbop_template', $template_code);
+        // Add metadata to track this is from reviewbird
+        $coupon->add_meta_data('_reviewbird_generated', true);
+        $coupon->add_meta_data('_reviewbird_template', $template_code);
 
         $coupon->save();
 
@@ -194,8 +194,8 @@ class CouponController {
             $coupon->set_date_expires($expiry_date);
         }
 
-        // Add metadata to track this is from ReviewBop
-        $coupon->add_meta_data('_reviewbop_generated', true);
+        // Add metadata to track this is from reviewbird
+        $coupon->add_meta_data('_reviewbird_generated', true);
 
         $coupon->save();
 

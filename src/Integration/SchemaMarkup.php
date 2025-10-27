@@ -1,13 +1,13 @@
 <?php
 /**
- * Schema.org markup integration for ReviewBop.
+ * Schema.org markup integration for reviewbird.
  *
- * @package ReviewBop
+ * @package reviewbird
  */
 
-namespace ReviewBop\Integration;
+namespace reviewbird\Integration;
 
-use ReviewBop\Api\Client;
+use reviewbird\Api\Client;
 
 /**
  * Schema markup class for SEO.
@@ -89,8 +89,8 @@ class SchemaMarkup {
 		}
 
 		// Get rating data from post meta (updated via webhook).
-		$avg_stars = get_post_meta( $product_id, '_reviewbop_avg_stars', true );
-		$review_count = get_post_meta( $product_id, '_reviewbop_reviews_count', true );
+		$avg_stars = get_post_meta( $product_id, '_reviewbird_avg_stars', true );
+		$review_count = get_post_meta( $product_id, '_reviewbird_reviews_count', true );
 
 		// Add aggregate rating if available.
 		if ( ! empty( $avg_stars ) && ! empty( $review_count ) && $review_count > 0 ) {
@@ -103,7 +103,7 @@ class SchemaMarkup {
 			);
 		}
 
-		// Fetch individual reviews from ReviewBop API.
+		// Fetch individual reviews from reviewbird API.
 		$reviews = $this->fetch_reviews_for_schema( $product_id );
 		if ( ! empty( $reviews ) ) {
 			$schema['review'] = $reviews;
@@ -113,7 +113,7 @@ class SchemaMarkup {
 	}
 
 	/**
-	 * Fetch approved reviews from ReviewBop API for schema markup.
+	 * Fetch approved reviews from reviewbird API for schema markup.
 	 *
 	 * @param int $product_id WooCommerce product ID.
 	 * @return array Array of Review schema objects.
@@ -126,7 +126,7 @@ class SchemaMarkup {
 		}
 
 		// Try to get reviews from cache first.
-		$cache_key = 'reviewbop_schema_reviews_' . $product_id;
+		$cache_key = 'reviewbird_schema_reviews_' . $product_id;
 		$cached = get_transient( $cache_key );
 
 		if ( false !== $cached ) {
@@ -135,10 +135,10 @@ class SchemaMarkup {
 
 		// Fetch reviews from API.
 		$response = wp_remote_get(
-			reviewbop_get_api_url() . "/api/stores/{$store_id}/products/{$product_id}/reviews",
+			reviewbird_get_api_url() . "/api/stores/{$store_id}/products/{$product_id}/reviews",
 			array(
 				'timeout'   => 10,
-				'sslverify' => ! reviewbop_should_disable_ssl_verify(),
+				'sslverify' => ! reviewbird_should_disable_ssl_verify(),
 				'headers'   => array(
 					'Accept' => 'application/json',
 				),
@@ -268,7 +268,7 @@ class SchemaMarkup {
 	 */
 	public function output_product_schema( $product_id ) {
 		// Check if schema is enabled.
-		$enabled = get_option( 'reviewbop_enable_schema', 'yes' );
+		$enabled = get_option( 'reviewbird_enable_schema', 'yes' );
 		if ( 'yes' !== $enabled ) {
 			return;
 		}
@@ -280,7 +280,7 @@ class SchemaMarkup {
 		}
 
 		// Allow developers to modify schema before output.
-		$schema = apply_filters( 'reviewbop_product_schema', $schema, $product_id );
+		$schema = apply_filters( 'reviewbird_product_schema', $schema, $product_id );
 
 		// Output JSON-LD script tag.
 		echo '<script type="application/ld+json">';
@@ -294,6 +294,6 @@ class SchemaMarkup {
 	 * @param int $product_id WooCommerce product ID.
 	 */
 	public function clear_schema_cache( $product_id ) {
-		delete_transient( 'reviewbop_schema_reviews_' . $product_id );
+		delete_transient( 'reviewbird_schema_reviews_' . $product_id );
 	}
 }

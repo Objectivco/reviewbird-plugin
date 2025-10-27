@@ -1,7 +1,7 @@
 {
-	"name": "reviewbop-reviews",
+	"name": "reviewbird-reviews",
 	"version": "1.0.0",
-	"description": "WordPress plugin for ReviewBop integration",
+	"description": "WordPress plugin for reviewbird integration",
 	"main": "index.js",
 	"scripts": {
 		"build": "wp-scripts build",
@@ -18,7 +18,7 @@
 		"reviews",
 		"woocommerce"
 	],
-	"author": "ReviewBop",
+	"author": "reviewbird",
 	"license": "GPL-2.0-or-later",
 	"devDependencies": {
 		"@wordpress/scripts": "^26.0.0",

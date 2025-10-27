@@ -1,11 +1,11 @@
 <?php
 /**
- * Display ReviewBop reviews widget
+ * Display reviewbird reviews widget
  *
  * This template overrides WooCommerce's single-product-reviews.php to display
- * the ReviewBop widget instead of native WordPress comments.
+ * the reviewbird widget instead of native WordPress comments.
  *
- * @package ReviewBop
+ * @package reviewbird
  * @version 1.0.0
  */
 
@@ -18,5 +18,5 @@ if ( ! comments_open() ) {
 }
 
 // Get the WooCommerce integration instance to access widget rendering
-$woocommerce_integration = new \ReviewBop\Integration\WooCommerce();
+$woocommerce_integration = new \reviewbird\Integration\WooCommerce();
 $woocommerce_integration->render_widget();

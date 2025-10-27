@@ -1,13 +1,13 @@
 <?php
 /**
- * WooCommerce integration for ReviewBop.
+ * WooCommerce integration for reviewbird.
  *
- * @package ReviewBop
+ * @package reviewbird
  */
 
-namespace ReviewBop\Integration;
+namespace reviewbird\Integration;
 
-use ReviewBop\Api\Client;
+use reviewbird\Api\Client;
 
 /**
  * WooCommerce integration class.
@@ -29,7 +29,7 @@ class WooCommerce {
 	}
 
 	/**
-	 * Sync product data to ReviewBop.
+	 * Sync product data to reviewbird.
 	 *
 	 * @param int $product_id WooCommerce product ID.
 	 */
@@ -69,7 +69,7 @@ class WooCommerce {
 				error_log(
 					sprintf(
 						/* translators: 1: Product ID, 2: Error message */
-						__( 'ReviewBop: Failed to sync product %1$d: %2$s', 'reviewbop-reviews' ),
+						__( 'reviewbird: Failed to sync product %1$d: %2$s', 'reviewbird-reviews' ),
 						$product_id,
 						$result->get_error_message()
 					)
@@ -151,7 +151,7 @@ class WooCommerce {
 			return;
 		}
 
-		// Mark product as deleted in ReviewBop (in_store = false)
+		// Mark product as deleted in reviewbird (in_store = false)
 		$product_data = array(
 			'external_id' => (string) $product_id,
 			'in_store'    => false,
@@ -164,7 +164,7 @@ class WooCommerce {
 			error_log(
 				sprintf(
 					/* translators: 1: Product ID, 2: Error message */
-					__( 'ReviewBop: Failed to mark product %1$d as deleted: %2$s', 'reviewbop-reviews' ),
+					__( 'reviewbird: Failed to mark product %1$d as deleted: %2$s', 'reviewbird-reviews' ),
 					$product_id,
 					$result->get_error_message()
 				)
@@ -173,7 +173,7 @@ class WooCommerce {
 	}
 
 	/**
-	 * Sync review data to ReviewBop.
+	 * Sync review data to reviewbird.
 	 *
 	 * @param int $comment_id Comment ID.
 	 */
@@ -209,7 +209,7 @@ class WooCommerce {
 				error_log(
 					sprintf(
 						/* translators: 1: Comment ID, 2: Error message */
-						__( 'ReviewBop: Failed to sync review %1$d: %2$s', 'reviewbop-reviews' ),
+						__( 'reviewbird: Failed to sync review %1$d: %2$s', 'reviewbird-reviews' ),
 						$comment_id,
 						$result->get_error_message()
 					)
@@ -219,7 +219,7 @@ class WooCommerce {
 	}
 
 	/**
-	 * Sync review status changes to ReviewBop.
+	 * Sync review status changes to reviewbird.
 	 *
 	 * @param int    $comment_id     Comment ID.
 	 * @param string $comment_status New comment status.
@@ -236,7 +236,7 @@ class WooCommerce {
 	}
 
 	/**
-	 * Delete review from ReviewBop.
+	 * Delete review from reviewbird.
 	 *
 	 * @param int $comment_id Comment ID.
 	 */
@@ -259,7 +259,7 @@ class WooCommerce {
 
 		// Use Action Scheduler for reliable processing.
 		if ( function_exists( 'as_enqueue_async_action' ) ) {
-			as_enqueue_async_action( 'reviewbop_delete_review', $delete_data );
+			as_enqueue_async_action( 'reviewbird_delete_review', $delete_data );
 		} else {
 			// Fallback to immediate deletion.
 			$result = $this->api_client->delete_review( $delete_data );
@@ -268,7 +268,7 @@ class WooCommerce {
 				error_log(
 					sprintf(
 						/* translators: 1: Comment ID, 2: Error message */
-						__( 'ReviewBop: Failed to delete review %1$d: %2$s', 'reviewbop-reviews' ),
+						__( 'reviewbird: Failed to delete review %1$d: %2$s', 'reviewbird-reviews' ),
 						$comment_id,
 						$result->get_error_message()
 					)
@@ -278,7 +278,7 @@ class WooCommerce {
 	}
 
 	/**
-	 * Track order events in ReviewBop.
+	 * Track order events in reviewbird.
 	 *
 	 * @param int    $order_id   Order ID.
 	 * @param string $old_status Old order status.
@@ -330,7 +330,7 @@ class WooCommerce {
 				error_log(
 					sprintf(
 						/* translators: 1: Order ID, 2: Error message */
-						__( 'ReviewBop: Failed to track order event %1$d: %2$s', 'reviewbop-reviews' ),
+						__( 'reviewbird: Failed to track order event %1$d: %2$s', 'reviewbird-reviews' ),
 						$order_id,
 						$result->get_error_message()
 					)
@@ -340,7 +340,7 @@ class WooCommerce {
 	}
 
 	/**
-	 * Render the ReviewBop widget.
+	 * Render the reviewbird widget.
 	 *
 	 * This method can be called from templates or hooks to display the widget.
 	 */
@@ -354,20 +354,20 @@ class WooCommerce {
 		$store_id = $this->api_client->get_store_id_for_frontend();
 		if ( ! $store_id ) {
 			// Add HTML comment for debugging
-			echo '<!-- ReviewBop: Widget not displayed. Store ID not configured. Please connect your ReviewBop account in WP Admin > ReviewBop > Settings -->';
+			echo '<!-- reviewbird: Widget not displayed. Store ID not configured. Please connect your reviewbird account in WP Admin > reviewbird > Settings -->';
 			return;
 		}
 
 		// Allow developers to disable widget for specific products.
-		if ( ! apply_filters( 'reviewbop_show_widget_for_product', true, $product ) ) {
+		if ( ! apply_filters( 'reviewbird_show_widget_for_product', true, $product ) ) {
 			return;
 		}
 
-		$widget_id = 'reviewbop-widget-container-' . $product->get_id();
+		$widget_id = 'reviewbird-widget-container-' . $product->get_id();
 
 		// Allow developers to customize widget attributes.
 		$widget_attrs = apply_filters(
-			'reviewbop_widget_attributes',
+			'reviewbird_widget_attributes',
 			array(
 				'store-id'    => $store_id,
 				'product-key' => $product->get_id(),
@@ -382,9 +382,9 @@ class WooCommerce {
 
 		// Allow developers to customize widget wrapper.
 		$widget_html = apply_filters(
-			'reviewbop_widget_html',
+			'reviewbird_widget_html',
 			sprintf(
-				'<div id="%s"%s></div><script>if(typeof ReviewBop !== "undefined") ReviewBop.init();</script>',
+				'<div id="%s"%s></div><script>if(typeof reviewbird !== "undefined") reviewbird.init();</script>',
 				esc_attr( $widget_id ),
 				$attrs_html
 			),
@@ -410,13 +410,13 @@ class WooCommerce {
 			return;
 		}
 
-		update_post_meta( $product_id, '_reviewbop_avg_stars', floatval( $avg_stars ) );
-		update_post_meta( $product_id, '_reviewbop_reviews_count', intval( $review_count ) );
+		update_post_meta( $product_id, '_reviewbird_avg_stars', floatval( $avg_stars ) );
+		update_post_meta( $product_id, '_reviewbird_reviews_count', intval( $review_count ) );
 
 		// Clear schema cache when ratings are updated.
-		delete_transient( 'reviewbop_schema_reviews_' . $product_id );
+		delete_transient( 'reviewbird_schema_reviews_' . $product_id );
 
-		do_action( 'reviewbop_rating_updated', $product_id, $avg_stars, $review_count );
+		do_action( 'reviewbird_rating_updated', $product_id, $avg_stars, $review_count );
 	}
 
 	/**

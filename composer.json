@@ -1,12 +1,12 @@
 {
-    "name": "reviewbop/wordpress-plugin",
-    "description": "WordPress plugin for ReviewBop integration",
+    "name": "reviewbird/wordpress-plugin",
+    "description": "WordPress plugin for reviewbird integration",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "authors": [
         {
-            "name": "ReviewBop",
-            "email": "support@reviewbop.com"
+            "name": "reviewbird",
+            "email": "support@reviewbird.com"
         }
     ],
     "require": {
@@ -19,12 +19,12 @@
     },
     "autoload": {
         "psr-4": {
-            "ReviewBop\\": "src/"
+            "reviewbird\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "ReviewBop\\Tests\\": "tests/"
+            "reviewbird\\Tests\\": "tests/"
         }
     },
     "scripts": {

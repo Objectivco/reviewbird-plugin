@@ -24,12 +24,12 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 
 	const loadSyncStatus = async () => {
 		try {
-			const data = await apiFetch({ path: '/reviewbop/v1/sync/reviews/status' });
+			const data = await apiFetch({ path: '/reviewbird/v1/sync/reviews/status' });
 			setSyncStatus(data);
 			setError(null);
 		} catch (err) {
 			console.error('Failed to load review sync status:', err);
-			setError(err.message || __('Failed to load review sync status', 'reviewbop-reviews'));
+			setError(err.message || __('Failed to load review sync status', 'reviewbird-reviews'));
 		} finally {
 			setLoading(false);
 		}
@@ -40,13 +40,13 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 		setError(null);
 		try {
 			await apiFetch({
-				path: '/reviewbop/v1/sync/reviews/start',
+				path: '/reviewbird/v1/sync/reviews/start',
 				method: 'POST',
 			});
 			// Reload status immediately
 			await loadSyncStatus();
 		} catch (err) {
-			setError(err.message || __('Failed to start review sync', 'reviewbop-reviews'));
+			setError(err.message || __('Failed to start review sync', 'reviewbird-reviews'));
 		} finally {
 			setSyncing(false);
 		}
@@ -77,7 +77,7 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 		<div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
 			<div className="px-6 py-5 border-b border-gray-200 bg-gray-50">
 				<h2 className="text-xl font-semibold text-gray-900">
-					{__('Review Sync', 'reviewbop-reviews')}
+					{__('Review Sync', 'reviewbird-reviews')}
 				</h2>
 			</div>
 
@@ -90,10 +90,10 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 							</svg>
 							<div className="ml-3">
 								<h3 className="text-sm font-medium text-yellow-800">
-									{__('Products Must Be Synced First', 'reviewbop-reviews')}
+									{__('Products Must Be Synced First', 'reviewbird-reviews')}
 								</h3>
 								<p className="text-sm text-yellow-700 mt-1">
-									{__('Please sync your products before syncing reviews. Reviews are linked to products.', 'reviewbop-reviews')}
+									{__('Please sync your products before syncing reviews. Reviews are linked to products.', 'reviewbird-reviews')}
 								</p>
 							</div>
 						</div>
@@ -117,7 +117,7 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 					<div className="space-y-4">
 						<div className="flex items-center justify-between text-sm">
 							<span className="font-medium text-gray-700">
-								{__('Syncing reviews...', 'reviewbop-reviews')}
+								{__('Syncing reviews...', 'reviewbird-reviews')}
 							</span>
 							<span className="text-gray-600">
 								{syncStatus.synced_reviews} / {syncStatus.total_reviews}
@@ -144,7 +144,7 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 								</svg>
 								<div className="ml-3">
 									<p className="text-sm text-blue-800">
-										{__('Sync in progress. This may take a few minutes...', 'reviewbop-reviews')}
+										{__('Sync in progress. This may take a few minutes...', 'reviewbird-reviews')}
 									</p>
 								</div>
 							</div>
@@ -158,7 +158,7 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 									{syncStatus?.total_reviews || 0}
 								</div>
 								<div className="text-sm text-gray-600">
-									{__('Approved reviews', 'reviewbop-reviews')}
+									{__('Approved reviews', 'reviewbird-reviews')}
 								</div>
 							</div>
 
@@ -167,7 +167,7 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 									{syncStatus?.synced_reviews || 0}
 								</div>
 								<div className="text-sm text-green-700">
-									{__('Synced', 'reviewbop-reviews')}
+									{__('Synced', 'reviewbird-reviews')}
 								</div>
 							</div>
 
@@ -177,7 +177,7 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 										{syncStatus.failed_reviews}
 									</div>
 									<div className="text-sm text-red-700">
-										{__('Failed', 'reviewbop-reviews')}
+										{__('Failed', 'reviewbird-reviews')}
 									</div>
 								</div>
 							)}
@@ -185,7 +185,7 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 
 						{syncStatus?.last_sync && (
 							<p className="text-sm text-gray-600">
-								{__('Last synced:', 'reviewbop-reviews')}{' '}
+								{__('Last synced:', 'reviewbird-reviews')}{' '}
 								{new Date(syncStatus.last_sync * 1000).toLocaleString()}
 							</p>
 						)}
@@ -199,10 +199,10 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 										</svg>
 										<div className="ml-3">
 											<h3 className="text-sm font-medium text-yellow-800">
-												{__('Sync Required', 'reviewbop-reviews')}
+												{__('Sync Required', 'reviewbird-reviews')}
 											</h3>
 											<p className="text-sm text-yellow-700 mt-1">
-												{__('You have approved reviews that need to be synced to ReviewBop.', 'reviewbop-reviews')}
+												{__('You have approved reviews that need to be synced to reviewbird.', 'reviewbird-reviews')}
 											</p>
 										</div>
 									</div>
@@ -214,7 +214,7 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 									disabled={isDisabled}
 									className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm border border-transparent rounded shadow-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 								>
-									{syncing ? __('Starting sync...', 'reviewbop-reviews') : __('Sync Reviews', 'reviewbop-reviews')}
+									{syncing ? __('Starting sync...', 'reviewbird-reviews') : __('Sync Reviews', 'reviewbird-reviews')}
 								</button>
 							</>
 						) : productsAreSynced && !syncStatus?.needs_sync ? (
@@ -225,7 +225,7 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 									</svg>
 									<div className="ml-3">
 										<p className="text-sm text-green-800">
-											{__('All reviews are synced', 'reviewbop-reviews')}
+											{__('All reviews are synced', 'reviewbird-reviews')}
 										</p>
 									</div>
 								</div>
@@ -234,7 +234,7 @@ export default function ReviewSyncPanel({ isConnected, productsAreSynced }) {
 
 						{!productsAreSynced && (
 							<p className="text-xs text-gray-500">
-								{__('Sync products first to enable review sync', 'reviewbop-reviews')}
+								{__('Sync products first to enable review sync', 'reviewbird-reviews')}
 							</p>
 						)}
 					</div>

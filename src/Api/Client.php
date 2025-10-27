@@ -1,14 +1,14 @@
 <?php
 /**
- * API client for ReviewBop communication.
+ * API client for reviewbird communication.
  *
- * @package ReviewBop
+ * @package reviewbird
  */
 
-namespace ReviewBop\Api;
+namespace reviewbird\Api;
 
 /**
- * API client class for handling ReviewBop communication.
+ * API client class for handling reviewbird communication.
  */
 class Client {
 
@@ -23,7 +23,7 @@ class Client {
 	 * Initialize the API client.
 	 */
 	public function __construct() {
-		$this->api_url = reviewbop_get_api_url();
+		$this->api_url = reviewbird_get_api_url();
 	}
 
 	/**
@@ -35,12 +35,12 @@ class Client {
 	 * @return array|\WP_Error The API response or WP_Error on failure.
 	 */
 	public function request( $endpoint, $data = null, $method = 'GET' ) {
-		$store_token = get_option( 'reviewbop_store_token' );
+		$store_token = get_option( 'reviewbird_store_token' );
 
 		if ( ! $store_token ) {
 			return new \WP_Error(
 				'no_token',
-				__( 'ReviewBop store token not configured', 'reviewbop-reviews' )
+				__( 'reviewbird store token not configured', 'reviewbird-reviews' )
 			);
 		}
 
@@ -48,11 +48,11 @@ class Client {
 			'headers' => array(
 				'Authorization' => 'Bearer ' . $store_token,
 				'Content-Type'  => 'application/json',
-				'User-Agent'    => 'ReviewBop WordPress Plugin/' . REVIEWBOP_VERSION,
+				'User-Agent'    => 'reviewbird WordPress Plugin/' . REVIEWBIRD_VERSION,
 			),
 			'timeout' => 30,
 			'method'  => strtoupper( $method ),
-            'sslverify' => ! reviewbop_should_disable_ssl_verify()
+            'sslverify' => ! reviewbird_should_disable_ssl_verify()
 		);
 
 		if ( in_array( $method, array( 'POST', 'PUT', 'PATCH' ), true ) && $data ) {
@@ -67,14 +67,14 @@ class Client {
 			return $response;
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response, array( 'sslverify' => ! reviewbop_should_disable_ssl_verify() ) );
+		$response_code = wp_remote_retrieve_response_code( $response, array( 'sslverify' => ! reviewbird_should_disable_ssl_verify() ) );
 		$body          = wp_remote_retrieve_body( $response );
 		$decoded       = json_decode( $body, true );
 
 		if ( $response_code >= 400 ) {
 			$error_message = isset( $decoded['message'] )
 				? $decoded['message']
-				: __( 'API request failed', 'reviewbop-reviews' );
+				: __( 'API request failed', 'reviewbird-reviews' );
 
 			$this->log_error( 
 				'API Error', 
@@ -88,7 +88,7 @@ class Client {
 			);
 
 			return new \WP_Error(
-				'reviewbop_api_error',
+				'reviewbird_api_error',
 				$error_message,
 				array(
 					'status'   => $response_code,
@@ -107,7 +107,7 @@ class Client {
 					count( $decoded['errors'] )
 				),
 				array( 
-					'source' => 'reviewbop',
+					'source' => 'reviewbird',
 					'errors' => $decoded['errors'],
 				)
 			);
@@ -127,7 +127,7 @@ class Client {
 	 */
 	public function queue_request( $endpoint, $data = null, $method = 'POST', $delay = 0 ) {
 		if ( ! function_exists( 'as_enqueue_async_action' ) ) {
-			error_log( 'ReviewBop: Action Scheduler not available for queuing API request' );
+			error_log( 'reviewbird: Action Scheduler not available for queuing API request' );
 			return false;
 		}
 
@@ -138,10 +138,10 @@ class Client {
 		);
 
 		if ( $delay > 0 ) {
-			return as_schedule_single_action( time() + $delay, 'reviewbop_process_api_request', $args );
+			return as_schedule_single_action( time() + $delay, 'reviewbird_process_api_request', $args );
 		}
 
-		return as_enqueue_async_action( 'reviewbop_process_api_request', $args );
+		return as_enqueue_async_action( 'reviewbird_process_api_request', $args );
 	}
 
 	/**
@@ -186,7 +186,7 @@ class Client {
 	}
 
 	/**
-	 * Sync product data to ReviewBop.
+	 * Sync product data to reviewbird.
 	 *
 	 * @param array $product_data Product data.
 	 * @return array|\WP_Error API response or WP_Error on failure.
@@ -207,7 +207,7 @@ class Client {
 	}
 
 	/**
-	 * Push review data to ReviewBop.
+	 * Push review data to reviewbird.
 	 *
 	 * @param array $review_data Review data.
 	 * @return array|\WP_Error API response or WP_Error on failure.
@@ -228,7 +228,7 @@ class Client {
 	}
 
 	/**
-	 * Delete review from ReviewBop.
+	 * Delete review from reviewbird.
 	 *
 	 * @param array $delete_data Review deletion data.
 	 * @return array|\WP_Error API response or WP_Error on failure.
@@ -238,7 +238,7 @@ class Client {
 	}
 
 	/**
-	 * Track order events in ReviewBop.
+	 * Track order events in reviewbird.
 	 *
 	 * @param array $order_data Order event data.
 	 * @return array|\WP_Error API response or WP_Error on failure.
@@ -282,7 +282,7 @@ class Client {
 	 */
 	public function get_store_id_from_token( $token = null ) {
 		if ( ! $token ) {
-			$token = get_option( 'reviewbop_store_token' );
+			$token = get_option( 'reviewbird_store_token' );
 		}
 
 		if ( ! $token ) {
@@ -303,7 +303,7 @@ class Client {
 	 * @return int|null Store ID or null if not available.
 	 */
 	public function get_store_id_for_frontend() {
-		$store_id = get_option( 'reviewbop_store_id' );
+		$store_id = get_option( 'reviewbird_store_id' );
 		if ( $store_id ) {
 			return absint( $store_id );
 		}
@@ -311,7 +311,7 @@ class Client {
 		// Extract from token if not cached.
 		$store_id = $this->get_store_id_from_token();
 		if ( $store_id ) {
-			update_option( 'reviewbop_store_id', $store_id );
+			update_option( 'reviewbird_store_id', $store_id );
 		}
 
 		return $store_id;
@@ -328,7 +328,7 @@ class Client {
 			return false;
 		}
 
-		return get_option( 'reviewbop_store_token' );
+		return get_option( 'reviewbird_store_token' );
 	}
 
 	/**
@@ -354,7 +354,7 @@ class Client {
 		if ( empty( $data ) ) {
 			return new \WP_Error(
 				'no_data',
-				__( 'No locale data provided', 'reviewbop-reviews' )
+				__( 'No locale data provided', 'reviewbird-reviews' )
 			);
 		}
 
@@ -386,10 +386,10 @@ class Client {
 			$logger = wc_get_logger();
 			$logger->error( 
 				$log_message,
-				array_merge( array( 'source' => 'reviewbop' ), $context )
+				array_merge( array( 'source' => 'reviewbird' ), $context )
 			);
 		} else {
-			error_log( 'ReviewBop: ' . $log_message );
+			error_log( 'reviewbird: ' . $log_message );
 		}
 	}
 }

@@ -2,13 +2,13 @@
 /**
  * REST API Settings Controller.
  *
- * @package ReviewBop
+ * @package reviewbird
  */
 
-namespace ReviewBop\Api;
+namespace reviewbird\Api;
 
-use ReviewBop\Integration\ProductSync;
-use ReviewBop\Integration\ReviewSync;
+use reviewbird\Integration\ProductSync;
+use reviewbird\Integration\ReviewSync;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -23,7 +23,7 @@ class SettingsController {
 	 */
 	public function register_routes() {
 		register_rest_route(
-			'reviewbop/v1',
+			'reviewbird/v1',
 			'/settings',
 			array(
 				array(
@@ -41,7 +41,7 @@ class SettingsController {
 		);
 
 		register_rest_route(
-			'reviewbop/v1',
+			'reviewbird/v1',
 			'/sync/status',
 			array(
 				'methods'             => 'GET',
@@ -51,7 +51,7 @@ class SettingsController {
 		);
 
 		register_rest_route(
-			'reviewbop/v1',
+			'reviewbird/v1',
 			'/sync/start',
 			array(
 				'methods'             => 'POST',
@@ -61,7 +61,7 @@ class SettingsController {
 		);
 
 		register_rest_route(
-			'reviewbop/v1',
+			'reviewbird/v1',
 			'/sync/reviews/status',
 			array(
 				'methods'             => 'GET',
@@ -71,7 +71,7 @@ class SettingsController {
 		);
 
 		register_rest_route(
-			'reviewbop/v1',
+			'reviewbird/v1',
 			'/sync/reviews/start',
 			array(
 				'methods'             => 'POST',
@@ -97,7 +97,7 @@ class SettingsController {
 	 */
 	public function get_settings() {
 		$client = new Client();
-		$token  = get_option( 'reviewbop_store_token', '' );
+		$token  = get_option( 'reviewbird_store_token', '' );
 
 		$connection_status = 'disconnected';
 		if ( $token ) {
@@ -106,18 +106,18 @@ class SettingsController {
 		}
 
 		// Get WooCommerce order statuses
-		$order_statuses = \ReviewBop\Integration\OrderSync::get_order_statuses();
+		$order_statuses = \reviewbird\Integration\OrderSync::get_order_statuses();
 
 		return rest_ensure_response(
 			array(
 				'store_token'                           => $token,
-				'store_id'                              => get_option( 'reviewbop_store_id', '' ),
+				'store_id'                              => get_option( 'reviewbird_store_id', '' ),
 				'connection_status'                     => $connection_status,
-				'oauth_nonce'                           => wp_create_nonce( 'reviewbop_oauth_start' ),
-				'review_request_trigger_status'         => get_option( 'reviewbop_review_request_trigger_status', 'completed' ),
+				'oauth_nonce'                           => wp_create_nonce( 'reviewbird_oauth_start' ),
+				'review_request_trigger_status'         => get_option( 'reviewbird_review_request_trigger_status', 'completed' ),
 				'available_order_statuses'              => $order_statuses,
-				'orders_synced_count'                   => (int) get_option( 'reviewbop_orders_synced_count', 0 ),
-				'orders_last_synced'                    => (int) get_option( 'reviewbop_orders_last_synced', 0 ),
+				'orders_synced_count'                   => (int) get_option( 'reviewbird_orders_synced_count', 0 ),
+				'orders_last_synced'                    => (int) get_option( 'reviewbird_orders_last_synced', 0 ),
 			)
 		);
 	}
@@ -132,7 +132,7 @@ class SettingsController {
 		// Update review request trigger status if provided
 		if ( $request->has_param( 'review_request_trigger_status' ) ) {
 			$trigger_status = sanitize_text_field( $request->get_param( 'review_request_trigger_status' ) );
-			update_option( 'reviewbop_review_request_trigger_status', $trigger_status );
+			update_option( 'reviewbird_review_request_trigger_status', $trigger_status );
 		}
 
 		// If only updating review request settings, return early
@@ -144,15 +144,15 @@ class SettingsController {
 
 		// Allow empty token to disconnect.
 		if ( empty( $token ) ) {
-			delete_option( 'reviewbop_store_token' );
-			delete_option( 'reviewbop_store_id' );
-			delete_option( reviewbop_get_env_option_key( 'oauth_client_id' ) );
+			delete_option( 'reviewbird_store_token' );
+			delete_option( 'reviewbird_store_id' );
+			delete_option( reviewbird_get_env_option_key( 'oauth_client_id' ) );
 
 			// Clear sync status so it rechecks when reconnected
-			delete_option( 'reviewbop_sync_status' );
-			delete_option( 'reviewbop_review_sync_status' );
-			delete_option( 'reviewbop_orders_synced_count' );
-			delete_option( 'reviewbop_orders_last_synced' );
+			delete_option( 'reviewbird_sync_status' );
+			delete_option( 'reviewbird_review_sync_status' );
+			delete_option( 'reviewbird_orders_synced_count' );
+			delete_option( 'reviewbird_orders_last_synced' );
 
 			// Clear all synced metadata from products and reviews
 			$product_sync = new ProductSync();
@@ -168,29 +168,29 @@ class SettingsController {
 		if ( ! preg_match( '/^ra_st_\d+_[a-zA-Z0-9]+$/', $token ) ) {
 			return new WP_Error(
 				'invalid_token_format',
-				__( 'Invalid store token format. Please copy the token exactly from your ReviewBop dashboard.', 'reviewbop-reviews' ),
+				__( 'Invalid store token format. Please copy the token exactly from your reviewbird dashboard.', 'reviewbird-reviews' ),
 				array( 'status' => 400 )
 			);
 		}
 
 		// Validate token with API.
 		$api_client = new Client();
-		$old_token  = get_option( 'reviewbop_store_token' );
+		$old_token  = get_option( 'reviewbird_store_token' );
 
 		// Temporarily set token for validation.
-		update_option( 'reviewbop_store_token', $token );
+		update_option( 'reviewbird_store_token', $token );
 
 		$result = $api_client->validate_token();
 
 		if ( is_wp_error( $result ) ) {
 			// Restore old token on validation failure.
-			update_option( 'reviewbop_store_token', $old_token );
+			update_option( 'reviewbird_store_token', $old_token );
 
 			return new WP_Error(
 				'invalid_token',
 				sprintf(
 					/* translators: %s: Error message */
-					__( 'Invalid store token: %s', 'reviewbop-reviews' ),
+					__( 'Invalid store token: %s', 'reviewbird-reviews' ),
 					$result->get_error_message()
 				),
 				array( 'status' => 400 )
@@ -200,13 +200,13 @@ class SettingsController {
 		// Extract and save store ID.
 		$store_id = $api_client->get_store_id_from_token( $token );
 		if ( $store_id ) {
-			update_option( 'reviewbop_store_id', $store_id );
+			update_option( 'reviewbird_store_id', $store_id );
 		}
 
 		// Configure media domains using Action Scheduler.
 		if ( function_exists( 'as_enqueue_async_action' ) ) {
 			$domains = array( parse_url( get_site_url(), PHP_URL_HOST ) );
-			as_enqueue_async_action( 'reviewbop_configure_domains', array( 'domains' => $domains ) );
+			as_enqueue_async_action( 'reviewbird_configure_domains', array( 'domains' => $domains ) );
 		}
 
 		return $this->get_settings();
@@ -239,7 +239,7 @@ class SettingsController {
 
 		return rest_ensure_response( array(
 			'success' => true,
-			'message' => __( 'Product sync started', 'reviewbop-reviews' ),
+			'message' => __( 'Product sync started', 'reviewbird-reviews' ),
 		) );
 	}
 
@@ -270,7 +270,7 @@ class SettingsController {
 
 		return rest_ensure_response( array(
 			'success' => true,
-			'message' => __( 'Review sync started', 'reviewbop-reviews' ),
+			'message' => __( 'Review sync started', 'reviewbird-reviews' ),
 		) );
 	}
 

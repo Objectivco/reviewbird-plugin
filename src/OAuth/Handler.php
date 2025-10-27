@@ -1,13 +1,13 @@
 <?php
 /**
- * OAuth flow handler for ReviewBop integration.
+ * OAuth flow handler for reviewbird integration.
  *
- * @package ReviewBop
+ * @package reviewbird
  */
 
-namespace ReviewBop\OAuth;
+namespace reviewbird\OAuth;
 
-use ReviewBop\Api\Client;
+use reviewbird\Api\Client;
 
 /**
  * OAuth flow handler.
@@ -24,32 +24,32 @@ class Handler {
 	 */
 	public function start_oauth_flow() {
 		// Verify nonce for security.
-		if ( ! wp_verify_nonce( $_POST['nonce'] ?? '', 'reviewbop_oauth_start' ) ) {
-			wp_die( esc_html__( 'Security check failed', 'reviewbop-reviews' ) );
+		if ( ! wp_verify_nonce( $_POST['nonce'] ?? '', 'reviewbird_oauth_start' ) ) {
+			wp_die( esc_html__( 'Security check failed', 'reviewbird-reviews' ) );
 		}
 
 		// Check permissions.
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Insufficient permissions', 'reviewbop-reviews' ) );
+			wp_die( esc_html__( 'Insufficient permissions', 'reviewbird-reviews' ) );
 		}
 
 		// Check if the stored OAuth client is for a different domain (e.g., ngrok URL changed).
 		// If so, clear it to force re-registration with the new domain.
-		if ( ! reviewbop_is_oauth_client_valid() ) {
-			reviewbop_clear_oauth_client();
+		if ( ! reviewbird_is_oauth_client_valid() ) {
+			reviewbird_clear_oauth_client();
 		}
 
-		$client_id = reviewbop_ensure_oauth_client();
+		$client_id = reviewbird_ensure_oauth_client();
 
 		if ( is_wp_error( $client_id ) ) {
-			set_transient( 'reviewbop_oauth_error', $client_id->get_error_message(), 60 );
-			wp_safe_redirect( admin_url( 'options-general.php?page=reviewbop-settings' ) );
+			set_transient( 'reviewbird_oauth_error', $client_id->get_error_message(), 60 );
+			wp_safe_redirect( admin_url( 'options-general.php?page=reviewbird-settings' ) );
 			exit;
 		}
 
 		$state        = wp_generate_uuid4();
-		$redirect_uri = admin_url( 'admin.php?page=reviewbop-settings' );
-		$callback_url = add_query_arg( 'reviewbop_oauth_callback', '1', $redirect_uri );
+		$redirect_uri = admin_url( 'admin.php?page=reviewbird-settings' );
+		$callback_url = add_query_arg( 'reviewbird_oauth_callback', '1', $redirect_uri );
 
 		// Generate PKCE parameters for OAuth security.
 		$code_verifier = $this->generate_code_verifier();
@@ -59,8 +59,8 @@ class Handler {
 		$this->store_oauth_state( $state, $redirect_uri, $code_verifier );
 
 		// Schedule cleanup of expired states using Action Scheduler.
-		if ( function_exists( 'as_schedule_single_action' ) && ! as_next_scheduled_action( 'reviewbop_cleanup_oauth_states' ) ) {
-			as_schedule_single_action( time() + self::STATE_EXPIRATION, 'reviewbop_cleanup_oauth_states' );
+		if ( function_exists( 'as_schedule_single_action' ) && ! as_next_scheduled_action( 'reviewbird_cleanup_oauth_states' ) ) {
+			as_schedule_single_action( time() + self::STATE_EXPIRATION, 'reviewbird_cleanup_oauth_states' );
 		}
 
         // Build OAuth URL with PKCE parameters.
@@ -74,7 +74,7 @@ class Handler {
             'code_challenge_method'  => 'S256',
         );
 
-		$oauth_url = reviewbop_get_oauth_url() . '/authorize?' . http_build_query( $oauth_params );
+		$oauth_url = reviewbird_get_oauth_url() . '/authorize?' . http_build_query( $oauth_params );
 
 		// Redirect to OAuth provider.
 		wp_redirect( $oauth_url );
@@ -86,7 +86,7 @@ class Handler {
 	 */
 	public function handle_oauth_callback() {
 		// Check if this is an OAuth callback.
-		if ( ! isset( $_GET['reviewbop_oauth_callback'] ) ) {
+		if ( ! isset( $_GET['reviewbird_oauth_callback'] ) ) {
 			return;
 		}
 
@@ -97,7 +97,7 @@ class Handler {
 				echo '<div class="notice notice-error"><p>' .
 					 sprintf(
 						/* translators: %s: Error description */
-						esc_html__( 'ReviewBop connection failed: %s', 'reviewbop-reviews' ),
+						esc_html__( 'reviewbird connection failed: %s', 'reviewbird-reviews' ),
 						esc_html( $error_description )
 					) .
 					 '</p></div>';
@@ -111,7 +111,7 @@ class Handler {
 		if ( ! $code || ! $state ) {
 			add_action( 'admin_notices', function() {
 				echo '<div class="notice notice-error"><p>' .
-					 esc_html__( 'Invalid OAuth callback parameters', 'reviewbop-reviews' ) .
+					 esc_html__( 'Invalid OAuth callback parameters', 'reviewbird-reviews' ) .
 					 '</p></div>';
 			});
 			return;
@@ -122,21 +122,21 @@ class Handler {
 		if ( ! $code_verifier ) {
 			add_action( 'admin_notices', function() {
 				echo '<div class="notice notice-error"><p>' .
-					 esc_html__( 'Invalid OAuth state. Please try again.', 'reviewbop-reviews' ) .
+					 esc_html__( 'Invalid OAuth state. Please try again.', 'reviewbird-reviews' ) .
 					 '</p></div>';
 			});
 			return;
 		}
 
 		// Exchange authorization code for access token immediately so the user gets instant feedback.
-		$client_id = reviewbop_get_oauth_client_id();
+		$client_id = reviewbird_get_oauth_client_id();
 
 		$processed = $this->process_oauth_token( $code, $code_verifier, $client_id );
 
 		if ( ! $processed && function_exists( 'as_enqueue_async_action' ) ) {
 			// Schedule a retry in the background if Action Scheduler is available.
 			as_enqueue_async_action(
-				'reviewbop_process_oauth_token',
+				'reviewbird_process_oauth_token',
 				array(
 					'code'          => $code,
 					'code_verifier' => $code_verifier,
@@ -149,11 +149,11 @@ class Handler {
 		$this->cleanup_oauth_state( $state );
 
 		// Redirect back to the settings page without the OAuth query parameters.
-		$redirect_url = menu_page_url( 'reviewbop-settings', false );
+		$redirect_url = menu_page_url( 'reviewbird-settings', false );
 		if ( empty( $redirect_url ) ) {
-			$redirect_url = admin_url( 'admin.php?page=reviewbop-settings' );
+			$redirect_url = admin_url( 'admin.php?page=reviewbird-settings' );
 		}
-		$redirect_url = remove_query_arg( array( 'code', 'state', 'reviewbop_oauth_callback', 'error', 'error_description' ), $redirect_url );
+		$redirect_url = remove_query_arg( array( 'code', 'state', 'reviewbird_oauth_callback', 'error', 'error_description' ), $redirect_url );
 
 		wp_safe_redirect( $redirect_url );
 		exit;
@@ -167,16 +167,16 @@ class Handler {
 	 * @param string $client_id OAuth client identifier.
 	 */
 	public function process_oauth_token( $code, $code_verifier = '', $client_id = '' ) {
-		$callback_url = reviewbop_get_oauth_callback_url();
+		$callback_url = reviewbird_get_oauth_callback_url();
 
 		if ( empty( $client_id ) ) {
-			$client_id = reviewbop_get_oauth_client_id();
+			$client_id = reviewbird_get_oauth_client_id();
 		}
 
 		if ( empty( $client_id ) ) {
-			error_log( 'ReviewBop: OAuth client ID missing during token exchange.' );
-			delete_transient( 'reviewbop_oauth_success' );
-			set_transient( 'reviewbop_oauth_error', __( 'ReviewBop OAuth client configuration is missing. Please contact support.', 'reviewbop-reviews' ), 60 );
+			error_log( 'reviewbird: OAuth client ID missing during token exchange.' );
+			delete_transient( 'reviewbird_oauth_success' );
+			set_transient( 'reviewbird_oauth_error', __( 'reviewbird OAuth client configuration is missing. Please contact support.', 'reviewbird-reviews' ), 60 );
 			return false;
 		}
 
@@ -189,24 +189,24 @@ class Handler {
 		);
 
 		$response = wp_remote_post(
-			reviewbop_get_oauth_url() . '/token',
+			reviewbird_get_oauth_url() . '/token',
 			array(
 				'body'       => $token_params,
 				'headers'    => array(
 					'Accept' => 'application/json',
 				),
 				'timeout'    => 30,
-				'sslverify'  => ! reviewbop_should_disable_ssl_verify(),
+				'sslverify'  => ! reviewbird_should_disable_ssl_verify(),
 			)
 		);
 
 		if ( is_wp_error( $response ) ) {
-			error_log( 'ReviewBop OAuth token exchange failed: ' . $response->get_error_message() );
-			delete_transient( 'reviewbop_oauth_success' );
+			error_log( 'reviewbird OAuth token exchange failed: ' . $response->get_error_message() );
+			delete_transient( 'reviewbird_oauth_success' );
 			set_transient(
-				'reviewbop_oauth_error',
+				'reviewbird_oauth_error',
 				sprintf(
-					__( 'Unable to connect to ReviewBop: %s', 'reviewbop-reviews' ),
+					__( 'Unable to connect to reviewbird: %s', 'reviewbird-reviews' ),
 					wp_strip_all_tags( $response->get_error_message() )
 				),
 				60
@@ -214,13 +214,13 @@ class Handler {
 			return false;
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response, array( 'sslverify' => ! reviewbop_should_disable_ssl_verify() ) );
+		$response_code = wp_remote_retrieve_response_code( $response, array( 'sslverify' => ! reviewbird_should_disable_ssl_verify() ) );
 		$body          = wp_remote_retrieve_body( $response );
 		$token_data    = json_decode( $body, true );
 
 		if ( 200 !== $response_code || ! is_array( $token_data ) || empty( $token_data['access_token'] ) ) {
-			error_log( 'ReviewBop OAuth token exchange failed: Invalid response' );
-			delete_transient( 'reviewbop_oauth_success' );
+			error_log( 'reviewbird OAuth token exchange failed: Invalid response' );
+			delete_transient( 'reviewbird_oauth_success' );
 
 			$error_message = '';
 			if ( isset( $token_data['error_description'] ) ) {
@@ -228,10 +228,10 @@ class Handler {
 			} elseif ( isset( $token_data['message'] ) ) {
 				$error_message = sanitize_text_field( $token_data['message'] );
 			} else {
-				$error_message = __( 'ReviewBop returned an unexpected response during the OAuth exchange. Please try again.', 'reviewbop-reviews' );
+				$error_message = __( 'reviewbird returned an unexpected response during the OAuth exchange. Please try again.', 'reviewbird-reviews' );
 			}
 
-			set_transient( 'reviewbop_oauth_error', $error_message, 60 );
+			set_transient( 'reviewbird_oauth_error', $error_message, 60 );
 			return false;
 		}
 
@@ -239,12 +239,12 @@ class Handler {
 		$store_token = sanitize_text_field( $token_data['access_token'] );
 
 		if ( empty( $store_token ) ) {
-			delete_transient( 'reviewbop_oauth_success' );
-			set_transient( 'reviewbop_oauth_error', __( 'ReviewBop returned an empty store token.', 'reviewbop-reviews' ), 60 );
+			delete_transient( 'reviewbird_oauth_success' );
+			set_transient( 'reviewbird_oauth_error', __( 'reviewbird returned an empty store token.', 'reviewbird-reviews' ), 60 );
 			return false;
 		}
 
-		update_option( 'reviewbop_store_token', $store_token );
+		update_option( 'reviewbird_store_token', $store_token );
 
 		// Store store ID from token response or derive it from the token.
 		$store_id = 0;
@@ -259,7 +259,7 @@ class Handler {
 		}
 
 		if ( $store_id ) {
-			update_option( 'reviewbop_store_id', $store_id );
+			update_option( 'reviewbird_store_id', $store_id );
 		}
 
 		// Configure media domains.
@@ -269,7 +269,7 @@ class Handler {
 			$configure_result = $api_client->configure_media_domains( $domains );
 
 			if ( is_wp_error( $configure_result ) ) {
-				error_log( 'ReviewBop: Failed to configure media domains: ' . $configure_result->get_error_message() );
+				error_log( 'reviewbird: Failed to configure media domains: ' . $configure_result->get_error_message() );
 			}
 		}
 
@@ -289,12 +289,12 @@ class Handler {
 		$locale_result = $api_client->update_store_locale( $timezone, $language, $country );
 
 		if ( is_wp_error( $locale_result ) ) {
-			error_log( 'ReviewBop: Failed to update store locale: ' . $locale_result->get_error_message() );
+			error_log( 'reviewbird: Failed to update store locale: ' . $locale_result->get_error_message() );
 		}
 
 		// Set connection success flag for admin notice.
-		delete_transient( 'reviewbop_oauth_error' );
-		set_transient( 'reviewbop_oauth_success', true, 300 );
+		delete_transient( 'reviewbird_oauth_error' );
+		set_transient( 'reviewbird_oauth_success', true, 300 );
 
 		return true;
 	}
@@ -309,7 +309,7 @@ class Handler {
 	private function store_oauth_state( $state, $redirect_uri, $code_verifier = '' ) {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'reviewbop_oauth_states';
+		$table_name = $wpdb->prefix . 'reviewbird_oauth_states';
 		$user_id    = get_current_user_id();
 		$expires_at = gmdate( 'Y-m-d H:i:s', time() + self::STATE_EXPIRATION );
 
@@ -335,12 +335,12 @@ class Handler {
 	private function verify_oauth_state( $state ) {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'reviewbop_oauth_states';
+		$table_name = $wpdb->prefix . 'reviewbird_oauth_states';
 		$user_id    = get_current_user_id();
 		$now        = current_time( 'mysql', true );
 
 		// Debug logging
-		error_log( 'ReviewBop OAuth state verification:' );
+		error_log( 'reviewbird OAuth state verification:' );
 		error_log( '  State: ' . $state );
 		error_log( '  Current User ID: ' . $user_id );
 		error_log( '  Current Time: ' . $now );
@@ -383,7 +383,7 @@ class Handler {
 	private function cleanup_oauth_state( $state ) {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'reviewbop_oauth_states';
+		$table_name = $wpdb->prefix . 'reviewbird_oauth_states';
 
 		$wpdb->delete(
 			$table_name,
@@ -398,7 +398,7 @@ class Handler {
 	public function cleanup_expired_oauth_states() {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'reviewbop_oauth_states';
+		$table_name = $wpdb->prefix . 'reviewbird_oauth_states';
 		$now        = current_time( 'mysql', true );
 
 		$wpdb->query(
