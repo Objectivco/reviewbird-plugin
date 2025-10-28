@@ -8,7 +8,8 @@
         "assets/build/**",
         "languages/**",
         "templates/**",
-        "src/**"
+        "src/**",
+        "vendor/**"
     ],
 	"scripts": {
 		"build": "wp-scripts build",
