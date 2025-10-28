@@ -112,6 +112,11 @@ class Plugin {
 	 * Enqueue public scripts and styles.
 	 */
 	public function enqueue_public_scripts() {
+		// Check if widget is enabled
+		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' ) {
+			return;
+		}
+
 		// Only load on product pages or pages with shortcode.
 		if ( is_product() || $this->has_reviewbird_shortcode() ) {
 			// Enqueue the widget CSS.
@@ -256,6 +261,11 @@ class Plugin {
 	 * @return string Template file path.
 	 */
 	public function comments_template_loader( $template ) {
+		// Check if widget is enabled
+		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' ) {
+			return $template;
+		}
+
 		if ( get_post_type() !== 'product' ) {
 			return $template;
 		}
