@@ -78,6 +78,9 @@ class Plugin {
 		// REST API routes.
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 
+		// Enable WooCommerce authentication for reviewbird REST API endpoints.
+		add_filter( 'woocommerce_rest_is_request_to_rest_api', array( $this, 'enable_wc_auth_for_reviewbird_api' ), 10, 1 );
+
 		// Admin hooks.
 		if ( is_admin() ) {
 			$settings = new Settings();
@@ -274,6 +277,29 @@ class Plugin {
 		}
 
 		return $template;
+	}
+
+	/**
+	 * Enable WooCommerce authentication for reviewbird REST API endpoints.
+	 *
+	 * @param bool $is_request_to_wc_api Whether this is a request to WC API.
+	 * @return bool
+	 */
+	public function enable_wc_auth_for_reviewbird_api( $is_request_to_wc_api ) {
+		// If already determined to be a WC API request, return true.
+		if ( $is_request_to_wc_api ) {
+			return true;
+		}
+
+		if ( empty( $_SERVER['REQUEST_URI'] ) ) {
+			return false;
+		}
+
+		$rest_prefix = trailingslashit( rest_get_url_prefix() );
+		$request_uri = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+
+		// Enable WooCommerce authentication for reviewbird/v1 endpoints.
+		return ( false !== strpos( $request_uri, $rest_prefix . 'reviewbird/' ) );
 	}
 
 }

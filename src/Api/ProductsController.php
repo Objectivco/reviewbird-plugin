@@ -161,18 +161,12 @@ class ProductsController {
 
 	/**
 	 * Check permission for API requests.
+	 * Uses WooCommerce authentication (consumer key/secret) via wc_rest_check_post_permissions.
 	 *
 	 * @param WP_REST_Request $request The REST API request.
 	 * @return bool Whether the request has permission.
 	 */
 	public function permission_callback( WP_REST_Request $request ) {
-		$api_key    = $request->get_header( 'X-API-Key' );
-		$saved_key = get_option( 'reviewbird_api_key' );
-
-		if ( empty( $api_key ) || empty( $saved_key ) ) {
-			return false;
-		}
-
-		return hash_equals( $saved_key, $api_key );
+		return wc_rest_check_post_permissions( 'product', 'read', 0 );
 	}
 }

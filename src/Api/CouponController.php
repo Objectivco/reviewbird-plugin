@@ -19,56 +19,11 @@ class CouponController {
     }
 
     /**
-     * Permission callback using WooCommerce OAuth authentication.
-     * Same authentication as WooCommerce REST API.
+     * Permission callback using WooCommerce authentication (consumer key/secret).
+     * Uses wc_rest_check_post_permissions for shop_coupon post type.
      */
     public function check_store_token(WP_REST_Request $request) {
-        // Check if WooCommerce REST API authentication is available
-        if (!class_exists('WC_REST_Authentication')) {
-            return new WP_Error(
-                'woocommerce_not_available',
-                'WooCommerce REST API authentication not available',
-                ['status' => 500]
-            );
-        }
-
-        // Use WooCommerce's OAuth authentication
-        // WooCommerce automatically validates OAuth signatures for REST API requests
-        $user_id = get_current_user_id();
-
-        if (!$user_id) {
-            // Check for OAuth parameters
-            $has_oauth_params = (
-                !empty($request->get_param('oauth_consumer_key')) ||
-                !empty($request->get_header('Authorization'))
-            );
-
-            if (!$has_oauth_params) {
-                return new WP_Error(
-                    'missing_auth',
-                    'Authentication required. Use WooCommerce OAuth credentials.',
-                    ['status' => 401]
-                );
-            }
-
-            // OAuth params present but authentication failed
-            return new WP_Error(
-                'invalid_oauth',
-                'Invalid WooCommerce OAuth credentials',
-                ['status' => 401]
-            );
-        }
-
-        // Verify user has appropriate WooCommerce permissions
-        if (!current_user_can('manage_woocommerce')) {
-            return new WP_Error(
-                'insufficient_permissions',
-                'User does not have permission to manage WooCommerce',
-                ['status' => 403]
-            );
-        }
-
-        return true;
+        return wc_rest_check_post_permissions('shop_coupon', 'create', 0);
     }
 
     /**
