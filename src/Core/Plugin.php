@@ -10,6 +10,7 @@ namespace reviewbird\Core;
 use reviewbird\Admin\Settings;
 use reviewbird\Api\Client;
 use reviewbird\Api\CouponController;
+use reviewbird\Api\ProductsController;
 use reviewbird\Api\RatingsController;
 use reviewbird\Integration\RatingOverride;
 use reviewbird\Integration\WooCommerce;
@@ -242,6 +243,10 @@ class Plugin {
 		// Coupon controller routes
 		$coupon_controller = new CouponController();
 		$coupon_controller->register_routes();
+
+		// Products controller routes
+		$products_controller = new ProductsController();
+		$products_controller->register_routes();
 	}
 
 	/**
