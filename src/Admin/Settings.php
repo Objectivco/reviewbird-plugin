@@ -18,7 +18,8 @@ class Settings {
 	 * Initialize admin hooks.
 	 */
 	public function __construct() {
-		add_action( 'wp_ajax_reviewbird_update_schema_setting', array( $this, 'handle_schema_setting_update' ) );
+		add_action( 'wp_ajax_reviewbird_update_enable_schema_setting', array( $this, 'handle_schema_setting_update' ) );
+		add_action( 'wp_ajax_reviewbird_update_enable_widget_setting', array( $this, 'handle_widget_setting_update' ) );
 		add_action( 'admin_notices', array( $this, 'display_oauth_notices' ) );
 	}
 
@@ -101,6 +102,7 @@ class Settings {
 				'apiUrl'       => reviewbird_get_api_url(),
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
 				'enableSchema' => get_option( 'reviewbird_enable_schema', 'yes' ) === 'yes',
+				'enableWidget' => get_option( 'reviewbird_enable_widget', 'yes' ) === 'yes',
 			)
 		);
 
@@ -148,6 +150,35 @@ class Settings {
 			array(
 				'enable_schema' => $enable_schema,
 				'message'       => __( 'Schema setting updated successfully', 'reviewbird-reviews' ),
+			)
+		);
+	}
+
+	/**
+	 * Handle AJAX request to update widget setting.
+	 */
+	public function handle_widget_setting_update() {
+		// Check nonce.
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'reviewbird_admin_nonce' ) ) {
+			wp_send_json_error( __( 'Invalid security token', 'reviewbird-reviews' ), 403 );
+		}
+
+		// Check permissions.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'Insufficient permissions', 'reviewbird-reviews' ), 403 );
+		}
+
+		// Get and validate the value.
+		$enable_widget = isset( $_POST['enable_widget'] ) && $_POST['enable_widget'] === '1';
+
+		// Update the option.
+		update_option( 'reviewbird_enable_widget', $enable_widget ? 'yes' : 'no' );
+
+		// Return success.
+		wp_send_json_success(
+			array(
+				'enable_widget' => $enable_widget,
+				'message'       => __( 'Widget setting updated successfully', 'reviewbird-reviews' ),
 			)
 		);
 	}

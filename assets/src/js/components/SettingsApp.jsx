@@ -1,66 +1,62 @@
 import { useState, useEffect } from '@wordpress/element';
-import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
-import ConnectionPanel from './ConnectionPanel';
-import SyncPanel from './SyncPanel';
-import ReviewSyncPanel from './ReviewSyncPanel';
-import ReviewRequestPanel from './ReviewRequestPanel';
-import SchemaPanel from './SchemaPanel';
+import ConnectionHealth from './ConnectionHealth';
+import TogglePanel from './TogglePanel';
 import LoadingSpinner from './LoadingSpinner';
 
 export default function SettingsApp() {
-	const [settings, setSettings] = useState(null);
-	const [productSyncStatus, setProductSyncStatus] = useState(null);
+	const [enableWidget, setEnableWidget] = useState(
+		window.reviewbirdAdmin?.enableWidget !== undefined ? window.reviewbirdAdmin.enableWidget : true
+	);
+	const [enableSchema, setEnableSchema] = useState(
+		window.reviewbirdAdmin?.enableSchema !== undefined ? window.reviewbirdAdmin.enableSchema : true
+	);
 	const [loading, setLoading] = useState(true);
-	const [saving, setSaving] = useState(false);
-	const [error, setError] = useState(null);
 
 	useEffect(() => {
-		loadSettings();
-		loadProductSyncStatus();
+		// Settings are loaded from PHP via reviewbirdAdmin global
+		setLoading(false);
 	}, []);
 
-	const loadProductSyncStatus = async () => {
+	const updateSetting = async (settingName, value) => {
 		try {
-			const data = await apiFetch({
-				path: '/reviewbird/v1/sync/status',
-			});
-			setProductSyncStatus(data);
-		} catch (err) {
-			console.error('Failed to load product sync status:', err);
-		}
-	};
+			const formData = new FormData();
+			formData.append('action', `reviewbird_update_${settingName}_setting`);
+			formData.append('nonce', window.reviewbirdAdmin.nonce);
+			formData.append(settingName, value ? '1' : '0');
 
-	const loadSettings = async () => {
-		try {
-			const data = await apiFetch({
-				path: '/reviewbird/v1/settings',
-			});
-			setSettings(data);
-			setError(null);
-		} catch (err) {
-			console.error('Failed to load settings:', err);
-			setError(err.message || __('Failed to load settings', 'reviewbird-reviews'));
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	const saveSettings = async (newSettings) => {
-		setSaving(true);
-		setError(null);
-		try {
-			const data = await apiFetch({
-				path: '/reviewbird/v1/settings',
+			const response = await fetch(window.reviewbirdAdmin.ajaxUrl, {
 				method: 'POST',
-				data: newSettings,
+				body: formData,
 			});
-			setSettings(data);
+
+			const result = await response.json();
+
+			if (!result.success) {
+				throw new Error(result.data || 'Failed to update setting');
+			}
+
+			return true;
 		} catch (err) {
-			setError(err.message || __('Failed to save settings', 'reviewbird-reviews'));
-			throw err;
-		} finally {
-			setSaving(false);
+			console.error(`Failed to update ${settingName} setting:`, err);
+			alert(__('Failed to update setting. Please try again.', 'reviewbird-reviews'));
+			return false;
+		}
+	};
+
+	const handleWidgetToggle = async () => {
+		const newValue = !enableWidget;
+		const success = await updateSetting('enable_widget', newValue);
+		if (success) {
+			setEnableWidget(newValue);
+		}
+	};
+
+	const handleSchemaToggle = async () => {
+		const newValue = !enableSchema;
+		const success = await updateSetting('enable_schema', newValue);
+		if (success) {
+			setEnableSchema(newValue);
 		}
 	};
 
@@ -75,49 +71,46 @@ export default function SettingsApp() {
 					{__('reviewbird Settings', 'reviewbird-reviews')}
 				</h1>
 				<p className="mt-2 text-gray-600">
-					{__('Connect your WooCommerce store to reviewbird for advanced review collection and display.', 'reviewbird-reviews')}
+					{__('Manage your reviewbird integration with WooCommerce.', 'reviewbird-reviews')}
 				</p>
 			</header>
 
-			{error && (
-				<div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-					<div className="flex">
-						<svg className="w-5 h-5 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-							<path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-						</svg>
-						<div className="ml-3">
-							<p className="text-sm text-red-800">{error}</p>
-						</div>
-					</div>
-				</div>
-			)}
-
 			<div className="space-y-6">
-				<ConnectionPanel
-					settings={settings}
-					onSave={saveSettings}
-					saving={saving}
+				<ConnectionHealth />
+
+				<TogglePanel
+					title={__('ReviewBird Widget', 'reviewbird-reviews')}
+					description={__('Display reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews.', 'reviewbird-reviews')}
+					enabled={enableWidget}
+					onToggle={handleWidgetToggle}
+					enabledText={__('Widget is enabled on all WooCommerce product pages.', 'reviewbird-reviews')}
 				/>
 
-				<SyncPanel isConnected={settings?.connection_status === 'connected'} />
-
-				<ReviewSyncPanel
-					isConnected={settings?.connection_status === 'connected'}
-					productsAreSynced={productSyncStatus && !productSyncStatus.needs_sync}
-				/>
-
-				<ReviewRequestPanel
-					settings={settings}
-					onSave={saveSettings}
-					saving={saving}
-					isConnected={settings?.connection_status === 'connected'}
-				/>
-
-				<SchemaPanel
-					settings={settings}
-					onSave={saveSettings}
-					saving={saving}
-					isConnected={settings?.connection_status === 'connected'}
+				<TogglePanel
+					title={__('SEO Schema Markup', 'reviewbird-reviews')}
+					description={__('Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results.', 'reviewbird-reviews')}
+					enabled={enableSchema}
+					onToggle={handleSchemaToggle}
+					enabledText={__('Schema markup is active on all WooCommerce product pages.', 'reviewbird-reviews')}
+					infoBox={{
+						title: __('What is Schema Markup?', 'reviewbird-reviews'),
+						items: [
+							__('Displays star ratings in Google search results', 'reviewbird-reviews'),
+							__('Shows review counts and product information', 'reviewbird-reviews'),
+							__('Can increase click-through rates by up to 30%', 'reviewbird-reviews'),
+							__('Reviews are cached for 4 hours for optimal performance', 'reviewbird-reviews'),
+						]
+					}}
+					links={[
+						{
+							href: 'https://search.google.com/test/rich-results',
+							text: __('Test with Google Rich Results', 'reviewbird-reviews')
+						},
+						{
+							href: 'https://validator.schema.org/',
+							text: __('Validate Schema', 'reviewbird-reviews')
+						}
+					]}
 				/>
 			</div>
 		</div>
