@@ -11,7 +11,6 @@ use reviewbird\Admin\Settings;
 use reviewbird\Api\Client;
 use reviewbird\Api\CouponController;
 use reviewbird\Api\RatingsController;
-use reviewbird\Api\SettingsController;
 use reviewbird\Core\ActionScheduler;
 use reviewbird\Integration\RatingOverride;
 use reviewbird\Integration\WooCommerce;
@@ -222,9 +221,6 @@ class Plugin {
 	 * Register REST API routes.
 	 */
 	public function register_rest_routes() {
-		$settings_controller = new SettingsController();
-		$settings_controller->register_routes();
-
 		$ratings_controller = new RatingsController();
 
 		register_rest_route(

@@ -87,10 +87,19 @@ export default function ConnectionHealth() {
 			case 'healthy':
 				return __('Your WooCommerce store is successfully connected to reviewbird. Review data is syncing properly.', 'reviewbird-reviews');
 			case 'unhealthy':
-				return __('Unable to connect to reviewbird. Please check that your WooCommerce OAuth credentials are valid and that reviewbird has access to your store.', 'reviewbird-reviews');
+				return null; // Will show custom message with link
 			default:
 				return __('Verifying connection to reviewbird...', 'reviewbird-reviews');
 		}
+	};
+
+	const getFixConnectionUrl = () => {
+		// Extract store ID from store_id field in health response, or construct from domain
+		const storeId = window.reviewbirdConfig?.storeId;
+		if (storeId) {
+			return `${window.reviewbirdAdmin.apiUrl}/stores/${storeId}/settings`;
+		}
+		return `${window.reviewbirdAdmin.apiUrl}/stores`;
 	};
 
 	return (
@@ -103,9 +112,26 @@ export default function ConnectionHealth() {
 					<h3 className="text-sm font-medium text-gray-900">
 						{getStatusText()}
 					</h3>
-					<p className="mt-1 text-sm text-gray-600">
-						{getStatusMessage()}
-					</p>
+					{healthStatus === 'unhealthy' ? (
+						<div className="mt-1 text-sm text-gray-600">
+							<p>{__('Unable to connect to reviewbird. Please check your connection settings.', 'reviewbird-reviews')}</p>
+							<a
+								href={getFixConnectionUrl()}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="mt-2 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700"
+							>
+								{__('Fix Connection Settings', 'reviewbird-reviews')}
+								<svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+								</svg>
+							</a>
+						</div>
+					) : (
+						<p className="mt-1 text-sm text-gray-600">
+							{getStatusMessage()}
+						</p>
+					)}
 					{lastChecked && (
 						<p className="mt-2 text-xs text-gray-500">
 							{__('Last checked:', 'reviewbird-reviews')} {lastChecked.toLocaleTimeString()}
