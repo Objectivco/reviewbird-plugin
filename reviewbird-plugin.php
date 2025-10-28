@@ -43,11 +43,6 @@ define( 'REVIEWBIRD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'REVIEWBIRD_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 /**
- * Text domain for translations.
- */
-define( 'REVIEWBIRD_TEXT_DOMAIN', 'reviewbird-reviews' );
-
-/**
  * reviewbird API URLs for different environments.
  */
 define( 'REVIEWBIRD_API_URL_PRODUCTION', 'https://app.reviewbird.com' );

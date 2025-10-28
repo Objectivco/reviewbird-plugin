@@ -64,7 +64,7 @@ class Plugin {
 	 */
 	public function load_plugin_textdomain() {
 		load_plugin_textdomain(
-			REVIEWBIRD_TEXT_DOMAIN,
+			'reviewbird-reviews',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);
@@ -76,7 +76,7 @@ class Plugin {
 	private function init_hooks() {
 		// REST API routes.
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
-		
+
 		// Admin hooks.
 		if ( is_admin() ) {
 			$settings = new Settings();
