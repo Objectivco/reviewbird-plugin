@@ -11,7 +11,6 @@ use reviewbird\Admin\Settings;
 use reviewbird\Api\Client;
 use reviewbird\Api\CouponController;
 use reviewbird\Api\RatingsController;
-use reviewbird\Core\ActionScheduler;
 use reviewbird\Integration\RatingOverride;
 use reviewbird\Integration\WooCommerce;
 
@@ -75,9 +74,6 @@ class Plugin {
 	 * Initialize plugin hooks.
 	 */
 	private function init_hooks() {
-		// Initialize Action Scheduler integration.
-		ActionScheduler::init();
-		
 		// REST API routes.
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 		
