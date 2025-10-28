@@ -1,10 +1,10 @@
 {
-	"name": "reviewbird-reviews",
+	"name": "reviewbird-plugin",
 	"version": "1.0.0",
 	"description": "WordPress plugin for reviewbird integration",
 	"main": "index.js",
     "files": [
-        "reviewapp-reviews.php",
+        "reviewbird-plugin.php",
         "assets/build/**",
         "languages/**",
         "templates/**",

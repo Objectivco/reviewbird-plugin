@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: reviewbird Reviews
- * Plugin URI: https://reviewbird.com
+ * Plugin Name: reviewbird
+ * Plugin URI: https://www.reviewbird.com
  * Description: Connect your WooCommerce store to reviewbird for advanced review collection and display.
  * Version: 1.0.0
  * Author: reviewbird
