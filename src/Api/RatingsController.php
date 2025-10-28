@@ -119,37 +119,55 @@ class RatingsController {
 
 	/**
 	 * Permission callback for ratings endpoint.
+	 * Uses WooCommerce OAuth 1.0a authentication (same as WooCommerce REST API).
 	 *
 	 * @param WP_REST_Request $request The REST API request.
 	 * @return bool|WP_Error True if authorized, WP_Error otherwise.
 	 */
 	public static function permission_callback( WP_REST_Request $request ) {
-		$auth_header = $request->get_header( 'Authorization' );
-
-		if ( empty( $auth_header ) ) {
+		// Check if WooCommerce REST API authentication is available
+		if ( ! class_exists( 'WC_REST_Authentication' ) ) {
 			return new WP_Error(
-				'missing_auth',
-				__( 'Authorization header is required', 'reviewbird-reviews' ),
+				'woocommerce_not_available',
+				__( 'WooCommerce REST API authentication not available', 'reviewbird-reviews' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		// Use WooCommerce's OAuth authentication
+		// WooCommerce automatically validates OAuth signatures for REST API requests
+		// If the request has valid OAuth credentials, current_user will be set
+		$user_id = get_current_user_id();
+
+		if ( ! $user_id ) {
+			// Check for OAuth parameters in the request
+			$has_oauth_params = (
+				! empty( $request->get_param( 'oauth_consumer_key' ) ) ||
+				! empty( $request->get_header( 'Authorization' ) )
+			);
+
+			if ( ! $has_oauth_params ) {
+				return new WP_Error(
+					'missing_auth',
+					__( 'Authentication required. Use WooCommerce OAuth credentials.', 'reviewbird-reviews' ),
+					array( 'status' => 401 )
+				);
+			}
+
+			// OAuth params present but authentication failed
+			return new WP_Error(
+				'invalid_oauth',
+				__( 'Invalid WooCommerce OAuth credentials', 'reviewbird-reviews' ),
 				array( 'status' => 401 )
 			);
 		}
 
-		$provided_token = str_replace( 'Bearer ', '', $auth_header );
-		$stored_token   = get_option( 'reviewbird_store_token' );
-
-		if ( empty( $stored_token ) ) {
+		// Verify user has appropriate WooCommerce permissions
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return new WP_Error(
-				'no_token_configured',
-				__( 'reviewbird store token not configured', 'reviewbird-reviews' ),
-				array( 'status' => 401 )
-			);
-		}
-
-		if ( $provided_token !== $stored_token ) {
-			return new WP_Error(
-				'invalid_token',
-				__( 'Invalid authentication token', 'reviewbird-reviews' ),
-				array( 'status' => 401 )
+				'insufficient_permissions',
+				__( 'User does not have permission to manage WooCommerce', 'reviewbird-reviews' ),
+				array( 'status' => 403 )
 			);
 		}
 

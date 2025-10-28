@@ -19,36 +19,52 @@ class CouponController {
     }
 
     /**
-     * Check store token authentication
+     * Permission callback using WooCommerce OAuth authentication.
+     * Same authentication as WooCommerce REST API.
      */
     public function check_store_token(WP_REST_Request $request) {
-        $store_token = $request->get_header('X-Store-Token');
-
-        if (empty($store_token)) {
+        // Check if WooCommerce REST API authentication is available
+        if (!class_exists('WC_REST_Authentication')) {
             return new WP_Error(
-                'missing_token',
-                'Store token is required',
+                'woocommerce_not_available',
+                'WooCommerce REST API authentication not available',
+                ['status' => 500]
+            );
+        }
+
+        // Use WooCommerce's OAuth authentication
+        // WooCommerce automatically validates OAuth signatures for REST API requests
+        $user_id = get_current_user_id();
+
+        if (!$user_id) {
+            // Check for OAuth parameters
+            $has_oauth_params = (
+                !empty($request->get_param('oauth_consumer_key')) ||
+                !empty($request->get_header('Authorization'))
+            );
+
+            if (!$has_oauth_params) {
+                return new WP_Error(
+                    'missing_auth',
+                    'Authentication required. Use WooCommerce OAuth credentials.',
+                    ['status' => 401]
+                );
+            }
+
+            // OAuth params present but authentication failed
+            return new WP_Error(
+                'invalid_oauth',
+                'Invalid WooCommerce OAuth credentials',
                 ['status' => 401]
             );
         }
 
-        // Get saved store token from settings
-        $saved_token = get_option('reviewbird_store_token');
-
-        if (empty($saved_token)) {
+        // Verify user has appropriate WooCommerce permissions
+        if (!current_user_can('manage_woocommerce')) {
             return new WP_Error(
-                'no_token_configured',
-                'No store token configured in WordPress',
-                ['status' => 401]
-            );
-        }
-
-        // Compare tokens
-        if (!hash_equals($saved_token, $store_token)) {
-            return new WP_Error(
-                'invalid_token',
-                'Invalid store token',
-                ['status' => 401]
+                'insufficient_permissions',
+                'User does not have permission to manage WooCommerce',
+                ['status' => 403]
             );
         }
 
