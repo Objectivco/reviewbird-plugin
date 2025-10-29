@@ -112,6 +112,8 @@ class ProductsController {
 			'permalink'    => $product->get_permalink(),
 			'type'         => $product->get_type(),
 			'status'       => $product->get_status(),
+			'sku'          => $product->get_sku(),
+			'price'        => $product->get_price(),
 			'image'        => wp_get_attachment_url( $product->get_image_id() ),
 			'images'       => $images,
 			'stock_status' => $product->get_stock_status(),
