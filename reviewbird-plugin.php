@@ -46,7 +46,7 @@ define( 'REVIEWBIRD_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
  * reviewbird API URLs for different environments.
  */
 define( 'REVIEWBIRD_API_URL_PRODUCTION', 'https://app.reviewbird.com' );
-define( 'REVIEWBIRD_API_URL_STAGING', 'https://6d4e16252666.ngrok-free.app' );
+define( 'REVIEWBIRD_API_URL_STAGING', 'https://staging.app.reviewbird.com' );
 define( 'REVIEWBIRD_API_URL_DEVELOPMENT', 'https://reviewbird.test' );
 
 
