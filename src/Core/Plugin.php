@@ -119,15 +119,7 @@ class Plugin {
 
 		// Only load on product pages or pages with shortcode.
 		if ( is_product() || $this->has_reviewbird_shortcode() ) {
-			// Enqueue the widget CSS.
-			wp_enqueue_style(
-				'reviewbird-widget',
-				reviewbird_get_api_url() . '/build/review-widget.css',
-				array(),
-				$this->version
-			);
-
-			// Enqueue the new Svelte widget JS.
+			// Enqueue the new Svelte widget JS (CSS is inlined in the JS bundle).
 			wp_enqueue_script(
 				'reviewbird-widget',
 				reviewbird_get_api_url() . '/build/review-widget-v2.js',
