@@ -9,6 +9,7 @@ namespace reviewbird\Core;
 
 use reviewbird\Admin\Settings;
 use reviewbird\Api\Client;
+use reviewbird\Api\ConnectionController;
 use reviewbird\Api\CouponController;
 use reviewbird\Api\ProductsController;
 use reviewbird\Api\RatingsController;
@@ -242,6 +243,10 @@ class Plugin {
 				'permission_callback' => array( 'reviewbird\Api\RatingsController', 'permission_callback' ),
 			)
 		);
+
+		// Connection controller routes
+		$connection_controller = new ConnectionController();
+		$connection_controller->register_routes();
 
 		// Coupon controller routes
 		$coupon_controller = new CouponController();
