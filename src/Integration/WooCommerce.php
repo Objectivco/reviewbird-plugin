@@ -116,6 +116,12 @@ class WooCommerce {
 			return;
 		}
 
+		// Check if store has subscription
+		$plugin = \reviewbird\Core\Plugin::get_instance();
+		if ( ! $plugin->store_has_subscription() ) {
+			return; // Don't output schema without subscription
+		}
+
 		// Get product ID from the current post.
 		$product_id = get_the_ID();
 		if ( ! $product_id ) {

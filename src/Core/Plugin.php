@@ -112,8 +112,8 @@ class Plugin {
 	 * Enqueue public scripts and styles.
 	 */
 	public function enqueue_public_scripts() {
-		// Check if widget is enabled
-		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' ) {
+		// Check if widget is enabled AND store has subscription
+		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' || ! $this->store_has_subscription() ) {
 			return;
 		}
 
@@ -258,9 +258,9 @@ class Plugin {
 	 * @return string Template file path.
 	 */
 	public function comments_template_loader( $template ) {
-		// Check if widget is enabled
-		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' ) {
-			return $template;
+		// Check if widget is enabled AND store has subscription
+		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' || ! $this->store_has_subscription() ) {
+			return $template; // Falls back to WooCommerce default reviews
 		}
 
 		if ( get_post_type() !== 'product' ) {
@@ -274,6 +274,33 @@ class Plugin {
 		}
 
 		return $template;
+	}
+
+	/**
+	 * Check if store has an active subscription.
+	 *
+	 * @return bool
+	 */
+	public function store_has_subscription() {
+		// Check transient cache first (1 hour)
+		$cached = get_transient( 'reviewbird_has_subscription' );
+		if ( false !== $cached ) {
+			return (bool) $cached;
+		}
+
+		$api_client = new \reviewbird\Api\Client();
+		$store_info = $api_client->get_store_info();
+
+		if ( is_wp_error( $store_info ) ) {
+			return false;
+		}
+
+		$has_subscription = isset( $store_info['has_active_subscription'] ) ? (bool) $store_info['has_active_subscription'] : false;
+
+		// Cache for 1 hour
+		set_transient( 'reviewbird_has_subscription', $has_subscription, HOUR_IN_SECONDS );
+
+		return $has_subscription;
 	}
 
 	/**
