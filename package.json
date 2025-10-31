@@ -3,18 +3,18 @@
 	"version": "1.0.0",
 	"description": "WordPress plugin for reviewbird integration",
 	"main": "index.js",
-    "files": [
-        "reviewbird-plugin.php",
-        "assets/build/**",
-        "languages/**",
-        "templates/**",
-        "src/**",
-        "vendor/**"
-    ],
+	"files": [
+		"reviewbird-plugin.php",
+		"assets/build/**",
+		"languages/**",
+		"templates/**",
+		"src/**",
+		"vendor/**"
+	],
 	"scripts": {
 		"build": "wp-scripts build",
 		"dev": "wp-scripts start",
-        "plugin-zip": "npm run build && composer install --no-dev && wp-scripts plugin-zip",
+		"plugin-zip": "npm run build && composer install --no-dev && wp-scripts plugin-zip",
 		"lint:js": "wp-scripts lint-js",
 		"lint:css": "wp-scripts lint-style",
 		"lint:php": "phpcs --standard=WordPress .",
@@ -31,15 +31,15 @@
 	"license": "GPL-2.0-or-later",
 	"devDependencies": {
 		"@wordpress/scripts": "^30.26.0",
-		"tailwindcss": "^3.4.0",
 		"autoprefixer": "^10.4.16",
-		"postcss": "^8.4.31"
+		"postcss": "^8.4.31",
+		"tailwindcss": "^3.4.0"
 	},
 	"dependencies": {
-		"@wordpress/element": "^5.0.0",
+		"@wordpress/api-fetch": "^6.55.0",
 		"@wordpress/components": "^25.0.0",
-		"@wordpress/api-fetch": "^6.0.0",
 		"@wordpress/data": "^9.0.0",
+		"@wordpress/element": "^5.0.0",
 		"@wordpress/i18n": "^4.0.0",
 		"@wordpress/notices": "^4.0.0",
 		"classnames": "^2.3.2"

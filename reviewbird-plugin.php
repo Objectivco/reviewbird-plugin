@@ -47,7 +47,7 @@ define( 'REVIEWBIRD_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
  */
 define( 'REVIEWBIRD_API_URL_PRODUCTION', 'https://app.reviewbird.com' );
 define( 'REVIEWBIRD_API_URL_STAGING', 'https://staging.app.reviewbird.com' );
-define( 'REVIEWBIRD_API_URL_DEVELOPMENT', 'https://reviewbird.test' );
+define( 'REVIEWBIRD_API_URL_DEVELOPMENT', 'https://reviewapp.test' );
 
 
 /**
