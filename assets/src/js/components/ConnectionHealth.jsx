@@ -1,6 +1,5 @@
 import { useState, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import apiFetch from '@wordpress/api-fetch';
 
 export default function ConnectionHealth() {
 	const [healthStatus, setHealthStatus] = useState('checking');
@@ -16,8 +15,7 @@ export default function ConnectionHealth() {
 
 	const checkHealth = async () => {
 		try {
-            const response = await apiFetch( {
-                url: `${window.reviewbirdAdmin.apiUrl}/api/woocommerce/health?domain=${window.location.hostname}`,
+            const response = await fetch( `${window.reviewbirdAdmin.apiUrl}/api/woocommerce/health?domain=${window.location.hostname}`, {
 				method: 'GET',
 				headers: {
 					'Accept': 'application/json',
