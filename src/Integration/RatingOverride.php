@@ -39,11 +39,13 @@ class RatingOverride {
 	/**
 	 * Check if store is connected to reviewbird.
 	 *
+	 * Checks for WooCommerce consumer key which indicates OAuth connection.
+	 *
 	 * @return bool True if connected, false otherwise.
 	 */
 	private function is_store_connected(): bool {
-		$token = get_option( 'reviewbird_store_token' );
-		return ! empty( $token );
+		$consumer_key = get_option( 'woocommerce_reviewbird_consumer_key' );
+		return ! empty( $consumer_key );
 	}
 
 	/**
