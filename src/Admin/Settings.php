@@ -8,6 +8,7 @@
 namespace reviewbird\Admin;
 
 use reviewbird\Api\Client;
+use reviewbird\Services\HealthChecker;
 
 /**
  * Admin settings page.
@@ -20,6 +21,7 @@ class Settings {
 	public function __construct() {
 		add_action( 'wp_ajax_reviewbird_update_enable_schema_setting', array( $this, 'handle_schema_setting_update' ) );
 		add_action( 'wp_ajax_reviewbird_update_enable_widget_setting', array( $this, 'handle_widget_setting_update' ) );
+		add_action( 'wp_ajax_reviewbird_clear_health_cache', array( $this, 'handle_clear_health_cache' ) );
 		add_action( 'admin_notices', array( $this, 'display_oauth_notices' ) );
 	}
 
@@ -179,6 +181,34 @@ class Settings {
 			array(
 				'enable_widget' => $enable_widget,
 				'message'       => __( 'Widget setting updated successfully', 'reviewbird-reviews' ),
+			)
+		);
+	}
+
+	/**
+	 * Handle AJAX request to clear health check cache.
+	 */
+	public function handle_clear_health_cache() {
+		// Check nonce.
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'reviewbird_admin_nonce' ) ) {
+			wp_send_json_error( __( 'Invalid security token', 'reviewbird-reviews' ), 403 );
+		}
+
+		// Check permissions.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'Insufficient permissions', 'reviewbird-reviews' ), 403 );
+		}
+
+		// Clear the health cache and fetch fresh status.
+		HealthChecker::clearCache();
+		$health_checker = new HealthChecker();
+		$status = $health_checker->getStatus();
+
+		// Return success with new status.
+		wp_send_json_success(
+			array(
+				'status'  => $status,
+				'message' => __( 'Health check cache cleared', 'reviewbird-reviews' ),
 			)
 		);
 	}
