@@ -125,7 +125,22 @@ class RatingsController {
 	 * @return bool|WP_Error True if authorized, WP_Error otherwise.
 	 */
 	public static function permission_callback( WP_REST_Request $request ) {
-		return wc_rest_check_post_permissions( 'product', 'edit', 0 );
+		// Extract and validate product ID from request
+		$product_external_id = $request->get_param( 'product_external_id' );
+		$product_id          = absint( $product_external_id );
+
+		// If no valid product ID provided, deny access
+		if ( ! $product_id ) {
+			return false;
+		}
+
+		// Verify the post is actually a product
+		if ( 'product' !== get_post_type( $product_id ) ) {
+			return false;
+		}
+
+		// Check WooCommerce OAuth authenticated user has permission to edit this specific product
+		return wc_rest_check_post_permissions( 'product', 'edit', $product_id );
 	}
 
 	/**

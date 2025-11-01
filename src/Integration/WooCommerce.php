@@ -117,8 +117,7 @@ class WooCommerce {
 		}
 
 		// Check if store has subscription
-		$plugin = \reviewbird\Core\Plugin::get_instance();
-		if ( ! $plugin->store_has_subscription() ) {
+		if ( ! \reviewbird\Core\Plugin::store_has_subscription() ) {
 			return; // Don't output schema without subscription
 		}
 
