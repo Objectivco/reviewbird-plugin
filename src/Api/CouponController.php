@@ -14,7 +14,7 @@ class CouponController {
         register_rest_route('reviewbird/v1', '/coupons/create', [
             'methods' => 'POST',
             'callback' => [$this, 'create_coupon'],
-            'permission_callback' => [$this, 'check_store_token'],
+            'permission_callback' => [$this, 'permission_callback'],
         ]);
     }
 
@@ -22,7 +22,7 @@ class CouponController {
      * Permission callback using WooCommerce authentication (consumer key/secret).
      * Uses wc_rest_check_post_permissions for shop_coupon post type.
      */
-    public function check_store_token(WP_REST_Request $request) {
+    public function permission_callback(WP_REST_Request $request) {
         return wc_rest_check_post_permissions('shop_coupon', 'create', 0);
     }
 
