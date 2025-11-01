@@ -13,9 +13,30 @@ export default function ConnectionHealth() {
 		return () => clearInterval(interval);
 	}, []);
 
-	const checkHealth = async () => {
+	const checkHealth = async (clearCache = false) => {
 		try {
-            const response = await fetch( `${window.reviewbirdAdmin.apiUrl}/api/woocommerce/health?domain=${window.location.hostname}`, {
+			// If clearCache is true, call WordPress AJAX to clear transient cache
+			if (clearCache) {
+				const formData = new FormData();
+				formData.append('action', 'reviewbird_clear_health_cache');
+				formData.append('nonce', window.reviewbirdAdmin.nonce);
+
+				try {
+					const cacheResponse = await fetch(window.reviewbirdAdmin.ajaxUrl, {
+						method: 'POST',
+						body: formData
+					});
+
+					if (!cacheResponse.ok) {
+						console.warn('Failed to clear cache, continuing with health check');
+					}
+				} catch (cacheError) {
+					console.warn('Cache clear request failed:', cacheError);
+					// Continue with health check anyway
+				}
+			}
+
+			const response = await fetch( `${window.reviewbirdAdmin.apiUrl}/api/woocommerce/health?domain=${window.location.hostname}`, {
 				method: 'GET',
 				headers: {
 					'Accept': 'application/json',
@@ -231,7 +252,7 @@ export default function ConnectionHealth() {
 				</div>
 				{healthStatus !== 'checking' && (
 					<button
-						onClick={checkHealth}
+						onClick={() => checkHealth(true)}
 						className="ml-4 text-sm text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap"
 					>
 						{__('Refresh', 'reviewbird-reviews')}
