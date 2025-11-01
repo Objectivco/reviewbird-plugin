@@ -8,6 +8,7 @@
 namespace reviewbird\Integration;
 
 use reviewbird\Api\Client;
+use reviewbird\Services\HealthChecker;
 
 /**
  * WooCommerce integration class.
@@ -22,10 +23,20 @@ class WooCommerce {
 	private $api_client;
 
 	/**
-	 * Initialize WooCommerce integration.
+	 * Health checker instance.
+	 *
+	 * @var \reviewbird\Services\HealthChecker
 	 */
-	public function __construct() {
+	private $health_checker;
+
+	/**
+	 * Initialize WooCommerce integration.
+	 *
+	 * @param \reviewbird\Services\HealthChecker $health_checker Optional health checker instance.
+	 */
+	public function __construct( $health_checker = null ) {
 		$this->api_client = new Client();
+		$this->health_checker = $health_checker;
 	}
 
 	/**
@@ -117,7 +128,7 @@ class WooCommerce {
 		}
 
 		// Check if store has subscription
-		if ( ! \reviewbird\Core\Plugin::store_has_subscription() ) {
+		if ( ! $this->health_checker || ! $this->health_checker->hasSubscription() ) {
 			return; // Don't output schema without subscription
 		}
 

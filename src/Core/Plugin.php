@@ -15,6 +15,7 @@ use reviewbird\Api\ProductsController;
 use reviewbird\Api\RatingsController;
 use reviewbird\Integration\RatingOverride;
 use reviewbird\Integration\WooCommerce;
+use reviewbird\Services\HealthChecker;
 
 /**
  * The core plugin class.
@@ -37,6 +38,13 @@ class Plugin {
 	 * @var string
 	 */
 	protected $version;
+
+	/**
+	 * Cached HealthChecker instance.
+	 *
+	 * @var \reviewbird\Services\HealthChecker
+	 */
+	private $health_checker;
 
 	/**
 	 * Initialize the plugin.
@@ -95,7 +103,7 @@ class Plugin {
 
 		// WooCommerce integration.
 		if ( class_exists( 'WooCommerce' ) ) {
-			$woocommerce = new WooCommerce();
+			$woocommerce = new WooCommerce( $this->get_health_checker() );
 
 			// Rating override integration.
 			new RatingOverride();
@@ -112,8 +120,8 @@ class Plugin {
 	 * Enqueue public scripts and styles.
 	 */
 	public function enqueue_public_scripts() {
-		// Check if widget is enabled AND store has subscription
-		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' || ! self::store_has_subscription() ) {
+		// Check if widget is enabled AND store can show widget
+		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' || ! $this->get_health_checker()->canShowWidget() ) {
 			return;
 		}
 
@@ -211,6 +219,18 @@ class Plugin {
 	}
 
 	/**
+	 * Get or create HealthChecker instance (singleton per Plugin instance).
+	 *
+	 * @return \reviewbird\Services\HealthChecker
+	 */
+	public function get_health_checker() {
+		if ( ! $this->health_checker ) {
+			$this->health_checker = new HealthChecker();
+		}
+		return $this->health_checker;
+	}
+
+	/**
 	 * Register REST API routes.
 	 */
 	public function register_rest_routes() {
@@ -258,8 +278,8 @@ class Plugin {
 	 * @return string Template file path.
 	 */
 	public function comments_template_loader( $template ) {
-		// Check if widget is enabled AND store has subscription
-		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' || ! self::store_has_subscription() ) {
+		// Check if widget is enabled AND store can show widget
+		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' || ! $this->get_health_checker()->canShowWidget() ) {
 			return $template; // Falls back to WooCommerce default reviews
 		}
 
@@ -276,32 +296,6 @@ class Plugin {
 		return $template;
 	}
 
-	/**
-	 * Check if store has an active subscription.
-	 *
-	 * @return bool
-	 */
-	public static function store_has_subscription() {
-		// Check transient cache first (1 hour)
-		$cached = get_transient( 'reviewbird_has_subscription' );
-		if ( false !== $cached ) {
-			return (bool) $cached;
-		}
-
-		$api_client = new \reviewbird\Api\Client();
-		$store_info = $api_client->get_store_info();
-
-		if ( is_wp_error( $store_info ) ) {
-			return false;
-		}
-
-		$has_subscription = isset( $store_info['has_active_subscription'] ) ? (bool) $store_info['has_active_subscription'] : false;
-
-		// Cache for 1 hour
-		set_transient( 'reviewbird_has_subscription', $has_subscription, HOUR_IN_SECONDS );
-
-		return $has_subscription;
-	}
 
 	/**
 	 * Enable WooCommerce authentication for reviewbird REST API endpoints.
