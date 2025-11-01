@@ -58,18 +58,12 @@ class HealthChecker
      */
     protected function fetchStatus(): ?array
     {
-        $apiClient = $this->getApiClient();
-        $storeId = $apiClient->get_store_id_for_frontend();
+        // Use the consolidated health endpoint (matches ConnectionHealth.jsx)
+        $domain = parse_url(home_url(), PHP_URL_HOST) ?? '';
+        $endpoint = '/api/woocommerce/health?domain=' . urlencode($domain);
 
-        if ($storeId) {
-            // Use store ID endpoint
-            $response = $apiClient->request("/api/stores/{$storeId}/status");
-        } else {
-            // Fallback to domain-based lookup
-            $domain = parse_url(home_url(), PHP_URL_HOST) ?? '';
-            $endpoint = '/api/woocommerce/health?domain=' . urlencode($domain);
-            $response = $apiClient->request($endpoint);
-        }
+        $apiClient = $this->getApiClient();
+        $response = $apiClient->request($endpoint);
 
         if (is_wp_error($response)) {
             return null;
