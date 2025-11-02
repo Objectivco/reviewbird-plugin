@@ -210,10 +210,10 @@ class RatingsController {
 
 			if ( $user ) {
 				// Load customer from user ID.
-				$customer = new WC_Customer( $user->ID );
+				$customer = new \WC_Customer( $user->ID );
 			} else {
 				// Create guest customer object.
-				$customer = new WC_Customer( 0 );
+				$customer = new \WC_Customer( 0 );
 				$customer->set_email( $customer_email );
 			}
 
