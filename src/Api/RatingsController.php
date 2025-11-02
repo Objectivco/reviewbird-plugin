@@ -23,12 +23,12 @@ class RatingsController {
 	 * @return WP_REST_Response|WP_Error Response or error.
 	 */
 	public function update_ratings( WP_REST_Request $request ) {
-		$product_external_id = $request->get_param( 'product_external_id' );
-		$avg_stars           = $request->get_param( 'avg_stars' );
-		$review_count        = $request->get_param( 'review_count' );
-		$rating_counts       = $request->get_param( 'rating_counts' );
+		$product_id    = $request->get_param( 'product_id' );
+		$avg_stars     = $request->get_param( 'avg_stars' );
+		$review_count  = $request->get_param( 'review_count' );
+		$rating_counts = $request->get_param( 'rating_counts' );
 
-		if ( empty( $product_external_id ) ) {
+		if ( empty( $product_id ) ) {
 			return new WP_Error(
 				'missing_product_id',
 				__( 'Product external ID is required', 'reviewbird-reviews' ),
@@ -60,7 +60,7 @@ class RatingsController {
 			);
 		}
 
-		$product_id = absint( $product_external_id );
+		$product_id = absint( $product_id );
 
 		if ( ! $product_id ) {
 			return new WP_Error(
