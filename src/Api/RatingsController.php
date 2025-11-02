@@ -126,8 +126,8 @@ class RatingsController {
 	 */
 	public static function permission_callback( WP_REST_Request $request ) {
 		// Extract and validate product ID from request
-		$product_external_id = $request->get_param( 'product_external_id' );
-		$product_id          = absint( $product_external_id );
+		$product_id = $request->get_param( 'product_id' );
+		$product_id = absint( $product_id );
 
 		// If no valid product ID provided, deny access
 		if ( ! $product_id ) {
