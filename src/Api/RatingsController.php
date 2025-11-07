@@ -200,7 +200,7 @@ class RatingsController {
 		$location          = null;
 
 		if ( function_exists( 'wc_customer_bought_product' ) ) {
-			$verified_purchase = wc_customer_bought_product( null, $customer_email, $product_id );
+			$verified_purchase = wc_customer_bought_product($customer_email, null, $product_id );
 		}
 
 		// Get customer's location using WC_Customer.
