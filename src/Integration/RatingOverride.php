@@ -19,7 +19,7 @@ class RatingOverride {
 	 */
 	public function __construct() {
 		// Only hook if store is connected
-		if ( ! $this->is_store_connected() ) {
+		if ( ! reviewbird_get_store_id() ) {
 			return;
 		}
 
@@ -34,18 +34,6 @@ class RatingOverride {
 		add_filter( 'woocommerce_product_variation_get_rating_count', array( $this, 'override_rating_count' ), 10, 2 );
 		add_filter( 'woocommerce_product_variation_get_review_count', array( $this, 'override_review_count' ), 10, 2 );
 		add_filter( 'woocommerce_product_variation_get_rating_counts', array( $this, 'override_rating_counts' ), 10, 2 );
-	}
-
-	/**
-	 * Check if store is connected to reviewbird.
-	 *
-	 * Checks for WooCommerce consumer key which indicates OAuth connection.
-	 *
-	 * @return bool True if connected, false otherwise.
-	 */
-	private function is_store_connected(): bool {
-		$consumer_key = get_option( 'woocommerce_reviewbird_consumer_key' );
-		return ! empty( $consumer_key );
 	}
 
 	/**

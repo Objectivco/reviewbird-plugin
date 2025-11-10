@@ -7,9 +7,6 @@
 
 namespace reviewbird\Admin;
 
-use reviewbird\Api\Client;
-use reviewbird\Services\HealthChecker;
-
 /**
  * Admin settings page.
  */
@@ -200,9 +197,8 @@ class Settings {
 		}
 
 		// Clear the health cache and fetch fresh status.
-		HealthChecker::clearCache();
-		$health_checker = new HealthChecker();
-		$status = $health_checker->getStatus();
+		reviewbird_clear_status_cache();
+		$status = reviewbird_get_store_status( true );
 
 		// Return success with new status.
 		wp_send_json_success(

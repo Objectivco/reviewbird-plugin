@@ -7,25 +7,15 @@
 
 namespace reviewbird\Integration;
 
-use reviewbird\Api\Client;
-
 /**
  * Schema markup class for SEO.
  */
 class SchemaMarkup {
 
 	/**
-	 * API client instance.
-	 *
-	 * @var Client
-	 */
-	private $api_client;
-
-	/**
 	 * Initialize schema markup integration.
 	 */
 	public function __construct() {
-		$this->api_client = new Client();
 	}
 
 	/**
@@ -119,7 +109,7 @@ class SchemaMarkup {
 	 * @return array Array of Review schema objects.
 	 */
 	private function fetch_reviews_for_schema( $product_id ) {
-		$store_id = $this->api_client->get_store_id_for_frontend();
+		$store_id = reviewbird_get_store_id();
 
 		if ( ! $store_id ) {
 			return array();
