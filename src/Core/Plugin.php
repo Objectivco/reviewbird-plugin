@@ -8,14 +8,12 @@
 namespace reviewbird\Core;
 
 use reviewbird\Admin\Settings;
-use reviewbird\Api\Client;
 use reviewbird\Api\ConnectionController;
 use reviewbird\Api\CouponController;
 use reviewbird\Api\ProductsController;
 use reviewbird\Api\RatingsController;
 use reviewbird\Integration\RatingOverride;
 use reviewbird\Integration\WooCommerce;
-use reviewbird\Services\HealthChecker;
 
 /**
  * The core plugin class.
@@ -38,13 +36,6 @@ class Plugin {
 	 * @var string
 	 */
 	protected $version;
-
-	/**
-	 * Cached HealthChecker instance.
-	 *
-	 * @var \reviewbird\Services\HealthChecker
-	 */
-	private $health_checker;
 
 	/**
 	 * Initialize the plugin.
@@ -103,7 +94,7 @@ class Plugin {
 
 		// WooCommerce integration.
 		if ( class_exists( 'WooCommerce' ) ) {
-			$woocommerce = new WooCommerce( $this->get_health_checker() );
+			$woocommerce = new WooCommerce();
 
 			// Rating override integration.
 			new RatingOverride();
@@ -121,7 +112,7 @@ class Plugin {
 	 */
 	public function enqueue_public_scripts() {
 		// Check if widget is enabled AND store can show widget
-		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' || ! $this->get_health_checker()->canShowWidget() ) {
+		if ( ! reviewbird_can_show_widget() ) {
 			return;
 		}
 
@@ -183,52 +174,9 @@ class Plugin {
 			return '<p>' . esc_html__( 'reviewbird: Product ID is required.', 'reviewbird-reviews' ) . '</p>';
 		}
 
-		$api_client = new Client();
-		$store_id = $api_client->get_store_id_for_frontend();
-
-		if ( ! $store_id ) {
-			return '<p>' . esc_html__( 'reviewbird: Store not connected.', 'reviewbird-reviews' ) . '</p>';
-		}
-
-		$widget_id = 'reviewbird-widget-' . uniqid();
-
-		return sprintf(
-			'<div id="%s" data-store-id="%s" data-product-key="%s"></div><script>if(typeof reviewbird !== "undefined") reviewbird.init();</script>',
-			esc_attr( $widget_id ),
-			esc_attr( $store_id ),
-			esc_attr( $atts['product_id'] )
-		);
+		return reviewbird_render_widget( $atts['product_id'] );
 	}
 
-	/**
-	 * Get plugin name.
-	 *
-	 * @return string
-	 */
-	public function get_plugin_name() {
-		return $this->plugin_name;
-	}
-
-	/**
-	 * Get plugin version.
-	 *
-	 * @return string
-	 */
-	public function get_version() {
-		return $this->version;
-	}
-
-	/**
-	 * Get or create HealthChecker instance (singleton per Plugin instance).
-	 *
-	 * @return \reviewbird\Services\HealthChecker
-	 */
-	public function get_health_checker() {
-		if ( ! $this->health_checker ) {
-			$this->health_checker = new HealthChecker();
-		}
-		return $this->health_checker;
-	}
 
 	/**
 	 * Register REST API routes.
@@ -279,7 +227,7 @@ class Plugin {
 	 */
 	public function comments_template_loader( $template ) {
 		// Check if widget is enabled AND store can show widget
-		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' || ! $this->get_health_checker()->canShowWidget() ) {
+		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' || ! reviewbird_can_show_widget() ) {
 			return $template; // Falls back to WooCommerce default reviews
 		}
 
