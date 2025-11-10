@@ -125,6 +125,11 @@ function reviewbird_should_disable_ssl_verify() {
 require_once REVIEWBIRD_PLUGIN_DIR . 'vendor/autoload.php';
 
 /**
+ * Load core functions.
+ */
+require_once REVIEWBIRD_PLUGIN_DIR . 'src/functions.php';
+
+/**
  * The code that runs during plugin activation.
  */
 function activate_reviewbird() {
