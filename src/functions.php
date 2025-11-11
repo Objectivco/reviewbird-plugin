@@ -26,7 +26,7 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
 	$api_url = reviewbird_get_api_url();
 
 	$args = array(
-		'headers' => array(
+		'headers'   => array(
 			'Content-Type' => 'application/json',
 			'User-Agent'   => 'reviewbird WordPress Plugin/' . REVIEWBIRD_VERSION,
 		),
@@ -52,9 +52,7 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
 	$decoded       = json_decode( $body, true );
 
 	if ( $response_code >= 400 ) {
-		$error_message = isset( $decoded['message'] )
-			? $decoded['message']
-			: __( 'API request failed', 'reviewbird-reviews' );
+		$error_message = $decoded['message'] ?? __( 'API request failed', 'reviewbird-reviews' );
 
 		reviewbird_log_api_error(
 			'API Error',
@@ -78,7 +76,7 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
 	}
 
 	// Log any errors in successful responses (partial failures)
-	if ( isset( $decoded['errors'] ) && ! empty( $decoded['errors'] ) && function_exists( 'wc_get_logger' ) ) {
+	if ( ! empty( $decoded['errors'] ) && function_exists( 'wc_get_logger' ) ) {
 		$logger = wc_get_logger();
 		$logger->warning(
 			sprintf(
@@ -198,12 +196,12 @@ function reviewbird_is_store_connected() {
 	}
 
 	// Widget can show if healthy or syncing AND has subscription
-	return in_array( $status['status'] ?? '', array( 'healthy', 'syncing' ) )
+	return in_array( $status['status'] ?? '', array( 'healthy', 'syncing' ), true )
 		&& ( $status['has_active_subscription'] ?? false );
 }
 
-function reviewbird_can_show_widget() {
-    return reviewbird_is_store_connected() && get_option('reviewbird_enable_widget', false ) === 'yes';
+function reviewbird_can_show_widget(): bool {
+	return reviewbird_is_store_connected() && get_option( 'reviewbird_enable_widget', false ) === 'yes';
 }
 
 /**
@@ -212,37 +210,31 @@ function reviewbird_can_show_widget() {
  * @param int|null $product_id Optional product ID. If not provided, uses global $product.
  * @return string HTML output for the widget, or empty string if conditions not met.
  */
-function reviewbird_render_widget( $product_id = null ) {
+function reviewbird_render_widget( $product_id = null ): string {
+	global $product;
+
 	// If product_id not provided, get from global
-	if ( $product_id === null ) {
-		global $product;
-		if ( ! $product ) {
-			return '';
-		}
-		$product_obj = $product;
-		$product_id = $product->get_id();
-	} else {
-		// Get product object from ID
-		if ( ! function_exists( 'wc_get_product' ) ) {
-			return '';
-		}
-		$product_obj = wc_get_product( $product_id );
-		if ( ! $product_obj ) {
-			return '';
-		}
+	if ( $product_id ) {
+		$product = wc_get_product( $product_id );
 	}
 
-	$store_id = reviewbird_get_store_id();
-	if ( ! $store_id ) {
-		// Return HTML comment for debugging when called directly
-		if ( $product_id === null ) {
-			return '<!-- reviewbird: Widget not displayed. Store ID not configured. Please connect your reviewbird account in WP Admin > reviewbird > Settings -->';
-		}
+	if ( ! $product ) {
 		return '';
 	}
 
+	if ( ! reviewbird_is_store_connected() ) {
+		return '';
+	}
+
+	$store_id = reviewbird_get_store_id();
+
+	if ( ! $store_id ) {
+		// Return HTML comment for debugging when called directly
+		return '<!-- reviewbird: Widget not displayed. Store ID not configured. Please connect your reviewbird account in WP Admin > reviewbird > Settings -->';
+	}
+
 	// Allow developers to disable widget for specific products.
-	if ( ! apply_filters( 'reviewbird_show_widget_for_product', true, $product_obj ) ) {
+	if ( ! apply_filters( 'reviewbird_show_widget_for_product', true, $product ) ) {
 		return '';
 	}
 
@@ -253,9 +245,9 @@ function reviewbird_render_widget( $product_id = null ) {
 		'reviewbird_widget_attributes',
 		array(
 			'store-id'    => $store_id,
-			'product-key' => $product_id,
+			'product-key' => $product->get_id(),
 		),
-		$product_obj
+		$product
 	);
 
 	$attrs_html = '';
@@ -264,17 +256,15 @@ function reviewbird_render_widget( $product_id = null ) {
 	}
 
 	// Allow developers to customize widget wrapper.
-	$widget_html = apply_filters(
+	return apply_filters(
 		'reviewbird_widget_html',
 		sprintf(
 			'<div id="%s"%s></div><script>if(typeof reviewbird !== "undefined") reviewbird.init();</script>',
 			esc_attr( $widget_id ),
 			$attrs_html
 		),
-		$product_obj,
+		$product,
 		$widget_id,
 		$widget_attrs
 	);
-
-	return $widget_html;
 }

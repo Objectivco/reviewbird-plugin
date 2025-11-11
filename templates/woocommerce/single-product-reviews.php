@@ -18,5 +18,4 @@ if ( ! comments_open() ) {
 }
 
 // Get the WooCommerce integration instance to access widget rendering
-$woocommerce_integration = new \reviewbird\Integration\WooCommerce();
-$woocommerce_integration->render_widget();
+echo reviewbird_render_widget();

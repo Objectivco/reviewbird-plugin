@@ -13,6 +13,7 @@ use reviewbird\Api\CouponController;
 use reviewbird\Api\ProductsController;
 use reviewbird\Api\RatingsController;
 use reviewbird\Integration\RatingOverride;
+use reviewbird\Integration\SchemaMarkup;
 use reviewbird\Integration\WooCommerce;
 
 /**
@@ -92,19 +93,14 @@ class Plugin {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_scripts' ) );
 		add_shortcode( 'reviewbird_widget', array( $this, 'widget_shortcode' ) );
 
-		// WooCommerce integration.
-		if ( class_exists( 'WooCommerce' ) ) {
-			$woocommerce = new WooCommerce();
+		// Rating override integration.
+		new RatingOverride();
 
-			// Rating override integration.
-			new RatingOverride();
+		// Schema markup for SEO - add to wp_head on product pages.
+		add_action( 'wp_head', array( $this, 'output_product_schema' ), 5 );
 
-			// Schema markup for SEO - add to wp_head on product pages.
-			add_action( 'wp_head', array( $woocommerce, 'output_product_schema' ), 5 );
-
-			// Template override - use reviewbird template for product reviews.
-			add_filter( 'comments_template', array( $this, 'comments_template_loader' ), 50 );
-		}
+		// Template override - use reviewbird template for product reviews.
+		add_filter( 'comments_template', array( $this, 'comments_template_loader' ), 50 );
 	}
 
 	/**
@@ -117,42 +113,29 @@ class Plugin {
 		}
 
 		// Only load on product pages or pages with shortcode.
-		if ( is_product() || $this->has_reviewbird_shortcode() ) {
-			// Enqueue the new Svelte widget JS (CSS is inlined in the JS bundle).
-			wp_enqueue_script(
-				'reviewbird-widget',
-				reviewbird_get_api_url() . '/build/review-widget-v2.js',
-				array(),
-				$this->version,
-				true
-			);
-
-			// Pass configuration to widget JavaScript.
-			wp_localize_script(
-				'reviewbird-widget',
-				'reviewbirdConfig',
-				array(
-					'apiUrl' => reviewbird_get_api_url(),
-					'storeId' => get_option( 'reviewbird_store_id' ),
-					'widgetPrefix' => 'reviewbird-widget-container-',
-				)
-			);
-		}
-	}
-
-	/**
-	 * Check if current page has reviewbird shortcode.
-	 *
-	 * @return bool
-	 */
-	private function has_reviewbird_shortcode() {
-		global $post;
-
-		if ( ! $post ) {
-			return false;
+		if ( ! is_product() && ! has_shortcode( $post->post_content, 'reviewbird_widget' ) ) {
+			return;
 		}
 
-		return has_shortcode( $post->post_content, 'reviewbird_widget' );
+		// Enqueue the new Svelte widget JS (CSS is inlined in the JS bundle).
+		wp_enqueue_script(
+			'reviewbird-widget',
+			reviewbird_get_api_url() . '/build/review-widget-v2.js',
+			array(),
+			$this->version,
+			true
+		);
+
+		// Pass configuration to widget JavaScript.
+		wp_localize_script(
+			'reviewbird-widget',
+			'reviewbirdConfig',
+			array(
+				'apiUrl'       => reviewbird_get_api_url(),
+				'storeId'      => get_option( 'reviewbird_store_id' ),
+				'widgetPrefix' => 'reviewbird-widget-container-',
+			)
+		);
 	}
 
 	/**
@@ -163,16 +146,10 @@ class Plugin {
 	 */
 	public function widget_shortcode( $atts ) {
 		$atts = shortcode_atts(
-			array(
-				'product_id' => '',
-			),
+			array(),
 			$atts,
 			'reviewbird_widget'
 		);
-
-		if ( ! $atts['product_id'] ) {
-			return '<p>' . esc_html__( 'reviewbird: Product ID is required.', 'reviewbird-reviews' ) . '</p>';
-		}
 
 		return reviewbird_render_widget( $atts['product_id'] );
 	}
@@ -218,6 +195,35 @@ class Plugin {
 	}
 
 	/**
+	 * Output product schema markup in head.
+	 */
+	public function output_product_schema() {
+		if ( ! is_product() ) {
+			return;
+		}
+
+		// Check if store has subscription
+		if ( ! reviewbird_is_store_connected() ) {
+			return; // Don't output schema without subscription
+		}
+
+		// Get product ID from the current post.
+		$product_id = get_the_ID();
+		if ( ! $product_id ) {
+			return;
+		}
+
+		// Verify this is actually a product.
+		if ( 'product' !== get_post_type( $product_id ) ) {
+			return;
+		}
+
+		// Load schema markup class.
+		$schema_markup = new SchemaMarkup();
+		$schema_markup->output_product_schema( $product_id );
+	}
+
+	/**
 	 * Load comments template for products.
 	 *
 	 * Override the comments template for WooCommerce products to use reviewbird widget.
@@ -227,7 +233,7 @@ class Plugin {
 	 */
 	public function comments_template_loader( $template ) {
 		// Check if widget is enabled AND store can show widget
-		if ( get_option( 'reviewbird_enable_widget', 'yes' ) !== 'yes' || ! reviewbird_can_show_widget() ) {
+		if ( ! reviewbird_can_show_widget() ) {
 			return $template; // Falls back to WooCommerce default reviews
 		}
 
@@ -267,5 +273,4 @@ class Plugin {
 		// Enable WooCommerce authentication for reviewbird/v1 endpoints.
 		return ( false !== strpos( $request_uri, $rest_prefix . 'reviewbird/' ) );
 	}
-
 }
