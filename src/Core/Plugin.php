@@ -96,6 +96,9 @@ class Plugin {
 		// Rating override integration.
 		new RatingOverride();
 
+		// WooCommerce integration (adds CusRev media to reviews REST API).
+		new WooCommerce();
+
 		// Schema markup for SEO - add to wp_head on product pages.
 		add_action( 'wp_head', array( $this, 'output_product_schema' ), 5 );
 
