@@ -1,6 +1,6 @@
 <?php
 /**
- * Core procedural functions for ReviewBird WordPress plugin.
+ * Core procedural functions for reviewbird WordPress plugin.
  *
  * @package reviewbird
  */
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // =============================================================================
 
 /**
- * Make API requests to ReviewBird backend.
+ * Make API requests to reviewbird backend.
  *
  * @param string $endpoint The API endpoint to call.
  * @param array  $data     Optional. Data to send with the request.
