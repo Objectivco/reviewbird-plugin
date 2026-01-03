@@ -246,6 +246,7 @@ function reviewbird_render_widget( $product_id = null ): string {
 		array(
 			'store-id'    => $store_id,
 			'product-key' => $product->get_id(),
+			'locale'      => get_locale(),
 		),
 		$product
 	);
