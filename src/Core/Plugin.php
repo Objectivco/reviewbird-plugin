@@ -92,6 +92,7 @@ class Plugin {
 		// Public hooks.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_scripts' ) );
 		add_shortcode( 'reviewbird_widget', array( $this, 'widget_shortcode' ) );
+		add_shortcode( 'reviewbird_carousel', array( $this, 'carousel_shortcode' ) );
 
 		// Rating override integration.
 		new RatingOverride();
@@ -157,6 +158,61 @@ class Plugin {
 		return reviewbird_render_widget( $atts['product_id'] );
 	}
 
+	/**
+	 * Handle reviewbird carousel shortcode.
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string
+	 */
+	public function carousel_shortcode( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'id' => '',
+			),
+			$atts,
+			'reviewbird_carousel'
+		);
+
+		// Carousel ID is required.
+		if ( empty( $atts['id'] ) ) {
+			return '<!-- reviewbird Carousel: Missing carousel ID -->';
+		}
+
+		// Store ID is required.
+		$store_id = get_option( 'reviewbird_store_id' );
+		if ( empty( $store_id ) ) {
+			return '<!-- reviewbird Carousel: Store not connected -->';
+		}
+
+		// Enqueue carousel script (only once per page).
+		wp_enqueue_script(
+			'reviewbird-carousel',
+			reviewbird_get_api_url() . '/build/review-carousel.js',
+			array(),
+			$this->version,
+			true
+		);
+
+		// Pass configuration to carousel JavaScript.
+		wp_localize_script(
+			'reviewbird-carousel',
+			'reviewbirdCarouselConfig',
+			array(
+				'apiUrl' => reviewbird_get_api_url(),
+			)
+		);
+
+		// Get locale (normalize to language code only, e.g., 'en' from 'en_US').
+		$locale = get_locale();
+		$locale = strtolower( substr( $locale, 0, 2 ) );
+
+		return sprintf(
+			'<div data-reviewbird-carousel data-store-id="%s" data-carousel-id="%s" data-locale="%s"></div>',
+			esc_attr( $store_id ),
+			esc_attr( $atts['id'] ),
+			esc_attr( $locale )
+		);
+	}
 
 	/**
 	 * Register REST API routes.
