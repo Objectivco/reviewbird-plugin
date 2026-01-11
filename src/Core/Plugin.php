@@ -92,7 +92,7 @@ class Plugin {
 		// Public hooks.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_scripts' ) );
 		add_shortcode( 'reviewbird_widget', array( $this, 'widget_shortcode' ) );
-		add_shortcode( 'reviewbird_carousel', array( $this, 'carousel_shortcode' ) );
+		add_shortcode( 'reviewbird_showcase', array( $this, 'carousel_shortcode' ) );
 
 		// Rating override integration.
 		new RatingOverride();
@@ -170,18 +170,18 @@ class Plugin {
 				'id' => '',
 			),
 			$atts,
-			'reviewbird_carousel'
+			'reviewbird_showcase'
 		);
 
 		// Carousel ID is required.
 		if ( empty( $atts['id'] ) ) {
-			return '<!-- reviewbird Carousel: Missing carousel ID -->';
+			return '<!-- reviewbird Showcase: Missing showcase ID -->';
 		}
 
 		// Store ID is required.
 		$store_id = get_option( 'reviewbird_store_id' );
 		if ( empty( $store_id ) ) {
-			return '<!-- reviewbird Carousel: Store not connected -->';
+			return '<!-- reviewbird Showcase: Store not connected -->';
 		}
 
 		// Enqueue carousel script (only once per page).
