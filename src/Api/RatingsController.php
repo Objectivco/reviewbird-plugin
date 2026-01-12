@@ -196,11 +196,13 @@ class RatingsController {
 		}
 
 		// Check if customer bought product using email (user_id = null).
-		$verified_purchase = false;
-		$location          = null;
+		$verified_purchase      = wc_customer_bought_product( $customer_email, null, $product_id );
+		$location               = null;
+		$purchased_attributes   = [];
 
-		if ( function_exists( 'wc_customer_bought_product' ) ) {
-			$verified_purchase = wc_customer_bought_product($customer_email, null, $product_id );
+		// Only look up variation attributes if verified (optimization).
+		if ( $verified_purchase ) {
+			$purchased_attributes = $this->get_purchased_attributes( $customer_email, $product_id );
 		}
 
 		// Get customer's location using WC_Customer.
@@ -231,11 +233,12 @@ class RatingsController {
 			$logger = wc_get_logger();
 			$logger->debug(
 				sprintf(
-					'Verified purchase check for product %d, email %s: %s, location: %s',
+					'Verified purchase check for product %d, email %s: %s, location: %s, attributes: %s',
 					$product_id,
 					$customer_email,
 					$verified_purchase ? 'true' : 'false',
-					$location ? $location : 'none'
+					$location ? $location : 'none',
+					! empty( $purchased_attributes ) ? wp_json_encode( $purchased_attributes ) : 'none'
 				),
 				array( 'source' => 'reviewbird' )
 			);
@@ -252,6 +255,68 @@ class RatingsController {
 			$response['location'] = $location;
 		}
 
+		// Only include purchased attributes if we found any.
+		if ( ! empty( $purchased_attributes ) ) {
+			$response['purchased_attributes'] = $purchased_attributes;
+		}
+
 		return new WP_REST_Response( $response, 200 );
+	}
+
+	/**
+	 * Get variation attributes for a customer's purchase of a product.
+	 *
+	 * @param string $customer_email Customer email address.
+	 * @param int    $product_id     Product ID (parent or variation).
+	 * @return array Purchased variation attributes.
+	 */
+	private function get_purchased_attributes( string $customer_email, int $product_id ): array {
+		$product = wc_get_product( $product_id );
+		if ( ! $product ) {
+			return [];
+		}
+
+		$parent_id = $product->get_parent_id() ?: $product_id;
+
+		$orders = wc_get_orders( [
+			'billing_email' => $customer_email,
+			'status'        => wc_get_is_paid_statuses(),
+			'limit'         => 10,
+			'orderby'       => 'date',
+			'order'         => 'DESC',
+		] );
+
+		foreach ( $orders as $order ) {
+			foreach ( $order->get_items() as $item ) {
+				$item_product_id = $item->get_product_id();
+				$variation_id    = $item->get_variation_id();
+
+				// Skip if not matching parent or no variation.
+				if ( $item_product_id !== $parent_id || ! $variation_id ) {
+					continue;
+				}
+
+				$variation = wc_get_product( $variation_id );
+				if ( ! $variation ) {
+					continue;
+				}
+
+				$attributes = [];
+				foreach ( $variation->get_variation_attributes() as $attr_key => $attr_value ) {
+					$attr_name    = wc_attribute_label( str_replace( 'attribute_', '', $attr_key ) );
+					$attributes[] = [
+						'name'  => ucwords( $attr_name ),
+						'value' => ucwords( $attr_value ),
+					];
+				}
+
+				// Return first match (most recent order).
+				if ( ! empty( $attributes ) ) {
+					return $attributes;
+				}
+			}
+		}
+
+		return [];
 	}
 }
