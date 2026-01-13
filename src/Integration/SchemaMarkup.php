@@ -63,6 +63,11 @@ class SchemaMarkup {
 		$reviews_to_include = array_slice( $data['reviews'], 0, 10 );
 
 		foreach ( $reviews_to_include as $review ) {
+			// Skip reviews with 0 rating.
+			if ( empty( $review['rating'] ) || intval( $review['rating'] ) === 0 ) {
+				continue;
+			}
+
 			$review_schema = array(
 				'@type'        => 'Review',
 				'reviewRating' => array(
