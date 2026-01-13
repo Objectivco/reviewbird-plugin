@@ -201,7 +201,7 @@ function reviewbird_is_store_connected() {
 }
 
 function reviewbird_can_show_widget(): bool {
-	return reviewbird_is_store_connected() && get_option( 'reviewbird_enable_widget', false ) === 'yes';
+	return reviewbird_is_store_connected() && get_option( 'reviewbird_enable_widget', 'yes' ) === 'yes';
 }
 
 /**

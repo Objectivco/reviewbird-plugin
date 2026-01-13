@@ -100,8 +100,9 @@ class Plugin {
 		// WooCommerce integration (adds CusRev media to reviews REST API).
 		new WooCommerce();
 
-		// Schema markup for SEO - add to wp_head on product pages.
-		add_action( 'wp_head', array( $this, 'output_product_schema' ), 5 );
+		// Schema markup for SEO - filter WooCommerce's structured data to add ReviewBird reviews.
+		$schema_markup = new SchemaMarkup();
+		add_filter( 'woocommerce_structured_data_product', array( $schema_markup, 'filter_woocommerce_structured_data' ), 10, 2 );
 
 		// Template override - use reviewbird template for product reviews.
 		add_filter( 'comments_template', array( $this, 'comments_template_loader' ), 50 );
@@ -117,7 +118,8 @@ class Plugin {
 		}
 
 		// Only load on product pages or pages with shortcode.
-		if ( ! is_product() && ! has_shortcode( $post->post_content, 'reviewbird_widget' ) ) {
+		global $post;
+		if ( ! is_product() && ( ! $post || ! has_shortcode( $post->post_content, 'reviewbird_widget' ) ) ) {
 			return;
 		}
 
@@ -251,35 +253,6 @@ class Plugin {
 		// Products controller routes
 		$products_controller = new ProductsController();
 		$products_controller->register_routes();
-	}
-
-	/**
-	 * Output product schema markup in head.
-	 */
-	public function output_product_schema() {
-		if ( ! is_product() ) {
-			return;
-		}
-
-		// Check if store has subscription
-		if ( ! reviewbird_is_store_connected() ) {
-			return; // Don't output schema without subscription
-		}
-
-		// Get product ID from the current post.
-		$product_id = get_the_ID();
-		if ( ! $product_id ) {
-			return;
-		}
-
-		// Verify this is actually a product.
-		if ( 'product' !== get_post_type( $product_id ) ) {
-			return;
-		}
-
-		// Load schema markup class.
-		$schema_markup = new SchemaMarkup();
-		$schema_markup->output_product_schema( $product_id );
 	}
 
 	/**
