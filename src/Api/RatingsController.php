@@ -222,10 +222,9 @@ class RatingsController {
 			// Get billing country code.
 			$country_code = $customer->get_billing_country();
 
-			// Convert to country name using WooCommerce's country list.
-			if ( ! empty( $country_code ) && function_exists( 'WC' ) && isset( WC()->countries ) ) {
-				$countries = WC()->countries->get_countries();
-				$location  = isset( $countries[ $country_code ] ) ? $countries[ $country_code ] : null;
+			// Convert to English country name (avoid WC localization issues).
+			if ( ! empty( $country_code ) ) {
+				$location = self::get_english_country_name( $country_code );
 			}
 		}
 
@@ -318,5 +317,82 @@ class RatingsController {
 		}
 
 		return [];
+	}
+
+	/**
+	 * Get English country name from ISO country code.
+	 *
+	 * Uses a static list to avoid WooCommerce localization returning
+	 * country names in the store's language instead of English.
+	 *
+	 * @param string $country_code Two-letter ISO country code.
+	 * @return string|null English country name or null if not found.
+	 */
+	private static function get_english_country_name( string $country_code ): ?string {
+		$countries = array(
+			'US' => 'United States',
+			'CA' => 'Canada',
+			'GB' => 'United Kingdom',
+			'AU' => 'Australia',
+			'NZ' => 'New Zealand',
+			'DE' => 'Germany',
+			'FR' => 'France',
+			'ES' => 'Spain',
+			'IT' => 'Italy',
+			'NL' => 'Netherlands',
+			'BE' => 'Belgium',
+			'SE' => 'Sweden',
+			'NO' => 'Norway',
+			'DK' => 'Denmark',
+			'FI' => 'Finland',
+			'IE' => 'Ireland',
+			'CH' => 'Switzerland',
+			'AT' => 'Austria',
+			'PL' => 'Poland',
+			'CZ' => 'Czech Republic',
+			'PT' => 'Portugal',
+			'GR' => 'Greece',
+			'HU' => 'Hungary',
+			'RO' => 'Romania',
+			'BG' => 'Bulgaria',
+			'HR' => 'Croatia',
+			'SK' => 'Slovakia',
+			'SI' => 'Slovenia',
+			'LT' => 'Lithuania',
+			'LV' => 'Latvia',
+			'EE' => 'Estonia',
+			'LU' => 'Luxembourg',
+			'MT' => 'Malta',
+			'CY' => 'Cyprus',
+			'IS' => 'Iceland',
+			'JP' => 'Japan',
+			'CN' => 'China',
+			'KR' => 'South Korea',
+			'TW' => 'Taiwan',
+			'HK' => 'Hong Kong',
+			'SG' => 'Singapore',
+			'MY' => 'Malaysia',
+			'TH' => 'Thailand',
+			'ID' => 'Indonesia',
+			'PH' => 'Philippines',
+			'VN' => 'Vietnam',
+			'IN' => 'India',
+			'MX' => 'Mexico',
+			'BR' => 'Brazil',
+			'AR' => 'Argentina',
+			'CL' => 'Chile',
+			'CO' => 'Colombia',
+			'PE' => 'Peru',
+			'ZA' => 'South Africa',
+			'AE' => 'United Arab Emirates',
+			'SA' => 'Saudi Arabia',
+			'IL' => 'Israel',
+			'TR' => 'Turkey',
+			'RU' => 'Russia',
+			'UA' => 'Ukraine',
+			'RS' => 'Serbia',
+		);
+
+		return isset( $countries[ $country_code ] ) ? $countries[ $country_code ] : null;
 	}
 }
