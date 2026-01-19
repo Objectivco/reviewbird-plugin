@@ -53,20 +53,31 @@ class ConnectionController {
 		// Save the store ID to WordPress options
 		update_option( 'reviewbird_store_id', $store_id );
 
+		// Auto-enable widget on connection (only if not already set)
+		if ( false === get_option( 'reviewbird_enable_widget' ) ) {
+			update_option( 'reviewbird_enable_widget', 'yes' );
+		}
+
+		// Clear any cached status
+		if ( function_exists( 'reviewbird_clear_status_cache' ) ) {
+			reviewbird_clear_status_cache();
+		}
+
 		// Log the connection for debugging
 		if ( function_exists( 'wc_get_logger' ) ) {
 			$logger = wc_get_logger();
 			$logger->info(
-				sprintf( 'reviewbird store connected: Store ID %d saved', $store_id ),
+				sprintf( 'reviewbird store connected: Store ID %d saved, widget auto-enabled', $store_id ),
 				array( 'source' => 'reviewbird' )
 			);
 		}
 
 		return new WP_REST_Response(
 			array(
-				'success'  => true,
-				'store_id' => $store_id,
-				'message'  => sprintf( 'Store ID %d has been saved successfully', $store_id ),
+				'success'       => true,
+				'store_id'      => $store_id,
+				'widget_enabled' => true,
+				'message'       => sprintf( 'Store ID %d has been saved successfully and widget enabled', $store_id ),
 			),
 			200
 		);
