@@ -50,28 +50,17 @@ class ConnectionController {
 		$store_id = $request->get_param( 'store_id' );
 
 		update_option( 'reviewbird_store_id', $store_id );
-		$this->auto_enable_widget();
 		$this->clear_status_cache();
 		$this->log_connection( $store_id );
 
 		return new WP_REST_Response(
 			array(
-				'success'        => true,
-				'store_id'       => $store_id,
-				'widget_enabled' => true,
-				'message'        => sprintf( 'Store ID %d has been saved successfully and widget enabled', $store_id ),
+				'success'  => true,
+				'store_id' => $store_id,
+				'message'  => sprintf( 'Store ID %d has been saved successfully', $store_id ),
 			),
 			200
 		);
-	}
-
-	/**
-	 * Auto-enable widget if not already configured.
-	 */
-	private function auto_enable_widget(): void {
-		if ( false === get_option( 'reviewbird_enable_widget' ) ) {
-			update_option( 'reviewbird_enable_widget', 'yes' );
-		}
 	}
 
 	/**
@@ -95,7 +84,7 @@ class ConnectionController {
 
 		$logger = wc_get_logger();
 		$logger->info(
-			sprintf( 'reviewbird store connected: Store ID %d saved, widget auto-enabled', $store_id ),
+			sprintf( 'reviewbird store connected: Store ID %d saved', $store_id ),
 			array( 'source' => 'reviewbird' )
 		);
 	}
