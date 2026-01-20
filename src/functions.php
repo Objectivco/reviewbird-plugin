@@ -208,6 +208,24 @@ function reviewbird_is_store_connected(): bool {
 }
 
 /**
+ * Check if the reviewbird widget setting is enabled.
+ *
+ * @return bool True if widget is enabled.
+ */
+function reviewbird_is_widget_enabled(): bool {
+	return get_option( 'reviewbird_enable_widget', 'no' ) === 'yes';
+}
+
+/**
+ * Check if the reviewbird schema setting is enabled.
+ *
+ * @return bool True if schema is enabled.
+ */
+function reviewbird_is_schema_enabled(): bool {
+	return get_option( 'reviewbird_enable_schema', 'no' ) === 'yes';
+}
+
+/**
  * Check if the reviewbird widget can be shown.
  *
  * Widget displays when the store is connected and widget setting is enabled.
@@ -215,9 +233,7 @@ function reviewbird_is_store_connected(): bool {
  * @return bool True if widget can be shown.
  */
 function reviewbird_can_show_widget(): bool {
-	$is_widget_enabled = get_option( 'reviewbird_enable_widget', 'yes' ) === 'yes';
-
-	return reviewbird_is_store_connected() && $is_widget_enabled;
+	return reviewbird_is_store_connected() && reviewbird_is_widget_enabled();
 }
 
 /**

@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import ConnectionHealth from './ConnectionHealth.jsx';
 import TogglePanel from './TogglePanel.jsx';
 
-function getAdminSetting(key, defaultValue = true) {
+function getAdminSetting(key, defaultValue = false) {
 	const value = window.reviewbirdAdmin?.[key];
 	return value !== undefined ? value : defaultValue;
 }

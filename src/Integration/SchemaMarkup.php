@@ -214,9 +214,7 @@ class SchemaMarkup {
 	 * @return bool True if schema should be generated.
 	 */
 	private function is_schema_enabled() {
-		$schema_setting_enabled = get_option( 'reviewbird_enable_schema', 'yes' ) === 'yes';
-
-		return $schema_setting_enabled && reviewbird_is_store_connected();
+		return reviewbird_is_schema_enabled() && reviewbird_is_store_connected();
 	}
 
 	/**

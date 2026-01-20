@@ -141,8 +141,8 @@ class Settings {
 			'nonce'        => wp_create_nonce( 'reviewbird_admin_nonce' ),
 			'apiUrl'       => reviewbird_get_api_url(),
 			'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-			'enableSchema' => get_option( 'reviewbird_enable_schema', 'yes' ) === 'yes',
-			'enableWidget' => get_option( 'reviewbird_enable_widget', 'yes' ) === 'yes',
+			'enableSchema' => reviewbird_is_schema_enabled(),
+			'enableWidget' => reviewbird_is_widget_enabled(),
 		);
 	}
 
