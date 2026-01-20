@@ -18,6 +18,8 @@
  */
 
 // If this file is called directly, abort.
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -153,7 +155,7 @@ run_reviewbird();
 /**
  * Initialize Plugin Update Checker for automatic updates from GitHub releases.
  */
-$reviewbird_update_checker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+$reviewbird_update_checker = PucFactory::buildUpdateChecker(
 	'https://github.com/Objectivco/reviewbird-plugin/',
 	__FILE__,
 	'reviewbird'
