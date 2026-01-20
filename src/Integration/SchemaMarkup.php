@@ -179,14 +179,14 @@ class SchemaMarkup {
 	}
 
 	/**
-	 * Filter WooCommerce's structured data to inject ReviewBird review data.
+	 * Filter WooCommerce's structured data to inject reviewbird review data.
 	 *
 	 * This hooks into WooCommerce's schema output to add aggregateRating and
-	 * individual reviews from ReviewBird, replacing WooCommerce's native review data.
+	 * individual reviews from reviewbird, replacing WooCommerce's native review data.
 	 *
 	 * @param array       $markup  The structured data markup array.
 	 * @param \WC_Product $product The WooCommerce product object.
-	 * @return array Modified markup with ReviewBird review data.
+	 * @return array Modified markup with reviewbird review data.
 	 */
 	public function filter_woocommerce_structured_data( $markup, $product ) {
 		if ( ! $this->is_schema_enabled() ) {

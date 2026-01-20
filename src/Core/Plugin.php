@@ -100,7 +100,7 @@ class Plugin {
 		// WooCommerce integration (adds CusRev media to reviews REST API).
 		new WooCommerce();
 
-		// Schema markup for SEO - filter WooCommerce's structured data to add ReviewBird reviews.
+		// Schema markup for SEO - filter WooCommerce's structured data to add reviewbird reviews.
 		$schema_markup = new SchemaMarkup();
 		add_filter( 'woocommerce_structured_data_product', array( $schema_markup, 'filter_woocommerce_structured_data' ), 10, 2 );
 

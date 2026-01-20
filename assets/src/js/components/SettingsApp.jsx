@@ -62,7 +62,7 @@ export default function SettingsApp() {
 				<ConnectionHealth />
 
 				<TogglePanel
-					title={__('ReviewBird Widget', 'reviewbird-reviews')}
+					title={__('reviewbird Widget', 'reviewbird-reviews')}
 					description={__('Display reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews.', 'reviewbird-reviews')}
 					enabled={enableWidget}
 					onToggle={handleWidgetToggle}
