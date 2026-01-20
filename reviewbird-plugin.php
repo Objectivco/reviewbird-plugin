@@ -164,3 +164,16 @@ function run_reviewbird() {
 }
 
 run_reviewbird();
+
+/**
+ * Initialize Plugin Update Checker for automatic updates from GitHub releases.
+ */
+$reviewbird_update_checker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+	'https://github.com/Objectivco/reviewbird-plugin/',
+	__FILE__,
+	'reviewbird'
+);
+
+// Use GitHub releases for updates.
+$reviewbird_update_checker->setBranch( 'master' );
+$reviewbird_update_checker->getVcsApi()->enableReleaseAssets();
