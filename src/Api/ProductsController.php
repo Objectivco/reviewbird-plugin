@@ -17,9 +17,43 @@ use WP_Error;
 class ProductsController {
 
 	/**
+	 * Create an error response.
+	 *
+	 * @param string $code    Error code.
+	 * @param string $message Error message.
+	 * @param int    $status  HTTP status code.
+	 * @return WP_Error The error response.
+	 */
+	private static function error( string $code, string $message, int $status = 400 ): WP_Error {
+		return new WP_Error( $code, $message, array( 'status' => $status ) );
+	}
+
+	/**
+	 * Check if WooCommerce is active.
+	 *
+	 * @return WP_Error|null Error if WooCommerce is not active, null otherwise.
+	 */
+	private static function require_woocommerce(): ?WP_Error {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return self::error( 'woocommerce_not_active', 'WooCommerce is not active', 503 );
+		}
+		return null;
+	}
+
+	/**
+	 * Get image URLs from an array of attachment IDs.
+	 *
+	 * @param array $image_ids Array of attachment IDs.
+	 * @return array Array of image URLs.
+	 */
+	private static function get_image_urls( array $image_ids ): array {
+		return array_filter( array_map( 'wp_get_attachment_url', $image_ids ) );
+	}
+
+	/**
 	 * Register REST API routes.
 	 */
-	public function register_routes() {
+	public function register_routes(): void {
 		register_rest_route(
 			'reviewbird/v1',
 			'/products',
@@ -52,45 +86,40 @@ class ProductsController {
 	 * @return WP_REST_Response|WP_Error Response or error.
 	 */
 	public function get_products( WP_REST_Request $request ) {
-		if ( ! class_exists( 'WooCommerce' ) ) {
-			return new WP_Error(
-				'woocommerce_not_active',
-				__( 'WooCommerce is not active', 'reviewbird-reviews' ),
-				array( 'status' => 503 )
-			);
+		$wc_error = self::require_woocommerce();
+		if ( $wc_error ) {
+			return $wc_error;
 		}
 
-		$per_page = $request->get_param( 'per_page' );
-		$page     = $request->get_param( 'page' );
-		$status   = $request->get_param( 'status' );
-
-		// Query products
-		$args = array(
-			'status'   => $status,
-			'limit'    => $per_page,
-			'page'     => $page,
-			'paginate' => true,
-			'orderby'  => 'ID',
-			'order'    => 'ASC',
+		$results = wc_get_products(
+			array(
+				'status'   => $request->get_param( 'status' ),
+				'limit'    => $request->get_param( 'per_page' ),
+				'page'     => $request->get_param( 'page' ),
+				'paginate' => true,
+				'orderby'  => 'ID',
+				'order'    => 'ASC',
+			)
 		);
 
-		$results  = wc_get_products( $args );
-		$products = array();
-
-		foreach ( $results->products as $product ) {
-			$product_data = $this->format_product( $product );
-
-			// Add variations if this is a variable product
-			if ( $product->is_type( 'variable' ) ) {
-				$product_data['variations'] = $this->get_product_variations( $product );
-			} else {
-				$product_data['variations'] = array();
-			}
-
-			$products[] = $product_data;
-		}
+		$products = array_map( array( $this, 'format_product_with_variations' ), $results->products );
 
 		return new WP_REST_Response( $products, 200 );
+	}
+
+	/**
+	 * Format product data including variations.
+	 *
+	 * @param \WC_Product $product Product object.
+	 * @return array Formatted product data with variations.
+	 */
+	private function format_product_with_variations( $product ): array {
+		$product_data               = $this->format_product( $product );
+		$product_data['variations'] = $product->is_type( 'variable' )
+			? $this->get_product_variations( $product )
+			: array();
+
+		return $product_data;
 	}
 
 	/**
@@ -99,12 +128,7 @@ class ProductsController {
 	 * @param \WC_Product $product Product object.
 	 * @return array Formatted product data.
 	 */
-	private function format_product( $product ) {
-		$images = array();
-		foreach ( $product->get_gallery_image_ids() as $image_id ) {
-			$images[] = wp_get_attachment_url( $image_id );
-		}
-
+	private function format_product( $product ): array {
 		return array(
 			'id'           => $product->get_id(),
 			'name'         => $product->get_name(),
@@ -115,7 +139,7 @@ class ProductsController {
 			'sku'          => $product->get_sku(),
 			'price'        => $product->get_price(),
 			'image'        => wp_get_attachment_url( $product->get_image_id() ),
-			'images'       => $images,
+			'images'       => self::get_image_urls( $product->get_gallery_image_ids() ),
 			'stock_status' => $product->get_stock_status(),
 			'in_stock'     => $product->is_in_stock(),
 		);
@@ -127,11 +151,10 @@ class ProductsController {
 	 * @param \WC_Product_Variable $product Variable product object.
 	 * @return array Array of formatted variations.
 	 */
-	private function get_product_variations( $product ) {
-		$variations      = array();
-		$variation_ids   = $product->get_children();
+	private function get_product_variations( $product ): array {
+		$variations = array();
 
-		foreach ( $variation_ids as $variation_id ) {
+		foreach ( $product->get_children() as $variation_id ) {
 			$variation = wc_get_product( $variation_id );
 
 			if ( ! $variation || ! $variation->exists() ) {
@@ -150,7 +173,7 @@ class ProductsController {
 	 * @param \WC_Product_Variation $variation Variation object.
 	 * @return array Formatted variation data.
 	 */
-	private function format_variation( $variation ) {
+	private function format_variation( $variation ): array {
 		return array(
 			'id'         => $variation->get_id(),
 			'sku'        => $variation->get_sku(),
@@ -168,7 +191,7 @@ class ProductsController {
 	 * @param WP_REST_Request $request The REST API request.
 	 * @return bool Whether the request has permission.
 	 */
-	public function permission_callback( WP_REST_Request $request ) {
+	public function permission_callback( WP_REST_Request $request ): bool {
 		return wc_rest_check_post_permissions( 'product', 'read', 0 );
 	}
 }

@@ -55,28 +55,21 @@ define( 'REVIEWBIRD_API_URL_DEVELOPMENT', 'https://reviewapp.test' );
  *
  * @return string 'production', 'staging', or 'development'
  */
-function reviewbird_get_environment() {
-	// Check for explicit environment constant first.
+function reviewbird_get_environment(): string {
 	if ( defined( 'REVIEWBIRD_ENVIRONMENT' ) ) {
 		return REVIEWBIRD_ENVIRONMENT;
 	}
 
-	// Fall back to WordPress environment type.
-	if ( defined( 'WP_ENVIRONMENT_TYPE' ) ) {
-		switch ( WP_ENVIRONMENT_TYPE ) {
-			case 'production':
-				return 'production';
-			case 'staging':
-				return 'staging';
-			case 'development':
-			case 'local':
-			default:
-				return 'development';
-		}
+	if ( ! defined( 'WP_ENVIRONMENT_TYPE' ) ) {
+		return 'development';
 	}
 
-	// Default to development for safety.
-	return 'development';
+	$environment_map = array(
+		'production' => 'production',
+		'staging'    => 'staging',
+	);
+
+	return $environment_map[ WP_ENVIRONMENT_TYPE ] ?? 'development';
 }
 
 /**
@@ -84,18 +77,14 @@ function reviewbird_get_environment() {
  *
  * @return string The API URL for the current environment.
  */
-function reviewbird_get_api_url() {
-	$environment = reviewbird_get_environment();
+function reviewbird_get_api_url(): string {
+	$api_urls = array(
+		'production'  => REVIEWBIRD_API_URL_PRODUCTION,
+		'staging'     => REVIEWBIRD_API_URL_STAGING,
+		'development' => REVIEWBIRD_API_URL_DEVELOPMENT,
+	);
 
-	switch ( $environment ) {
-		case 'production':
-			return REVIEWBIRD_API_URL_PRODUCTION;
-		case 'staging':
-			return REVIEWBIRD_API_URL_STAGING;
-		case 'development':
-		default:
-			return REVIEWBIRD_API_URL_DEVELOPMENT;
-	}
+	return $api_urls[ reviewbird_get_environment() ] ?? REVIEWBIRD_API_URL_DEVELOPMENT;
 }
 
 /**
@@ -103,15 +92,11 @@ function reviewbird_get_api_url() {
  *
  * @return bool True to disable SSL verification, false to enable it.
  */
-function reviewbird_should_disable_ssl_verify() {
-	$environment = reviewbird_get_environment();
-
-	// Always disable SSL verification in development/local environments
-	if ( 'development' === $environment ) {
+function reviewbird_should_disable_ssl_verify(): bool {
+	if ( 'development' === reviewbird_get_environment() ) {
 		return true;
 	}
 
-	// Allow override via constant
 	if ( defined( 'REVIEWBIRD_DISABLE_SSL_VERIFY' ) ) {
 		return (bool) REVIEWBIRD_DISABLE_SSL_VERIFY;
 	}

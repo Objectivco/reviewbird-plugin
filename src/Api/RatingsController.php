@@ -17,6 +17,57 @@ use WP_Error;
 class RatingsController {
 
 	/**
+	 * Create a validation error response.
+	 *
+	 * @param string $code    Error code.
+	 * @param string $message Error message.
+	 * @param int    $status  HTTP status code.
+	 * @return WP_Error The error response.
+	 */
+	private static function validation_error( string $code, string $message, int $status = 400 ): WP_Error {
+		return new WP_Error( $code, $message, array( 'status' => $status ) );
+	}
+
+	/**
+	 * Validate and sanitize a product ID.
+	 *
+	 * @param mixed $product_id The product ID to validate.
+	 * @return int|WP_Error The sanitized product ID or an error.
+	 */
+	private static function validate_product_id( $product_id ) {
+		if ( empty( $product_id ) ) {
+			return self::validation_error( 'missing_product_id', 'Product ID is required' );
+		}
+
+		$product_id = absint( $product_id );
+
+		if ( ! $product_id ) {
+			return self::validation_error( 'invalid_product_id', 'Invalid product ID' );
+		}
+
+		if ( 'product' !== get_post_type( $product_id ) ) {
+			return self::validation_error( 'product_not_found', 'Product not found', 404 );
+		}
+
+		return $product_id;
+	}
+
+	/**
+	 * Log a message using WooCommerce logger.
+	 *
+	 * @param string $message Log message.
+	 * @param string $level   Log level (debug, info, error).
+	 */
+	private static function log( string $message, string $level = 'info' ): void {
+		if ( ! function_exists( 'wc_get_logger' ) ) {
+			return;
+		}
+
+		$logger = wc_get_logger();
+		$logger->$level( $message, array( 'source' => 'reviewbird' ) );
+	}
+
+	/**
 	 * Update product ratings from reviewbird.
 	 *
 	 * @param WP_REST_Request $request The REST API request.
@@ -28,83 +79,37 @@ class RatingsController {
 		$review_count  = $request->get_param( 'review_count' );
 		$rating_counts = $request->get_param( 'rating_counts' );
 
-		if ( empty( $product_id ) ) {
-			return new WP_Error(
-				'missing_product_id',
-				__( 'Product external ID is required', 'reviewbird-reviews' ),
-				array( 'status' => 400 )
-			);
+		$product_id = self::validate_product_id( $product_id );
+		if ( is_wp_error( $product_id ) ) {
+			return $product_id;
 		}
 
 		if ( ! is_numeric( $avg_stars ) || $avg_stars < 0 || $avg_stars > 5 ) {
-			return new WP_Error(
-				'invalid_rating',
-				__( 'Average stars must be a number between 0 and 5', 'reviewbird-reviews' ),
-				array( 'status' => 400 )
-			);
+			return self::validation_error( 'invalid_rating', 'Average stars must be a number between 0 and 5' );
 		}
 
 		if ( ! is_numeric( $review_count ) || $review_count < 0 ) {
-			return new WP_Error(
-				'invalid_count',
-				__( 'Review count must be a non-negative number', 'reviewbird-reviews' ),
-				array( 'status' => 400 )
-			);
+			return self::validation_error( 'invalid_count', 'Review count must be a non-negative number' );
 		}
 
 		if ( ! empty( $rating_counts ) && ! is_array( $rating_counts ) ) {
-			return new WP_Error(
-				'invalid_rating_counts',
-				__( 'Rating counts must be an array', 'reviewbird-reviews' ),
-				array( 'status' => 400 )
-			);
-		}
-
-		$product_id = absint( $product_id );
-
-		if ( ! $product_id ) {
-			return new WP_Error(
-				'invalid_product_id',
-				__( 'Invalid product ID', 'reviewbird-reviews' ),
-				array( 'status' => 400 )
-			);
-		}
-
-		if ( 'product' !== get_post_type( $product_id ) ) {
-			return new WP_Error(
-				'product_not_found',
-				__( 'Product not found', 'reviewbird-reviews' ),
-				array( 'status' => 404 )
-			);
+			return self::validation_error( 'invalid_rating_counts', 'Rating counts must be an array' );
 		}
 
 		update_post_meta( $product_id, '_reviewbird_avg_stars', floatval( $avg_stars ) );
 		update_post_meta( $product_id, '_reviewbird_reviews_count', intval( $review_count ) );
 
-		// Store rating distribution if provided
-		if ( ! empty( $rating_counts ) && is_array( $rating_counts ) ) {
+		if ( ! empty( $rating_counts ) ) {
 			update_post_meta( $product_id, '_reviewbird_rating_counts', $rating_counts );
 		}
 
-		// Clear WooCommerce product cache to force re-fetch of ratings
 		if ( function_exists( 'wc_delete_product_transients' ) ) {
 			wc_delete_product_transients( $product_id );
 		}
 
 		do_action( 'reviewbird_rating_updated', $product_id, $avg_stars, $review_count );
 
-		if ( function_exists( 'wc_get_logger' ) ) {
-			$logger = wc_get_logger();
-			$logger->info(
-				sprintf(
-					'Rating updated for product %d: %.2f stars (%d reviews)',
-					$product_id,
-					$avg_stars,
-					$review_count
-				),
-				array( 'source' => 'reviewbird' )
-			);
-		}
+		self::log( sprintf( 'Rating updated for product %d: %.2f stars (%d reviews)', $product_id, $avg_stars, $review_count ) );
 
 		return new WP_REST_Response(
 			array(
@@ -125,21 +130,12 @@ class RatingsController {
 	 * @return bool|WP_Error True if authorized, WP_Error otherwise.
 	 */
 	public static function permission_callback( WP_REST_Request $request ) {
-		// Extract and validate product ID from request
-		$product_id = $request->get_param( 'product_id' );
-		$product_id = absint( $product_id );
+		$product_id = self::validate_product_id( $request->get_param( 'product_id' ) );
 
-		// If no valid product ID provided, deny access
-		if ( ! $product_id ) {
+		if ( is_wp_error( $product_id ) ) {
 			return false;
 		}
 
-		// Verify the post is actually a product
-		if ( 'product' !== get_post_type( $product_id ) ) {
-			return false;
-		}
-
-		// Check WooCommerce OAuth authenticated user has permission to edit this specific product
 		return wc_rest_check_post_permissions( 'product', 'edit', $product_id );
 	}
 
@@ -153,95 +149,34 @@ class RatingsController {
 		$product_id     = $request->get_param( 'product_id' );
 		$customer_email = $request->get_param( 'customer_email' );
 
-		if ( empty( $product_id ) ) {
-			return new WP_Error(
-				'missing_product_id',
-				__( 'Product ID is required', 'reviewbird-reviews' ),
-				array( 'status' => 400 )
-			);
+		$product_id = self::validate_product_id( $product_id );
+		if ( is_wp_error( $product_id ) ) {
+			return $product_id;
 		}
 
 		if ( empty( $customer_email ) ) {
-			return new WP_Error(
-				'missing_email',
-				__( 'Customer email is required', 'reviewbird-reviews' ),
-				array( 'status' => 400 )
-			);
+			return self::validation_error( 'missing_email', 'Customer email is required' );
 		}
 
 		if ( ! is_email( $customer_email ) ) {
-			return new WP_Error(
-				'invalid_email',
-				__( 'Invalid email address', 'reviewbird-reviews' ),
-				array( 'status' => 400 )
-			);
+			return self::validation_error( 'invalid_email', 'Invalid email address' );
 		}
 
-		$product_id = absint( $product_id );
+		$verified_purchase    = wc_customer_bought_product( $customer_email, null, $product_id );
+		$purchased_attributes = $verified_purchase ? $this->get_purchased_attributes( $customer_email, $product_id ) : array();
+		$location             = $this->get_customer_location( $customer_email );
 
-		if ( ! $product_id ) {
-			return new WP_Error(
-				'invalid_product_id',
-				__( 'Invalid product ID', 'reviewbird-reviews' ),
-				array( 'status' => 400 )
-			);
-		}
-
-		if ( 'product' !== get_post_type( $product_id ) ) {
-			return new WP_Error(
-				'product_not_found',
-				__( 'Product not found', 'reviewbird-reviews' ),
-				array( 'status' => 404 )
-			);
-		}
-
-		// Check if customer bought product using email (user_id = null).
-		$verified_purchase      = wc_customer_bought_product( $customer_email, null, $product_id );
-		$location               = null;
-		$purchased_attributes   = [];
-
-		// Only look up variation attributes if verified (optimization).
-		if ( $verified_purchase ) {
-			$purchased_attributes = $this->get_purchased_attributes( $customer_email, $product_id );
-		}
-
-		// Get customer's location using WC_Customer.
-		if ( class_exists( 'WC_Customer' ) ) {
-			// Try to get user ID by email.
-			$user = get_user_by( 'email', $customer_email );
-
-			if ( $user ) {
-				// Load customer from user ID.
-				$customer = new \WC_Customer( $user->ID );
-			} else {
-				// Create guest customer object.
-				$customer = new \WC_Customer( 0 );
-				$customer->set_email( $customer_email );
-			}
-
-			// Get billing country code.
-			$country_code = $customer->get_billing_country();
-
-			// Convert to English country name (avoid WC localization issues).
-			if ( ! empty( $country_code ) ) {
-				$location = self::get_english_country_name( $country_code );
-			}
-		}
-
-		if ( function_exists( 'wc_get_logger' ) ) {
-			$logger = wc_get_logger();
-			$logger->debug(
-				sprintf(
-					'Verified purchase check for product %d, email %s: %s, location: %s, attributes: %s',
-					$product_id,
-					$customer_email,
-					$verified_purchase ? 'true' : 'false',
-					$location ? $location : 'none',
-					! empty( $purchased_attributes ) ? wp_json_encode( $purchased_attributes ) : 'none'
-				),
-				array( 'source' => 'reviewbird' )
-			);
-		}
+		self::log(
+			sprintf(
+				'Verified purchase check for product %d, email %s: %s, location: %s, attributes: %s',
+				$product_id,
+				$customer_email,
+				$verified_purchase ? 'true' : 'false',
+				$location ? $location : 'none',
+				! empty( $purchased_attributes ) ? wp_json_encode( $purchased_attributes ) : 'none'
+			),
+			'debug'
+		);
 
 		$response = array(
 			'product_id'        => $product_id,
@@ -249,17 +184,38 @@ class RatingsController {
 			'verified_purchase' => (bool) $verified_purchase,
 		);
 
-		// Only include location if we found one.
 		if ( ! empty( $location ) ) {
 			$response['location'] = $location;
 		}
 
-		// Only include purchased attributes if we found any.
 		if ( ! empty( $purchased_attributes ) ) {
 			$response['purchased_attributes'] = $purchased_attributes;
 		}
 
 		return new WP_REST_Response( $response, 200 );
+	}
+
+	/**
+	 * Get customer billing location by email.
+	 *
+	 * @param string $customer_email Customer email address.
+	 * @return string|null English country name or null if not found.
+	 */
+	private function get_customer_location( string $customer_email ): ?string {
+		if ( ! class_exists( 'WC_Customer' ) ) {
+			return null;
+		}
+
+		$user     = get_user_by( 'email', $customer_email );
+		$customer = $user ? new \WC_Customer( $user->ID ) : new \WC_Customer( 0 );
+
+		if ( ! $user ) {
+			$customer->set_email( $customer_email );
+		}
+
+		$country_code = $customer->get_billing_country();
+
+		return ! empty( $country_code ) ? self::get_english_country_name( $country_code ) : null;
 	}
 
 	/**
@@ -272,18 +228,20 @@ class RatingsController {
 	private function get_purchased_attributes( string $customer_email, int $product_id ): array {
 		$product = wc_get_product( $product_id );
 		if ( ! $product ) {
-			return [];
+			return array();
 		}
 
-		$parent_id = $product->get_parent_id() ?: $product_id;
+		$parent_id = $product->get_parent_id() ? $product->get_parent_id() : $product_id;
 
-		$orders = wc_get_orders( [
-			'billing_email' => $customer_email,
-			'status'        => wc_get_is_paid_statuses(),
-			'limit'         => 10,
-			'orderby'       => 'date',
-			'order'         => 'DESC',
-		] );
+		$orders = wc_get_orders(
+			array(
+				'billing_email' => $customer_email,
+				'status'        => wc_get_is_paid_statuses(),
+				'limit'         => 10,
+				'orderby'       => 'date',
+				'order'         => 'DESC',
+			)
+		);
 
 		foreach ( $orders as $order ) {
 			foreach ( $order->get_items() as $item ) {
@@ -300,13 +258,13 @@ class RatingsController {
 					continue;
 				}
 
-				$attributes = [];
+				$attributes = array();
 				foreach ( $variation->get_variation_attributes() as $attr_key => $attr_value ) {
 					$attr_name    = wc_attribute_label( str_replace( 'attribute_', '', $attr_key ) );
-					$attributes[] = [
+					$attributes[] = array(
 						'name'  => ucwords( $attr_name ),
 						'value' => ucwords( $attr_value ),
-					];
+					);
 				}
 
 				// Return first match (most recent order).
@@ -316,7 +274,7 @@ class RatingsController {
 			}
 		}
 
-		return [];
+		return array();
 	}
 
 	/**

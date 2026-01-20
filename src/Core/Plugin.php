@@ -112,7 +112,7 @@ class Plugin {
 	 * Enqueue public scripts and styles.
 	 */
 	public function enqueue_public_scripts() {
-		// Check if widget is enabled AND store can show widget
+		// Check if widget is enabled AND store can show widget.
 		if ( ! reviewbird_can_show_widget() ) {
 			return;
 		}
@@ -152,7 +152,9 @@ class Plugin {
 	 */
 	public function widget_shortcode( $atts ) {
 		$atts = shortcode_atts(
-			array(),
+			array(
+				'product_id' => null,
+			),
 			$atts,
 			'reviewbird_widget'
 		);
@@ -175,18 +177,33 @@ class Plugin {
 			'reviewbird_showcase'
 		);
 
-		// Carousel ID is required.
-		if ( empty( $atts['id'] ) ) {
+		$carousel_id = $atts['id'];
+		$store_id    = get_option( 'reviewbird_store_id' );
+
+		if ( empty( $carousel_id ) ) {
 			return '<!-- reviewbird Showcase: Missing showcase ID -->';
 		}
 
-		// Store ID is required.
-		$store_id = get_option( 'reviewbird_store_id' );
 		if ( empty( $store_id ) ) {
 			return '<!-- reviewbird Showcase: Store not connected -->';
 		}
 
-		// Enqueue carousel script (only once per page).
+		$this->enqueue_carousel_script();
+
+		$locale = $this->get_language_code();
+
+		return sprintf(
+			'<div data-reviewbird-carousel data-store-id="%s" data-carousel-id="%s" data-locale="%s"></div>',
+			esc_attr( $store_id ),
+			esc_attr( $carousel_id ),
+			esc_attr( $locale )
+		);
+	}
+
+	/**
+	 * Enqueue carousel script and configuration.
+	 */
+	private function enqueue_carousel_script() {
 		wp_enqueue_script(
 			'reviewbird-carousel',
 			reviewbird_get_api_url() . '/build/review-carousel.js',
@@ -195,7 +212,6 @@ class Plugin {
 			true
 		);
 
-		// Pass configuration to carousel JavaScript.
 		wp_localize_script(
 			'reviewbird-carousel',
 			'reviewbirdCarouselConfig',
@@ -203,17 +219,15 @@ class Plugin {
 				'apiUrl' => reviewbird_get_api_url(),
 			)
 		);
+	}
 
-		// Get locale (normalize to language code only, e.g., 'en' from 'en_US').
-		$locale = get_locale();
-		$locale = strtolower( substr( $locale, 0, 2 ) );
-
-		return sprintf(
-			'<div data-reviewbird-carousel data-store-id="%s" data-carousel-id="%s" data-locale="%s"></div>',
-			esc_attr( $store_id ),
-			esc_attr( $atts['id'] ),
-			esc_attr( $locale )
-		);
+	/**
+	 * Get the two-letter language code from the current locale.
+	 *
+	 * @return string Two-letter language code (e.g., 'en' from 'en_US').
+	 */
+	private function get_language_code() {
+		return strtolower( substr( get_locale(), 0, 2 ) );
 	}
 
 	/**
@@ -242,15 +256,15 @@ class Plugin {
 			)
 		);
 
-		// Connection controller routes
+		// Connection controller routes.
 		$connection_controller = new ConnectionController();
 		$connection_controller->register_routes();
 
-		// Coupon controller routes
+		// Coupon controller routes.
 		$coupon_controller = new CouponController();
 		$coupon_controller->register_routes();
 
-		// Products controller routes
+		// Products controller routes.
 		$products_controller = new ProductsController();
 		$products_controller->register_routes();
 	}
@@ -264,24 +278,14 @@ class Plugin {
 	 * @return string Template file path.
 	 */
 	public function comments_template_loader( $template ) {
-		// Check if widget is enabled AND store can show widget
-		if ( ! reviewbird_can_show_widget() ) {
-			return $template; // Falls back to WooCommerce default reviews
-		}
-
-		if ( get_post_type() !== 'product' ) {
+		if ( ! reviewbird_can_show_widget() || get_post_type() !== 'product' ) {
 			return $template;
 		}
 
-		$reviewbird_template = trailingslashit( REVIEWBIRD_PLUGIN_DIR ) . 'templates/woocommerce/single-product-reviews.php';
+		$reviewbird_template = REVIEWBIRD_PLUGIN_DIR . 'templates/woocommerce/single-product-reviews.php';
 
-		if ( file_exists( $reviewbird_template ) ) {
-			return $reviewbird_template;
-		}
-
-		return $template;
+		return file_exists( $reviewbird_template ) ? $reviewbird_template : $template;
 	}
-
 
 	/**
 	 * Enable WooCommerce authentication for reviewbird REST API endpoints.
@@ -290,19 +294,13 @@ class Plugin {
 	 * @return bool
 	 */
 	public function enable_wc_auth_for_reviewbird_api( $is_request_to_wc_api ) {
-		// If already determined to be a WC API request, return true.
-		if ( $is_request_to_wc_api ) {
-			return true;
-		}
-
-		if ( empty( $_SERVER['REQUEST_URI'] ) ) {
-			return false;
+		if ( $is_request_to_wc_api || empty( $_SERVER['REQUEST_URI'] ) ) {
+			return $is_request_to_wc_api;
 		}
 
 		$rest_prefix = trailingslashit( rest_get_url_prefix() );
 		$request_uri = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 
-		// Enable WooCommerce authentication for reviewbird/v1 endpoints.
-		return ( false !== strpos( $request_uri, $rest_prefix . 'reviewbird/' ) );
+		return strpos( $request_uri, $rest_prefix . 'reviewbird/' ) !== false;
 	}
 }

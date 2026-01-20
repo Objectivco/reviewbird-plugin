@@ -5,7 +5,7 @@
  * @package reviewbird
  */
 
-// Prevent direct access
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -35,7 +35,8 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
 		'sslverify' => ! reviewbird_should_disable_ssl_verify(),
 	);
 
-	if ( in_array( $method, array( 'POST', 'PUT', 'PATCH' ), true ) && $data ) {
+	$methods_with_body = array( 'POST', 'PUT', 'PATCH' );
+	if ( $data && in_array( $method, $methods_with_body, true ) ) {
 		$args['body'] = wp_json_encode( $data );
 	}
 
@@ -75,7 +76,7 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
 		);
 	}
 
-	// Log any errors in successful responses (partial failures)
+	// Log any errors in successful responses (partial failures).
 	if ( ! empty( $decoded['errors'] ) && function_exists( 'wc_get_logger' ) ) {
 		$logger = wc_get_logger();
 		$logger->warning(
@@ -99,21 +100,23 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
  *
  * @return int|null Store ID or null if not available.
  */
-function reviewbird_get_store_id() {
+function reviewbird_get_store_id(): ?int {
 	$store_id = get_option( 'reviewbird_store_id' );
+
 	return $store_id ? absint( $store_id ) : null;
 }
 
 /**
  * Log API errors for debugging.
  *
- * @param string $type     Error type.
- * @param string $message  Error message.
- * @param string $endpoint API endpoint.
- * @param int    $code     Optional. HTTP response code.
- * @param array  $context  Optional. Additional context data.
+ * @param string   $type     Error type.
+ * @param string   $message  Error message.
+ * @param string   $endpoint API endpoint.
+ * @param int|null $code     Optional. HTTP response code.
+ * @param array    $context  Optional. Additional context data.
+ * @return void
  */
-function reviewbird_log_api_error( $type, $message, $endpoint, $code = null, $context = array() ) {
+function reviewbird_log_api_error( string $type, string $message, string $endpoint, ?int $code = null, array $context = array() ): void {
 	$log_message = sprintf(
 		'%s: %s [Endpoint: %s]',
 		$type,
@@ -125,7 +128,7 @@ function reviewbird_log_api_error( $type, $message, $endpoint, $code = null, $co
 		$log_message .= sprintf( ' [Code: %d]', $code );
 	}
 
-	// Use WooCommerce logger if available
+	// Use WooCommerce logger if available.
 	if ( function_exists( 'wc_get_logger' ) ) {
 		$logger = wc_get_logger();
 		$logger->error(
@@ -147,61 +150,74 @@ function reviewbird_log_api_error( $type, $message, $endpoint, $code = null, $co
  * @param bool $skip_cache Force fresh check.
  * @return array|null Status array or null if unavailable.
  */
-function reviewbird_get_store_status( $skip_cache = false ) {
+function reviewbird_get_store_status( bool $skip_cache = false ): ?array {
 	$cache_key = 'reviewbird_store_status';
 
 	if ( ! $skip_cache ) {
 		$cached = get_transient( $cache_key );
-		if ( $cached !== false ) {
+		if ( false !== $cached ) {
 			return $cached;
 		}
 	}
 
-	// Fetch fresh status from API
 	$domain   = parse_url( home_url(), PHP_URL_HOST ) ?? '';
 	$endpoint = '/api/woocommerce/health?domain=' . urlencode( $domain );
-
 	$response = reviewbird_api_request( $endpoint );
 
 	if ( is_wp_error( $response ) ) {
 		return null;
 	}
 
-	// Cache status with TTL based on health
-	// Match backend TTL: 5 min when healthy/syncing, 30 sec otherwise
-	$ttl = in_array( $response['status'] ?? '', array( 'healthy', 'syncing' ) ) ? 300 : 30;
+	$healthy_statuses = array( 'healthy', 'syncing' );
+	$is_healthy       = in_array( $response['status'] ?? '', $healthy_statuses, true );
+	$ttl              = $is_healthy ? 300 : 30;
+
 	set_transient( $cache_key, $response, $ttl );
 
 	return $response;
 }
 
 /**
- * Clear cached status.
+ * Clear cached store status.
+ *
+ * @return void
  */
-function reviewbird_clear_status_cache() {
+function reviewbird_clear_status_cache(): void {
 	delete_transient( 'reviewbird_store_status' );
 }
 
 /**
- * Check if widget can be shown.
- * Widget shows if healthy or syncing AND has subscription.
+ * Check if the store is connected and can show the widget.
  *
- * @return bool
+ * A store is considered connected when it is healthy or syncing AND has an active subscription.
+ *
+ * @return bool True if store is connected.
  */
-function reviewbird_is_store_connected() {
+function reviewbird_is_store_connected(): bool {
 	$status = reviewbird_get_store_status();
 
 	if ( ! $status ) {
 		return false;
 	}
 
-	// Widget can show if healthy or syncing AND has subscription
-	return in_array( $status['status'] ?? '', array( 'healthy', 'syncing' ), true )
-		&& ( $status['has_active_subscription'] ?? false );
+	$valid_statuses          = array( 'healthy', 'syncing' );
+	$current_status          = $status['status'] ?? '';
+	$has_active_subscription = $status['has_active_subscription'] ?? false;
+
+	return in_array( $current_status, $valid_statuses, true ) && $has_active_subscription;
 }
 
+/**
+ * Check if the reviewbird widget can be shown.
+ *
+ * Widget displays when the store is connected and widget setting is enabled.
+ *
+ * @return bool True if widget can be shown.
+ */
 function reviewbird_can_show_widget(): bool {
-	return reviewbird_is_store_connected() && get_option( 'reviewbird_enable_widget', 'yes' ) === 'yes';
+	$is_widget_enabled = get_option( 'reviewbird_enable_widget', 'yes' ) === 'yes';
+
+	return reviewbird_is_store_connected() && $is_widget_enabled;
 }
 
 /**
@@ -211,41 +227,30 @@ function reviewbird_can_show_widget(): bool {
  * @return string HTML output for the widget, or empty string if conditions not met.
  */
 function reviewbird_render_widget( $product_id = null ): string {
-	global $product;
+	$product = $product_id ? wc_get_product( $product_id ) : $GLOBALS['product'] ?? null;
 
-	// If product_id not provided, get from global
-	if ( $product_id ) {
-		$product = wc_get_product( $product_id );
-	}
-
-	if ( ! $product ) {
-		return '';
-	}
-
-	if ( ! reviewbird_is_store_connected() ) {
+	if ( ! $product || ! reviewbird_is_store_connected() ) {
 		return '';
 	}
 
 	$store_id = reviewbird_get_store_id();
 
 	if ( ! $store_id ) {
-		// Return HTML comment for debugging when called directly
 		return '<!-- reviewbird: Widget not displayed. Store ID not configured. Please connect your reviewbird account in WP Admin > reviewbird > Settings -->';
 	}
 
-	// Allow developers to disable widget for specific products.
 	if ( ! apply_filters( 'reviewbird_show_widget_for_product', true, $product ) ) {
 		return '';
 	}
 
-	$widget_id = 'reviewbird-widget-container-' . $product_id;
+	$actual_product_id = $product->get_id();
+	$widget_id         = 'reviewbird-widget-container-' . $actual_product_id;
 
-	// Allow developers to customize widget attributes.
 	$widget_attrs = apply_filters(
 		'reviewbird_widget_attributes',
 		array(
 			'store-id'    => $store_id,
-			'product-key' => $product->get_id(),
+			'product-key' => $actual_product_id,
 			'locale'      => get_locale(),
 		),
 		$product
@@ -256,7 +261,6 @@ function reviewbird_render_widget( $product_id = null ): string {
 		$attrs_html .= sprintf( ' data-%s="%s"', esc_attr( $key ), esc_attr( $value ) );
 	}
 
-	// Allow developers to customize widget wrapper.
 	return apply_filters(
 		'reviewbird_widget_html',
 		sprintf(

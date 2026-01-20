@@ -45,35 +45,39 @@ class WooCommerce {
 	 * @return \WP_REST_Response Modified response with media data.
 	 */
 	public function add_review_media_to_rest_response( $response, $review ) {
-		$media = array();
-
-		// Get CusRev photo meta (attachment IDs).
-		$image_ids = get_comment_meta( $review->comment_ID, 'ivole_review_image2', false );
-		foreach ( $image_ids as $attachment_id ) {
-			$url = wp_get_attachment_url( $attachment_id );
-			if ( $url ) {
-				$media[] = array(
-					'type' => 'image',
-					'url'  => $url,
-				);
-			}
-		}
-
-		// Get CusRev video meta (attachment IDs).
-		$video_ids = get_comment_meta( $review->comment_ID, 'ivole_review_video2', false );
-		foreach ( $video_ids as $attachment_id ) {
-			$url = wp_get_attachment_url( $attachment_id );
-			if ( $url ) {
-				$media[] = array(
-					'type' => 'video',
-					'url'  => $url,
-				);
-			}
-		}
+		$media = array_merge(
+			$this->get_attachment_media( $review->comment_ID, 'ivole_review_image2', 'image' ),
+			$this->get_attachment_media( $review->comment_ID, 'ivole_review_video2', 'video' )
+		);
 
 		$response->data['media'] = $media;
 
 		return $response;
+	}
+
+	/**
+	 * Get media items from comment meta attachment IDs.
+	 *
+	 * @param int    $comment_id The comment ID.
+	 * @param string $meta_key   The meta key containing attachment IDs.
+	 * @param string $type       The media type ('image' or 'video').
+	 * @return array Array of media items with type and url.
+	 */
+	private function get_attachment_media( $comment_id, $meta_key, $type ) {
+		$media          = array();
+		$attachment_ids = get_comment_meta( $comment_id, $meta_key, false );
+
+		foreach ( $attachment_ids as $attachment_id ) {
+			$url = wp_get_attachment_url( $attachment_id );
+			if ( $url ) {
+				$media[] = array(
+					'type' => $type,
+					'url'  => $url,
+				);
+			}
+		}
+
+		return $media;
 	}
 
 	/**
@@ -82,21 +86,37 @@ class WooCommerce {
 	 * This captures the locale at the time of purchase, not at sync time.
 	 * Supports multilingual stores where different customers may order in different languages.
 	 *
-	 * @param int|\WC_Order $order_id Order ID or order object.
+	 * @param int|\WC_Order  $order_id Order ID or order object.
 	 * @param \WC_Order|null $order Order object (optional, depends on hook).
 	 */
 	public function save_order_locale( $order_id, $order = null ) {
-		// Handle both hook signatures.
+		$order = $this->resolve_order( $order_id, $order );
+
+		if ( ! $order ) {
+			return;
+		}
+
+		$order->update_meta_data( '_reviewbird_locale', get_locale() );
+		$order->save();
+	}
+
+	/**
+	 * Resolve order object from various hook signatures.
+	 *
+	 * @param int|\WC_Order  $order_id Order ID or order object.
+	 * @param \WC_Order|null $order    Order object (optional).
+	 * @return \WC_Order|false Order object or false if not found.
+	 */
+	private function resolve_order( $order_id, $order ) {
 		if ( $order_id instanceof \WC_Order ) {
-			$order = $order_id;
-		} elseif ( ! $order ) {
-			$order = wc_get_order( $order_id );
+			return $order_id;
 		}
 
 		if ( $order ) {
-			$order->update_meta_data( '_reviewbird_locale', get_locale() );
-			$order->save();
+			return $order;
 		}
+
+		return wc_get_order( $order_id );
 	}
 
 	/**
@@ -111,9 +131,8 @@ class WooCommerce {
 	 * @return \WP_REST_Response Modified response with locale.
 	 */
 	public function add_locale_to_order_response( $response, $order, $request ) {
-		$saved_locale         = $order->get_meta( '_reviewbird_locale' );
+		$saved_locale             = $order->get_meta( '_reviewbird_locale' );
 		$response->data['locale'] = $saved_locale ? $saved_locale : get_locale();
 		return $response;
 	}
-
 }

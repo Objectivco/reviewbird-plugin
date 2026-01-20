@@ -35,7 +35,7 @@ class Deactivator {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'reviewbird_oauth_states';
-		
+
 		// Delete expired states.
 		$wpdb->query(
 			$wpdb->prepare(

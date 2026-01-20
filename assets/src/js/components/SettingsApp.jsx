@@ -1,68 +1,51 @@
-import { useState, useEffect } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import ConnectionHealth from './ConnectionHealth';
-import TogglePanel from './TogglePanel';
-import LoadingSpinner from './LoadingSpinner';
+import ConnectionHealth from './ConnectionHealth.jsx';
+import TogglePanel from './TogglePanel.jsx';
+
+function getAdminSetting(key, defaultValue = true) {
+	const value = window.reviewbirdAdmin?.[key];
+	return value !== undefined ? value : defaultValue;
+}
+
+async function updateSetting(settingName, value) {
+	const formData = new FormData();
+	formData.append('action', `reviewbird_update_${settingName}_setting`);
+	formData.append('nonce', window.reviewbirdAdmin.nonce);
+	formData.append(settingName, value ? '1' : '0');
+
+	const response = await fetch(window.reviewbirdAdmin.ajaxUrl, {
+		method: 'POST',
+		body: formData,
+	});
+
+	const result = await response.json();
+
+	if (!result.success) {
+		throw new Error(result.data || 'Failed to update setting');
+	}
+}
+
+function useToggleSetting(settingKey, apiSettingName) {
+	const [enabled, setEnabled] = useState(() => getAdminSetting(settingKey));
+
+	async function handleToggle() {
+		const newValue = !enabled;
+		try {
+			await updateSetting(apiSettingName, newValue);
+			setEnabled(newValue);
+		} catch (err) {
+			console.error(`Failed to update ${apiSettingName} setting:`, err);
+			alert(__('Failed to update setting. Please try again.', 'reviewbird-reviews'));
+		}
+	}
+
+	return [enabled, handleToggle];
+}
 
 export default function SettingsApp() {
-	const [enableWidget, setEnableWidget] = useState(
-		window.reviewbirdAdmin?.enableWidget !== undefined ? window.reviewbirdAdmin.enableWidget : true
-	);
-	const [enableSchema, setEnableSchema] = useState(
-		window.reviewbirdAdmin?.enableSchema !== undefined ? window.reviewbirdAdmin.enableSchema : true
-	);
-	const [loading, setLoading] = useState(true);
-
-	useEffect(() => {
-		// Settings are loaded from PHP via reviewbirdAdmin global
-		setLoading(false);
-	}, []);
-
-	const updateSetting = async (settingName, value) => {
-		try {
-			const formData = new FormData();
-			formData.append('action', `reviewbird_update_${settingName}_setting`);
-			formData.append('nonce', window.reviewbirdAdmin.nonce);
-			formData.append(settingName, value ? '1' : '0');
-
-			const response = await fetch(window.reviewbirdAdmin.ajaxUrl, {
-				method: 'POST',
-				body: formData,
-			});
-
-			const result = await response.json();
-
-			if (!result.success) {
-				throw new Error(result.data || 'Failed to update setting');
-			}
-
-			return true;
-		} catch (err) {
-			console.error(`Failed to update ${settingName} setting:`, err);
-			alert(__('Failed to update setting. Please try again.', 'reviewbird-reviews'));
-			return false;
-		}
-	};
-
-	const handleWidgetToggle = async () => {
-		const newValue = !enableWidget;
-		const success = await updateSetting('enable_widget', newValue);
-		if (success) {
-			setEnableWidget(newValue);
-		}
-	};
-
-	const handleSchemaToggle = async () => {
-		const newValue = !enableSchema;
-		const success = await updateSetting('enable_schema', newValue);
-		if (success) {
-			setEnableSchema(newValue);
-		}
-	};
-
-	if (loading) {
-		return <LoadingSpinner />;
-	}
+	const [enableWidget, handleWidgetToggle] = useToggleSetting('enableWidget', 'enable_widget');
+	const [enableSchema, handleSchemaToggle] = useToggleSetting('enableSchema', 'enable_schema');
 
 	return (
 		<div className="max-w-4xl mx-auto py-8">
