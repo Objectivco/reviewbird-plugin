@@ -5,59 +5,59 @@ const HEALTH_CHECK_INTERVAL = 300000; // 5 minutes
 
 const STATUS_CONFIG = {
 	healthy: {
-		color: 'bg-green-50 border-green-200',
+		color: 'border-l-4 border-l-green-500',
 		iconColor: 'text-green-600',
-		text: __('Connected to ReviewBird', 'reviewbird-reviews'),
-		message: __('Your WooCommerce store is successfully connected to ReviewBird. Review data is syncing properly.', 'reviewbird-reviews'),
+		text: __('Connected to reviewbird', 'reviewbird-reviews'),
+		message: __('Your WooCommerce store is successfully connected to reviewbird. Review data is syncing properly.', 'reviewbird-reviews'),
 		buttonText: __('View Dashboard', 'reviewbird-reviews'),
 		route: 'settings'
 	},
 	not_connected: {
-		color: 'bg-blue-50 border-blue-200',
+		color: 'border-l-4 border-l-blue-500',
 		iconColor: 'text-blue-600',
 		text: __('WooCommerce Not Connected', 'reviewbird-reviews'),
-		message: __('WooCommerce is not yet connected to ReviewBird. Connect your store to start syncing products and reviews.', 'reviewbird-reviews'),
+		message: __('WooCommerce is not yet connected to reviewbird. Connect your store to start syncing products and reviews.', 'reviewbird-reviews'),
 		buttonText: __('Connect WooCommerce', 'reviewbird-reviews'),
 		route: 'connect'
 	},
 	syncing: {
-		color: 'bg-yellow-50 border-yellow-200',
+		color: 'border-l-4 border-l-yellow-500',
 		iconColor: 'text-yellow-600',
 		text: __('Initial Sync in Progress', 'reviewbird-reviews'),
-		message: __('ReviewBird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes.', 'reviewbird-reviews'),
+		message: __('reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes.', 'reviewbird-reviews'),
 		buttonText: __('View Sync Progress', 'reviewbird-reviews'),
 		route: 'connect'
 	},
 	billing_required: {
-		color: 'bg-orange-50 border-orange-200',
+		color: 'border-l-4 border-l-orange-500',
 		iconColor: 'text-orange-600',
 		text: __('Subscription Required', 'reviewbird-reviews'),
-		message: __('Your ReviewBird subscription is inactive. Please update your billing information to continue using the service.', 'reviewbird-reviews'),
+		message: __('Your reviewbird subscription is inactive. Please update your billing information to continue using the service.', 'reviewbird-reviews'),
 		buttonText: __('Update Billing', 'reviewbird-reviews'),
 		route: 'billing'
 	},
 	unhealthy: {
-		color: 'bg-red-50 border-red-200',
+		color: 'border-l-4 border-l-red-500',
 		iconColor: 'text-red-600',
 		text: __('Connection Issue Detected', 'reviewbird-reviews'),
-		message: __('Unable to connect to ReviewBird. Please check your connection settings.', 'reviewbird-reviews'),
+		message: __('Unable to connect to reviewbird. Please check your connection settings.', 'reviewbird-reviews'),
 		buttonText: __('Fix Connection', 'reviewbird-reviews'),
 		route: 'connect'
 	},
 	error: {
-		color: 'bg-red-50 border-red-200',
+		color: 'border-l-4 border-l-red-500',
 		iconColor: 'text-red-600',
 		text: __('Connection Issue Detected', 'reviewbird-reviews'),
-		message: __('Unable to reach ReviewBird API. Please check your internet connection.', 'reviewbird-reviews'),
+		message: __('Unable to reach reviewbird API. Please check your internet connection.', 'reviewbird-reviews'),
 		buttonText: __('Get Help', 'reviewbird-reviews'),
 		route: 'support'
 	},
 	checking: {
-		color: 'bg-gray-50 border-gray-200',
+		color: 'border-l-4 border-l-gray-300',
 		iconColor: 'text-gray-400',
 		text: __('Checking connection...', 'reviewbird-reviews'),
-		message: __('Verifying connection to ReviewBird...', 'reviewbird-reviews'),
-		buttonText: __('Open ReviewBird', 'reviewbird-reviews'),
+		message: __('Verifying connection to reviewbird...', 'reviewbird-reviews'),
+		buttonText: __('Open reviewbird', 'reviewbird-reviews'),
 		route: 'settings'
 	}
 };
@@ -214,7 +214,7 @@ export default function ConnectionHealth() {
 		} catch (error) {
 			console.error('Health check failed:', error);
 			setHealthStatus('error');
-			setHealthData({ message: 'Unable to reach ReviewBird API' });
+			setHealthData({ message: 'Unable to reach reviewbird API' });
 		}
 
 		setLastChecked(new Date());
@@ -230,44 +230,44 @@ export default function ConnectionHealth() {
 	const isChecking = healthStatus === 'checking';
 
 	return (
-		<div className={`rounded-lg border p-6 ${config.color}`}>
-			<div className="flex items-start">
-				<div className="flex-shrink-0">
+		<div className={`bg-white rounded-lg shadow p-6 ${config.color}`}>
+			{/* Row 1: Icon + Title + Refresh button */}
+			<div className="flex items-center justify-between">
+				<div className="flex items-center gap-3">
 					<StatusIcon status={healthStatus} />
-				</div>
-				<div className="ml-3 flex-1">
 					<h3 className="text-sm font-medium text-gray-900">
 						{getStatusText(healthStatus, healthData)}
 					</h3>
-					<div className="mt-1 text-sm text-gray-600">
-						<p>{getStatusMessage(healthStatus, healthData)}</p>
-						{!isChecking && (
-							<a
-								href={getActionUrl(healthStatus, healthData)}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="mt-2 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700"
-							>
-								{config.buttonText}
-								<ExternalLinkIcon />
-							</a>
-						)}
-					</div>
-					{lastChecked && (
-						<p className="mt-2 text-xs text-gray-500">
-							{__('Last checked:', 'reviewbird-reviews')} {lastChecked.toLocaleTimeString()}
-						</p>
-					)}
 				</div>
 				{!isChecking && (
 					<button
 						onClick={() => checkHealth(true)}
-						className="ml-4 text-sm text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap"
+						className="text-sm text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap"
 					>
 						{__('Refresh', 'reviewbird-reviews')}
 					</button>
 				)}
 			</div>
+			{/* Row 2: Description, link, timestamp (indented to align with title) */}
+			<div className="mt-2 ml-8 text-sm text-gray-600">
+				<p>{getStatusMessage(healthStatus, healthData)}</p>
+				{!isChecking && (
+					<a
+						href={getActionUrl(healthStatus, healthData)}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="mt-2 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700"
+					>
+						{config.buttonText}
+						<ExternalLinkIcon />
+					</a>
+				)}
+			</div>
+			{lastChecked && (
+				<p className="mt-2 ml-8 text-xs text-gray-500">
+					{__('Last checked:', 'reviewbird-reviews')} {lastChecked.toLocaleTimeString()}
+				</p>
+			)}
 		</div>
 	);
 }
