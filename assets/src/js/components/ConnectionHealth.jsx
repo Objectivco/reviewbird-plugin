@@ -242,7 +242,17 @@ export default function ConnectionHealth() {
 				{!isChecking && (
 					<button
 						onClick={() => checkHealth(true)}
-						className="text-sm text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap"
+						className="text-sm font-medium whitespace-nowrap transition-colors"
+						style={{
+							padding: '6px 12px',
+							backgroundColor: '#eef2ff',
+							color: '#4f46e5',
+							border: 'none',
+							borderRadius: '6px',
+							cursor: 'pointer',
+						}}
+						onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e0e7ff'}
+						onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#eef2ff'}
 					>
 						{__('Refresh', 'reviewbird-reviews')}
 					</button>
