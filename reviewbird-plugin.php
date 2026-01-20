@@ -2,7 +2,7 @@
 /**
  * Plugin Name: reviewbird
  * Plugin URI: https://www.reviewbird.com
- * Description: Connect your WooCommerce store to reviewbird for advanced review collection and display.
+ * Description: Automated review collection that blocks spam, catches complaints, and showcases your best feedback.
  * Version: 1.0.0
  * Author: reviewbird
  * Author URI: https://reviewbird.com
@@ -61,7 +61,7 @@ function reviewbird_get_environment(): string {
 	}
 
 	if ( ! defined( 'WP_ENVIRONMENT_TYPE' ) ) {
-		return 'development';
+		return 'production';
 	}
 
 	$environment_map = array(
@@ -69,7 +69,7 @@ function reviewbird_get_environment(): string {
 		'staging'    => 'staging',
 	);
 
-	return $environment_map[ WP_ENVIRONMENT_TYPE ] ?? 'development';
+	return $environment_map[ WP_ENVIRONMENT_TYPE ] ?? 'production';
 }
 
 /**
