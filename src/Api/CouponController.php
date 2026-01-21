@@ -60,7 +60,7 @@ class CouponController {
 	 * @param WP_REST_Request $request The REST API request.
 	 * @return bool Whether the request has permission.
 	 */
-	public function permission_callback( WP_REST_Request $request ) {
+	public function permission_callback( WP_REST_Request $request ): bool {
 		return wc_rest_check_post_permissions( 'shop_coupon', 'create', 0 );
 	}
 

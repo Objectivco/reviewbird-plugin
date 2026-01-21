@@ -9,6 +9,8 @@
 
 namespace reviewbird\Integration;
 
+use WC_Product;
+
 /**
  * Rating override class.
  */
@@ -45,8 +47,8 @@ class RatingOverride {
 	/**
 	 * Override product average rating.
 	 *
-	 * @param float       $default Default average rating.
-	 * @param \WC_Product $product Product object.
+	 * @param float      $default Default average rating.
+	 * @param WC_Product $product Product object.
 	 * @return float Average rating.
 	 */
 	public function override_average_rating( $default, $product ): float {
@@ -62,8 +64,8 @@ class RatingOverride {
 	/**
 	 * Override product rating/review count.
 	 *
-	 * @param int         $default Default count.
-	 * @param \WC_Product $product Product object.
+	 * @param int        $default Default count.
+	 * @param WC_Product $product Product object.
 	 * @return int Rating or review count.
 	 */
 	public function override_rating_count( $default, $product ): int {
@@ -81,8 +83,8 @@ class RatingOverride {
 	 *
 	 * WooCommerce expects an array with keys 1-5 and count values.
 	 *
-	 * @param array       $default Default rating counts.
-	 * @param \WC_Product $product Product object.
+	 * @param array      $default Default rating counts.
+	 * @param WC_Product $product Product object.
 	 * @return array Rating counts distribution.
 	 */
 	public function override_rating_counts( $default, $product ): array {
@@ -101,8 +103,8 @@ class RatingOverride {
 	/**
 	 * Get reviewbird meta value for a product.
 	 *
-	 * @param \WC_Product $product  Product object.
-	 * @param string      $meta_key Meta key to retrieve.
+	 * @param WC_Product $product  Product object.
+	 * @param string     $meta_key Meta key to retrieve.
 	 * @return mixed Meta value or empty string if not set.
 	 */
 	private function get_product_meta( $product, string $meta_key ) {

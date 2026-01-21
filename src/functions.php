@@ -11,6 +11,64 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // =============================================================================
+// ENVIRONMENT FUNCTIONS
+// =============================================================================
+
+/**
+ * Determine the current environment.
+ *
+ * @return string 'production', 'staging', or 'development'
+ */
+function reviewbird_get_environment(): string {
+	if ( defined( 'REVIEWBIRD_ENVIRONMENT' ) ) {
+		return REVIEWBIRD_ENVIRONMENT;
+	}
+
+	if ( ! defined( 'WP_ENVIRONMENT_TYPE' ) ) {
+		return 'production';
+	}
+
+	$environment_map = array(
+		'production' => 'production',
+		'staging'    => 'staging',
+	);
+
+	return $environment_map[ WP_ENVIRONMENT_TYPE ] ?? 'production';
+}
+
+/**
+ * Get the appropriate API URL based on environment.
+ *
+ * @return string The API URL for the current environment.
+ */
+function reviewbird_get_api_url(): string {
+	$api_urls = array(
+		'production'  => REVIEWBIRD_API_URL_PRODUCTION,
+		'staging'     => REVIEWBIRD_API_URL_STAGING,
+		'development' => REVIEWBIRD_API_URL_DEVELOPMENT,
+	);
+
+	return $api_urls[ reviewbird_get_environment() ] ?? REVIEWBIRD_API_URL_DEVELOPMENT;
+}
+
+/**
+ * Determine if SSL verification should be disabled for HTTP requests.
+ *
+ * @return bool True to disable SSL verification, false to enable it.
+ */
+function reviewbird_should_disable_ssl_verify(): bool {
+	if ( 'development' === reviewbird_get_environment() ) {
+		return true;
+	}
+
+	if ( defined( 'REVIEWBIRD_DISABLE_SSL_VERIFY' ) ) {
+		return (bool) REVIEWBIRD_DISABLE_SSL_VERIFY;
+	}
+
+	return false;
+}
+
+// =============================================================================
 // API FUNCTIONS (replacing Client class)
 // =============================================================================
 

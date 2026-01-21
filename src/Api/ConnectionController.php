@@ -14,7 +14,6 @@ use WP_REST_Response;
  * Connection controller class.
  */
 class ConnectionController {
-
 	/**
 	 * Register REST API routes.
 	 */
@@ -50,8 +49,13 @@ class ConnectionController {
 		$store_id = $request->get_param( 'store_id' );
 
 		update_option( 'reviewbird_store_id', $store_id );
-		$this->clear_status_cache();
-		$this->log_connection( $store_id );
+
+		reviewbird_clear_status_cache();
+
+		wc_get_logger()->info(
+			sprintf( 'reviewbird store connected: Store ID %d saved', $store_id ),
+			array( 'source' => 'reviewbird' )
+		);
 
 		return new WP_REST_Response(
 			array(
@@ -60,32 +64,6 @@ class ConnectionController {
 				'message'  => sprintf( 'Store ID %d has been saved successfully', $store_id ),
 			),
 			200
-		);
-	}
-
-	/**
-	 * Clear any cached connection status.
-	 */
-	private function clear_status_cache(): void {
-		if ( function_exists( 'reviewbird_clear_status_cache' ) ) {
-			reviewbird_clear_status_cache();
-		}
-	}
-
-	/**
-	 * Log the store connection event.
-	 *
-	 * @param int $store_id The connected store ID.
-	 */
-	private function log_connection( int $store_id ): void {
-		if ( ! function_exists( 'wc_get_logger' ) ) {
-			return;
-		}
-
-		$logger = wc_get_logger();
-		$logger->info(
-			sprintf( 'reviewbird store connected: Store ID %d saved', $store_id ),
-			array( 'source' => 'reviewbird' )
 		);
 	}
 

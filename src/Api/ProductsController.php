@@ -7,6 +7,7 @@
 
 namespace reviewbird\Api;
 
+use WC_Product_Variable;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;
@@ -33,7 +34,7 @@ class ProductsController {
 	 *
 	 * @return WP_Error|null Error if WooCommerce is not active, null otherwise.
 	 */
-	private static function require_woocommerce(): ?WP_Error {
+	private static function require_woocommerce() {
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			return self::error( 'woocommerce_not_active', 'WooCommerce is not active', 503 );
 		}
@@ -148,7 +149,7 @@ class ProductsController {
 	/**
 	 * Get product variations.
 	 *
-	 * @param \WC_Product_Variable $product Variable product object.
+	 * @param WC_Product_Variable $product Variable product object.
 	 * @return array Array of formatted variations.
 	 */
 	private function get_product_variations( $product ): array {
@@ -188,7 +189,6 @@ class ProductsController {
 	 * Check permission for API requests.
 	 * Uses WooCommerce authentication (consumer key/secret) via wc_rest_check_post_permissions.
 	 *
-	 * @param WP_REST_Request $request The REST API request.
 	 * @return bool Whether the request has permission.
 	 */
 	public function permission_callback( WP_REST_Request $request ): bool {

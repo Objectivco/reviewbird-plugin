@@ -80,12 +80,13 @@ class RatingsController {
 		$rating_counts = $request->get_param( 'rating_counts' );
 
 		$product_id = self::validate_product_id( $product_id );
+
 		if ( is_wp_error( $product_id ) ) {
 			return $product_id;
 		}
 
-		if ( ! is_numeric( $avg_stars ) || $avg_stars < 0 || $avg_stars > 5 ) {
-			return self::validation_error( 'invalid_rating', 'Average stars must be a number between 0 and 5' );
+		if ( ! is_numeric( $avg_stars ) || $avg_stars < 1 || $avg_stars > 5 ) {
+			return self::validation_error( 'invalid_rating', 'Average stars must be a number between 1 and 5' );
 		}
 
 		if ( ! is_numeric( $review_count ) || $review_count < 0 ) {
