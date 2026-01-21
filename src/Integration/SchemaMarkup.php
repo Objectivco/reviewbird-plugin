@@ -28,7 +28,7 @@ class SchemaMarkup {
 	 * @param int $product_id WooCommerce product ID.
 	 * @return array Array of Review schema objects.
 	 */
-	private function fetch_reviews_for_schema( $product_id ) {
+	private function fetch_reviews_for_schema( $product_id ): array {
 		$store_id = reviewbird_get_store_id();
 
 		if ( ! $store_id ) {
@@ -62,7 +62,7 @@ class SchemaMarkup {
 	 * @param int $product_id WooCommerce product ID.
 	 * @return array Raw reviews array or empty array on failure.
 	 */
-	private function fetch_reviews_from_api( $store_id, $product_id ) {
+	private function fetch_reviews_from_api( $store_id, $product_id ): array {
 		$response = wp_remote_get(
 			reviewbird_get_api_url() . "/api/public/{$store_id}/{$product_id}?context=schema&page=1",
 			array(
@@ -95,7 +95,7 @@ class SchemaMarkup {
 	 * @param array $reviews Raw reviews from API.
 	 * @return array Array of Review schema objects.
 	 */
-	private function build_review_schemas( array $reviews ) {
+	private function build_review_schemas( array $reviews ): array {
 		$schemas         = array();
 		$reviews_limited = array_slice( $reviews, 0, self::MAX_SCHEMA_REVIEWS );
 
@@ -146,6 +146,7 @@ class SchemaMarkup {
 		}
 
 		$date_published = $this->format_date( $review['created_at'] ?? '' );
+
 		if ( $date_published ) {
 			$schema['datePublished'] = $date_published;
 		}
@@ -170,15 +171,6 @@ class SchemaMarkup {
 	}
 
 	/**
-	 * Clear schema cache for a product.
-	 *
-	 * @param int $product_id WooCommerce product ID.
-	 */
-	public function clear_schema_cache( $product_id ) {
-		delete_transient( 'reviewbird_schema_reviews_' . $product_id );
-	}
-
-	/**
 	 * Filter WooCommerce's structured data to inject reviewbird review data.
 	 *
 	 * This hooks into WooCommerce's schema output to add aggregateRating and
@@ -196,11 +188,13 @@ class SchemaMarkup {
 		$product_id = $product->get_id();
 
 		$aggregate_rating = $this->build_aggregate_rating( $product_id );
+
 		if ( $aggregate_rating ) {
 			$markup['aggregateRating'] = $aggregate_rating;
 		}
 
 		$reviews = $this->fetch_reviews_for_schema( $product_id );
+
 		if ( ! empty( $reviews ) ) {
 			$markup['review'] = $reviews;
 		}
@@ -213,7 +207,7 @@ class SchemaMarkup {
 	 *
 	 * @return bool True if schema should be generated.
 	 */
-	private function is_schema_enabled() {
+	private function is_schema_enabled(): bool {
 		return reviewbird_is_schema_enabled() && reviewbird_is_store_connected();
 	}
 
