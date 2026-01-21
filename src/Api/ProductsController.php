@@ -63,16 +63,20 @@ class ProductsController {
 				'callback'            => array( $this, 'get_products' ),
 				'permission_callback' => array( $this, 'permission_callback' ),
 				'args'                => array(
-					'per_page' => array(
+					'per_page'       => array(
 						'default'           => 100,
 						'sanitize_callback' => 'absint',
 					),
-					'page'     => array(
+					'page'           => array(
 						'default'           => 1,
 						'sanitize_callback' => 'absint',
 					),
-					'status'   => array(
+					'status'         => array(
 						'default'           => 'publish',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'modified_after' => array(
+						'default'           => null,
 						'sanitize_callback' => 'sanitize_text_field',
 					),
 				),
@@ -92,16 +96,21 @@ class ProductsController {
 			return $wc_error;
 		}
 
-		$results = wc_get_products(
-			array(
-				'status'   => $request->get_param( 'status' ),
-				'limit'    => $request->get_param( 'per_page' ),
-				'page'     => $request->get_param( 'page' ),
-				'paginate' => true,
-				'orderby'  => 'ID',
-				'order'    => 'ASC',
-			)
+		$args = array(
+			'status'   => $request->get_param( 'status' ),
+			'limit'    => $request->get_param( 'per_page' ),
+			'page'     => $request->get_param( 'page' ),
+			'paginate' => true,
+			'orderby'  => 'ID',
+			'order'    => 'ASC',
 		);
+
+		$modified_after = $request->get_param( 'modified_after' );
+		if ( $modified_after ) {
+			$args['date_modified'] = '>=' . $modified_after;
+		}
+
+		$results = wc_get_products( $args );
 
 		$products = array_map( array( $this, 'format_product_with_variations' ), $results->products );
 
@@ -131,19 +140,39 @@ class ProductsController {
 	 */
 	private function format_product( $product ): array {
 		return array(
-			'id'           => $product->get_id(),
-			'name'         => $product->get_name(),
-			'slug'         => $product->get_slug(),
-			'permalink'    => $product->get_permalink(),
-			'type'         => $product->get_type(),
-			'status'       => $product->get_status(),
-			'sku'          => $product->get_sku(),
-			'price'        => $product->get_price(),
-			'image'        => wp_get_attachment_url( $product->get_image_id() ),
-			'images'       => self::get_image_urls( $product->get_gallery_image_ids() ),
-			'stock_status' => $product->get_stock_status(),
-			'in_stock'     => $product->is_in_stock(),
+			'id'               => $product->get_id(),
+			'name'             => $product->get_name(),
+			'slug'             => $product->get_slug(),
+			'permalink'        => $product->get_permalink(),
+			'type'             => $product->get_type(),
+			'status'           => $product->get_status(),
+			'sku'              => $product->get_sku(),
+			'global_unique_id' => $product->get_global_unique_id(),
+			'brand'            => $this->get_product_brand( $product ),
+			'price'            => $product->get_price(),
+			'image'            => wp_get_attachment_url( $product->get_image_id() ),
+			'images'           => self::get_image_urls( $product->get_gallery_image_ids() ),
+			'stock_status'     => $product->get_stock_status(),
+			'in_stock'         => $product->is_in_stock(),
 		);
+	}
+
+	/**
+	 * Get product brand from taxonomy or meta.
+	 *
+	 * @param \WC_Product $product Product object.
+	 * @return string|null Brand name or null if not found.
+	 */
+	private function get_product_brand( $product ): ?string {
+		// Try taxonomy first (product_brand)
+		$brands = wp_get_post_terms( $product->get_id(), 'product_brand', array( 'fields' => 'names' ) );
+		if ( ! is_wp_error( $brands ) && ! empty( $brands ) ) {
+			return $brands[0];
+		}
+
+		// Fallback to meta
+		$meta_brand = $product->get_meta( '_brand' );
+		return $meta_brand ? $meta_brand : null;
 	}
 
 	/**
@@ -176,12 +205,14 @@ class ProductsController {
 	 */
 	private function format_variation( $variation ): array {
 		return array(
-			'id'         => $variation->get_id(),
-			'sku'        => $variation->get_sku(),
-			'price'      => $variation->get_price(),
-			'image'      => wp_get_attachment_url( $variation->get_image_id() ),
-			'attributes' => $variation->get_attributes(),
-			'in_stock'   => $variation->is_in_stock(),
+			'id'               => $variation->get_id(),
+			'sku'              => $variation->get_sku(),
+			'global_unique_id' => $variation->get_global_unique_id(),
+			'brand'            => $this->get_product_brand( $variation ),
+			'price'            => $variation->get_price(),
+			'image'            => wp_get_attachment_url( $variation->get_image_id() ),
+			'attributes'       => $variation->get_attributes(),
+			'in_stock'         => $variation->is_in_stock(),
 		);
 	}
 
