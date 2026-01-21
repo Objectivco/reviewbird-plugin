@@ -64,7 +64,7 @@ class SchemaMarkup {
 	 */
 	private function fetch_reviews_from_api( $store_id, $product_id ) {
 		$response = wp_remote_get(
-			reviewbird_get_api_url() . "/api/public/{$store_id}/{$product_id}",
+			reviewbird_get_api_url() . "/api/public/{$store_id}/{$product_id}?context=schema",
 			array(
 				'timeout'   => 10,
 				'sslverify' => ! reviewbird_should_disable_ssl_verify(),
