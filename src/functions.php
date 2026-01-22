@@ -203,36 +203,19 @@ function reviewbird_log_api_error( string $type, string $message, string $endpoi
 // =============================================================================
 
 /**
- * Get store status with smart caching.
+ * Get store status from cached option.
  *
- * @param bool $skip_cache Force fresh check.
- * @return array|null Status array or null if unavailable.
+ * This reads from an option that is populated by the HealthScheduler
+ * running via Action Scheduler in the background. No API calls are
+ * made during page loads.
+ *
+ * @param bool $skip_cache Deprecated. Kept for backward compatibility.
+ * @return array|null Status array or null if not yet populated.
  */
 function reviewbird_get_store_status( bool $skip_cache = false ): ?array {
-	$cache_key = 'reviewbird_store_status';
+	$status = get_option( 'reviewbird_store_status' );
 
-	if ( ! $skip_cache ) {
-		$cached = get_transient( $cache_key );
-		if ( false !== $cached ) {
-			return $cached;
-		}
-	}
-
-	$domain   = parse_url( home_url(), PHP_URL_HOST ) ?? '';
-	$endpoint = '/api/woocommerce/health?domain=' . urlencode( $domain );
-	$response = reviewbird_api_request( $endpoint );
-
-	if ( is_wp_error( $response ) ) {
-		return null;
-	}
-
-	$healthy_statuses = array( 'healthy', 'syncing' );
-	$is_healthy       = in_array( $response['status'] ?? '', $healthy_statuses, true );
-	$ttl              = $is_healthy ? 300 : 30;
-
-	set_transient( $cache_key, $response, $ttl );
-
-	return $response;
+	return is_array( $status ) ? $status : null;
 }
 
 /**
@@ -241,7 +224,7 @@ function reviewbird_get_store_status( bool $skip_cache = false ): ?array {
  * @return void
  */
 function reviewbird_clear_status_cache(): void {
-	delete_transient( 'reviewbird_store_status' );
+	delete_option( 'reviewbird_store_status' );
 }
 
 /**

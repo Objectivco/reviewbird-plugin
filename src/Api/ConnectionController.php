@@ -7,6 +7,7 @@
 
 namespace reviewbird\Api;
 
+use reviewbird\Integration\HealthScheduler;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -51,6 +52,10 @@ class ConnectionController {
 		update_option( 'reviewbird_store_id', $store_id );
 
 		reviewbird_clear_status_cache();
+
+		// Schedule immediate health status refresh.
+		$health_scheduler = new HealthScheduler();
+		$health_scheduler->schedule_immediate_refresh();
 
 		wc_get_logger()->info(
 			sprintf( 'reviewbird store connected: Store ID %d saved', $store_id ),

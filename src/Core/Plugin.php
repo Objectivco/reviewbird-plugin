@@ -12,8 +12,10 @@ use reviewbird\Api\ConnectionController;
 use reviewbird\Api\CouponController;
 use reviewbird\Api\ProductsController;
 use reviewbird\Api\RatingsController;
+use reviewbird\Integration\HealthScheduler;
 use reviewbird\Integration\RatingOverride;
 use reviewbird\Integration\SchemaMarkup;
+use reviewbird\Integration\SchemaScheduler;
 use reviewbird\Integration\WooCommerce;
 
 /**
@@ -99,6 +101,13 @@ class Plugin {
 
 		// WooCommerce integration (adds CusRev media to reviews REST API).
 		new WooCommerce();
+
+		// Action Scheduler integrations for async API calls.
+		$health_scheduler = new HealthScheduler();
+		$health_scheduler->init();
+
+		$schema_scheduler = new SchemaScheduler();
+		$schema_scheduler->init();
 
 		// Schema markup for SEO - filter WooCommerce's structured data to add reviewbird reviews.
 		$schema_markup = new SchemaMarkup();
