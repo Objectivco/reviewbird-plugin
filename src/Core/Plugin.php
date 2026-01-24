@@ -41,6 +41,13 @@ class Plugin {
 	protected $version;
 
 	/**
+	 * Whether the carousel script has been enqueued.
+	 *
+	 * @var bool
+	 */
+	private static $carousel_script_enqueued = false;
+
+	/**
 	 * Initialize the plugin.
 	 */
 	public function __construct() {
@@ -213,6 +220,10 @@ class Plugin {
 	 * Enqueue carousel script and configuration.
 	 */
 	private function enqueue_carousel_script() {
+		if ( self::$carousel_script_enqueued ) {
+			return;
+		}
+
 		wp_enqueue_script(
 			'reviewbird-carousel',
 			reviewbird_get_api_url() . '/build/review-carousel.js',
@@ -228,6 +239,8 @@ class Plugin {
 				'apiUrl' => reviewbird_get_api_url(),
 			)
 		);
+
+		self::$carousel_script_enqueued = true;
 	}
 
 	/**
