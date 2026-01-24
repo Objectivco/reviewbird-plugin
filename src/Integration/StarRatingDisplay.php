@@ -116,12 +116,12 @@ class StarRatingDisplay {
 		// translators: %s is the average rating.
 		$aria_label = sprintf( __( 'Rated %s out of 5', 'reviewbird-reviews' ), number_format( $average_rating, 2 ) );
 
-		echo '<div class="reviewbird-rating" role="img" aria-label="' . esc_attr( $aria_label ) . '">';
+		echo '<div class="rb-wc-rating" role="img" aria-label="' . esc_attr( $aria_label ) . '">';
 		echo $stars_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML is escaped in generate_stars_html.
 
 		if ( $show_count && $rating_count > 0 ) {
 			printf(
-				'<span class="reviewbird-rating-count">(%s)</span>',
+				'<span class="rb-wc-rating-count">(%s)</span>',
 				esc_html( $rating_count )
 			);
 		}
@@ -155,7 +155,7 @@ class StarRatingDisplay {
 		// Full stars.
 		for ( $i = 0; $i < $full_stars; $i++ ) {
 			$html .= sprintf(
-				'<span class="reviewbird-star reviewbird-star-fill" style="color: %s;"></span>',
+				'<span class="rb-wc-star rb-wc-star-fill" style="color: %s;"></span>',
 				esc_attr( $star_color )
 			);
 		}
@@ -163,7 +163,7 @@ class StarRatingDisplay {
 		// Half star.
 		if ( $has_half ) {
 			$html .= sprintf(
-				'<span class="reviewbird-star reviewbird-star-half" style="color: %s;"></span>',
+				'<span class="rb-wc-star rb-wc-star-half" style="color: %s;"></span>',
 				esc_attr( $star_color )
 			);
 		}
@@ -171,7 +171,7 @@ class StarRatingDisplay {
 		// Empty stars.
 		for ( $i = 0; $i < $empty_stars; $i++ ) {
 			$html .= sprintf(
-				'<span class="reviewbird-star reviewbird-star-empty" style="color: %s;"></span>',
+				'<span class="rb-wc-star rb-wc-star-empty" style="color: %s;"></span>',
 				esc_attr( $empty_color )
 			);
 		}
