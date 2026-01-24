@@ -174,8 +174,8 @@ class Plugin {
 			return;
 		}
 
-		// Load on WooCommerce product pages and shop/archive pages.
-		if ( ! is_woocommerce() && ! is_product() && ! is_shop() && ! is_product_category() && ! is_product_tag() ) {
+		// Load on WooCommerce pages (products, shop, archives).
+		if ( ! is_woocommerce() ) {
 			return;
 		}
 
