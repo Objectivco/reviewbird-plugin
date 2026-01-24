@@ -43,89 +43,88 @@ class StarRatingDisplay {
 	/**
 	 * Register WooCommerce rating display hooks.
 	 *
-	 * Removes native WooCommerce rating display and adds ReviewBird's version.
+	 * Filters the rating HTML output to work with both classic and block themes.
 	 */
 	private function register_hooks(): void {
-		// Remove WooCommerce's native rating display.
-		add_action( 'init', array( $this, 'remove_woocommerce_rating_hooks' ) );
+		// Filter rating HTML output - use high priority to run after WooCommerce blocks.
+		add_filter( 'woocommerce_product_get_rating_html', array( $this, 'filter_rating_html' ), 999, 3 );
 
-		// Add ReviewBird rating display at same hooks/priorities.
-		add_action( 'woocommerce_after_shop_loop_item_title', array( $this, 'display_loop_rating' ), 5 );
-		add_action( 'woocommerce_single_product_summary', array( $this, 'display_single_rating' ), 10 );
+		// Replace WooCommerce's single product rating template (which includes the review link).
+		add_action( 'init', array( $this, 'replace_single_product_rating' ) );
 	}
 
 	/**
-	 * Remove WooCommerce's native rating display hooks.
+	 * Replace WooCommerce's single product rating template.
 	 *
-	 * Called on 'init' to ensure WooCommerce functions exist.
+	 * The default template outputs a "customer reviews" link outside of the
+	 * filtered rating HTML. We remove it and add our own implementation.
 	 */
-	public function remove_woocommerce_rating_hooks(): void {
-		remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_rating', 5 );
+	public function replace_single_product_rating(): void {
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating', 10 );
+		add_action( 'woocommerce_single_product_summary', array( $this, 'display_single_rating' ), 6 );
 	}
 
 	/**
-	 * Display rating in product loop (shop/archive pages).
-	 */
-	public function display_loop_rating(): void {
-		global $product;
-
-		if ( ! $product ) {
-			return;
-		}
-
-		$this->render_rating( $product );
-	}
-
-	/**
-	 * Display rating on single product page.
+	 * Display rating on single product page without the review link.
 	 */
 	public function display_single_rating(): void {
 		global $product;
 
-		if ( ! $product ) {
+		if ( ! $product || ! wc_review_ratings_enabled() ) {
 			return;
 		}
 
 		$rating_count = $product->get_rating_count();
-
 		if ( $rating_count < 1 ) {
 			return;
 		}
 
-		$this->render_rating( $product );
+		echo '<div class="woocommerce-product-rating">';
+		echo wc_get_rating_html( $product->get_average_rating(), $rating_count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '</div>';
 	}
 
 	/**
-	 * Render the star rating HTML.
+	 * Filter the WooCommerce rating HTML output.
 	 *
-	 * @param \WC_Product $product The product object.
+	 * Replaces the native rating HTML with ReviewBird's custom star display.
+	 * Works for both classic themes (via template functions) and block themes
+	 * (via the woocommerce/product-rating block).
+	 *
+	 * @param string $html   The HTML string for the rating.
+	 * @param float  $rating The average rating.
+	 * @param int    $count  The number of ratings.
+	 * @return string The filtered HTML string.
 	 */
-	private function render_rating( $product ): void {
-		$average_rating = (float) $product->get_average_rating();
-		$rating_count   = $product->get_rating_count();
+	public function filter_rating_html( string $html, float $rating, int $count ): string {
+		// If count not provided, try to get it from the global product.
+		if ( $count < 1 ) {
+			global $product;
+			if ( $product instanceof \WC_Product ) {
+				$count = $product->get_rating_count();
+			}
+		}
 
-		if ( $average_rating <= 0 && $rating_count < 1 ) {
-			return;
+		if ( $rating <= 0 && $count < 1 ) {
+			return '';
 		}
 
 		$star_color = $this->get_star_color();
-		$stars_html = $this->generate_stars_html( $average_rating, $star_color );
+		$stars_html = $this->generate_stars_html( $rating, $star_color );
 
 		// translators: %s is the average rating.
-		$aria_label = sprintf( __( 'Rated %s out of 5', 'reviewbird-reviews' ), number_format( $average_rating, 2 ) );
+		$aria_label = sprintf( __( 'Rated %s out of 5', 'reviewbird-reviews' ), number_format( $rating, 2 ) );
 
-		echo '<div class="rb-wc-rating" role="img" aria-label="' . esc_attr( $aria_label ) . '">';
-		echo $stars_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML is escaped in generate_stars_html.
+		$output  = '<div class="rb-wc-rating" role="img" aria-label="' . esc_attr( $aria_label ) . '">';
+		$output .= $stars_html;
 
-		if ( $rating_count > 0 ) {
-			printf(
-				'<span class="rb-wc-rating-count">(%s)</span>',
-				esc_html( $rating_count )
-			);
+		if ( $count > 0 ) {
+			$output .= sprintf( '<span class="rb-wc-rating-count">(%s)</span>', esc_html( $count ) );
 		}
 
-		echo '</div>';
+		$output .= '</div>';
+
+		return $output;
 	}
 
 	/**
