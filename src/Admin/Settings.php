@@ -7,6 +7,8 @@
 
 namespace reviewbird\Admin;
 
+use reviewbird\Integration\StarRatingDisplay;
+
 /**
  * Admin settings page.
  */
@@ -150,11 +152,28 @@ class Settings {
 	 * Render the settings page.
 	 */
 	public function render_settings_page(): void {
+		// Refresh star color cache when admin visits settings page.
+		$this->maybe_refresh_star_color();
+
 		?>
 		<div class="wrap">
 			<div id="reviewbird-settings-root"></div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Refresh the star color cache if needed.
+	 *
+	 * Fetches from widget config API when transient is expired or missing.
+	 */
+	private function maybe_refresh_star_color(): void {
+		$cached_color = get_transient( 'reviewbird_star_color' );
+
+		// Only fetch if not cached.
+		if ( false === $cached_color ) {
+			StarRatingDisplay::fetch_and_cache_star_color();
+		}
 	}
 
 	/**

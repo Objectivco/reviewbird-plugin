@@ -16,6 +16,7 @@ use reviewbird\Integration\HealthScheduler;
 use reviewbird\Integration\RatingOverride;
 use reviewbird\Integration\SchemaMarkup;
 use reviewbird\Integration\SchemaScheduler;
+use reviewbird\Integration\StarRatingDisplay;
 use reviewbird\Integration\WooCommerce;
 
 /**
@@ -100,11 +101,15 @@ class Plugin {
 
 		// Public hooks.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_scripts' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_star_styles' ) );
 		add_shortcode( 'reviewbird_widget', array( $this, 'widget_shortcode' ) );
 		add_shortcode( 'reviewbird_showcase', array( $this, 'carousel_shortcode' ) );
 
 		// Rating override integration.
 		new RatingOverride();
+
+		// Star rating display override.
+		new StarRatingDisplay();
 
 		// WooCommerce integration (adds CusRev media to reviews REST API).
 		new WooCommerce();
@@ -157,6 +162,28 @@ class Plugin {
 				'storeId'      => get_option( 'reviewbird_store_id' ),
 				'widgetPrefix' => 'reviewbird-widget-container-',
 			)
+		);
+	}
+
+	/**
+	 * Enqueue star rating styles on WooCommerce pages.
+	 */
+	public function enqueue_star_styles() {
+		// Only load when store is connected.
+		if ( ! reviewbird_get_store_id() ) {
+			return;
+		}
+
+		// Load on WooCommerce product pages and shop/archive pages.
+		if ( ! is_woocommerce() && ! is_product() && ! is_shop() && ! is_product_category() && ! is_product_tag() ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'reviewbird-stars',
+			REVIEWBIRD_PLUGIN_URL . 'assets/css/reviewbird-stars.css',
+			array(),
+			$this->version
 		);
 	}
 
