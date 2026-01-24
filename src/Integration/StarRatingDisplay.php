@@ -93,16 +93,15 @@ class StarRatingDisplay {
 			return;
 		}
 
-		$this->render_rating( $product, true );
+		$this->render_rating( $product );
 	}
 
 	/**
 	 * Render the star rating HTML.
 	 *
-	 * @param \WC_Product $product       The product object.
-	 * @param bool        $show_count    Whether to show review count.
+	 * @param \WC_Product $product The product object.
 	 */
-	private function render_rating( $product, bool $show_count = false ): void {
+	private function render_rating( $product ): void {
 		$average_rating = (float) $product->get_average_rating();
 		$rating_count   = $product->get_rating_count();
 
@@ -119,7 +118,7 @@ class StarRatingDisplay {
 		echo '<div class="rb-wc-rating" role="img" aria-label="' . esc_attr( $aria_label ) . '">';
 		echo $stars_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML is escaped in generate_stars_html.
 
-		if ( $show_count && $rating_count > 0 ) {
+		if ( $rating_count > 0 ) {
 			printf(
 				'<span class="rb-wc-rating-count">(%s)</span>',
 				esc_html( $rating_count )
