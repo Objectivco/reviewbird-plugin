@@ -182,7 +182,7 @@ class Settings {
 	 * Sends JSON error response and terminates if validation fails.
 	 */
 	private function verify_ajax_request(): void {
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'reviewbird_admin_nonce' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'reviewbird_admin_nonce' ) ) {
 			wp_send_json_error( __( 'Invalid security token', 'reviewbird-reviews' ), 403 );
 		}
 
@@ -198,7 +198,7 @@ class Settings {
 	 * @return bool True if the parameter equals '1'.
 	 */
 	private function is_post_param_enabled( string $key ): bool {
-		return isset( $_POST[ $key ] ) && '1' === $_POST[ $key ];
+		return isset( $_POST[ $key ] ) && '1' === sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
 	}
 
 	/**

@@ -118,7 +118,7 @@ class SchemaScheduler {
 		$body = wp_remote_retrieve_body( $response );
 		$data = json_decode( $body, true );
 
-		if ( empty( $data['reviews'] ) || ! is_array( $data['reviews'] ) ) {
+		if ( null === $data || empty( $data['reviews'] ) || ! is_array( $data['reviews'] ) ) {
 			return array();
 		}
 
