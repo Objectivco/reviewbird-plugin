@@ -125,8 +125,9 @@ class Plugin {
 		$schema_markup = new SchemaMarkup();
 		add_filter( 'woocommerce_structured_data_product', array( $schema_markup, 'filter_woocommerce_structured_data' ), 10, 2 );
 
-		// Template override - use reviewbird template for product reviews.
-		add_filter( 'comments_template', array( $this, 'comments_template_loader' ), 50 );
+		// Widget display on product pages (only when connected).
+		add_filter( 'woocommerce_product_tabs', array( $this, 'remove_reviews_tab' ), 98 );
+		add_action( 'woocommerce_after_single_product_summary', array( $this, 'render_product_widget' ), 14 );
 	}
 
 	/**
@@ -319,21 +320,26 @@ class Plugin {
 	}
 
 	/**
-	 * Load comments template for products.
+	 * Remove the reviews tab when ReviewBird is connected.
 	 *
-	 * Override the comments template for WooCommerce products to use reviewbird widget.
-	 *
-	 * @param string $template Template path.
-	 * @return string Template file path.
+	 * @param array $tabs Product tabs.
+	 * @return array Modified tabs.
 	 */
-	public function comments_template_loader( $template ) {
-		if ( ! reviewbird_can_show_widget() || get_post_type() !== 'product' ) {
-			return $template;
+	public function remove_reviews_tab( array $tabs ): array {
+		if ( reviewbird_can_show_widget() ) {
+			unset( $tabs['reviews'] );
 		}
 
-		$reviewbird_template = REVIEWBIRD_PLUGIN_DIR . 'templates/woocommerce/single-product-reviews.php';
+		return $tabs;
+	}
 
-		return file_exists( $reviewbird_template ) ? $reviewbird_template : $template;
+	/**
+	 * Render the ReviewBird widget after product summary.
+	 */
+	public function render_product_widget(): void {
+		if ( reviewbird_can_show_widget() ) {
+			echo reviewbird_render_widget();
+		}
 	}
 
 	/**

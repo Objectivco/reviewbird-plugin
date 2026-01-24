@@ -9,11 +9,10 @@
  * @package reviewbird
  */
 
-/* Prevent hover effects and pointer interactions */
+/* Enable click to scroll to reviews */
 .rb-wc-rating,
 .rb-wc-star {
-    cursor: default;
-    pointer-events: none;
+    cursor: pointer;
 }
 
 /* Base star class */
