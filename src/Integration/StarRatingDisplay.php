@@ -46,11 +46,15 @@ class StarRatingDisplay {
 	 * Filters the rating HTML output to work with both classic and block themes.
 	 */
 	private function register_hooks(): void {
-		// Filter rating HTML output - use high priority to run after WooCommerce blocks.
+		// Filter rating HTML output - works for both classic and block themes.
 		add_filter( 'woocommerce_product_get_rating_html', array( $this, 'filter_rating_html' ), 999, 3 );
 
-		// Replace WooCommerce's single product rating template (which includes the review link).
-		add_action( 'init', array( $this, 'replace_single_product_rating' ) );
+		// Replace single product rating template - only needed for classic themes.
+		// Block themes use the woocommerce/product-rating block which calls wc_get_rating_html()
+		// directly, so the filter above handles those.
+		if ( ! wp_is_block_theme() ) {
+			add_action( 'init', array( $this, 'replace_single_product_rating' ) );
+		}
 	}
 
 	/**

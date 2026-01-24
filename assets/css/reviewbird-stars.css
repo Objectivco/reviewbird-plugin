@@ -87,3 +87,20 @@
     margin-left: 0.5em !important;
     font-size: 0.875em !important;
 }
+
+/* Block theme support - make native wrappers invisible but render children */
+.wc-block-components-product-rating__container,
+.wc-block-components-product-rating-stars__container,
+.wc-block-components-product-rating-counter__container {
+    display: contents !important;
+}
+
+/* Hide WooCommerce native review link - fallback for edge cases */
+.woocommerce-review-link {
+    display: none !important;
+}
+
+/* Widget container max-width for block theme compatibility */
+[id^="reviewbird-widget-container-"] {
+    max-width: var(--wp--style--global--wide-size, 100%);
+}
