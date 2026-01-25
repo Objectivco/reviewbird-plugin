@@ -128,6 +128,9 @@ class Plugin {
 		// Widget display on product pages (only when connected).
 		add_filter( 'woocommerce_product_tabs', array( $this, 'remove_reviews_tab' ), 98 );
 		add_action( 'woocommerce_after_single_product_summary', array( $this, 'render_product_widget' ), 14 );
+
+		// Force reviews open on products when enabled.
+		add_filter( 'comments_open', array( $this, 'maybe_force_comments_open' ), 10, 2 );
 	}
 
 	/**
@@ -340,6 +343,25 @@ class Plugin {
 		if ( reviewbird_can_show_widget() ) {
 			echo reviewbird_render_widget();
 		}
+	}
+
+	/**
+	 * Force comments open on product pages when setting is enabled.
+	 *
+	 * @param bool $open    Whether comments are open.
+	 * @param int  $post_id The post ID.
+	 * @return bool Whether comments are open.
+	 */
+	public function maybe_force_comments_open( bool $open, int $post_id ): bool {
+		if ( ! reviewbird_is_force_reviews_open() ) {
+			return $open;
+		}
+
+		if ( 'product' === get_post_type( $post_id ) ) {
+			return true;
+		}
+
+		return $open;
 	}
 
 	/**

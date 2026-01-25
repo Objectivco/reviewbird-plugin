@@ -267,6 +267,15 @@ function reviewbird_is_schema_enabled(): bool {
 }
 
 /**
+ * Check if force reviews open setting is enabled.
+ *
+ * @return bool True if force reviews open is enabled.
+ */
+function reviewbird_is_force_reviews_open(): bool {
+	return get_option( 'reviewbird_force_reviews_open', 'no' ) === 'yes';
+}
+
+/**
  * Check if the reviewbird widget can be shown.
  *
  * Widget displays when the store is connected and widget setting is enabled.

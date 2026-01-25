@@ -10,9 +10,10 @@ function getAdminSetting(key, defaultValue = false) {
 
 async function updateSetting(settingName, value) {
 	const formData = new FormData();
-	formData.append('action', `reviewbird_update_${settingName}_setting`);
+	formData.append('action', 'reviewbird_update_setting');
 	formData.append('nonce', window.reviewbirdAdmin.nonce);
-	formData.append(settingName, value ? '1' : '0');
+	formData.append('setting', settingName);
+	formData.append('value', value ? '1' : '0');
 
 	const response = await fetch(window.reviewbirdAdmin.ajaxUrl, {
 		method: 'POST',
@@ -46,6 +47,7 @@ function useToggleSetting(settingKey, apiSettingName) {
 export default function SettingsApp() {
 	const [enableWidget, handleWidgetToggle] = useToggleSetting('enableWidget', 'enable_widget');
 	const [enableSchema, handleSchemaToggle] = useToggleSetting('enableSchema', 'enable_schema');
+	const [forceReviewsOpen, handleForceReviewsToggle] = useToggleSetting('forceReviewsOpen', 'force_reviews_open');
 
 	return (
 		<div className="max-w-4xl mx-auto py-8">
@@ -67,7 +69,33 @@ export default function SettingsApp() {
 					enabled={enableWidget}
 					onToggle={handleWidgetToggle}
 					enabledText={__('Widget is enabled on all WooCommerce product pages.', 'reviewbird-reviews')}
-				/>
+				>
+					<div className="mt-4 pt-4 border-t border-gray-200">
+						<div className="flex items-center justify-between">
+							<div>
+								<p className="text-sm font-medium text-gray-900">
+									{__('Forcefully enable reviews on all products', 'reviewbird-reviews')}
+								</p>
+								<p className="text-xs text-gray-500 mt-1">
+									{__('Leave this off if you prefer to control reviews per product using the "Enable reviews" checkbox.', 'reviewbird-reviews')}
+								</p>
+							</div>
+							<button
+								type="button"
+								onClick={handleForceReviewsToggle}
+								className={`relative inline-flex flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 ${forceReviewsOpen ? 'bg-indigo-600' : 'bg-gray-200'}`}
+								style={{ height: '24px', width: '44px', padding: 0 }}
+								role="switch"
+								aria-checked={forceReviewsOpen}
+							>
+								<span
+									className={`pointer-events-none inline-block transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${forceReviewsOpen ? 'translate-x-5' : 'translate-x-0'}`}
+									style={{ height: '20px', width: '20px' }}
+								/>
+							</button>
+						</div>
+					</div>
+				</TogglePanel>
 
 				<TogglePanel
 					title={__('SEO Schema Markup', 'reviewbird-reviews')}
@@ -80,8 +108,7 @@ export default function SettingsApp() {
 						items: [
 							__('Displays star ratings in Google search results', 'reviewbird-reviews'),
 							__('Shows review counts and product information', 'reviewbird-reviews'),
-							__('Can increase click-through rates by up to 30%', 'reviewbird-reviews'),
-							__('Reviews are cached for 4 hours for optimal performance', 'reviewbird-reviews'),
+							__('Review schema is cached for 4 hours for optimal performance', 'reviewbird-reviews'),
 						]
 					}}
 					links={[

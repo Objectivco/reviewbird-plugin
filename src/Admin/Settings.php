@@ -15,11 +15,21 @@ use reviewbird\Integration\StarRatingDisplay;
 class Settings {
 
 	/**
+	 * Allowed settings that can be updated via AJAX.
+	 *
+	 * @var array
+	 */
+	private const ALLOWED_SETTINGS = array(
+		'enable_schema',
+		'enable_widget',
+		'force_reviews_open',
+	);
+
+	/**
 	 * Initialize admin hooks.
 	 */
 	public function __construct() {
-		add_action( 'wp_ajax_reviewbird_update_enable_schema_setting', array( $this, 'handle_schema_setting_update' ) );
-		add_action( 'wp_ajax_reviewbird_update_enable_widget_setting', array( $this, 'handle_widget_setting_update' ) );
+		add_action( 'wp_ajax_reviewbird_update_setting', array( $this, 'handle_setting_update' ) );
 		add_action( 'wp_ajax_reviewbird_clear_health_cache', array( $this, 'handle_clear_health_cache' ) );
 		add_action( 'admin_notices', array( $this, 'display_oauth_notices' ) );
 	}
@@ -139,12 +149,13 @@ class Settings {
 	 */
 	private function get_script_localization_data(): array {
 		return array(
-			'restUrl'      => rest_url( 'reviewbird/v1' ),
-			'nonce'        => wp_create_nonce( 'reviewbird_admin_nonce' ),
-			'apiUrl'       => reviewbird_get_api_url(),
-			'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-			'enableSchema' => reviewbird_is_schema_enabled(),
-			'enableWidget' => reviewbird_is_widget_enabled(),
+			'restUrl'          => rest_url( 'reviewbird/v1' ),
+			'nonce'            => wp_create_nonce( 'reviewbird_admin_nonce' ),
+			'apiUrl'           => reviewbird_get_api_url(),
+			'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
+			'enableSchema'     => reviewbird_is_schema_enabled(),
+			'enableWidget'     => reviewbird_is_widget_enabled(),
+			'forceReviewsOpen' => reviewbird_is_force_reviews_open(),
 		);
 	}
 
@@ -202,35 +213,25 @@ class Settings {
 	}
 
 	/**
-	 * Handle AJAX request to update schema setting.
+	 * Handle AJAX request to update a setting.
 	 */
-	public function handle_schema_setting_update(): void {
+	public function handle_setting_update(): void {
 		$this->verify_ajax_request();
 
-		$enabled = $this->is_post_param_enabled( 'enable_schema' );
-		update_option( 'reviewbird_enable_schema', $enabled ? 'yes' : 'no' );
+		$setting = isset( $_POST['setting'] ) ? sanitize_key( $_POST['setting'] ) : '';
+
+		if ( ! in_array( $setting, self::ALLOWED_SETTINGS, true ) ) {
+			wp_send_json_error( __( 'Invalid setting', 'reviewbird-reviews' ), 400 );
+		}
+
+		$enabled = $this->is_post_param_enabled( 'value' );
+		update_option( 'reviewbird_' . $setting, $enabled ? 'yes' : 'no' );
 
 		wp_send_json_success(
 			array(
-				'enable_schema' => $enabled,
-				'message'       => __( 'Schema setting updated successfully', 'reviewbird-reviews' ),
-			)
-		);
-	}
-
-	/**
-	 * Handle AJAX request to update widget setting.
-	 */
-	public function handle_widget_setting_update(): void {
-		$this->verify_ajax_request();
-
-		$enabled = $this->is_post_param_enabled( 'enable_widget' );
-		update_option( 'reviewbird_enable_widget', $enabled ? 'yes' : 'no' );
-
-		wp_send_json_success(
-			array(
-				'enable_widget' => $enabled,
-				'message'       => __( 'Widget setting updated successfully', 'reviewbird-reviews' ),
+				'setting' => $setting,
+				'value'   => $enabled,
+				'message' => __( 'Setting updated successfully', 'reviewbird-reviews' ),
 			)
 		);
 	}

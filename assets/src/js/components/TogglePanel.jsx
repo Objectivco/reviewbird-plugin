@@ -150,7 +150,8 @@ export default function TogglePanel({
 	onToggle,
 	enabledText,
 	infoBox,
-	links
+	links,
+	children
 }) {
 	const [isSaving, setIsSaving] = useState(false);
 
@@ -173,6 +174,7 @@ export default function TogglePanel({
 				<ToggleSwitch enabled={enabled} isSaving={isSaving} onToggle={handleToggle} />
 			</div>
 			{showEnabledContent && <EnabledContent enabledText={enabledText} links={links} />}
+			{enabled && children}
 		</div>
 	);
 }
