@@ -1,6 +1,6 @@
 {
 	"name": "reviewbird-plugin",
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"description": "WordPress plugin for reviewbird integration",
 	"main": "index.js",
 	"files": [
