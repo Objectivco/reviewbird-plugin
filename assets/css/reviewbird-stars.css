@@ -108,5 +108,7 @@
 
 /* Widget container max-width for block theme compatibility */
 [id^="reviewbird-widget-container-"] {
+    display: block;
+    clear: both;
     max-width: var(--wp--style--global--wide-size, 100%);
 }
