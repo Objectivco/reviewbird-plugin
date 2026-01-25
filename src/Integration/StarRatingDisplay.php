@@ -49,6 +49,9 @@ class StarRatingDisplay {
 		// Filter rating HTML output - works for both classic and block themes.
 		add_filter( 'woocommerce_product_get_rating_html', array( $this, 'filter_rating_html' ), 999, 3 );
 
+		// Display ratings in shop loop - ensures ratings appear even if theme doesn't call wc_get_rating_html().
+		add_action( 'woocommerce_after_shop_loop_item_title', array( $this, 'display_loop_rating' ), 5 );
+
 		// Replace single product rating template - only needed for classic themes.
 		// Block themes use the woocommerce/product-rating block which calls wc_get_rating_html()
 		// directly, so the filter above handles those.
@@ -91,6 +94,41 @@ class StarRatingDisplay {
 		echo '<div class="woocommerce-product-rating">';
 		echo wc_get_rating_html( $product->get_average_rating(), $rating_count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '</div>';
+	}
+
+	/**
+	 * Display rating in shop/archive loop.
+	 *
+	 * Ensures ratings appear on shop pages even if the theme doesn't
+	 * include rating display in its loop template.
+	 */
+	public function display_loop_rating(): void {
+		global $product;
+
+		if ( ! $product instanceof \WC_Product ) {
+			return;
+		}
+
+		// Check if reviews are enabled globally.
+		if ( ! wc_review_ratings_enabled() ) {
+			return;
+		}
+
+		// Don't show rating if reviews are disabled for this product.
+		if ( ! comments_open( $product->get_id() ) ) {
+			return;
+		}
+
+		$rating = $product->get_average_rating();
+		$count  = $product->get_rating_count();
+
+		// Only show if there are reviews.
+		if ( $count < 1 ) {
+			return;
+		}
+
+		// Use wc_get_rating_html which triggers our filter_rating_html.
+		echo wc_get_rating_html( $rating, $count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
