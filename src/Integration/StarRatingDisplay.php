@@ -117,9 +117,9 @@ class StarRatingDisplay {
 		$stars_html = $this->generate_stars_html( $rating, $star_color );
 
 		// translators: %s is the average rating.
-		$aria_label = sprintf( __( 'Rated %s out of 5', 'reviewbird-reviews' ), number_format( $rating, 2 ) );
+		$aria_label = sprintf( __( 'Rated %s out of 5, click to view reviews', 'reviewbird-reviews' ), number_format( $rating, 2 ) );
 
-		$output  = '<div class="rb-wc-rating" role="img" aria-label="' . esc_attr( $aria_label ) . '">';
+		$output  = '<div class="rb-wc-rating" role="button" tabindex="0" aria-label="' . esc_attr( $aria_label ) . '">';
 		$output .= $stars_html;
 
 		if ( $count > 0 ) {
