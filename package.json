@@ -6,6 +6,7 @@
 	"files": [
 		"reviewbird-plugin.php",
 		"assets/build/**",
+		"assets/css/**",
 		"languages/**",
 		"templates/**",
 		"src/**",
