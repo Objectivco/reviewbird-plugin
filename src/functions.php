@@ -309,6 +309,11 @@ function reviewbird_render_widget( $product_id = null ): string {
 		return '';
 	}
 
+	// Don't show widget if reviews are disabled for this product.
+	if ( ! comments_open( $product->get_id() ) ) {
+		return '';
+	}
+
 	$actual_product_id = $product->get_id();
 	$widget_id         = 'reviewbird-widget-container-' . $actual_product_id;
 
