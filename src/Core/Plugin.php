@@ -132,6 +132,7 @@ class Plugin {
 
 		// Force reviews open on products when enabled.
 		add_filter( 'comments_open', array( $this, 'maybe_force_comments_open' ), 10, 2 );
+		add_filter( 'woocommerce_product_get_reviews_allowed', array( $this, 'maybe_force_reviews_allowed' ), 10, 2 );
 	}
 
 	/**
@@ -363,6 +364,21 @@ class Plugin {
 		}
 
 		return $open;
+	}
+
+	/**
+	 * Force reviews allowed on products when setting is enabled.
+	 *
+	 * @param bool        $allowed Whether reviews are allowed.
+	 * @param \WC_Product $product The product object.
+	 * @return bool Whether reviews are allowed.
+	 */
+	public function maybe_force_reviews_allowed( bool $allowed, $product ): bool {
+		if ( ! reviewbird_is_force_reviews_open() ) {
+			return $allowed;
+		}
+
+		return true;
 	}
 
 	/**

@@ -78,6 +78,11 @@ class StarRatingDisplay {
 			return;
 		}
 
+		// Don't show rating if reviews are disabled for this product.
+		if ( ! comments_open( $product->get_id() ) ) {
+			return;
+		}
+
 		$rating_count = $product->get_rating_count();
 		if ( $rating_count < 1 ) {
 			return;
