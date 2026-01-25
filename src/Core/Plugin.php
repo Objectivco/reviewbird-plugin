@@ -97,6 +97,7 @@ class Plugin {
 			$settings = new Settings();
 			add_action( 'admin_menu', array( $settings, 'add_admin_menu' ) );
 			add_action( 'admin_enqueue_scripts', array( $settings, 'enqueue_scripts' ) );
+			add_filter( 'plugin_action_links_' . REVIEWBIRD_PLUGIN_BASENAME, array( $this, 'add_plugin_action_links' ) );
 		}
 
 		// Public hooks.
@@ -362,6 +363,24 @@ class Plugin {
 		}
 
 		return $open;
+	}
+
+	/**
+	 * Add settings link to plugin action links.
+	 *
+	 * @param array $links Existing plugin action links.
+	 * @return array Modified plugin action links.
+	 */
+	public function add_plugin_action_links( array $links ): array {
+		$settings_link = sprintf(
+			'<a href="%s">%s</a>',
+			admin_url( 'options-general.php?page=reviewbird-settings' ),
+			__( 'Settings', 'reviewbird-reviews' )
+		);
+
+		array_unshift( $links, $settings_link );
+
+		return $links;
 	}
 
 	/**
