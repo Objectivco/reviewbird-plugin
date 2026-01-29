@@ -177,14 +177,15 @@ function reviewbird_get_store_hash(): ?string {
 /**
  * Fetch product reviews from the reviewbird API.
  *
- * @param array $product_ids Array of product IDs to fetch reviews for (max 50).
- * @param int   $per_page    Number of reviews per product (1-20). Default 3.
+ * @param array $product_ids Array of product IDs to fetch reviews for (max 50). Default empty array returns all store reviews.
+ * @param int   $per_page    Number of reviews per page (1-20). Default 5.
  * @param array $args        Optional arguments:
  *                           - 'sort'   string Sort order: newest, oldest, rating_high, rating_low, most_helpful.
  *                           - 'rating' int    Filter by star rating (1-5).
+ *                           - 'page'   int    Page number for pagination (1+).
  * @return array|\WP_Error The API response array on success, or WP_Error on failure.
  */
-function reviewbird_get_product_reviews( array $product_ids, int $per_page = 3, array $args = array() ) {
+function reviewbird_get_product_reviews( array $product_ids = array(), int $per_page = 5, array $args = array() ) {
 	$endpoint = '/api/v1/stores/{store_id}/products/reviews';
 
 	// Validate store connection.
@@ -213,15 +214,7 @@ function reviewbird_get_product_reviews( array $product_ids, int $per_page = 3, 
 	$product_ids = array_unique( $product_ids );
 	$product_ids = array_values( $product_ids );
 
-	if ( empty( $product_ids ) ) {
-		reviewbird_log_api_error( 'Validation Error', 'No valid product IDs provided', $endpoint );
-		return new \WP_Error(
-			'reviewbird_invalid_product_ids',
-			__( 'No valid product IDs provided.', 'reviewbird-reviews' )
-		);
-	}
-
-	if ( count( $product_ids ) > 50 ) {
+	if ( ! empty( $product_ids ) && count( $product_ids ) > 50 ) {
 		reviewbird_log_api_error( 'Validation Error', 'Too many product IDs (max 50)', $endpoint );
 		return new \WP_Error(
 			'reviewbird_too_many_products',
@@ -234,9 +227,12 @@ function reviewbird_get_product_reviews( array $product_ids, int $per_page = 3, 
 
 	// Build query parameters.
 	$query_params = array(
-		'product_ids' => implode( ',', $product_ids ),
-		'per_page'    => $per_page,
+		'per_page' => $per_page,
 	);
+
+	if ( ! empty( $product_ids ) ) {
+		$query_params['product_ids'] = implode( ',', $product_ids );
+	}
 
 	// Validate and add optional sort parameter.
 	if ( ! empty( $args['sort'] ) ) {
@@ -251,6 +247,14 @@ function reviewbird_get_product_reviews( array $product_ids, int $per_page = 3, 
 		$rating = absint( $args['rating'] );
 		$rating = max( 1, min( 5, $rating ) );
 		$query_params['rating'] = $rating;
+	}
+
+	// Validate and add optional page parameter.
+	if ( isset( $args['page'] ) ) {
+		$page = absint( $args['page'] );
+		if ( $page >= 1 ) {
+			$query_params['page'] = $page;
+		}
 	}
 
 	// Build the full URL.
