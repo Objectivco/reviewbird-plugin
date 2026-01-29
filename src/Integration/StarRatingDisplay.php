@@ -49,9 +49,6 @@ class StarRatingDisplay {
 		// Filter rating HTML output - works for both classic and block themes.
 		add_filter( 'woocommerce_product_get_rating_html', array( $this, 'filter_rating_html' ), 999, 3 );
 
-		// Display ratings in shop loop - ensures ratings appear even if theme doesn't call wc_get_rating_html().
-		add_action( 'woocommerce_after_shop_loop_item_title', array( $this, 'display_loop_rating' ), 5 );
-
 		// Replace single product rating template - only needed for classic themes.
 		// Block themes use the woocommerce/product-rating block which calls wc_get_rating_html()
 		// directly, so the filter above handles those.
