@@ -5,6 +5,10 @@
  * @package reviewbird
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 namespace reviewbird\Admin;
 
 use reviewbird\Integration\StarRatingDisplay;
@@ -59,7 +63,7 @@ class Settings {
 		?>
 		<div class="notice notice-error is-dismissible">
 			<p>
-				<strong><?php esc_html_e( 'reviewbird Connection Error:', 'reviewbird-reviews' ); ?></strong>
+				<strong><?php esc_html_e( 'reviewbird Connection Error:', 'reviewbird' ); ?></strong>
 				<?php echo esc_html( $error ); ?>
 			</p>
 		</div>
@@ -78,7 +82,7 @@ class Settings {
 
 		?>
 		<div class="notice notice-success is-dismissible">
-			<p><?php esc_html_e( 'Successfully connected to reviewbird!', 'reviewbird-reviews' ); ?></p>
+			<p><?php esc_html_e( 'Successfully connected to reviewbird!', 'reviewbird' ); ?></p>
 		</div>
 		<?php
 		delete_transient( 'reviewbird_oauth_success' );
@@ -89,8 +93,8 @@ class Settings {
 	 */
 	public function add_admin_menu(): void {
 		add_options_page(
-			__( 'reviewbird Settings', 'reviewbird-reviews' ),
-			__( 'reviewbird', 'reviewbird-reviews' ),
+			__( 'reviewbird Settings', 'reviewbird' ),
+			__( 'reviewbird', 'reviewbird' ),
 			'manage_options',
 			'reviewbird-settings',
 			array( $this, 'render_settings_page' )
@@ -194,11 +198,11 @@ class Settings {
 	 */
 	private function verify_ajax_request(): void {
 		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'reviewbird_admin_nonce' ) ) {
-			wp_send_json_error( __( 'Invalid security token', 'reviewbird-reviews' ), 403 );
+			wp_send_json_error( __( 'Invalid security token', 'reviewbird' ), 403 );
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( __( 'Insufficient permissions', 'reviewbird-reviews' ), 403 );
+			wp_send_json_error( __( 'Insufficient permissions', 'reviewbird' ), 403 );
 		}
 	}
 
@@ -221,7 +225,7 @@ class Settings {
 		$setting = isset( $_POST['setting'] ) ? sanitize_key( $_POST['setting'] ) : '';
 
 		if ( ! in_array( $setting, self::ALLOWED_SETTINGS, true ) ) {
-			wp_send_json_error( __( 'Invalid setting', 'reviewbird-reviews' ), 400 );
+			wp_send_json_error( __( 'Invalid setting', 'reviewbird' ), 400 );
 		}
 
 		$enabled = $this->is_post_param_enabled( 'value' );
@@ -231,7 +235,7 @@ class Settings {
 			array(
 				'setting' => $setting,
 				'value'   => $enabled,
-				'message' => __( 'Setting updated successfully', 'reviewbird-reviews' ),
+				'message' => __( 'Setting updated successfully', 'reviewbird' ),
 			)
 		);
 	}
@@ -248,7 +252,7 @@ class Settings {
 		wp_send_json_success(
 			array(
 				'status'  => $status,
-				'message' => __( 'Health check cache cleared', 'reviewbird-reviews' ),
+				'message' => __( 'Health check cache cleared', 'reviewbird' ),
 			)
 		);
 	}

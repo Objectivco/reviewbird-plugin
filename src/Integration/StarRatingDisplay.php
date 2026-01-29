@@ -8,6 +8,10 @@
  * @package reviewbird
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 namespace reviewbird\Integration;
 
 /**
@@ -125,12 +129,12 @@ class StarRatingDisplay {
 		}
 
 		// Make rating non-interactive for shop loop.
-		add_filter( 'rb_rating_is_static', '__return_true' );
+		add_filter( 'reviewbird_rating_is_static', '__return_true' );
 
 		// Use wc_get_rating_html which triggers our filter_rating_html.
 		echo wc_get_rating_html( $rating, $count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		remove_filter( 'rb_rating_is_static', '__return_true' );
+		remove_filter( 'reviewbird_rating_is_static', '__return_true' );
 	}
 
 	/**
@@ -162,7 +166,7 @@ class StarRatingDisplay {
 		$stars_html = $this->generate_stars_html( $rating, $star_color );
 
 		// Check if rating should be non-interactive (e.g., shop loop context).
-		$is_static = apply_filters( 'rb_rating_is_static', false );
+		$is_static = apply_filters( 'reviewbird_rating_is_static', false );
 
 		// Build class and attributes based on context.
 		$class             = 'rb-wc-rating' . ( $is_static ? ' rb-wc-rating--static' : '' );
@@ -170,10 +174,10 @@ class StarRatingDisplay {
 
 		if ( $is_static ) {
 			// translators: %s is the average rating.
-			$aria_label = sprintf( __( 'Rated %s out of 5', 'reviewbird-reviews' ), number_format( $rating, 2 ) );
+			$aria_label = sprintf( __( 'Rated %s out of 5', 'reviewbird' ), number_format( $rating, 2 ) );
 		} else {
 			// translators: %s is the average rating.
-			$aria_label = sprintf( __( 'Rated %s out of 5, click to view reviews', 'reviewbird-reviews' ), number_format( $rating, 2 ) );
+			$aria_label = sprintf( __( 'Rated %s out of 5, click to view reviews', 'reviewbird' ), number_format( $rating, 2 ) );
 		}
 
 		$output  = '<div class="' . esc_attr( $class ) . '"' . $interactive_attrs . ' aria-label="' . esc_attr( $aria_label ) . '">';

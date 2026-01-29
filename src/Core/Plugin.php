@@ -5,6 +5,10 @@
  * @package reviewbird
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 namespace reviewbird\Core;
 
 use reviewbird\Admin\Settings;
@@ -52,7 +56,7 @@ class Plugin {
 	 * Initialize the plugin.
 	 */
 	public function __construct() {
-		$this->plugin_name = 'reviewbird-reviews';
+		$this->plugin_name = 'reviewbird';
 		$this->version     = REVIEWBIRD_VERSION;
 	}
 
@@ -60,26 +64,7 @@ class Plugin {
 	 * Run the plugin.
 	 */
 	public function run() {
-		$this->load_textdomain();
 		$this->init_hooks();
-	}
-
-	/**
-	 * Load plugin textdomain.
-	 */
-	private function load_textdomain() {
-		add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
-	}
-
-	/**
-	 * Load the plugin text domain for translation.
-	 */
-	public function load_plugin_textdomain() {
-		load_plugin_textdomain(
-			'reviewbird-reviews',
-			false,
-			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
-		);
 	}
 
 	/**
@@ -343,6 +328,7 @@ class Plugin {
 	 */
 	public function render_product_widget(): void {
 		if ( reviewbird_can_show_widget() ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is escaped in reviewbird_render_widget()
 			echo reviewbird_render_widget();
 		}
 	}
@@ -391,7 +377,7 @@ class Plugin {
 		$settings_link = sprintf(
 			'<a href="%s">%s</a>',
 			admin_url( 'options-general.php?page=reviewbird-settings' ),
-			__( 'Settings', 'reviewbird-reviews' )
+			__( 'Settings', 'reviewbird' )
 		);
 
 		array_unshift( $links, $settings_link );

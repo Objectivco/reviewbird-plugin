@@ -111,7 +111,7 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
 	$decoded       = json_decode( $body, true );
 
 	if ( $response_code >= 400 ) {
-		$error_message = $decoded['message'] ?? __( 'API request failed', 'reviewbird-reviews' );
+		$error_message = $decoded['message'] ?? __( 'API request failed', 'reviewbird' );
 
 		reviewbird_log_api_error(
 			'API Error',
@@ -194,7 +194,7 @@ function reviewbird_get_product_reviews( array $product_ids = array(), int $per_
 		reviewbird_log_api_error( 'Validation Error', 'Store not connected', $endpoint );
 		return new \WP_Error(
 			'reviewbird_not_connected',
-			__( 'Store is not connected to reviewbird.', 'reviewbird-reviews' )
+			__( 'Store is not connected to reviewbird.', 'reviewbird' )
 		);
 	}
 
@@ -204,7 +204,7 @@ function reviewbird_get_product_reviews( array $product_ids = array(), int $per_
 		reviewbird_log_api_error( 'Validation Error', 'Missing Store Hash', $endpoint );
 		return new \WP_Error(
 			'reviewbird_missing_api_key',
-			__( 'Unable to generate API key for authentication.', 'reviewbird-reviews' )
+			__( 'Unable to generate API key for authentication.', 'reviewbird' )
 		);
 	}
 
@@ -218,7 +218,7 @@ function reviewbird_get_product_reviews( array $product_ids = array(), int $per_
 		reviewbird_log_api_error( 'Validation Error', 'Too many product IDs (max 50)', $endpoint );
 		return new \WP_Error(
 			'reviewbird_too_many_products',
-			__( 'Maximum of 50 product IDs allowed per request.', 'reviewbird-reviews' )
+			__( 'Maximum of 50 product IDs allowed per request.', 'reviewbird' )
 		);
 	}
 
@@ -287,7 +287,7 @@ function reviewbird_get_product_reviews( array $product_ids = array(), int $per_
 
 	if ( $response_code >= 400 ) {
 		$decoded       = json_decode( $body, true );
-		$error_message = $decoded['message'] ?? __( 'API request failed', 'reviewbird-reviews' );
+		$error_message = $decoded['message'] ?? __( 'API request failed', 'reviewbird' );
 
 		reviewbird_log_api_error(
 			'API Error',
@@ -323,7 +323,7 @@ function reviewbird_get_product_reviews( array $product_ids = array(), int $per_
 
 		return new \WP_Error(
 			'reviewbird_json_error',
-			__( 'Failed to decode API response.', 'reviewbird-reviews' )
+			__( 'Failed to decode API response.', 'reviewbird' )
 		);
 	}
 
@@ -359,8 +359,6 @@ function reviewbird_log_api_error( string $type, string $message, string $endpoi
 			$log_message,
 			array_merge( array( 'source' => 'reviewbird' ), $context )
 		);
-	} else {
-		error_log( 'reviewbird: ' . $log_message );
 	}
 }
 

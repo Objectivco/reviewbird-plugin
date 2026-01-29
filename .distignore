@@ -1,0 +1,61 @@
+# Distribution ignore file
+# Files and directories listed here will be excluded from the final plugin zip
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# GitHub specific
+.github
+
+# IDE and editor files
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+
+# Claude/AI
+.claude
+
+# Development files
+node_modules
+vendor/bin
+tests
+phpunit.xml
+phpunit.xml.dist
+phpcs.xml
+phpcs.xml.dist
+.phpcs.xml.dist
+
+# Build configuration
+composer.json
+composer.lock
+package.json
+package-lock.json
+postcss.config.js
+tailwind.config.js
+webpack.config.js
+
+# Source files (only include built assets)
+assets/src
+
+# Documentation (readme.txt is the WordPress version)
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+
+# Archives
+*.zip
+*.tar.gz
+
+# Misc
+.editorconfig
+.eslintrc
+.eslintrc.js
+.prettierrc
+.stylelintrc
+Makefile
+Gruntfile.js
+gulpfile.js

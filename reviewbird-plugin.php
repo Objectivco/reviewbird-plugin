@@ -6,7 +6,7 @@
  * Version: 1.0.11
  * Author: reviewbird
  * Author URI: https://reviewbird.com
- * Text Domain: reviewbird-reviews
+ * Text Domain: reviewbird
  * Domain Path: /languages
  * Requires at least: 5.0
  * Tested up to: 6.4
@@ -23,7 +23,6 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use reviewbird\Core\Activator;
 use reviewbird\Core\Deactivator;
 use reviewbird\Core\Plugin;
-use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -78,22 +77,9 @@ add_action( 'before_woocommerce_init', function() {
 /**
  * Begins execution of the plugin.
  */
-function run_reviewbird() {
+function reviewbird_run() {
 	$plugin = new Plugin();
 	$plugin->run();
 }
 
-run_reviewbird();
-
-/**
- * Initialize Plugin Update Checker for automatic updates from GitHub releases.
- */
-$reviewbird_update_checker = PucFactory::buildUpdateChecker(
-	'https://github.com/Objectivco/reviewbird-plugin/',
-	__FILE__,
-	'reviewbird'
-);
-
-// Use GitHub releases for updates.
-$reviewbird_update_checker->setBranch( 'master' );
-$reviewbird_update_checker->getVcsApi()->enableReleaseAssets();
+reviewbird_run();
