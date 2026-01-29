@@ -5,11 +5,11 @@
  * @package reviewbird
  */
 
+namespace reviewbird\Admin;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-namespace reviewbird\Admin;
 
 use reviewbird\Integration\StarRatingDisplay;
 
@@ -213,6 +213,7 @@ class Settings {
 	 * @return bool True if the parameter equals '1'.
 	 */
 	private function is_post_param_enabled( string $key ): bool {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_request().
 		return isset( $_POST[ $key ] ) && '1' === sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
 	}
 
@@ -222,6 +223,7 @@ class Settings {
 	public function handle_setting_update(): void {
 		$this->verify_ajax_request();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_request() above.
 		$setting = isset( $_POST['setting'] ) ? sanitize_key( $_POST['setting'] ) : '';
 
 		if ( ! in_array( $setting, self::ALLOWED_SETTINGS, true ) ) {

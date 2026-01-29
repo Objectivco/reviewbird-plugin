@@ -7,6 +7,10 @@
 
 namespace reviewbird\Api;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use reviewbird\Integration\HealthScheduler;
 use WP_REST_Request;
 use WP_REST_Response;

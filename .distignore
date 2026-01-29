@@ -15,6 +15,7 @@
 *.swp
 *.swo
 .DS_Store
+.gitkeep
 
 # Claude/AI
 .claude

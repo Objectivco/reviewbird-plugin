@@ -5,11 +5,11 @@
  * @package reviewbird
  */
 
+namespace reviewbird\Integration;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-namespace reviewbird\Integration;
 
 use WC_Order;
 use WP_Comment;

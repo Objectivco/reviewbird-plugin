@@ -7,6 +7,10 @@
 
 namespace reviewbird\Api;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use WC_Product_Variable;
 use WP_REST_Request;
 use WP_REST_Response;

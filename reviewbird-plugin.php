@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: reviewbird
+ * Plugin Name: ReviewBird Reviews
  * Plugin URI: https://www.reviewbird.com
  * Description: Automated review collection that blocks spam, catches complaints, and showcases your best feedback.
  * Version: 1.0.11
@@ -9,7 +9,7 @@
  * Text Domain: reviewbird
  * Domain Path: /languages
  * Requires at least: 5.0
- * Tested up to: 6.4
+ * Tested up to: 6.9
  * Requires PHP: 7.4
  * WC requires at least: 5.0
  * WC tested up to: 8.4

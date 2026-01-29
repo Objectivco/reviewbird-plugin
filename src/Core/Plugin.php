@@ -5,11 +5,11 @@
  * @package reviewbird
  */
 
+namespace reviewbird\Core;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-namespace reviewbird\Core;
 
 use reviewbird\Admin\Settings;
 use reviewbird\Api\ConnectionController;

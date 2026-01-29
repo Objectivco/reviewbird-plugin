@@ -8,11 +8,11 @@
  * @package reviewbird
  */
 
+namespace reviewbird\Integration;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-namespace reviewbird\Integration;
 
 /**
  * Health scheduler class.

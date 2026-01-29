@@ -7,6 +7,10 @@
 
 namespace reviewbird\Integration;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Schema markup class for SEO.
  *

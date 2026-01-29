@@ -1,16 +1,19 @@
 {
-	"name": "reviewbird-plugin",
+	"name": "reviewbird",
 	"version": "1.0.11",
 	"description": "WordPress plugin for reviewbird integration",
 	"main": "index.js",
 	"files": [
 		"reviewbird-plugin.php",
+		"readme.txt",
 		"assets/build/**",
 		"assets/css/**",
 		"languages/**",
 		"templates/**",
 		"src/**",
-		"vendor/**"
+		"vendor/**",
+		"!**/.gitkeep",
+		"!**/.DS_Store"
 	],
 	"scripts": {
 		"build": "wp-scripts build",
