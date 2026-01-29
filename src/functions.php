@@ -165,6 +165,16 @@ function reviewbird_get_store_id(): ?int {
 }
 
 /**
+ * Get MD5 hash of store ID for API authentication.
+ *
+ * @return string|null Hash or null if store ID not available.
+ */
+function reviewbird_get_store_hash(): ?string {
+	$store_id = reviewbird_get_store_id();
+	return $store_id ? md5( (string) $store_id ) : null;
+}
+
+/**
  * Log API errors for debugging.
  *
  * @param string   $type     Error type.
