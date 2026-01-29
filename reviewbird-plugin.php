@@ -3,7 +3,7 @@
  * Plugin Name: reviewbird
  * Plugin URI: https://www.reviewbird.com
  * Description: Automated review collection that blocks spam, catches complaints, and showcases your best feedback.
- * Version: 1.0.10
+ * Version: 1.0.11
  * Author: reviewbird
  * Author URI: https://reviewbird.com
  * Text Domain: reviewbird-reviews
@@ -32,7 +32,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Currently plugin version.
  */
-define( 'REVIEWBIRD_VERSION', '1.0.10' );
+define( 'REVIEWBIRD_VERSION', '1.0.11' );
 
 /**
  * Plugin directory path.
