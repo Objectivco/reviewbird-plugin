@@ -175,6 +175,158 @@ function reviewbird_get_store_hash(): ?string {
 }
 
 /**
+ * Fetch product reviews from the reviewbird API.
+ *
+ * @param array $product_ids Array of product IDs to fetch reviews for (max 50).
+ * @param int   $per_page    Number of reviews per product (1-20). Default 3.
+ * @param array $args        Optional arguments:
+ *                           - 'sort'   string Sort order: newest, oldest, rating_high, rating_low, most_helpful.
+ *                           - 'rating' int    Filter by star rating (1-5).
+ * @return array|\WP_Error The API response array on success, or WP_Error on failure.
+ */
+function reviewbird_get_product_reviews( array $product_ids, int $per_page = 3, array $args = array() ) {
+	$endpoint = '/api/v1/stores/{store_id}/products/reviews';
+
+	// Validate store connection.
+	$store_id = reviewbird_get_store_id();
+	if ( ! $store_id ) {
+		reviewbird_log_api_error( 'Validation Error', 'Store not connected', $endpoint );
+		return new \WP_Error(
+			'reviewbird_not_connected',
+			__( 'Store is not connected to reviewbird.', 'reviewbird-reviews' )
+		);
+	}
+
+	// Get API key.
+	$store_hash = reviewbird_get_store_hash();
+	if ( ! $store_hash ) {
+		reviewbird_log_api_error( 'Validation Error', 'Missing Store Hash', $endpoint );
+		return new \WP_Error(
+			'reviewbird_missing_api_key',
+			__( 'Unable to generate API key for authentication.', 'reviewbird-reviews' )
+		);
+	}
+
+	// Validate and sanitize product IDs.
+	$product_ids = array_map( 'absint', $product_ids );
+	$product_ids = array_filter( $product_ids );
+	$product_ids = array_unique( $product_ids );
+	$product_ids = array_values( $product_ids );
+
+	if ( empty( $product_ids ) ) {
+		reviewbird_log_api_error( 'Validation Error', 'No valid product IDs provided', $endpoint );
+		return new \WP_Error(
+			'reviewbird_invalid_product_ids',
+			__( 'No valid product IDs provided.', 'reviewbird-reviews' )
+		);
+	}
+
+	if ( count( $product_ids ) > 50 ) {
+		reviewbird_log_api_error( 'Validation Error', 'Too many product IDs (max 50)', $endpoint );
+		return new \WP_Error(
+			'reviewbird_too_many_products',
+			__( 'Maximum of 50 product IDs allowed per request.', 'reviewbird-reviews' )
+		);
+	}
+
+	// Validate per_page (clamp to 1-20).
+	$per_page = max( 1, min( 20, $per_page ) );
+
+	// Build query parameters.
+	$query_params = array(
+		'product_ids' => implode( ',', $product_ids ),
+		'per_page'    => $per_page,
+	);
+
+	// Validate and add optional sort parameter.
+	if ( ! empty( $args['sort'] ) ) {
+		$valid_sorts = array( 'newest', 'oldest', 'rating_high', 'rating_low', 'most_helpful' );
+		if ( in_array( $args['sort'], $valid_sorts, true ) ) {
+			$query_params['sort'] = $args['sort'];
+		}
+	}
+
+	// Validate and add optional rating parameter.
+	if ( isset( $args['rating'] ) ) {
+		$rating = absint( $args['rating'] );
+		$rating = max( 1, min( 5, $rating ) );
+		$query_params['rating'] = $rating;
+	}
+
+	// Build the full URL.
+	$api_url  = reviewbird_get_api_url();
+	$endpoint = '/api/v1/stores/' . $store_id . '/products/reviews';
+	$url      = $api_url . $endpoint . '?' . http_build_query( $query_params );
+
+	// Make the request.
+	$response = wp_remote_get(
+		$url,
+		array(
+			'headers'   => array(
+				'X-Store-Hash'  => $store_hash,
+				'User-Agent' => 'reviewbird WordPress Plugin/' . REVIEWBIRD_VERSION,
+			),
+			'timeout'   => 30,
+			'sslverify' => ! reviewbird_should_disable_ssl_verify(),
+		)
+	);
+
+	// Handle connection errors.
+	if ( is_wp_error( $response ) ) {
+		reviewbird_log_api_error( 'HTTP Error', $response->get_error_message(), $endpoint );
+		return $response;
+	}
+
+	// Handle HTTP error responses.
+	$response_code = wp_remote_retrieve_response_code( $response );
+	$body          = wp_remote_retrieve_body( $response );
+
+	if ( $response_code >= 400 ) {
+		$decoded       = json_decode( $body, true );
+		$error_message = $decoded['message'] ?? __( 'API request failed', 'reviewbird-reviews' );
+
+		reviewbird_log_api_error(
+			'API Error',
+			$error_message,
+			$endpoint,
+			$response_code,
+			array(
+				'response_body'    => $body,
+				'decoded_response' => $decoded,
+			)
+		);
+
+		return new \WP_Error(
+			'reviewbird_api_error',
+			$error_message,
+			array(
+				'status'   => $response_code,
+				'response' => $decoded,
+			)
+		);
+	}
+
+	// Decode JSON response.
+	$decoded = json_decode( $body, true );
+	if ( null === $decoded && json_last_error() !== JSON_ERROR_NONE ) {
+		reviewbird_log_api_error(
+			'JSON Error',
+			json_last_error_msg(),
+			$endpoint,
+			$response_code,
+			array( 'response_body' => $body )
+		);
+
+		return new \WP_Error(
+			'reviewbird_json_error',
+			__( 'Failed to decode API response.', 'reviewbird-reviews' )
+		);
+	}
+
+	return $decoded;
+}
+
+/**
  * Log API errors for debugging.
  *
  * @param string   $type     Error type.
