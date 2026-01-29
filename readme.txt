@@ -12,16 +12,70 @@ Powerfully simple product review collection, moderation, and management for WooC
 
 == Description ==
 
-reviewbird is a WooCommerce review management solution that helps you collect more authentic product reviews while protecting your store from spam and negative feedback.
+reviewbird supercharges your WooCommerce reviews
 
-**Key Features:**
+**🌟Key Features:**
 
 * **Automated Review Collection** - Automatically request reviews from customers after purchase
-* **Spam Protection** - AI-powered spam detection blocks fake and low-quality reviews
+* **Spam Protection** - AI-powered spam detection blocks fake, inappropriate, and low-quality reviews
 * **Complaint Catching** - Intercept negative feedback before it goes public, giving you a chance to resolve issues
-* **Beautiful Widget** - Display reviews with a customizable, modern widget that matches your store design
-* **Star Ratings** - Override WooCommerce star ratings with your reviewbird review data
-* **Schema Markup** - Automatically add structured data for rich search results
+* **Beautiful Display** - Display your reviews with a beautiful, customizable widget that matches your store design
+* **Multimedia Reviews** - Customers can submit reviews with photos and videos so customers can really see what you products look like.
+* **Star Ratings** - Seamlessly integrates with WooCommerce so your ratings show up on product pages and catalog pages
+* **SEO Rich Snippets** - Automatically adds JSON-LD structured data for rich Google search results
+* **Showcases** - Show-off your best reviews in a variety of formats including sliders, tickers, a review wall, etc.
+* **Discount Incentives** - Offers discounts to customers that leave a review - or incentivize them to add a photo or video.
+* **Import/Export Reviews** - Easily import and export reviews, with all of your data.
+* **Google Merchant Feed** - Sync your reviews to Google shopping search results.
+* **Translated and Localized** - Translate your reviews to your user's language, automatically.
+
+** 🔭 SEO Optimized **
+
+Reviews from your customers are one of the best sources of SEO content you can get. When customers write excellent reviews, they use the same language other potential buyers are searching for - those long-tail keywords that drive qualified traffic to your store.
+
+- Fresh, Unique Content: Customer reviews naturally include diverse keywords and phrases.
+- Photos and Videos: Collect customer photos and videos to enhance your reviews
+- Rich Search Results: Display product ratings and review counts in Google results.
+
+** 🛠️Made for Developers by Developers **
+
+We include the shortcodes, filters, and action hooks you need to deeply integrate reviewbird into your store.
+
+Note: Requires a reviewbird account. [Create an account](https://reviewbird.com/#pricing) to get started.
+
+== External Services ==
+
+This plugin connects to the reviewbird API to enable review collection, management, and display features. reviewbird connects to WooCommerce using OAuth and pulls information securely via the REST API. reviewbird extens the native REST API to add additional end points required for full functionality.
+
+**Service Name:** reviewbird API
+
+**Service Provider:** reviewbird
+**Website:** https://reviewbird.com
+**Terms of Service:** https://reviewbird.com/terms-and-conditions/
+**Privacy Policy:** https://reviewbird.com/privacy-policy/
+**Cookie Policy:** https://reviewbird.com/cookie-policy/
+
+**Purpose:**
+- Verify your reviewbird account
+- Allow reviewbird to collect order data to trigger review request emails
+- Retrieve review widgets and showcases for your website
+- Allow reviewbird to collect product information for review display and product groups
+- Manage review submissions and responses
+
+**Data Transmitted:**
+- **Account Verification:** Connection status
+- **Order Data:** Order ID, customer email, customer name, line items, order date, status, locale
+- **Product Data:** Product ID, name, SKU, slug, GTIN, brand, price, attributes (for variations), image URL, permalink, stock status
+- **Customer Data:** Email address, name, review content and media
+
+**When Data is Sent:**
+- During OAuth connection from reviewbird to WooCommerce
+- During initial product sync after connection
+- During scheduled order sync
+- When you manually sync products
+- When the review widget or showcases are loaded onto your website pages
+
+By using this plugin, you agree to the reviewbird Terms and Conditions and Privacy Policy.
 
 **Requirements:**
 
@@ -40,7 +94,7 @@ reviewbird is a WooCommerce review management solution that helps you collect mo
 
 = Do I need a reviewbird account? =
 
-Yes, you need a reviewbird account to use this plugin. You can sign up at reviewbird.com.
+Yes, you need a reviewbird account to use this plugin. You can sign up at [reviewbird.com](https://reviewbird.com);
 
 = Is WooCommerce required? =
 
@@ -52,7 +106,7 @@ Once connected, enable the widget in Settings > reviewbird. Reviews will automat
 
 = Can I customize the widget appearance? =
 
-Yes, you can customize colors and styling through your reviewbird dashboard at app.reviewbird.com.
+Yes, you can customize colors and styling through your [reviewbird dashboard](https://app.reviewbird.com/dashboard).
 
 == Screenshots ==
 
