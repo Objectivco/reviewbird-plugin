@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin Name: ReviewBird Reviews
- * Plugin URI: https://www.reviewbird.com
- * Description: Automated review collection that blocks spam, catches complaints, and showcases your best feedback.
+ * Plugin Name: reviewbird
+ * Plugin URI: https://reviewbird.com
+ * Description: Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback.
  * Version: 1.0.12
  * Author: reviewbird
  * Author URI: https://reviewbird.com
  * Text Domain: reviewbird
- * Domain Path: /languages
+ * Domain Path: /i18n/languages
  * Requires at least: 5.0
  * Tested up to: 6.9
  * Requires PHP: 7.4

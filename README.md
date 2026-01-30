@@ -26,7 +26,7 @@ Connect your WooCommerce store to reviewbird for advanced review collection and 
 
 ### Manual Installation
 1. Download the plugin files
-2. Upload to your `/wp-content/plugins/reviewbird-reviews/` directory
+2. Upload to your `/wp-content/plugins/reviewbird/` directory
 3. Activate the plugin through the WordPress admin
 4. Go to Settings > reviewbird to connect your store
 

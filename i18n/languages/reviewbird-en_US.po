@@ -15,8 +15,8 @@ msgstr ""
 
 #: reviewbird-plugin.php
 #. Plugin Name of the plugin
-msgid "ReviewBird Reviews"
-msgstr "ReviewBird Reviews"
+msgid "reviewbird"
+msgstr "reviewbird"
 
 #: reviewbird-plugin.php
 #. Plugin URI of the plugin
