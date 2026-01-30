@@ -13,31 +13,23 @@ msgstr ""
 "X-Generator: WP-CLI 2.12.0\n"
 "Copyright: (C) 2026 reviewbird\n"
 
-#: reviewbird-plugin.php
 #. Plugin Name of the plugin
+#. Author of the plugin
+#: reviewbird-plugin.php
+#: src/Admin/Settings.php:97
 msgid "reviewbird"
 msgstr "reviewbird Beoordelingen"
 
-#: reviewbird-plugin.php
 #. Plugin URI of the plugin
-msgid "https://www.reviewbird.com"
-msgstr "https://www.reviewbird.com"
-
-#: reviewbird-plugin.php
-#. Description of the plugin
-msgid "Automated review collection that blocks spam, catches complaints, and showcases your best feedback."
-msgstr "Geautomatiseerde beoordeling verzameling die spam blokkeert, klachten opvangt en je beste feedback toont."
-
-#: reviewbird-plugin.php
-#: src/Admin/Settings.php:97
-#. Author of the plugin
-msgid "reviewbird"
-msgstr "reviewbird"
-
-#: reviewbird-plugin.php
 #. Author URI of the plugin
+#: reviewbird-plugin.php
 msgid "https://reviewbird.com"
 msgstr "https://reviewbird.com"
+
+#. Description of the plugin
+#: reviewbird-plugin.php
+msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
+msgstr "Geautomatiseerde beoordelingverzameling voor WooCommerce die spam blokkeert, klachten opvangt en je beste feedback toont."
 
 #: src/Admin/Settings.php:66
 msgid "reviewbird Connection Error:"
@@ -72,7 +64,8 @@ msgstr "Instelling succesvol bijgewerkt"
 msgid "Health check cache cleared"
 msgstr "Cache voor gezondheidscontrole gewist"
 
-#: src/Api/ConnectionController.php:73
+#. translators: %d: Store ID number.
+#: src/Api/ConnectionController.php:74
 #, php-format
 msgid "Store ID %d has been saved successfully"
 msgstr "Winkel-ID %d is succesvol opgeslagen"
@@ -86,12 +79,13 @@ msgstr "WooCommerce is niet actief"
 msgid "Coupon code is required"
 msgstr "Couponcode is vereist"
 
-#: src/Api/CouponController.php:125
+#. translators: %s: Template coupon code.
+#: src/Api/CouponController.php:126
 #, php-format
 msgid "Template coupon '%s' not found"
 msgstr "Sjablooncoupon '%s' niet gevonden"
 
-#: src/Api/CouponController.php:154
+#: src/Api/CouponController.php:155
 msgid "discount_type and amount are required when not using template"
 msgstr "discount_type en bedrag zijn vereist wanneer geen sjabloon wordt gebruikt"
 
@@ -152,14 +146,14 @@ msgstr "Maximaal 50 product-ID's toegestaan per verzoek."
 msgid "Failed to decode API response."
 msgstr "Kan API-respons niet decoderen."
 
-#: src/Integration/StarRatingDisplay.php:177
 #. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:177
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "Beoordeeld met %s van de 5"
 
-#: src/Integration/StarRatingDisplay.php:180
 #. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:180
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "Beoordeeld met %s van de 5, klik om beoordelingen te bekijken"
@@ -193,12 +187,8 @@ msgid "Initial Sync in Progress"
 msgstr "Initiële synchronisatie bezig"
 
 #: assets/src/js/components/ConnectionHealth.jsx:27
-msgid ""
-"reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget "
-"will be available once sync completes."
-msgstr ""
-"reviewbird synchroniseert je producten en beoordelingen. Dit kan enkele minuten duren afhankelijk van de grootte van je "
-"catalogus. De widget is beschikbaar zodra de synchronisatie is voltooid."
+msgid "reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
+msgstr "reviewbird synchroniseert je producten en beoordelingen. Dit kan enkele minuten duren afhankelijk van de grootte van je catalogus. De widget is beschikbaar zodra de synchronisatie is voltooid."
 
 #: assets/src/js/components/ConnectionHealth.jsx:28
 msgid "View Sync Progress"
@@ -278,12 +268,8 @@ msgid "reviewbird Widget"
 msgstr "reviewbird-widget"
 
 #: assets/src/js/components/SettingsApp.jsx:68
-msgid ""
-"Display reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new "
-"reviews."
-msgstr ""
-"Toon reviewbird review-widget op productpagina's. De widget toont klantbeoordelingen en stelt klanten in staat nieuwe "
-"beoordelingen in te dienen."
+msgid "Display reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
+msgstr "Toon reviewbird review-widget op productpagina's. De widget toont klantbeoordelingen en stelt klanten in staat nieuwe beoordelingen in te dienen."
 
 #: assets/src/js/components/SettingsApp.jsx:71
 msgid "Widget is enabled on all WooCommerce product pages."
@@ -303,9 +289,7 @@ msgstr "SEO Schema Markup"
 
 #: assets/src/js/components/SettingsApp.jsx:102
 msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
-msgstr ""
-"Schakel Google-conforme gestructureerde gegevens (JSON-LD schema) in op productpagina's voor rijke fragmenten in "
-"zoekresultaten."
+msgstr "Schakel Google-conforme gestructureerde gegevens (JSON-LD schema) in op productpagina's voor rijke fragmenten in zoekresultaten."
 
 #: assets/src/js/components/SettingsApp.jsx:105
 msgid "Schema markup is active on all WooCommerce product pages."

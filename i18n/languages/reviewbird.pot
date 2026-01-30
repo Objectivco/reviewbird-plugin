@@ -2,42 +2,34 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: reviewbird 1.0.11\n"
+"Project-Id-Version: reviewbird 1.0.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-30T18:43:07+00:00\n"
+"POT-Creation-Date: 2026-01-30T18:59:25+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
 
 #. Plugin Name of the plugin
-#: reviewbird-plugin.php
-msgid "reviewbird"
-msgstr ""
-
-#. Plugin URI of the plugin
-#: reviewbird-plugin.php
-msgid "https://www.reviewbird.com"
-msgstr ""
-
-#. Description of the plugin
-#: reviewbird-plugin.php
-msgid "Automated review collection that blocks spam, catches complaints, and showcases your best feedback."
-msgstr ""
-
 #. Author of the plugin
 #: reviewbird-plugin.php
 #: src/Admin/Settings.php:97
 msgid "reviewbird"
 msgstr ""
 
+#. Plugin URI of the plugin
 #. Author URI of the plugin
 #: reviewbird-plugin.php
 msgid "https://reviewbird.com"
+msgstr ""
+
+#. Description of the plugin
+#: reviewbird-plugin.php
+msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr ""
 
 #: src/Admin/Settings.php:66
@@ -73,7 +65,8 @@ msgstr ""
 msgid "Health check cache cleared"
 msgstr ""
 
-#: src/Api/ConnectionController.php:73
+#. translators: %d: Store ID number.
+#: src/Api/ConnectionController.php:74
 #, php-format
 msgid "Store ID %d has been saved successfully"
 msgstr ""
@@ -87,12 +80,13 @@ msgstr ""
 msgid "Coupon code is required"
 msgstr ""
 
-#: src/Api/CouponController.php:125
+#. translators: %s: Template coupon code.
+#: src/Api/CouponController.php:126
 #, php-format
 msgid "Template coupon '%s' not found"
 msgstr ""
 
-#: src/Api/CouponController.php:154
+#: src/Api/CouponController.php:155
 msgid "discount_type and amount are required when not using template"
 msgstr ""
 

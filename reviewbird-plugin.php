@@ -5,7 +5,6 @@
  * Description: Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback.
  * Version: 1.0.12
  * Author: reviewbird
- * Author URI: https://reviewbird.com
  * Text Domain: reviewbird
  * Domain Path: /i18n/languages
  * Requires at least: 5.0
