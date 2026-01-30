@@ -133,7 +133,14 @@ Yes, you can customize colors and styling through your [reviewbird dashboard](ht
 
 1. reviewbird settings page
 2. Review widget on product page
-3. Star ratings in shop loop
+3. Review collection widget step 1
+4. Review collection widget step 2
+5. Review collection widget step 3
+6. Review collection widget step 4
+7. Review collection widget submission step
+8. Review collection widget submitted
+9. Review Wall showcase
+10. Other showcase styles
 
 == Changelog ==
 
@@ -141,7 +148,7 @@ Yes, you can customize colors and styling through your [reviewbird dashboard](ht
 * Compatibility updates for WordPress.org submission
 
 = 1.0.11 =
-* New reviews API wrapper function for programattic review access: reviewbird_get_product_reviews()
+* New reviews API wrapper function for programmatic review access: reviewbird_get_product_reviews()
 
 = 1.0.10 =
 * Bug fixes and performance improvements
