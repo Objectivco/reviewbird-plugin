@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: reviews, woocommerce, product reviews, ratings, customer reviews
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.11
+Stable tag: 1.0.12
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -85,10 +85,31 @@ By using this plugin, you agree to the reviewbird Terms and Conditions and Priva
 
 == Installation ==
 
-1. Upload the `reviewbird` folder to the `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Go to Settings > reviewbird to connect your store
-4. Follow the connection wizard to link your reviewbird account
+**Automatic Installation:**
+
+1. Log in to your WordPress admin dashboard
+2. Navigate to **Plugins > Add New**
+3. Search for "reviewbird"
+4. Click **Install Now** and then **Activate**
+
+**Manual Installation:**
+
+1. Download the plugin ZIP file
+2. Log in to your WordPress admin dashboard
+3. Navigate to **Plugins > Add New > Upload Plugin**
+4. Choose the ZIP file and click **Install Now**
+5. Click **Activate Plugin**
+
+**Configuration:**
+
+Connection to your store is initiated through reviewbird. Once you have the plugin activated, go to https://app.reviewbird.com/dashboard and click on "Connect".
+
+After you have connected your store to reviewbird, this is how you configure the plugin settings:
+
+1. Go to **Settings > reviewbird**
+2. Click the toggle to enable the reviewbird display widget
+3. You can also enable the Google Schema JSON-LD output.
+4. Settings are saved automatically.
 
 == Frequently Asked Questions ==
 
@@ -116,8 +137,11 @@ Yes, you can customize colors and styling through your [reviewbird dashboard](ht
 
 == Changelog ==
 
-= 1.0.11 =
+= 1.0.12 =
 * Compatibility updates for WordPress.org submission
+
+= 1.0.11 =
+* New reviews API wrapper function for programattic review access: reviewbird_get_product_reviews()
 
 = 1.0.10 =
 * Bug fixes and performance improvements
@@ -132,8 +156,3 @@ Yes, you can customize colors and styling through your [reviewbird dashboard](ht
 
 = 1.0.7 =
 * Initial public release
-
-== Upgrade Notice ==
-
-= 1.0.11 =
-This version includes compatibility updates for WordPress.org hosting.
