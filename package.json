@@ -10,7 +10,7 @@
 		"package.json",
 		"assets/build/**",
 		"assets/css/**",
-		"i18n/**",
+		"languages/**",
 		"templates/**",
 		"src/**",
 		"vendor/**",
@@ -26,8 +26,8 @@
 		"lint:php": "phpcs --standard=WordPress .",
 		"format:php": "phpcbf --standard=WordPress .",
 		"test": "wp-scripts test-unit-js",
-		"make:pot": "wp i18n make-pot . i18n/languages/reviewbird.pot --exclude=\".*,.*/**,node_modules/**,vendor/**,tests/**,assets/build/**\" --domain=\"reviewbird\" --slug=\"reviewbird\"",
-		"make:json": "rm -f i18n/languages/*.json && wp i18n make-json i18n/languages '--use-map=[\"assets/build/map-admin.json\"]' --no-purge"
+		"make:pot": "wp i18n make-pot . languages/reviewbird.pot --exclude=\".*,.*/**,node_modules/**,vendor/**,tests/**,assets/build/**\" --domain=\"reviewbird\" --slug=\"reviewbird\"",
+		"make:json": "rm -f languages/*.json && wp i18n make-json languages '--use-map=[\"assets/build/map-admin.json\"]' --no-purge"
 	},
 	"keywords": [
 		"wordpress",

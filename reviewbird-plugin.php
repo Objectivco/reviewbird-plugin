@@ -6,7 +6,7 @@
  * Version: 1.0.12
  * Author: reviewbird
  * Text Domain: reviewbird
- * Domain Path: /i18n/languages
+ * Domain Path: /languages
  * Requires at least: 5.0
  * Tested up to: 6.9
  * Requires PHP: 7.4

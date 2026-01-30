@@ -126,7 +126,7 @@ class Settings {
 		wp_set_script_translations(
 			'reviewbird-admin',
 			'reviewbird',
-			REVIEWBIRD_PLUGIN_DIR . 'i18n/languages'
+			REVIEWBIRD_PLUGIN_DIR . 'languages'
 		);
 
 		wp_enqueue_style(
