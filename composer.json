@@ -2,7 +2,9 @@
     "name": "reviewbird/wordpress-plugin",
     "description": "WordPress plugin for reviewbird integration",
     "type": "wordpress-plugin",
-    "license": "GPL-2.0-or-later",
+    "license": "GPL-3.0-or-later",
+    "prefer-stable": true,
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "reviewbird",
@@ -12,10 +14,17 @@
     "require": {
         "php": ">=7.4"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:kestrelwp/owl.git"
+        }
+    ],
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.0",
         "wp-coding-standards/wpcs": "^3.0",
-        "phpunit/phpunit": "^9.0"
+        "phpunit/phpunit": "^9.0",
+        "kestrelwp/owl": "dev-main"
     },
     "autoload": {
         "psr-4": {

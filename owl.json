@@ -1,0 +1,8 @@
+{
+  "package": "reviewbird",
+  "plugin": {
+    "name": "reviewbird",
+    "basename": "reviewbird",
+    "textdomain": "reviewbird"
+  }
+}
