@@ -324,7 +324,7 @@ class Plugin {
 	}
 
 	/**
-	 * Remove the reviews tab when ReviewBird is connected.
+	 * Remove the reviews tab when reviewbird is connected.
 	 *
 	 * @param array $tabs Product tabs.
 	 * @return array Modified tabs.
@@ -338,7 +338,7 @@ class Plugin {
 	}
 
 	/**
-	 * Render the ReviewBird widget after product summary.
+	 * Render the reviewbird widget after product summary.
 	 */
 	public function render_product_widget(): void {
 		if ( reviewbird_can_show_widget() ) {

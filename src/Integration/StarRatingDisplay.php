@@ -2,7 +2,7 @@
 /**
  * Star rating display override for WooCommerce.
  *
- * Replaces WooCommerce's native star rating display with ReviewBird's
+ * Replaces WooCommerce's native star rating display with reviewbird's
  * custom star icons using CSS mask-image approach.
  *
  * @package reviewbird
@@ -140,7 +140,7 @@ class StarRatingDisplay {
 	/**
 	 * Filter the WooCommerce rating HTML output.
 	 *
-	 * Replaces the native rating HTML with ReviewBird's custom star display.
+	 * Replaces the native rating HTML with reviewbird's custom star display.
 	 * Works for both classic themes (via template functions) and block themes
 	 * (via the woocommerce/product-rating block).
 	 *
