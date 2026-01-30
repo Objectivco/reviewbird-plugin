@@ -1,5 +1,5 @@
 === reviewbird ===
-Contributors: reviewbird
+Contributors: reviewbird, clifgriffin
 Tags: reviews, woocommerce, product reviews, ratings, customer reviews
 Requires at least: 5.0
 Tested up to: 6.9
