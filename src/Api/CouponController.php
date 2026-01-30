@@ -122,6 +122,7 @@ class CouponController {
 		$template_coupon = $this->find_coupon_by_code( $template_code );
 
 		if ( ! $template_coupon ) {
+			// translators: %s: Template coupon code.
 			return $this->error( 'template_not_found', sprintf( __( "Template coupon '%s' not found", 'reviewbird' ), $template_code ), 404 );
 		}
 
