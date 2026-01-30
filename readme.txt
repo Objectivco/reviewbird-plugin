@@ -146,20 +146,3 @@ Yes, you can customize colors and styling through your [reviewbird dashboard](ht
 
 = 1.0.12 =
 * Compatibility updates for WordPress.org submission
-
-= 1.0.11 =
-* New reviews API wrapper function for programmatic review access: reviewbird_get_product_reviews()
-
-= 1.0.10 =
-* Bug fixes and performance improvements
-
-= 1.0.9 =
-* Added force reviews open setting
-* Improved star rating display
-
-= 1.0.8 =
-* Added schema markup support for rich search results
-* Performance improvements with Action Scheduler
-
-= 1.0.7 =
-* Initial public release
