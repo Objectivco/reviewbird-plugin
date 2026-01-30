@@ -983,12 +983,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:kestrelwp/owl.git",
-                "reference": "e38dbce889f3bc55048186d03c4e2270b08dc4c5"
+                "reference": "57f13f3af9cd1bddf06ff1a4c81e0fac531c64a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kestrelwp/owl/zipball/e38dbce889f3bc55048186d03c4e2270b08dc4c5",
-                "reference": "e38dbce889f3bc55048186d03c4e2270b08dc4c5",
+                "url": "https://api.github.com/repos/kestrelwp/owl/zipball/57f13f3af9cd1bddf06ff1a4c81e0fac531c64a4",
+                "reference": "57f13f3af9cd1bddf06ff1a4c81e0fac531c64a4",
                 "shasum": ""
             },
             "require": {
@@ -1101,7 +1101,7 @@
                 "source": "https://github.com/kestrelwp/owl/tree/main",
                 "issues": "https://github.com/kestrelwp/owl/issues"
             },
-            "time": "2026-01-21T07:53:01+00:00"
+            "time": "2026-01-30T19:18:31+00:00"
         },
         {
             "name": "mockery/mockery",

@@ -13,21 +13,20 @@ msgstr ""
 "X-Generator: WP-CLI 2.12.0\n"
 "Copyright: (C) 2026 reviewbird\n"
 
-#. Plugin Name of the plugin
-#. Author of the plugin
 #: reviewbird-plugin.php
 #: src/Admin/Settings.php:97
+#. Plugin Name of the plugin
+#. Author of the plugin
 msgid "reviewbird"
 msgstr "Reseñas de reviewbird"
 
-#. Plugin URI of the plugin
-#. Author URI of the plugin
 #: reviewbird-plugin.php
+#. Plugin URI of the plugin
 msgid "https://reviewbird.com"
 msgstr "https://reviewbird.com"
 
-#. Description of the plugin
 #: reviewbird-plugin.php
+#. Description of the plugin
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "Recopilación automática de reseñas para WooCommerce que bloquea el spam, detecta quejas y muestra tus mejores opiniones."
 
@@ -64,8 +63,8 @@ msgstr "Configuración actualizada con éxito"
 msgid "Health check cache cleared"
 msgstr "Caché de verificación de estado borrada"
 
-#. translators: %d: Store ID number.
 #: src/Api/ConnectionController.php:74
+#. translators: %d: Store ID number.
 #, php-format
 msgid "Store ID %d has been saved successfully"
 msgstr "La tienda con ID %d se ha guardado correctamente"
@@ -79,8 +78,8 @@ msgstr "WooCommerce no está activo"
 msgid "Coupon code is required"
 msgstr "Se requiere código de cupón"
 
-#. translators: %s: Template coupon code.
 #: src/Api/CouponController.php:126
+#. translators: %s: Template coupon code.
 #, php-format
 msgid "Template coupon '%s' not found"
 msgstr "Cupón de plantilla '%s' no encontrado"
@@ -121,7 +120,7 @@ msgstr "Se requiere correo electrónico del cliente"
 msgid "Invalid email address"
 msgstr "Dirección de correo electrónico inválida"
 
-#: src/Core/Plugin.php:394
+#: src/Core/Plugin.php:380
 msgid "Settings"
 msgstr "Configuraciones"
 
@@ -146,14 +145,14 @@ msgstr "Máximo de 50 IDs de producto permitidos por solicitud."
 msgid "Failed to decode API response."
 msgstr "Error al decodificar la respuesta de la API."
 
-#. translators: %s is the average rating.
 #: src/Integration/StarRatingDisplay.php:177
+#. translators: %s is the average rating.
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "Calificado %s de 5"
 
-#. translators: %s is the average rating.
 #: src/Integration/StarRatingDisplay.php:180
+#. translators: %s is the average rating.
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "Calificado %s de 5, haz clic para ver reseñas"
@@ -187,8 +186,12 @@ msgid "Initial Sync in Progress"
 msgstr "Sincronización inicial en progreso"
 
 #: assets/src/js/components/ConnectionHealth.jsx:27
-msgid "reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
-msgstr "reviewbird está sincronizando tus productos y reseñas. Esto puede tardar unos minutos dependiendo del tamaño de tu catálogo. El widget estará disponible una vez que la sincronización termine."
+msgid ""
+"reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget "
+"will be available once sync completes."
+msgstr ""
+"reviewbird está sincronizando tus productos y reseñas. Esto puede tardar unos minutos dependiendo del tamaño de tu "
+"catálogo. El widget estará disponible una vez que la sincronización termine."
 
 #: assets/src/js/components/ConnectionHealth.jsx:28
 msgid "View Sync Progress"
@@ -200,7 +203,9 @@ msgstr "Suscripción requerida"
 
 #: assets/src/js/components/ConnectionHealth.jsx:35
 msgid "Your reviewbird subscription is inactive. Please update your billing information to continue using the service."
-msgstr "Tu suscripción a reviewbird está inactiva. Por favor, actualiza tu información de facturación para continuar usando el servicio."
+msgstr ""
+"Tu suscripción a reviewbird está inactiva. Por favor, actualiza tu información de facturación para continuar usando el "
+"servicio."
 
 #: assets/src/js/components/ConnectionHealth.jsx:36
 msgid "Update Billing"
@@ -268,8 +273,12 @@ msgid "reviewbird Widget"
 msgstr "Widget de reviewbird"
 
 #: assets/src/js/components/SettingsApp.jsx:68
-msgid "Display reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
-msgstr "Mostrar el widget de reseñas de reviewbird en las páginas de productos. El widget muestra las opiniones de los clientes y permite a los clientes enviar nuevas reseñas."
+msgid ""
+"Display reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new "
+"reviews."
+msgstr ""
+"Mostrar el widget de reseñas de reviewbird en las páginas de productos. El widget muestra las opiniones de los clientes "
+"y permite a los clientes enviar nuevas reseñas."
 
 #: assets/src/js/components/SettingsApp.jsx:71
 msgid "Widget is enabled on all WooCommerce product pages."
@@ -289,7 +298,9 @@ msgstr "Marcado de esquema SEO"
 
 #: assets/src/js/components/SettingsApp.jsx:102
 msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
-msgstr "Habilitar datos estructurados compatibles con Google (esquema JSON-LD) en las páginas de productos para fragmentos enriquecidos en los resultados de búsqueda."
+msgstr ""
+"Habilitar datos estructurados compatibles con Google (esquema JSON-LD) en las páginas de productos para fragmentos "
+"enriquecidos en los resultados de búsqueda."
 
 #: assets/src/js/components/SettingsApp.jsx:105
 msgid "Schema markup is active on all WooCommerce product pages."
