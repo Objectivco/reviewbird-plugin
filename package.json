@@ -6,6 +6,8 @@
 	"files": [
 		"reviewbird-plugin.php",
 		"readme.txt",
+		"composer.json",
+		"package.json",
 		"assets/build/**",
 		"assets/css/**",
 		"languages/**",

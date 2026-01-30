@@ -1,0 +1,334 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: reviewbird 1.0.11\n"
+"Report-Msgid-Bugs-To: https://reviewbird.com/contact/\n"
+"Last-Translator: gpt-po v1.2.3\n"
+"Language-Team: reviewbird <support@reviewbird.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-01-30T18:13:06+00:00\n"
+"PO-Revision-Date: 2026-01-30 00:00+0000\n"
+"Language: it_IT\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"Copyright: (C) 2026 reviewbird\n"
+
+#. Author of the plugin
+#: reviewbird-plugin.php
+#: src/Admin/Settings.php:97
+msgid "reviewbird"
+msgstr "reviewbird"
+
+#. Plugin URI of the plugin
+#: reviewbird-plugin.php
+msgid "https://www.reviewbird.com"
+msgstr "https://www.reviewbird.com"
+
+#. Description of the plugin
+#: reviewbird-plugin.php
+msgid "Automated review collection that blocks spam, catches complaints, and showcases your best feedback."
+msgstr "Raccolta automatica di recensioni che blocca lo spam, intercetta i reclami e mostra i tuoi migliori feedback."
+
+#. Author URI of the plugin
+#: reviewbird-plugin.php
+msgid "https://reviewbird.com"
+msgstr "https://reviewbird.com"
+
+#: src/Admin/Settings.php:66
+msgid "reviewbird Connection Error:"
+msgstr "Errore di connessione a reviewbird:"
+
+#: src/Admin/Settings.php:85
+msgid "Successfully connected to reviewbird!"
+msgstr "Connessione a reviewbird avvenuta con successo!"
+
+#: src/Admin/Settings.php:96
+#: assets/src/js/components/SettingsApp.jsx:56
+msgid "reviewbird Settings"
+msgstr "Impostazioni reviewbird"
+
+#: src/Admin/Settings.php:201
+msgid "Invalid security token"
+msgstr "Token di sicurezza non valido"
+
+#: src/Admin/Settings.php:205
+msgid "Insufficient permissions"
+msgstr "Permessi insufficienti"
+
+#: src/Admin/Settings.php:230
+msgid "Invalid setting"
+msgstr "Impostazione non valida"
+
+#: src/Admin/Settings.php:240
+msgid "Setting updated successfully"
+msgstr "Impostazione aggiornata con successo"
+
+#: src/Admin/Settings.php:257
+msgid "Health check cache cleared"
+msgstr "Cache del controllo di integrità cancellata"
+
+#: src/Api/ConnectionController.php:73
+#, php-format
+msgid "Store ID %d has been saved successfully"
+msgstr "ID negozio %d salvato con successo"
+
+#: src/Api/CouponController.php:79
+#: src/Api/ProductsController.php:43
+msgid "WooCommerce is not active"
+msgstr "WooCommerce non è attivo"
+
+#: src/Api/CouponController.php:89
+msgid "Coupon code is required"
+msgstr "Il codice coupon è obbligatorio"
+
+#: src/Api/CouponController.php:125
+#, php-format
+msgid "Template coupon '%s' not found"
+msgstr "Coupon modello '%s' non trovato"
+
+#: src/Api/CouponController.php:154
+msgid "discount_type and amount are required when not using template"
+msgstr "discount_type e amount sono obbligatori quando non si usa un modello"
+
+#: src/Api/RatingsController.php:43
+msgid "Product ID is required"
+msgstr "ID prodotto è obbligatorio"
+
+#: src/Api/RatingsController.php:49
+msgid "Invalid product ID"
+msgstr "ID prodotto non valido"
+
+#: src/Api/RatingsController.php:53
+msgid "Product not found"
+msgstr "Prodotto non trovato"
+
+#: src/Api/RatingsController.php:93
+msgid "Average stars must be a number between 1 and 5"
+msgstr "Le stelle medie devono essere un numero tra 1 e 5"
+
+#: src/Api/RatingsController.php:97
+msgid "Review count must be a non-negative number"
+msgstr "Il conteggio delle recensioni deve essere un numero non negativo"
+
+#: src/Api/RatingsController.php:101
+msgid "Rating counts must be an array"
+msgstr "I conteggi delle valutazioni devono essere un array"
+
+#: src/Api/RatingsController.php:163
+msgid "Customer email is required"
+msgstr "L'email del cliente è obbligatoria"
+
+#: src/Api/RatingsController.php:167
+msgid "Invalid email address"
+msgstr "Indirizzo email non valido"
+
+#: src/Core/Plugin.php:380
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: src/functions.php:114
+#: src/functions.php:290
+msgid "API request failed"
+msgstr "Richiesta API fallita"
+
+#: src/functions.php:197
+msgid "Store is not connected to reviewbird."
+msgstr "Il negozio non è connesso a reviewbird."
+
+#: src/functions.php:207
+msgid "Unable to generate API key for authentication."
+msgstr "Impossibile generare la chiave API per l'autenticazione."
+
+#: src/functions.php:221
+msgid "Maximum of 50 product IDs allowed per request."
+msgstr "Massimo 50 ID prodotto consentiti per richiesta."
+
+#: src/functions.php:326
+msgid "Failed to decode API response."
+msgstr "Decodifica della risposta API fallita."
+
+#. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:177
+#, php-format
+msgid "Rated %s out of 5"
+msgstr "Valutato %s su 5"
+
+#. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:180
+#, php-format
+msgid "Rated %s out of 5, click to view reviews"
+msgstr "Valutato %s su 5, clicca per vedere le recensioni"
+
+#: assets/src/js/components/ConnectionHealth.jsx:10
+msgid "Connected to reviewbird"
+msgstr "Connesso a reviewbird"
+
+#: assets/src/js/components/ConnectionHealth.jsx:11
+msgid "Your WooCommerce store is successfully connected to reviewbird. Review data is syncing properly."
+msgstr "Il tuo negozio WooCommerce è connesso con successo a reviewbird. I dati delle recensioni si stanno sincronizzando correttamente."
+
+#: assets/src/js/components/ConnectionHealth.jsx:12
+msgid "View Dashboard"
+msgstr "Visualizza Dashboard"
+
+#: assets/src/js/components/ConnectionHealth.jsx:18
+msgid "WooCommerce Not Connected"
+msgstr "WooCommerce non connesso"
+
+#: assets/src/js/components/ConnectionHealth.jsx:19
+msgid "WooCommerce is not yet connected to reviewbird. Connect your store to start syncing products and reviews."
+msgstr "WooCommerce non è ancora connesso a reviewbird. Connetti il tuo negozio per iniziare a sincronizzare prodotti e recensioni."
+
+#: assets/src/js/components/ConnectionHealth.jsx:20
+msgid "Connect WooCommerce"
+msgstr "Connetti WooCommerce"
+
+#: assets/src/js/components/ConnectionHealth.jsx:26
+msgid "Initial Sync in Progress"
+msgstr "Sincronizzazione iniziale in corso"
+
+#: assets/src/js/components/ConnectionHealth.jsx:27
+msgid "reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
+msgstr "reviewbird sta sincronizzando i tuoi prodotti e le recensioni. Questo potrebbe richiedere alcuni minuti a seconda della dimensione del catalogo. Il widget sarà disponibile una volta completata la sincronizzazione."
+
+#: assets/src/js/components/ConnectionHealth.jsx:28
+msgid "View Sync Progress"
+msgstr "Visualizza progresso sincronizzazione"
+
+#: assets/src/js/components/ConnectionHealth.jsx:34
+msgid "Subscription Required"
+msgstr "Abbonamento richiesto"
+
+#: assets/src/js/components/ConnectionHealth.jsx:35
+msgid "Your reviewbird subscription is inactive. Please update your billing information to continue using the service."
+msgstr "Il tuo abbonamento a reviewbird è inattivo. Aggiorna le informazioni di fatturazione per continuare a utilizzare il servizio."
+
+#: assets/src/js/components/ConnectionHealth.jsx:36
+msgid "Update Billing"
+msgstr "Aggiorna fatturazione"
+
+#: assets/src/js/components/ConnectionHealth.jsx:42
+#: assets/src/js/components/ConnectionHealth.jsx:50
+msgid "Connection Issue Detected"
+msgstr "Problema di connessione rilevato"
+
+#: assets/src/js/components/ConnectionHealth.jsx:43
+msgid "Unable to connect to reviewbird. Please check your connection settings."
+msgstr "Impossibile connettersi a reviewbird. Controlla le impostazioni di connessione."
+
+#: assets/src/js/components/ConnectionHealth.jsx:44
+msgid "Fix Connection"
+msgstr "Risolvi connessione"
+
+#: assets/src/js/components/ConnectionHealth.jsx:51
+msgid "Unable to reach reviewbird API. Please check your internet connection."
+msgstr "Impossibile raggiungere l'API di reviewbird. Controlla la tua connessione internet."
+
+#: assets/src/js/components/ConnectionHealth.jsx:52
+msgid "Get Help"
+msgstr "Ottieni aiuto"
+
+#: assets/src/js/components/ConnectionHealth.jsx:58
+msgid "Checking connection..."
+msgstr "Verifica connessione in corso..."
+
+#: assets/src/js/components/ConnectionHealth.jsx:59
+msgid "Verifying connection to reviewbird..."
+msgstr "Verifica della connessione a reviewbird in corso..."
+
+#: assets/src/js/components/ConnectionHealth.jsx:60
+msgid "Open reviewbird"
+msgstr "Apri reviewbird"
+
+#: assets/src/js/components/ConnectionHealth.jsx:188
+msgid "Connection Issue"
+msgstr "Problema di connessione"
+
+#: assets/src/js/components/ConnectionHealth.jsx:257
+msgid "Refresh"
+msgstr "Aggiorna"
+
+#: assets/src/js/components/ConnectionHealth.jsx:278
+msgid "Last checked:"
+msgstr "Ultimo controllo:"
+
+#: assets/src/js/components/LoadingSpinner.jsx:8
+msgid "Loading..."
+msgstr "Caricamento..."
+
+#: assets/src/js/components/SettingsApp.jsx:40
+msgid "Failed to update setting. Please try again."
+msgstr "Aggiornamento impostazione fallito. Riprova."
+
+#: assets/src/js/components/SettingsApp.jsx:59
+msgid "Manage your reviewbird integration with WooCommerce."
+msgstr "Gestisci la tua integrazione reviewbird con WooCommerce."
+
+#: assets/src/js/components/SettingsApp.jsx:67
+msgid "reviewbird Widget"
+msgstr "Widget reviewbird"
+
+#: assets/src/js/components/SettingsApp.jsx:68
+msgid "Display reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
+msgstr "Visualizza il widget di recensioni reviewbird nelle pagine dei prodotti. Il widget mostra le recensioni dei clienti e consente ai clienti di inviare nuove recensioni."
+
+#: assets/src/js/components/SettingsApp.jsx:71
+msgid "Widget is enabled on all WooCommerce product pages."
+msgstr "Il widget è abilitato su tutte le pagine dei prodotti WooCommerce."
+
+#: assets/src/js/components/SettingsApp.jsx:77
+msgid "Forcefully enable reviews on all products"
+msgstr "Abilita forzatamente le recensioni su tutti i prodotti"
+
+#: assets/src/js/components/SettingsApp.jsx:80
+msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
+msgstr "Lascia disattivato se preferisci controllare le recensioni per prodotto utilizzando la casella di controllo \"Abilita recensioni\"."
+
+#: assets/src/js/components/SettingsApp.jsx:101
+msgid "SEO Schema Markup"
+msgstr "Markup Schema SEO"
+
+#: assets/src/js/components/SettingsApp.jsx:102
+msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
+msgstr "Abilita dati strutturati conformi a Google (schema JSON-LD) nelle pagine dei prodotti per rich snippet nei risultati di ricerca."
+
+#: assets/src/js/components/SettingsApp.jsx:105
+msgid "Schema markup is active on all WooCommerce product pages."
+msgstr "Il markup schema è attivo su tutte le pagine dei prodotti WooCommerce."
+
+#: assets/src/js/components/SettingsApp.jsx:107
+msgid "What is Schema Markup?"
+msgstr "Cos'è il Markup Schema?"
+
+#: assets/src/js/components/SettingsApp.jsx:109
+msgid "Displays star ratings in Google search results"
+msgstr "Mostra le valutazioni a stelle nei risultati di ricerca Google"
+
+#: assets/src/js/components/SettingsApp.jsx:110
+msgid "Shows review counts and product information"
+msgstr "Mostra il conteggio delle recensioni e le informazioni sul prodotto"
+
+#: assets/src/js/components/SettingsApp.jsx:111
+msgid "Review schema is cached for 4 hours for optimal performance"
+msgstr "Lo schema delle recensioni è memorizzato nella cache per 4 ore per prestazioni ottimali"
+
+#: assets/src/js/components/SettingsApp.jsx:117
+msgid "Test with Google Rich Results"
+msgstr "Testa con Google Rich Results"
+
+#: assets/src/js/components/SettingsApp.jsx:121
+msgid "Validate Schema"
+msgstr "Valida Schema"
+
+#: assets/src/js/components/TogglePanel.jsx:114
+msgid "Enabled"
+msgstr "Abilitato"
+
+#: assets/src/js/components/TogglePanel.jsx:115
+msgid "Disabled"
+msgstr "Disabilitato"
+
+#. Plugin Name of the plugin
+#: reviewbird-plugin.php
+msgid "ReviewBird Reviews"
+msgstr ""
