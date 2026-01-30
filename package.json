@@ -10,7 +10,7 @@
 		"package.json",
 		"assets/build/**",
 		"assets/css/**",
-		"languages/**",
+		"i18n/**",
 		"templates/**",
 		"src/**",
 		"vendor/**",
