@@ -70,7 +70,7 @@ class ConnectionController {
 			array(
 				'success'  => true,
 				'store_id' => $store_id,
-				'message'  => sprintf( 'Store ID %d has been saved successfully', $store_id ),
+				'message'  => sprintf( __( 'Store ID %d has been saved successfully', 'reviewbird' ), $store_id ),
 			),
 			200
 		);

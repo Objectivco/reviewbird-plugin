@@ -40,17 +40,17 @@ class RatingsController {
 	 */
 	private static function validate_product_id( $product_id ) {
 		if ( empty( $product_id ) ) {
-			return self::validation_error( 'missing_product_id', 'Product ID is required' );
+			return self::validation_error( 'missing_product_id', __( 'Product ID is required', 'reviewbird' ) );
 		}
 
 		$product_id = absint( $product_id );
 
 		if ( ! $product_id ) {
-			return self::validation_error( 'invalid_product_id', 'Invalid product ID' );
+			return self::validation_error( 'invalid_product_id', __( 'Invalid product ID', 'reviewbird' ) );
 		}
 
 		if ( 'product' !== get_post_type( $product_id ) ) {
-			return self::validation_error( 'product_not_found', 'Product not found', 404 );
+			return self::validation_error( 'product_not_found', __( 'Product not found', 'reviewbird' ), 404 );
 		}
 
 		return $product_id;
@@ -90,15 +90,15 @@ class RatingsController {
 		}
 
 		if ( ! is_numeric( $avg_stars ) || $avg_stars < 1 || $avg_stars > 5 ) {
-			return self::validation_error( 'invalid_rating', 'Average stars must be a number between 1 and 5' );
+			return self::validation_error( 'invalid_rating', __( 'Average stars must be a number between 1 and 5', 'reviewbird' ) );
 		}
 
 		if ( ! is_numeric( $review_count ) || $review_count < 0 ) {
-			return self::validation_error( 'invalid_count', 'Review count must be a non-negative number' );
+			return self::validation_error( 'invalid_count', __( 'Review count must be a non-negative number', 'reviewbird' ) );
 		}
 
 		if ( ! empty( $rating_counts ) && ! is_array( $rating_counts ) ) {
-			return self::validation_error( 'invalid_rating_counts', 'Rating counts must be an array' );
+			return self::validation_error( 'invalid_rating_counts', __( 'Rating counts must be an array', 'reviewbird' ) );
 		}
 
 		update_post_meta( $product_id, '_reviewbird_avg_stars', floatval( $avg_stars ) );
@@ -160,11 +160,11 @@ class RatingsController {
 		}
 
 		if ( empty( $customer_email ) ) {
-			return self::validation_error( 'missing_email', 'Customer email is required' );
+			return self::validation_error( 'missing_email', __( 'Customer email is required', 'reviewbird' ) );
 		}
 
 		if ( ! is_email( $customer_email ) ) {
-			return self::validation_error( 'invalid_email', 'Invalid email address' );
+			return self::validation_error( 'invalid_email', __( 'Invalid email address', 'reviewbird' ) );
 		}
 
 		$verified_purchase    = wc_customer_bought_product( $customer_email, null, $product_id );

@@ -40,7 +40,7 @@ class ProductsController {
 	 */
 	private static function require_woocommerce() {
 		if ( ! class_exists( 'WooCommerce' ) ) {
-			return self::error( 'woocommerce_not_active', 'WooCommerce is not active', 503 );
+			return self::error( 'woocommerce_not_active', __( 'WooCommerce is not active', 'reviewbird' ), 503 );
 		}
 		return null;
 	}
