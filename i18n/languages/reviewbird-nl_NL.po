@@ -13,24 +13,29 @@ msgstr ""
 "X-Generator: WP-CLI 2.12.0\n"
 "Copyright: (C) 2026 reviewbird\n"
 
-#. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:97
-msgid "reviewbird"
-msgstr "reviewbird"
+#. Plugin Name of the plugin
+msgid "ReviewBird Reviews"
+msgstr "ReviewBird Beoordelingen"
 
-#. Plugin URI of the plugin
 #: reviewbird-plugin.php
+#. Plugin URI of the plugin
 msgid "https://www.reviewbird.com"
 msgstr "https://www.reviewbird.com"
 
-#. Description of the plugin
 #: reviewbird-plugin.php
+#. Description of the plugin
 msgid "Automated review collection that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "Geautomatiseerde beoordeling verzameling die spam blokkeert, klachten opvangt en je beste feedback toont."
 
-#. Author URI of the plugin
 #: reviewbird-plugin.php
+#: src/Admin/Settings.php:97
+#. Author of the plugin
+msgid "reviewbird"
+msgstr "reviewbird"
+
+#: reviewbird-plugin.php
+#. Author URI of the plugin
 msgid "https://reviewbird.com"
 msgstr "https://reviewbird.com"
 
@@ -47,23 +52,23 @@ msgstr "Succesvol verbonden met reviewbird!"
 msgid "reviewbird Settings"
 msgstr "reviewbird instellingen"
 
-#: src/Admin/Settings.php:201
+#: src/Admin/Settings.php:207
 msgid "Invalid security token"
 msgstr "Ongeldig beveiligingstoken"
 
-#: src/Admin/Settings.php:205
+#: src/Admin/Settings.php:211
 msgid "Insufficient permissions"
 msgstr "Onvoldoende rechten"
 
-#: src/Admin/Settings.php:230
+#: src/Admin/Settings.php:236
 msgid "Invalid setting"
 msgstr "Ongeldige instelling"
 
-#: src/Admin/Settings.php:240
+#: src/Admin/Settings.php:246
 msgid "Setting updated successfully"
 msgstr "Instelling succesvol bijgewerkt"
 
-#: src/Admin/Settings.php:257
+#: src/Admin/Settings.php:263
 msgid "Health check cache cleared"
 msgstr "Cache voor gezondheidscontrole gewist"
 
@@ -122,7 +127,7 @@ msgstr "E-mailadres klant is vereist"
 msgid "Invalid email address"
 msgstr "Ongeldig e-mailadres"
 
-#: src/Core/Plugin.php:380
+#: src/Core/Plugin.php:394
 msgid "Settings"
 msgstr "Instellingen"
 
@@ -147,14 +152,14 @@ msgstr "Maximaal 50 product-ID's toegestaan per verzoek."
 msgid "Failed to decode API response."
 msgstr "Kan API-respons niet decoderen."
 
-#. translators: %s is the average rating.
 #: src/Integration/StarRatingDisplay.php:177
+#. translators: %s is the average rating.
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "Beoordeeld met %s van de 5"
 
-#. translators: %s is the average rating.
 #: src/Integration/StarRatingDisplay.php:180
+#. translators: %s is the average rating.
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "Beoordeeld met %s van de 5, klik om beoordelingen te bekijken"
@@ -188,8 +193,12 @@ msgid "Initial Sync in Progress"
 msgstr "Initiële synchronisatie bezig"
 
 #: assets/src/js/components/ConnectionHealth.jsx:27
-msgid "reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
-msgstr "reviewbird synchroniseert je producten en beoordelingen. Dit kan enkele minuten duren afhankelijk van de grootte van je catalogus. De widget is beschikbaar zodra de synchronisatie is voltooid."
+msgid ""
+"reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget "
+"will be available once sync completes."
+msgstr ""
+"reviewbird synchroniseert je producten en beoordelingen. Dit kan enkele minuten duren afhankelijk van de grootte van je "
+"catalogus. De widget is beschikbaar zodra de synchronisatie is voltooid."
 
 #: assets/src/js/components/ConnectionHealth.jsx:28
 msgid "View Sync Progress"
@@ -269,8 +278,12 @@ msgid "reviewbird Widget"
 msgstr "reviewbird-widget"
 
 #: assets/src/js/components/SettingsApp.jsx:68
-msgid "Display reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
-msgstr "Toon reviewbird review-widget op productpagina's. De widget toont klantbeoordelingen en stelt klanten in staat nieuwe beoordelingen in te dienen."
+msgid ""
+"Display reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new "
+"reviews."
+msgstr ""
+"Toon reviewbird review-widget op productpagina's. De widget toont klantbeoordelingen en stelt klanten in staat nieuwe "
+"beoordelingen in te dienen."
 
 #: assets/src/js/components/SettingsApp.jsx:71
 msgid "Widget is enabled on all WooCommerce product pages."
@@ -290,7 +303,9 @@ msgstr "SEO Schema Markup"
 
 #: assets/src/js/components/SettingsApp.jsx:102
 msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
-msgstr "Schakel Google-conforme gestructureerde gegevens (JSON-LD schema) in op productpagina's voor rijke fragmenten in zoekresultaten."
+msgstr ""
+"Schakel Google-conforme gestructureerde gegevens (JSON-LD schema) in op productpagina's voor rijke fragmenten in "
+"zoekresultaten."
 
 #: assets/src/js/components/SettingsApp.jsx:105
 msgid "Schema markup is active on all WooCommerce product pages."
@@ -327,8 +342,3 @@ msgstr "Ingeschakeld"
 #: assets/src/js/components/TogglePanel.jsx:115
 msgid "Disabled"
 msgstr "Uitgeschakeld"
-
-#. Plugin Name of the plugin
-#: reviewbird-plugin.php
-msgid "ReviewBird Reviews"
-msgstr ""

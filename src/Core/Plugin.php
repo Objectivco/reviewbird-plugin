@@ -71,6 +71,9 @@ class Plugin {
 	 * Initialize plugin hooks.
 	 */
 	private function init_hooks() {
+		// Load translations.
+		add_action( 'init', array( $this, 'load_textdomain' ) );
+
 		// REST API routes.
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 
@@ -118,6 +121,17 @@ class Plugin {
 		// Force reviews open on products when enabled.
 		add_filter( 'comments_open', array( $this, 'maybe_force_comments_open' ), 10, 2 );
 		add_filter( 'woocommerce_product_get_reviews_allowed', array( $this, 'maybe_force_reviews_allowed' ), 10, 2 );
+	}
+
+	/**
+	 * Load plugin text domain for translations.
+	 */
+	public function load_textdomain(): void {
+		load_plugin_textdomain(
+			'reviewbird',
+			false,
+			dirname( REVIEWBIRD_PLUGIN_BASENAME ) . '/i18n/languages'
+		);
 	}
 
 	/**

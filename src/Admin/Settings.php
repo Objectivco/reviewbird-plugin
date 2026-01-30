@@ -123,6 +123,12 @@ class Settings {
 
 		wp_localize_script( 'reviewbird-admin', 'reviewbirdAdmin', $this->get_script_localization_data() );
 
+		wp_set_script_translations(
+			'reviewbird-admin',
+			'reviewbird',
+			REVIEWBIRD_PLUGIN_DIR . 'i18n/languages'
+		);
+
 		wp_enqueue_style(
 			'reviewbird-admin',
 			REVIEWBIRD_PLUGIN_URL . 'assets/build/admin.css',

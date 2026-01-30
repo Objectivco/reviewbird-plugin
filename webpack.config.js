@@ -1,5 +1,6 @@
 const defaultConfig = require('@wordpress/scripts/config/webpack.config');
 const path = require('path');
+const BundleOutputPlugin = require('webpack-bundle-output');
 
 module.exports = {
     ...defaultConfig,
@@ -11,4 +12,8 @@ module.exports = {
         path: path.resolve(process.cwd(), 'assets/build'),
         filename: '[name].js',
     },
+    plugins: [
+        ...defaultConfig.plugins,
+        new BundleOutputPlugin({ output: 'map-admin.json' }),
+    ],
 };

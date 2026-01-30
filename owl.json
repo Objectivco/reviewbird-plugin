@@ -4,5 +4,9 @@
     "name": "reviewbird",
     "basename": "reviewbird",
     "textdomain": "reviewbird"
+  },
+  "translations": {
+    "makePotCommand": "pnpm run make:pot",
+    "makeJsonCommand": "pnpm run make:json"
   }
 }

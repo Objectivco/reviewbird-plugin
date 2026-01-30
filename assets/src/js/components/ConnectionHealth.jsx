@@ -7,57 +7,57 @@ const STATUS_CONFIG = {
 	healthy: {
 		color: 'border-l-4 border-l-green-500',
 		iconColor: 'text-green-600',
-		text: __('Connected to reviewbird', 'reviewbird-reviews'),
-		message: __('Your WooCommerce store is successfully connected to reviewbird. Review data is syncing properly.', 'reviewbird-reviews'),
-		buttonText: __('View Dashboard', 'reviewbird-reviews'),
+		text: __('Connected to reviewbird', 'reviewbird'),
+		message: __('Your WooCommerce store is successfully connected to reviewbird. Review data is syncing properly.', 'reviewbird'),
+		buttonText: __('View Dashboard', 'reviewbird'),
 		route: 'settings'
 	},
 	not_connected: {
 		color: 'border-l-4 border-l-blue-500',
 		iconColor: 'text-blue-600',
-		text: __('WooCommerce Not Connected', 'reviewbird-reviews'),
-		message: __('WooCommerce is not yet connected to reviewbird. Connect your store to start syncing products and reviews.', 'reviewbird-reviews'),
-		buttonText: __('Connect WooCommerce', 'reviewbird-reviews'),
+		text: __('WooCommerce Not Connected', 'reviewbird'),
+		message: __('WooCommerce is not yet connected to reviewbird. Connect your store to start syncing products and reviews.', 'reviewbird'),
+		buttonText: __('Connect WooCommerce', 'reviewbird'),
 		route: 'connect'
 	},
 	syncing: {
 		color: 'border-l-4 border-l-yellow-500',
 		iconColor: 'text-yellow-600',
-		text: __('Initial Sync in Progress', 'reviewbird-reviews'),
-		message: __('reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes.', 'reviewbird-reviews'),
-		buttonText: __('View Sync Progress', 'reviewbird-reviews'),
+		text: __('Initial Sync in Progress', 'reviewbird'),
+		message: __('reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes.', 'reviewbird'),
+		buttonText: __('View Sync Progress', 'reviewbird'),
 		route: 'connect'
 	},
 	billing_required: {
 		color: 'border-l-4 border-l-orange-500',
 		iconColor: 'text-orange-600',
-		text: __('Subscription Required', 'reviewbird-reviews'),
-		message: __('Your reviewbird subscription is inactive. Please update your billing information to continue using the service.', 'reviewbird-reviews'),
-		buttonText: __('Update Billing', 'reviewbird-reviews'),
+		text: __('Subscription Required', 'reviewbird'),
+		message: __('Your reviewbird subscription is inactive. Please update your billing information to continue using the service.', 'reviewbird'),
+		buttonText: __('Update Billing', 'reviewbird'),
 		route: 'billing'
 	},
 	unhealthy: {
 		color: 'border-l-4 border-l-red-500',
 		iconColor: 'text-red-600',
-		text: __('Connection Issue Detected', 'reviewbird-reviews'),
-		message: __('Unable to connect to reviewbird. Please check your connection settings.', 'reviewbird-reviews'),
-		buttonText: __('Fix Connection', 'reviewbird-reviews'),
+		text: __('Connection Issue Detected', 'reviewbird'),
+		message: __('Unable to connect to reviewbird. Please check your connection settings.', 'reviewbird'),
+		buttonText: __('Fix Connection', 'reviewbird'),
 		route: 'connect'
 	},
 	error: {
 		color: 'border-l-4 border-l-red-500',
 		iconColor: 'text-red-600',
-		text: __('Connection Issue Detected', 'reviewbird-reviews'),
-		message: __('Unable to reach reviewbird API. Please check your internet connection.', 'reviewbird-reviews'),
-		buttonText: __('Get Help', 'reviewbird-reviews'),
+		text: __('Connection Issue Detected', 'reviewbird'),
+		message: __('Unable to reach reviewbird API. Please check your internet connection.', 'reviewbird'),
+		buttonText: __('Get Help', 'reviewbird'),
 		route: 'support'
 	},
 	checking: {
 		color: 'border-l-4 border-l-gray-300',
 		iconColor: 'text-gray-400',
-		text: __('Checking connection...', 'reviewbird-reviews'),
-		message: __('Verifying connection to reviewbird...', 'reviewbird-reviews'),
-		buttonText: __('Open reviewbird', 'reviewbird-reviews'),
+		text: __('Checking connection...', 'reviewbird'),
+		message: __('Verifying connection to reviewbird...', 'reviewbird'),
+		buttonText: __('Open reviewbird', 'reviewbird'),
 		route: 'settings'
 	}
 };
@@ -185,7 +185,7 @@ function getActionUrl(status, healthData) {
 
 function getStatusText(status, healthData) {
 	if (status === 'unhealthy' && healthData?.error_code) {
-		return `${__('Connection Issue', 'reviewbird-reviews')} (${healthData.error_code})`;
+		return `${__('Connection Issue', 'reviewbird')} (${healthData.error_code})`;
 	}
 	return STATUS_CONFIG[status]?.text || STATUS_CONFIG.checking.text;
 }
@@ -254,7 +254,7 @@ export default function ConnectionHealth() {
 						onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e0e7ff'}
 						onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#eef2ff'}
 					>
-						{__('Refresh', 'reviewbird-reviews')}
+						{__('Refresh', 'reviewbird')}
 					</button>
 				)}
 			</div>
@@ -275,7 +275,7 @@ export default function ConnectionHealth() {
 			</div>
 			{lastChecked && (
 				<p className="mt-2 ml-8 text-xs text-gray-500">
-					{__('Last checked:', 'reviewbird-reviews')} {lastChecked.toLocaleTimeString()}
+					{__('Last checked:', 'reviewbird')} {lastChecked.toLocaleTimeString()}
 				</p>
 			)}
 		</div>

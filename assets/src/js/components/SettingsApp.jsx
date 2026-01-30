@@ -37,7 +37,7 @@ function useToggleSetting(settingKey, apiSettingName) {
 			setEnabled(newValue);
 		} catch (err) {
 			console.error(`Failed to update ${apiSettingName} setting:`, err);
-			alert(__('Failed to update setting. Please try again.', 'reviewbird-reviews'));
+			alert(__('Failed to update setting. Please try again.', 'reviewbird'));
 		}
 	}
 
@@ -53,10 +53,10 @@ export default function SettingsApp() {
 		<div className="max-w-4xl mx-auto py-8">
 			<header className="mb-8">
 				<h1 className="text-3xl font-bold text-gray-900">
-					{__('reviewbird Settings', 'reviewbird-reviews')}
+					{__('reviewbird Settings', 'reviewbird')}
 				</h1>
 				<p className="mt-2 text-gray-600">
-					{__('Manage your reviewbird integration with WooCommerce.', 'reviewbird-reviews')}
+					{__('Manage your reviewbird integration with WooCommerce.', 'reviewbird')}
 				</p>
 			</header>
 
@@ -64,20 +64,20 @@ export default function SettingsApp() {
 				<ConnectionHealth />
 
 				<TogglePanel
-					title={__('reviewbird Widget', 'reviewbird-reviews')}
-					description={__('Display reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews.', 'reviewbird-reviews')}
+					title={__('reviewbird Widget', 'reviewbird')}
+					description={__('Display reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews.', 'reviewbird')}
 					enabled={enableWidget}
 					onToggle={handleWidgetToggle}
-					enabledText={__('Widget is enabled on all WooCommerce product pages.', 'reviewbird-reviews')}
+					enabledText={__('Widget is enabled on all WooCommerce product pages.', 'reviewbird')}
 				>
 					<div className="mt-4 pt-4 border-t border-gray-200">
 						<div className="flex items-center justify-between">
 							<div>
 								<p className="text-sm font-medium text-gray-900">
-									{__('Forcefully enable reviews on all products', 'reviewbird-reviews')}
+									{__('Forcefully enable reviews on all products', 'reviewbird')}
 								</p>
 								<p className="text-xs text-gray-500 mt-1">
-									{__('Leave this off if you prefer to control reviews per product using the "Enable reviews" checkbox.', 'reviewbird-reviews')}
+									{__('Leave this off if you prefer to control reviews per product using the "Enable reviews" checkbox.', 'reviewbird')}
 								</p>
 							</div>
 							<button
@@ -98,27 +98,27 @@ export default function SettingsApp() {
 				</TogglePanel>
 
 				<TogglePanel
-					title={__('SEO Schema Markup', 'reviewbird-reviews')}
-					description={__('Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results.', 'reviewbird-reviews')}
+					title={__('SEO Schema Markup', 'reviewbird')}
+					description={__('Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results.', 'reviewbird')}
 					enabled={enableSchema}
 					onToggle={handleSchemaToggle}
-					enabledText={__('Schema markup is active on all WooCommerce product pages.', 'reviewbird-reviews')}
+					enabledText={__('Schema markup is active on all WooCommerce product pages.', 'reviewbird')}
 					infoBox={{
-						title: __('What is Schema Markup?', 'reviewbird-reviews'),
+						title: __('What is Schema Markup?', 'reviewbird'),
 						items: [
-							__('Displays star ratings in Google search results', 'reviewbird-reviews'),
-							__('Shows review counts and product information', 'reviewbird-reviews'),
-							__('Review schema is cached for 4 hours for optimal performance', 'reviewbird-reviews'),
+							__('Displays star ratings in Google search results', 'reviewbird'),
+							__('Shows review counts and product information', 'reviewbird'),
+							__('Review schema is cached for 4 hours for optimal performance', 'reviewbird'),
 						]
 					}}
 					links={[
 						{
 							href: 'https://search.google.com/test/rich-results',
-							text: __('Test with Google Rich Results', 'reviewbird-reviews')
+							text: __('Test with Google Rich Results', 'reviewbird')
 						},
 						{
 							href: 'https://validator.schema.org/',
-							text: __('Validate Schema', 'reviewbird-reviews')
+							text: __('Validate Schema', 'reviewbird')
 						}
 					]}
 				/>
