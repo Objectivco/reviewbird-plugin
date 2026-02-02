@@ -1,15 +1,15 @@
-# Copyright (C) 2026 reviewbird
+# Copyright (C) 2026 Reviewbird
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: reviewbird 1.0.12\n"
+"Project-Id-Version: Reviewbird 1.0.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-30T19:20:12+00:00\n"
+"POT-Creation-Date: 2026-02-02T22:39:13+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
@@ -18,7 +18,7 @@ msgstr ""
 #. Author of the plugin
 #: reviewbird-plugin.php
 #: src/Admin/Settings.php:97
-msgid "reviewbird"
+msgid "Reviewbird"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -32,16 +32,16 @@ msgid "Automated review collection for WooCommerce that blocks spam, catches com
 msgstr ""
 
 #: src/Admin/Settings.php:66
-msgid "reviewbird Connection Error:"
+msgid "Reviewbird Connection Error:"
 msgstr ""
 
 #: src/Admin/Settings.php:85
-msgid "Successfully connected to reviewbird!"
+msgid "Successfully connected to Reviewbird!"
 msgstr ""
 
 #: src/Admin/Settings.php:96
 #: assets/src/js/components/SettingsApp.jsx:56
-msgid "reviewbird Settings"
+msgid "Reviewbird Settings"
 msgstr ""
 
 #: src/Admin/Settings.php:207
@@ -131,7 +131,7 @@ msgid "API request failed"
 msgstr ""
 
 #: src/functions.php:197
-msgid "Store is not connected to reviewbird."
+msgid "Store is not connected to Reviewbird."
 msgstr ""
 
 #: src/functions.php:207
@@ -159,11 +159,11 @@ msgid "Rated %s out of 5, click to view reviews"
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:10
-msgid "Connected to reviewbird"
+msgid "Connected to Reviewbird"
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:11
-msgid "Your WooCommerce store is successfully connected to reviewbird. Review data is syncing properly."
+msgid "Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly."
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:12
@@ -175,7 +175,7 @@ msgid "WooCommerce Not Connected"
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:19
-msgid "WooCommerce is not yet connected to reviewbird. Connect your store to start syncing products and reviews."
+msgid "WooCommerce is not yet connected to Reviewbird. Connect your store to start syncing products and reviews."
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:20
@@ -187,7 +187,7 @@ msgid "Initial Sync in Progress"
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:27
-msgid "reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
+msgid "Reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:28
@@ -199,7 +199,7 @@ msgid "Subscription Required"
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:35
-msgid "Your reviewbird subscription is inactive. Please update your billing information to continue using the service."
+msgid "Your Reviewbird subscription is inactive. Please update your billing information to continue using the service."
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:36
@@ -212,7 +212,7 @@ msgid "Connection Issue Detected"
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:43
-msgid "Unable to connect to reviewbird. Please check your connection settings."
+msgid "Unable to connect to Reviewbird. Please check your connection settings."
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:44
@@ -220,7 +220,7 @@ msgid "Fix Connection"
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:51
-msgid "Unable to reach reviewbird API. Please check your internet connection."
+msgid "Unable to reach Reviewbird API. Please check your internet connection."
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:52
@@ -232,11 +232,11 @@ msgid "Checking connection..."
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:59
-msgid "Verifying connection to reviewbird..."
+msgid "Verifying connection to Reviewbird..."
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:60
-msgid "Open reviewbird"
+msgid "Open Reviewbird"
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:188
@@ -260,15 +260,15 @@ msgid "Failed to update setting. Please try again."
 msgstr ""
 
 #: assets/src/js/components/SettingsApp.jsx:59
-msgid "Manage your reviewbird integration with WooCommerce."
+msgid "Manage your Reviewbird integration with WooCommerce."
 msgstr ""
 
 #: assets/src/js/components/SettingsApp.jsx:67
-msgid "reviewbird Widget"
+msgid "Reviewbird Widget"
 msgstr ""
 
 #: assets/src/js/components/SettingsApp.jsx:68
-msgid "Display reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
+msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
 msgstr ""
 
 #: assets/src/js/components/SettingsApp.jsx:71
