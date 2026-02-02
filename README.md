@@ -1,12 +1,12 @@
-# reviewbird WordPress Plugin
+# Reviewbird WordPress Plugin
 
-Connect your WooCommerce store to reviewbird for advanced review collection and display.
+Connect your WooCommerce store to Reviewbird for advanced review collection and display.
 
 ## Features
 
-- **OAuth Integration**: Seamless connection to reviewbird dashboard
+- **OAuth Integration**: Seamless connection to Reviewbird dashboard
 - **Automatic Widget Injection**: Review widgets automatically appear on product pages  
-- **Real-time Sync**: Products, reviews, and orders sync automatically to reviewbird
+- **Real-time Sync**: Products, reviews, and orders sync automatically to Reviewbird
 - **Action Scheduler**: Reliable background processing using WooCommerce's Action Scheduler
 - **Security First**: Store tokens never exposed to frontend, proper capability checks
 - **Developer Friendly**: Extensive filter system for customization
@@ -20,26 +20,26 @@ Connect your WooCommerce store to reviewbird for advanced review collection and 
 ## Installation
 
 ### From WordPress.org (Coming Soon)
-1. Search for "reviewbird Reviews" in your WordPress admin
+1. Search for "Reviewbird Reviews" in your WordPress admin
 2. Install and activate the plugin
-3. Go to Settings > reviewbird to connect your store
+3. Go to Settings > Reviewbird to connect your store
 
 ### Manual Installation
 1. Download the plugin files
 2. Upload to your `/wp-content/plugins/reviewbird/` directory
 3. Activate the plugin through the WordPress admin
-4. Go to Settings > reviewbird to connect your store
+4. Go to Settings > Reviewbird to connect your store
 
 ## Getting Started
 
-1. **Connect Your Store**: Click "Connect to reviewbird" in Settings > reviewbird
-2. **Create reviewbird Account**: If you don't have one, you'll be guided to create an account
-3. **Authorize Connection**: Grant the plugin access to your reviewbird store
+1. **Connect Your Store**: Click "Connect to Reviewbird" in Settings > Reviewbird
+2. **Create Reviewbird Account**: If you don't have one, you'll be guided to create an account
+3. **Authorize Connection**: Grant the plugin access to your Reviewbird store
 4. **Widgets Appear Automatically**: Review widgets will automatically appear on all product pages
 
 ## Environment Configuration
 
-The plugin automatically detects your environment and uses the appropriate reviewbird servers:
+The plugin automatically detects your environment and uses the appropriate Reviewbird servers:
 
 - **Development**: `https://reviewbird.test` (for local development)
 - **Staging**: `https://staging.reviewbird.com` (when ready)  
@@ -155,27 +155,27 @@ npm run test            # JavaScript tests
 - Check that your WordPress site can make outbound HTTPS requests
 - Ensure Action Scheduler is functioning (WooCommerce > Status > Scheduled Actions)
 
-### Widget Not Appearing  
-- Verify connection status in Settings > reviewbird
+### Widget Not Appearing
+- Verify connection status in Settings > Reviewbird
 - Check that WooCommerce is active and you're on a product page
 - Ensure the theme supports the `woocommerce_after_single_product_summary` hook
 
 ### Development Setup
 - Set `REVIEWAPP_ENVIRONMENT` to `'development'` in wp-config.php
-- Ensure your local reviewbird instance is running at `https://reviewbird.test`
+- Ensure your local Reviewbird instance is running at `https://reviewbird.test`
 
 ## Changelog
 
 ### 1.0.0
 - Initial release
-- OAuth integration with reviewbird
-- Automatic widget injection  
+- OAuth integration with Reviewbird
+- Automatic widget injection
 - Product/review/order synchronization
 - Action Scheduler integration
 - Comprehensive filter system
 
 ## Support
 
-- **Documentation**: [reviewbird Plugin Docs](https://docs.reviewbird.com/wordpress)  
-- **Support**: [reviewbird Support](https://reviewbird.com/support)
+- **Documentation**: [Reviewbird Plugin Docs](https://docs.reviewbird.com/wordpress)
+- **Support**: [Reviewbird Support](https://reviewbird.com/support)
 - **Issues**: [GitHub Issues](https://github.com/reviewbird/wordpress-plugin/issues)

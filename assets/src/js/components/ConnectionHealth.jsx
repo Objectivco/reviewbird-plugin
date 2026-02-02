@@ -7,8 +7,8 @@ const STATUS_CONFIG = {
 	healthy: {
 		color: 'border-l-4 border-l-green-500',
 		iconColor: 'text-green-600',
-		text: __('Connected to reviewbird', 'reviewbird'),
-		message: __('Your WooCommerce store is successfully connected to reviewbird. Review data is syncing properly.', 'reviewbird'),
+		text: __('Connected to Reviewbird', 'reviewbird'),
+		message: __('Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly.', 'reviewbird'),
 		buttonText: __('View Dashboard', 'reviewbird'),
 		route: 'settings'
 	},
@@ -16,7 +16,7 @@ const STATUS_CONFIG = {
 		color: 'border-l-4 border-l-blue-500',
 		iconColor: 'text-blue-600',
 		text: __('WooCommerce Not Connected', 'reviewbird'),
-		message: __('WooCommerce is not yet connected to reviewbird. Connect your store to start syncing products and reviews.', 'reviewbird'),
+		message: __('WooCommerce is not yet connected to Reviewbird. Connect your store to start syncing products and reviews.', 'reviewbird'),
 		buttonText: __('Connect WooCommerce', 'reviewbird'),
 		route: 'connect'
 	},
@@ -24,7 +24,7 @@ const STATUS_CONFIG = {
 		color: 'border-l-4 border-l-yellow-500',
 		iconColor: 'text-yellow-600',
 		text: __('Initial Sync in Progress', 'reviewbird'),
-		message: __('reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes.', 'reviewbird'),
+		message: __('Reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes.', 'reviewbird'),
 		buttonText: __('View Sync Progress', 'reviewbird'),
 		route: 'connect'
 	},
@@ -32,7 +32,7 @@ const STATUS_CONFIG = {
 		color: 'border-l-4 border-l-orange-500',
 		iconColor: 'text-orange-600',
 		text: __('Subscription Required', 'reviewbird'),
-		message: __('Your reviewbird subscription is inactive. Please update your billing information to continue using the service.', 'reviewbird'),
+		message: __('Your Reviewbird subscription is inactive. Please update your billing information to continue using the service.', 'reviewbird'),
 		buttonText: __('Update Billing', 'reviewbird'),
 		route: 'billing'
 	},
@@ -40,7 +40,7 @@ const STATUS_CONFIG = {
 		color: 'border-l-4 border-l-red-500',
 		iconColor: 'text-red-600',
 		text: __('Connection Issue Detected', 'reviewbird'),
-		message: __('Unable to connect to reviewbird. Please check your connection settings.', 'reviewbird'),
+		message: __('Unable to connect to Reviewbird. Please check your connection settings.', 'reviewbird'),
 		buttonText: __('Fix Connection', 'reviewbird'),
 		route: 'connect'
 	},
@@ -48,7 +48,7 @@ const STATUS_CONFIG = {
 		color: 'border-l-4 border-l-red-500',
 		iconColor: 'text-red-600',
 		text: __('Connection Issue Detected', 'reviewbird'),
-		message: __('Unable to reach reviewbird API. Please check your internet connection.', 'reviewbird'),
+		message: __('Unable to reach Reviewbird API. Please check your internet connection.', 'reviewbird'),
 		buttonText: __('Get Help', 'reviewbird'),
 		route: 'support'
 	},
@@ -56,8 +56,8 @@ const STATUS_CONFIG = {
 		color: 'border-l-4 border-l-gray-300',
 		iconColor: 'text-gray-400',
 		text: __('Checking connection...', 'reviewbird'),
-		message: __('Verifying connection to reviewbird...', 'reviewbird'),
-		buttonText: __('Open reviewbird', 'reviewbird'),
+		message: __('Verifying connection to Reviewbird...', 'reviewbird'),
+		buttonText: __('Open Reviewbird', 'reviewbird'),
 		route: 'settings'
 	}
 };
@@ -214,7 +214,7 @@ export default function ConnectionHealth() {
 		} catch (error) {
 			console.error('Health check failed:', error);
 			setHealthStatus('error');
-			setHealthData({ message: 'Unable to reach reviewbird API' });
+			setHealthData({ message: 'Unable to reach Reviewbird API' });
 		}
 
 		setLastChecked(new Date());

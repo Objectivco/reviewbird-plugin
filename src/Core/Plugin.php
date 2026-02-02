@@ -215,11 +215,11 @@ class Plugin {
 		$store_id    = get_option( 'reviewbird_store_id' );
 
 		if ( empty( $carousel_id ) ) {
-			return '<!-- reviewbird Showcase: Missing showcase ID -->';
+			return '<!-- Reviewbird Showcase: Missing showcase ID -->';
 		}
 
 		if ( empty( $store_id ) ) {
-			return '<!-- reviewbird Showcase: Store not connected -->';
+			return '<!-- Reviewbird Showcase: Store not connected -->';
 		}
 
 		$this->enqueue_carousel_script();

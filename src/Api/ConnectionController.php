@@ -62,7 +62,7 @@ class ConnectionController {
 		$health_scheduler->schedule_immediate_refresh();
 
 		wc_get_logger()->info(
-			sprintf( 'reviewbird store connected: Store ID %d saved', $store_id ),
+			sprintf( 'Reviewbird store connected: Store ID %d saved', $store_id ),
 			array( 'source' => 'reviewbird' )
 		);
 

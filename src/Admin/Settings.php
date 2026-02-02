@@ -63,7 +63,7 @@ class Settings {
 		?>
 		<div class="notice notice-error is-dismissible">
 			<p>
-				<strong><?php esc_html_e( 'reviewbird Connection Error:', 'reviewbird' ); ?></strong>
+				<strong><?php esc_html_e( 'Reviewbird Connection Error:', 'reviewbird' ); ?></strong>
 				<?php echo esc_html( $error ); ?>
 			</p>
 		</div>
@@ -82,7 +82,7 @@ class Settings {
 
 		?>
 		<div class="notice notice-success is-dismissible">
-			<p><?php esc_html_e( 'Successfully connected to reviewbird!', 'reviewbird' ); ?></p>
+			<p><?php esc_html_e( 'Successfully connected to Reviewbird!', 'reviewbird' ); ?></p>
 		</div>
 		<?php
 		delete_transient( 'reviewbird_oauth_success' );
@@ -93,8 +93,8 @@ class Settings {
 	 */
 	public function add_admin_menu(): void {
 		add_options_page(
-			__( 'reviewbird Settings', 'reviewbird' ),
-			__( 'reviewbird', 'reviewbird' ),
+			__( 'Reviewbird Settings', 'reviewbird' ),
+			__( 'Reviewbird', 'reviewbird' ),
 			'manage_options',
 			'reviewbird-settings',
 			array( $this, 'render_settings_page' )

@@ -35,7 +35,7 @@
 		"reviews",
 		"woocommerce"
 	],
-	"author": "reviewbird",
+	"author": "Reviewbird",
 	"license": "GPL-2.0-or-later",
 	"devDependencies": {
 		"@wordpress/scripts": "^30.26.0",

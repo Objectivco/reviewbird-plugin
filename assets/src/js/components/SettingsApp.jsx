@@ -53,10 +53,10 @@ export default function SettingsApp() {
 		<div className="max-w-4xl mx-auto py-8">
 			<header className="mb-8">
 				<h1 className="text-3xl font-bold text-gray-900">
-					{__('reviewbird Settings', 'reviewbird')}
+					{__('Reviewbird Settings', 'reviewbird')}
 				</h1>
 				<p className="mt-2 text-gray-600">
-					{__('Manage your reviewbird integration with WooCommerce.', 'reviewbird')}
+					{__('Manage your Reviewbird integration with WooCommerce.', 'reviewbird')}
 				</p>
 			</header>
 
@@ -64,8 +64,8 @@ export default function SettingsApp() {
 				<ConnectionHealth />
 
 				<TogglePanel
-					title={__('reviewbird Widget', 'reviewbird')}
-					description={__('Display reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews.', 'reviewbird')}
+					title={__('Reviewbird Widget', 'reviewbird')}
+					description={__('Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews.', 'reviewbird')}
 					enabled={enableWidget}
 					onToggle={handleWidgetToggle}
 					enabledText={__('Widget is enabled on all WooCommerce product pages.', 'reviewbird')}

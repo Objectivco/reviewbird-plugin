@@ -194,7 +194,7 @@ function reviewbird_get_product_reviews( array $product_ids = array(), int $per_
 		reviewbird_log_api_error( 'Validation Error', 'Store not connected', $endpoint );
 		return new \WP_Error(
 			'reviewbird_not_connected',
-			__( 'Store is not connected to reviewbird.', 'reviewbird' )
+			__( 'Store is not connected to Reviewbird.', 'reviewbird' )
 		);
 	}
 
@@ -466,7 +466,7 @@ function reviewbird_render_widget( $product_id = null ): string {
 	$store_id = reviewbird_get_store_id();
 
 	if ( ! $store_id ) {
-		return '<!-- reviewbird: Widget not displayed. Store ID not configured. Please connect your reviewbird account in WP Admin > reviewbird > Settings -->';
+		return '<!-- Reviewbird: Widget not displayed. Store ID not configured. Please connect your Reviewbird account in WP Admin > Reviewbird > Settings -->';
 	}
 
 	if ( ! apply_filters( 'reviewbird_show_widget_for_product', true, $product ) ) {
