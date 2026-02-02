@@ -376,7 +376,7 @@ class Plugin {
 	public function add_plugin_action_links( array $links ): array {
 		$settings_link = sprintf(
 			'<a href="%s">%s</a>',
-			admin_url( 'options-general.php?page=reviewbird-settings' ),
+			admin_url( 'admin.php?page=reviewbird-settings' ),
 			__( 'Settings', 'reviewbird' )
 		);
 
