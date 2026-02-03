@@ -144,15 +144,30 @@ class Plugin {
 			true
 		);
 
+		// Build widget configuration.
+		$config = array(
+			'apiUrl'       => reviewbird_get_api_url(),
+			'storeId'      => get_option( 'reviewbird_store_id' ),
+			'widgetPrefix' => 'reviewbird-widget-container-',
+		);
+
+		// Add prefill data for logged-in WooCommerce customers.
+		if ( function_exists( 'WC' ) && is_user_logged_in() ) {
+			$customer = WC()->customer;
+			if ( $customer && $customer->get_billing_email() ) {
+				$config['prefill'] = array(
+					'firstName' => $customer->get_billing_first_name() ?: '',
+					'lastName'  => $customer->get_billing_last_name() ?: '',
+					'email'     => $customer->get_billing_email() ?: '',
+				);
+			}
+		}
+
 		// Pass configuration to widget JavaScript.
 		wp_localize_script(
 			'reviewbird-widget',
 			'reviewbirdConfig',
-			array(
-				'apiUrl'       => reviewbird_get_api_url(),
-				'storeId'      => get_option( 'reviewbird_store_id' ),
-				'widgetPrefix' => 'reviewbird-widget-container-',
-			)
+			$config
 		);
 	}
 
