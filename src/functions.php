@@ -464,7 +464,7 @@ function reviewbird_get_cached_product_reviews( int $product_id ): array {
 		return $cached;
 	}
 
-	$response = reviewbird_get_product_reviews( array( $product_id ) );
+	$response = reviewbird_get_product_reviews( array( $product_id ), 10 );
 
 	if ( is_wp_error( $response ) ) {
 		return array();
@@ -486,7 +486,8 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 		return '';
 	}
 
-	$html = '<div class="reviewbird-ssr-reviews">';
+	$html  = '';
+	$count = 0;
 
 	foreach ( $response['reviews'] as $review ) {
 		$rating = intval( $review['rating'] ?? 0 );
@@ -539,11 +540,14 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 		}
 
 		$html .= '</article>';
+		++$count;
 	}
 
-	$html .= '</div>';
+	if ( 0 === $count ) {
+		return '';
+	}
 
-	return $html;
+	return '<div class="reviewbird-ssr-reviews">' . $html . '</div>';
 }
 
 /**
