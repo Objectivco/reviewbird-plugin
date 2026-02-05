@@ -451,6 +451,102 @@ function reviewbird_can_show_widget(): bool {
 }
 
 /**
+ * Get cached product reviews, using a transient to avoid repeated API calls.
+ *
+ * @param int $product_id WooCommerce product ID.
+ * @return array API response array (with 'reviews' key) or empty array on failure.
+ */
+function reviewbird_get_cached_product_reviews( int $product_id ): array {
+	$transient_key = 'reviewbird_ssr_' . $product_id;
+	$cached        = get_transient( $transient_key );
+
+	if ( false !== $cached ) {
+		return $cached;
+	}
+
+	$response = reviewbird_get_product_reviews( array( $product_id ) );
+
+	if ( is_wp_error( $response ) ) {
+		return array();
+	}
+
+	set_transient( $transient_key, $response, 4 * HOUR_IN_SECONDS );
+
+	return $response;
+}
+
+/**
+ * Render server-side review HTML for SEO.
+ *
+ * @param array $response API response array containing 'reviews' key.
+ * @return string Semantic HTML string of reviews.
+ */
+function reviewbird_render_ssr_reviews( array $response ): string {
+	if ( empty( $response['reviews'] ) || ! is_array( $response['reviews'] ) ) {
+		return '';
+	}
+
+	$html = '<div class="reviewbird-ssr-reviews">';
+
+	foreach ( $response['reviews'] as $review ) {
+		$rating = intval( $review['rating'] ?? 0 );
+
+		if ( 0 === $rating ) {
+			continue;
+		}
+
+		$author_name = esc_html( $review['author']['name'] ?? 'Anonymous' );
+		$title       = esc_html( wp_strip_all_tags( $review['title'] ?? '' ) );
+		$body        = esc_html( wp_strip_all_tags( $review['body'] ?? '' ) );
+
+		// Format date.
+		$datetime_attr  = '';
+		$date_display   = '';
+		$created_at     = $review['created_at'] ?? '';
+		if ( ! empty( $created_at ) ) {
+			$date = date_create( $created_at );
+			if ( $date ) {
+				$datetime_attr = $date->format( 'Y-m-d' );
+				$date_display  = wp_date( get_option( 'date_format' ), $date->getTimestamp() );
+			}
+		}
+
+		$html .= '<article class="reviewbird-ssr-review">';
+		$html .= '<header>';
+		$html .= sprintf(
+			'<span class="reviewbird-ssr-rating" aria-label="%s">%d/5</span>',
+			esc_attr( sprintf( 'Rated %d out of 5', $rating ) ),
+			$rating
+		);
+		$html .= sprintf( '<strong class="reviewbird-ssr-author">%s</strong>', $author_name );
+
+		if ( $datetime_attr ) {
+			$html .= sprintf(
+				'<time datetime="%s">%s</time>',
+				esc_attr( $datetime_attr ),
+				esc_html( $date_display )
+			);
+		}
+
+		$html .= '</header>';
+
+		if ( ! empty( $title ) ) {
+			$html .= sprintf( '<h4 class="reviewbird-ssr-title">%s</h4>', $title );
+		}
+
+		if ( ! empty( $body ) ) {
+			$html .= sprintf( '<p class="reviewbird-ssr-body">%s</p>', $body );
+		}
+
+		$html .= '</article>';
+	}
+
+	$html .= '</div>';
+
+	return $html;
+}
+
+/**
  * Render the reviewbird widget for a product.
  *
  * @param int|null $product_id Optional product ID. If not provided, uses global $product.
@@ -496,12 +592,17 @@ function reviewbird_render_widget( $product_id = null ): string {
 		$attrs_html .= sprintf( ' data-%s="%s"', esc_attr( $key ), esc_attr( $value ) );
 	}
 
+	// Build SSR review HTML for SEO.
+	$cached_reviews = reviewbird_get_cached_product_reviews( $actual_product_id );
+	$ssr_html       = reviewbird_render_ssr_reviews( $cached_reviews );
+
 	return apply_filters(
 		'reviewbird_widget_html',
 		sprintf(
-			'<div id="%s"%s></div><script>if(typeof reviewbird !== "undefined") reviewbird.init();</script>',
+			'<div id="%s"%s>%s</div><script>if(typeof reviewbird !== "undefined") reviewbird.init();</script>',
 			esc_attr( $widget_id ),
-			$attrs_html
+			$attrs_html,
+			$ssr_html
 		),
 		$product,
 		$widget_id,
