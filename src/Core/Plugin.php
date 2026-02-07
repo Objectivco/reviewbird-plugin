@@ -200,6 +200,10 @@ class Plugin {
 	 * @return string
 	 */
 	public function widget_shortcode( $atts ) {
+		if ( ! reviewbird_can_show_widget() ) {
+			return '';
+		}
+
 		$atts = shortcode_atts(
 			array(
 				'product_id' => null,
