@@ -311,7 +311,7 @@ class Plugin {
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $ratings_controller, 'check_verified_purchase' ),
-				'permission_callback' => array( 'reviewbird\Api\RatingsController', 'permission_callback' ),
+				'permission_callback' => array( 'reviewbird\Api\RatingsController', 'verified_purchase_permission_callback' ),
 			)
 		);
 

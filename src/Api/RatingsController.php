@@ -145,6 +145,17 @@ class RatingsController {
 	}
 
 	/**
+	 * Permission callback for verified purchase endpoint.
+	 * Checks order read permissions since this endpoint accesses customer purchase data.
+	 *
+	 * @param WP_REST_Request $request The REST API request.
+	 * @return bool|WP_Error True if authorized, WP_Error otherwise.
+	 */
+	public static function verified_purchase_permission_callback( WP_REST_Request $request ) {
+		return wc_rest_check_post_permissions( 'shop_order', 'read', 0 );
+	}
+
+	/**
 	 * Check if a customer is a verified purchaser of a product.
 	 *
 	 * @param WP_REST_Request $request The REST API request.

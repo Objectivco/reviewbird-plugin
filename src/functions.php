@@ -600,10 +600,17 @@ function reviewbird_render_widget( $product_id = null ): string {
 	$cached_reviews = reviewbird_get_cached_product_reviews( $actual_product_id );
 	$ssr_html       = reviewbird_render_ssr_reviews( $cached_reviews );
 
+	// Add the init call via wp_add_inline_script (once, even if multiple widgets render).
+	static $inline_script_added = false;
+	if ( ! $inline_script_added ) {
+		wp_add_inline_script( 'reviewbird-widget', 'if(typeof reviewbird !== "undefined") reviewbird.init();' );
+		$inline_script_added = true;
+	}
+
 	return apply_filters(
 		'reviewbird_widget_html',
 		sprintf(
-			'<div id="%s"%s>%s</div><script>if(typeof reviewbird !== "undefined") reviewbird.init();</script>',
+			'<div id="%s"%s>%s</div>',
 			esc_attr( $widget_id ),
 			$attrs_html,
 			$ssr_html

@@ -20,7 +20,7 @@ Reviewbird supercharges your WooCommerce reviews
 * **Spam Protection** - AI-powered spam detection blocks fake, inappropriate, and low-quality reviews
 * **Complaint Catching** - Intercept negative feedback before it goes public, giving you a chance to resolve issues
 * **Beautiful Display** - Display your reviews with a beautiful, customizable widget that matches your store design
-* **Multimedia Reviews** - Customers can submit reviews with photos and videos so customers can really see what you products look like.
+* **Multimedia Reviews** - Customers can submit reviews with photos and videos so customers can really see what your products look like.
 * **Star Ratings** - Seamlessly integrates with WooCommerce so your ratings show up on product pages and catalog pages
 * **SEO Rich Snippets** - Automatically adds JSON-LD structured data for rich Google search results
 * **Showcases** - Show-off your best reviews in a variety of formats including sliders, tickers, a review wall, etc.
@@ -45,7 +45,7 @@ Note: Requires a Reviewbird account. [Create an account](https://reviewbird.com/
 
 == External Services ==
 
-This plugin connects to the Reviewbird API to enable review collection, management, and display features. Reviewbird connects to WooCommerce using OAuth and pulls information securely via the REST API. Reviewbird extends the native REST API to add additional end points required for full functionality.
+This plugin connects to the Reviewbird API to enable review collection, management, and display features. Reviewbird connects to WooCommerce using OAuth and pulls information securely via the REST API. Reviewbird extends the native REST API to add additional endpoints required for full functionality.
 
 **Service Name:** Reviewbird API
 
@@ -106,7 +106,7 @@ Connection to your store is initiated through Reviewbird. Once you have the plug
 
 After you have connected your store to Reviewbird, this is how you configure the plugin settings:
 
-1. Go to **Settings > Reviewbird**
+1. Go to **Reviewbird** in your admin menu
 2. Click the toggle to enable the Reviewbird display widget
 3. You can also enable the Google Schema JSON-LD output.
 4. Settings are saved automatically.
@@ -115,7 +115,7 @@ After you have connected your store to Reviewbird, this is how you configure the
 
 = Do I need a Reviewbird account? =
 
-Yes, you need a Reviewbird account to use this plugin. You can sign up at [reviewbird.com](https://reviewbird.com);
+Yes, you need a Reviewbird account to use this plugin. You can sign up at [reviewbird.com](https://reviewbird.com).
 
 = Is WooCommerce required? =
 
@@ -123,7 +123,7 @@ Yes, this plugin requires WooCommerce 5.0 or higher to function.
 
 = How do I display reviews on my product pages? =
 
-Once connected, enable the widget in Settings > Reviewbird. Reviews will automatically appear on your product pages.
+Once connected, enable the widget in **Reviewbird** in your admin menu. Reviews will automatically appear on your product pages.
 
 = Can I customize the widget appearance? =
 
@@ -141,6 +141,20 @@ Yes, you can customize colors and styling through your [Reviewbird dashboard](ht
 8. Review collection widget submitted
 9. Review Wall showcase
 10. Other showcase styles
+
+== Source Code ==
+
+The built JavaScript and CSS files in `assets/build/` are compiled from source files in `assets/src/` using the WordPress Scripts (`@wordpress/scripts`) build tool.
+
+The full source code is available at: https://github.com/Objectivco/reviewbird-plugin
+
+To build from source:
+
+1. Clone the repository
+2. Run `npm install`
+3. Run `npm run build`
+
+For development: `npm run dev`
 
 == Changelog ==
 

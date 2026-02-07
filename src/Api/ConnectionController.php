@@ -84,6 +84,6 @@ class ConnectionController {
 	 * @return bool Whether the request has permission.
 	 */
 	public function permission_callback( WP_REST_Request $request ): bool {
-		return wc_rest_check_post_permissions( 'shop_order', 'create', 0 );
+		return current_user_can( 'manage_woocommerce' );
 	}
 }
