@@ -7,6 +7,10 @@
 
 namespace reviewbird\Api;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;
@@ -72,7 +76,7 @@ class CouponController {
 	 */
 	public function create_coupon( WP_REST_Request $request ) {
 		if ( ! class_exists( 'WooCommerce' ) ) {
-			return $this->error( 'woocommerce_not_active', 'WooCommerce is not active', 400 );
+			return $this->error( 'woocommerce_not_active', __( 'WooCommerce is not active', 'reviewbird' ), 400 );
 		}
 
 		$code          = $request->get_param( 'code' );
@@ -82,7 +86,7 @@ class CouponController {
 		$amount        = $request->get_param( 'amount' );
 
 		if ( empty( $code ) ) {
-			return $this->error( 'missing_code', 'Coupon code is required', 400 );
+			return $this->error( 'missing_code', __( 'Coupon code is required', 'reviewbird' ), 400 );
 		}
 
 		try {
@@ -118,7 +122,8 @@ class CouponController {
 		$template_coupon = $this->find_coupon_by_code( $template_code );
 
 		if ( ! $template_coupon ) {
-			return $this->error( 'template_not_found', "Template coupon '{$template_code}' not found", 404 );
+			// translators: %s: Template coupon code.
+			return $this->error( 'template_not_found', sprintf( __( "Template coupon '%s' not found", 'reviewbird' ), $template_code ), 404 );
 		}
 
 		$coupon = new \WC_Coupon();
@@ -147,7 +152,7 @@ class CouponController {
 	 */
 	private function create_new_coupon( $code, $discount_type, $amount, $expiry_date ) {
 		if ( empty( $discount_type ) || empty( $amount ) ) {
-			return $this->error( 'missing_parameters', 'discount_type and amount are required when not using template', 400 );
+			return $this->error( 'missing_parameters', __( 'discount_type and amount are required when not using template', 'reviewbird' ), 400 );
 		}
 
 		$coupon = new \WC_Coupon();

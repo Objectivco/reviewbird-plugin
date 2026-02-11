@@ -1,15 +1,14 @@
 <?php
 /**
- * Plugin Name: reviewbird
- * Plugin URI: https://www.reviewbird.com
- * Description: Automated review collection that blocks spam, catches complaints, and showcases your best feedback.
- * Version: 1.0.11
- * Author: reviewbird
- * Author URI: https://reviewbird.com
- * Text Domain: reviewbird-reviews
+ * Plugin Name: Reviewbird
+ * Plugin URI: https://reviewbird.com
+ * Description: Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback.
+ * Version: 1.0.12
+ * Author: Reviewbird
+ * Text Domain: reviewbird
  * Domain Path: /languages
  * Requires at least: 5.0
- * Tested up to: 6.4
+ * Tested up to: 6.9
  * Requires PHP: 7.4
  * WC requires at least: 5.0
  * WC tested up to: 8.4
@@ -23,7 +22,6 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use reviewbird\Core\Activator;
 use reviewbird\Core\Deactivator;
 use reviewbird\Core\Plugin;
-use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -32,7 +30,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Currently plugin version.
  */
-define( 'REVIEWBIRD_VERSION', '1.0.11' );
+define( 'REVIEWBIRD_VERSION', '1.0.12' );
 
 /**
  * Plugin directory path.
@@ -78,22 +76,9 @@ add_action( 'before_woocommerce_init', function() {
 /**
  * Begins execution of the plugin.
  */
-function run_reviewbird() {
+function reviewbird_run() {
 	$plugin = new Plugin();
 	$plugin->run();
 }
 
-run_reviewbird();
-
-/**
- * Initialize Plugin Update Checker for automatic updates from GitHub releases.
- */
-$reviewbird_update_checker = PucFactory::buildUpdateChecker(
-	'https://github.com/Objectivco/reviewbird-plugin/',
-	__FILE__,
-	'reviewbird'
-);
-
-// Use GitHub releases for updates.
-$reviewbird_update_checker->setBranch( 'master' );
-$reviewbird_update_checker->getVcsApi()->enableReleaseAssets();
+reviewbird_run();

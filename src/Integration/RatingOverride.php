@@ -9,6 +9,10 @@
 
 namespace reviewbird\Integration;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use WC_Product;
 
 /**

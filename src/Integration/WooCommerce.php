@@ -7,6 +7,10 @@
 
 namespace reviewbird\Integration;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use WC_Order;
 use WP_Comment;
 use WP_REST_Request;
