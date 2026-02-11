@@ -93,7 +93,7 @@ class StarRatingDisplay {
 		}
 
 		echo '<div class="woocommerce-product-rating">';
-		echo wp_kses_post( wc_get_rating_html( $product->get_average_rating(), $rating_count ) );
+		echo wp_kses( wc_get_rating_html( $product->get_average_rating(), $rating_count ), self::allowed_rating_tags() );
 		echo '</div>';
 	}
 
@@ -132,7 +132,7 @@ class StarRatingDisplay {
 		add_filter( 'reviewbird_rating_is_static', '__return_true' );
 
 		// Use wc_get_rating_html which triggers our filter_rating_html.
-		echo wp_kses_post( wc_get_rating_html( $rating, $count ) );
+		echo wp_kses( wc_get_rating_html( $rating, $count ), self::allowed_rating_tags() );
 
 		remove_filter( 'reviewbird_rating_is_static', '__return_true' );
 	}
@@ -255,6 +255,33 @@ class StarRatingDisplay {
 		}
 
 		return self::DEFAULT_STAR_COLOR;
+	}
+
+	/**
+	 * Allowed HTML tags and attributes for rating output.
+	 *
+	 * Covers both our custom filter_rating_html() output and the
+	 * native WooCommerce wc_get_rating_html() / wc_get_star_rating_html()
+	 * output as a fallback.
+	 *
+	 * @return array<string, array<string, bool>>
+	 */
+	private static function allowed_rating_tags(): array {
+		return array(
+			'div'    => array(
+				'class'      => true,
+				'role'       => true,
+				'tabindex'   => true,
+				'aria-label' => true,
+			),
+			'span'   => array(
+				'class' => true,
+				'style' => true,
+			),
+			'strong' => array(
+				'class' => true,
+			),
+		);
 	}
 
 	/**
