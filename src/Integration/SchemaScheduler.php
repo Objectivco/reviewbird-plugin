@@ -173,7 +173,7 @@ class SchemaScheduler {
 			),
 			'author'       => array(
 				'@type' => 'Person',
-				'name'  => $review['author']['name'] ?? 'Anonymous',
+				'name'  => wp_strip_all_tags( $review['author']['name'] ?? 'Anonymous' ),
 			),
 		);
 

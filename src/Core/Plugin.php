@@ -212,7 +212,7 @@ class Plugin {
 			'reviewbird_widget'
 		);
 
-		return reviewbird_render_widget( $atts['product_id'] );
+		return wp_kses_post( reviewbird_render_widget( $atts['product_id'] ) );
 	}
 
 	/**
@@ -347,8 +347,7 @@ class Plugin {
 	 */
 	public function render_product_widget(): void {
 		if ( reviewbird_can_show_widget() ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is escaped in reviewbird_render_widget()
-			echo reviewbird_render_widget();
+			echo wp_kses_post( reviewbird_render_widget() );
 		}
 	}
 

@@ -496,9 +496,9 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 			continue;
 		}
 
-		$author_name = esc_html( $review['author']['name'] ?? 'Anonymous' );
-		$title       = esc_html( wp_strip_all_tags( $review['title'] ?? '' ) );
-		$body        = esc_html( wp_strip_all_tags( $review['body'] ?? '' ) );
+		$author_name = $review['author']['name'] ?? 'Anonymous';
+		$title       = wp_strip_all_tags( $review['title'] ?? '' );
+		$body        = wp_strip_all_tags( $review['body'] ?? '' );
 
 		// Format date.
 		$datetime_attr  = '';
@@ -519,7 +519,7 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 			esc_attr( sprintf( 'Rated %d out of 5', $rating ) ),
 			$rating
 		);
-		$html .= sprintf( '<strong class="reviewbird-ssr-author">%s</strong>', $author_name );
+		$html .= sprintf( '<strong class="reviewbird-ssr-author">%s</strong>', esc_html( $author_name ) );
 
 		if ( $datetime_attr ) {
 			$html .= sprintf(
@@ -532,11 +532,11 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 		$html .= '</header>';
 
 		if ( ! empty( $title ) ) {
-			$html .= sprintf( '<h4 class="reviewbird-ssr-title">%s</h4>', $title );
+			$html .= sprintf( '<h4 class="reviewbird-ssr-title">%s</h4>', esc_html( $title ) );
 		}
 
 		if ( ! empty( $body ) ) {
-			$html .= sprintf( '<p class="reviewbird-ssr-body">%s</p>', $body );
+			$html .= sprintf( '<p class="reviewbird-ssr-body">%s</p>', esc_html( $body ) );
 		}
 
 		$html .= '</article>';

@@ -93,7 +93,7 @@ class StarRatingDisplay {
 		}
 
 		echo '<div class="woocommerce-product-rating">';
-		echo wc_get_rating_html( $product->get_average_rating(), $rating_count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wp_kses_post( wc_get_rating_html( $product->get_average_rating(), $rating_count ) );
 		echo '</div>';
 	}
 
@@ -132,7 +132,7 @@ class StarRatingDisplay {
 		add_filter( 'reviewbird_rating_is_static', '__return_true' );
 
 		// Use wc_get_rating_html which triggers our filter_rating_html.
-		echo wc_get_rating_html( $rating, $count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wp_kses_post( wc_get_rating_html( $rating, $count ) );
 
 		remove_filter( 'reviewbird_rating_is_static', '__return_true' );
 	}
