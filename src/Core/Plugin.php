@@ -7,6 +7,10 @@
 
 namespace reviewbird\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use reviewbird\Admin\Settings;
 use reviewbird\Api\ConnectionController;
 use reviewbird\Api\CouponController;
@@ -52,7 +56,7 @@ class Plugin {
 	 * Initialize the plugin.
 	 */
 	public function __construct() {
-		$this->plugin_name = 'reviewbird-reviews';
+		$this->plugin_name = 'reviewbird';
 		$this->version     = REVIEWBIRD_VERSION;
 	}
 
@@ -60,26 +64,7 @@ class Plugin {
 	 * Run the plugin.
 	 */
 	public function run() {
-		$this->load_textdomain();
 		$this->init_hooks();
-	}
-
-	/**
-	 * Load plugin textdomain.
-	 */
-	private function load_textdomain() {
-		add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
-	}
-
-	/**
-	 * Load the plugin text domain for translation.
-	 */
-	public function load_plugin_textdomain() {
-		load_plugin_textdomain(
-			'reviewbird-reviews',
-			false,
-			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
-		);
 	}
 
 	/**
@@ -159,15 +144,30 @@ class Plugin {
 			true
 		);
 
+		// Build widget configuration.
+		$config = array(
+			'apiUrl'       => reviewbird_get_api_url(),
+			'storeId'      => get_option( 'reviewbird_store_id' ),
+			'widgetPrefix' => 'reviewbird-widget-container-',
+		);
+
+		// Add prefill data for logged-in WooCommerce customers.
+		if ( function_exists( 'WC' ) && is_user_logged_in() ) {
+			$customer = WC()->customer;
+			if ( $customer && $customer->get_billing_email() ) {
+				$config['prefill'] = array(
+					'firstName' => $customer->get_billing_first_name() ?: '',
+					'lastName'  => $customer->get_billing_last_name() ?: '',
+					'email'     => $customer->get_billing_email() ?: '',
+				);
+			}
+		}
+
 		// Pass configuration to widget JavaScript.
 		wp_localize_script(
 			'reviewbird-widget',
 			'reviewbirdConfig',
-			array(
-				'apiUrl'       => reviewbird_get_api_url(),
-				'storeId'      => get_option( 'reviewbird_store_id' ),
-				'widgetPrefix' => 'reviewbird-widget-container-',
-			)
+			$config
 		);
 	}
 
@@ -200,6 +200,10 @@ class Plugin {
 	 * @return string
 	 */
 	public function widget_shortcode( $atts ) {
+		if ( ! reviewbird_can_show_widget() ) {
+			return '';
+		}
+
 		$atts = shortcode_atts(
 			array(
 				'product_id' => null,
@@ -208,7 +212,7 @@ class Plugin {
 			'reviewbird_widget'
 		);
 
-		return reviewbird_render_widget( $atts['product_id'] );
+		return wp_kses_post( reviewbird_render_widget( $atts['product_id'] ) );
 	}
 
 	/**
@@ -230,11 +234,11 @@ class Plugin {
 		$store_id    = get_option( 'reviewbird_store_id' );
 
 		if ( empty( $carousel_id ) ) {
-			return '<!-- reviewbird Showcase: Missing showcase ID -->';
+			return '<!-- Reviewbird Showcase: Missing showcase ID -->';
 		}
 
 		if ( empty( $store_id ) ) {
-			return '<!-- reviewbird Showcase: Store not connected -->';
+			return '<!-- Reviewbird Showcase: Store not connected -->';
 		}
 
 		$this->enqueue_carousel_script();
@@ -307,7 +311,7 @@ class Plugin {
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $ratings_controller, 'check_verified_purchase' ),
-				'permission_callback' => array( 'reviewbird\Api\RatingsController', 'permission_callback' ),
+				'permission_callback' => array( 'reviewbird\Api\RatingsController', 'verified_purchase_permission_callback' ),
 			)
 		);
 
@@ -325,7 +329,7 @@ class Plugin {
 	}
 
 	/**
-	 * Remove the reviews tab when ReviewBird is connected.
+	 * Remove the reviews tab when reviewbird is connected.
 	 *
 	 * @param array $tabs Product tabs.
 	 * @return array Modified tabs.
@@ -339,11 +343,11 @@ class Plugin {
 	}
 
 	/**
-	 * Render the ReviewBird widget after product summary.
+	 * Render the reviewbird widget after product summary.
 	 */
 	public function render_product_widget(): void {
 		if ( reviewbird_can_show_widget() ) {
-			echo reviewbird_render_widget();
+			echo wp_kses_post( reviewbird_render_widget() );
 		}
 	}
 
@@ -390,8 +394,8 @@ class Plugin {
 	public function add_plugin_action_links( array $links ): array {
 		$settings_link = sprintf(
 			'<a href="%s">%s</a>',
-			admin_url( 'options-general.php?page=reviewbird-settings' ),
-			__( 'Settings', 'reviewbird-reviews' )
+			admin_url( 'admin.php?page=reviewbird-settings' ),
+			__( 'Settings', 'reviewbird' )
 		);
 
 		array_unshift( $links, $settings_link );

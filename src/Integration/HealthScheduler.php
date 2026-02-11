@@ -10,6 +10,10 @@
 
 namespace reviewbird\Integration;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Health scheduler class.
  */

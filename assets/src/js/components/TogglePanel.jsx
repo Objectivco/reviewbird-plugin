@@ -111,8 +111,8 @@ function ToggleSwitch({ enabled, isSaving, onToggle }) {
 	].join(' ');
 
 	const statusText = enabled
-		? __('Enabled', 'reviewbird-reviews')
-		: __('Disabled', 'reviewbird-reviews');
+		? __('Enabled', 'reviewbird')
+		: __('Disabled', 'reviewbird');
 
 	return (
 		<div className="ml-6">

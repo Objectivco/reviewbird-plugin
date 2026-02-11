@@ -2,13 +2,17 @@
 /**
  * Star rating display override for WooCommerce.
  *
- * Replaces WooCommerce's native star rating display with ReviewBird's
+ * Replaces WooCommerce's native star rating display with reviewbird's
  * custom star icons using CSS mask-image approach.
  *
  * @package reviewbird
  */
 
 namespace reviewbird\Integration;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Star rating display class.
@@ -89,7 +93,7 @@ class StarRatingDisplay {
 		}
 
 		echo '<div class="woocommerce-product-rating">';
-		echo wc_get_rating_html( $product->get_average_rating(), $rating_count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wp_kses( wc_get_rating_html( $product->get_average_rating(), $rating_count ), self::allowed_rating_tags() );
 		echo '</div>';
 	}
 
@@ -125,18 +129,18 @@ class StarRatingDisplay {
 		}
 
 		// Make rating non-interactive for shop loop.
-		add_filter( 'rb_rating_is_static', '__return_true' );
+		add_filter( 'reviewbird_rating_is_static', '__return_true' );
 
 		// Use wc_get_rating_html which triggers our filter_rating_html.
-		echo wc_get_rating_html( $rating, $count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wp_kses( wc_get_rating_html( $rating, $count ), self::allowed_rating_tags() );
 
-		remove_filter( 'rb_rating_is_static', '__return_true' );
+		remove_filter( 'reviewbird_rating_is_static', '__return_true' );
 	}
 
 	/**
 	 * Filter the WooCommerce rating HTML output.
 	 *
-	 * Replaces the native rating HTML with ReviewBird's custom star display.
+	 * Replaces the native rating HTML with reviewbird's custom star display.
 	 * Works for both classic themes (via template functions) and block themes
 	 * (via the woocommerce/product-rating block).
 	 *
@@ -162,7 +166,7 @@ class StarRatingDisplay {
 		$stars_html = $this->generate_stars_html( $rating, $star_color );
 
 		// Check if rating should be non-interactive (e.g., shop loop context).
-		$is_static = apply_filters( 'rb_rating_is_static', false );
+		$is_static = apply_filters( 'reviewbird_rating_is_static', false );
 
 		// Build class and attributes based on context.
 		$class             = 'rb-wc-rating' . ( $is_static ? ' rb-wc-rating--static' : '' );
@@ -170,10 +174,10 @@ class StarRatingDisplay {
 
 		if ( $is_static ) {
 			// translators: %s is the average rating.
-			$aria_label = sprintf( __( 'Rated %s out of 5', 'reviewbird-reviews' ), number_format( $rating, 2 ) );
+			$aria_label = sprintf( __( 'Rated %s out of 5', 'reviewbird' ), number_format( $rating, 2 ) );
 		} else {
 			// translators: %s is the average rating.
-			$aria_label = sprintf( __( 'Rated %s out of 5, click to view reviews', 'reviewbird-reviews' ), number_format( $rating, 2 ) );
+			$aria_label = sprintf( __( 'Rated %s out of 5, click to view reviews', 'reviewbird' ), number_format( $rating, 2 ) );
 		}
 
 		$output  = '<div class="' . esc_attr( $class ) . '"' . $interactive_attrs . ' aria-label="' . esc_attr( $aria_label ) . '">';
@@ -251,6 +255,33 @@ class StarRatingDisplay {
 		}
 
 		return self::DEFAULT_STAR_COLOR;
+	}
+
+	/**
+	 * Allowed HTML tags and attributes for rating output.
+	 *
+	 * Covers both our custom filter_rating_html() output and the
+	 * native WooCommerce wc_get_rating_html() / wc_get_star_rating_html()
+	 * output as a fallback.
+	 *
+	 * @return array<string, array<string, bool>>
+	 */
+	private static function allowed_rating_tags(): array {
+		return array(
+			'div'    => array(
+				'class'      => true,
+				'role'       => true,
+				'tabindex'   => true,
+				'aria-label' => true,
+			),
+			'span'   => array(
+				'class' => true,
+				'style' => true,
+			),
+			'strong' => array(
+				'class' => true,
+			),
+		);
 	}
 
 	/**
