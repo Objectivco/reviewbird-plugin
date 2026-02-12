@@ -168,19 +168,22 @@ async function fetchHealthStatus() {
 function getActionUrl(status, healthData) {
 	const storeId = healthData?.store_id || window.reviewbirdConfig?.storeId;
 	const baseUrl = window.reviewbirdAdmin.apiUrl;
+	const orgSlug = healthData?.org_slug;
 
 	if (!storeId) {
-		return `${baseUrl}/stores`;
+		return orgSlug ? `${baseUrl}/${orgSlug}/stores` : `${baseUrl}/stores`;
 	}
 
 	const config = STATUS_CONFIG[status] || STATUS_CONFIG.checking;
 	const route = config.route;
 
 	if (route === 'support') {
-		return `${baseUrl}/support`;
+		return orgSlug ? `${baseUrl}/${orgSlug}/support` : `${baseUrl}/support`;
 	}
 
-	return `${baseUrl}/stores/${storeId}/${route}`;
+	return orgSlug
+		? `${baseUrl}/${orgSlug}/stores/${storeId}/${route}`
+		: `${baseUrl}/stores/${storeId}/${route}`;
 }
 
 function getStatusText(status, healthData) {
