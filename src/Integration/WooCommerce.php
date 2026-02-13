@@ -36,7 +36,7 @@ class WooCommerce {
 			'woocommerce_rest_prepare_product_review',
 			array(
 				$this,
-				'add_review_media_to_rest_response',
+				'add_cusrev_review_media_to_rest_response',
 			),
 			10,
 			2
@@ -51,30 +51,23 @@ class WooCommerce {
 	}
 
 	/**
-	 * Add review media and title to the WooCommerce product review REST response.
+	 * Add CusRev media data to the WooCommerce product review REST response.
 	 *
-	 * Supports media from multiple review plugins:
-	 * - CusRev: attachment IDs in ivole_review_image2 / ivole_review_video2
-	 * - ReviewX: direct URLs in reviewx_attachments
+	 * CusRev stores media as WordPress attachment IDs in comment meta:
+	 * - ivole_review_image2: Photo attachment IDs
+	 * - ivole_review_video2: Video attachment IDs
 	 *
 	 * @param WP_REST_Response $response The response object.
 	 * @param WP_Comment       $review   The review comment object.
-	 * @return WP_REST_Response Modified response with media and title data.
+	 * @return WP_REST_Response Modified response with media data.
 	 */
-	public function add_review_media_to_rest_response( $response, $review ): WP_REST_Response {
+	public function add_cusrev_review_media_to_rest_response( $response, $review ): WP_REST_Response {
 		$media = array_merge(
 			$this->get_attachment_media( $review->comment_ID, 'ivole_review_image2', 'image' ),
-			$this->get_attachment_media( $review->comment_ID, 'ivole_review_video2', 'video' ),
-			$this->get_reviewx_media( $review->comment_ID )
+			$this->get_attachment_media( $review->comment_ID, 'ivole_review_video2', 'video' )
 		);
 
 		$response->data['media'] = $media;
-
-		$title = get_comment_meta( $review->comment_ID, 'reviewx_title', true );
-		if ( empty( $title ) ) {
-			$title = get_comment_meta( $review->comment_ID, 'rvx_comment_title', true );
-		}
-		$response->data['review_title'] = $title ? $title : '';
 
 		return $response;
 	}
@@ -99,42 +92,6 @@ class WooCommerce {
 					'url'  => $url,
 				);
 			}
-		}
-
-		return $media;
-	}
-
-	/**
-	 * Get media items from ReviewX comment meta.
-	 *
-	 * ReviewX stores direct URLs in a serialized array under reviewx_attachments.
-	 * Media type is determined by file extension.
-	 *
-	 * @param int $comment_id The comment ID.
-	 * @return array Array of media items with type and url.
-	 */
-	private function get_reviewx_media( int $comment_id ): array {
-		$media       = array();
-		$attachments = get_comment_meta( $comment_id, 'reviewx_attachments', true );
-
-		if ( ! is_array( $attachments ) ) {
-			return $media;
-		}
-
-		$video_extensions = array( 'mp4', 'webm', 'mov', 'avi', 'wmv', 'flv', 'mkv' );
-
-		foreach ( $attachments as $url ) {
-			if ( ! is_string( $url ) || empty( $url ) ) {
-				continue;
-			}
-
-			$extension = strtolower( pathinfo( wp_parse_url( $url, PHP_URL_PATH ) ?? '', PATHINFO_EXTENSION ) );
-			$type      = in_array( $extension, $video_extensions, true ) ? 'video' : 'image';
-
-			$media[] = array(
-				'type' => $type,
-				'url'  => $url,
-			);
 		}
 
 		return $media;
