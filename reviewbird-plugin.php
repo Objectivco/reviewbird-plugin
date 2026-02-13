@@ -3,7 +3,7 @@
  * Plugin Name: Reviewbird
  * Plugin URI: https://reviewbird.com
  * Description: Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback.
- * Version: 1.0.13
+ * Version: 1.0.14
  * Author: Reviewbird
  * Text Domain: reviewbird
  * Domain Path: /languages
@@ -19,7 +19,6 @@
 
 // If this file is called directly, abort.
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
-use reviewbird\Core\Activator;
 use reviewbird\Core\Deactivator;
 use reviewbird\Core\Plugin;
 
@@ -30,7 +29,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Currently plugin version.
  */
-define( 'REVIEWBIRD_VERSION', '1.0.13' );
+define( 'REVIEWBIRD_VERSION', '1.0.14' );
 
 /**
  * Plugin directory path.
@@ -72,6 +71,11 @@ add_action( 'before_woocommerce_init', function() {
 		FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
 	}
 } );
+
+/**
+ * Plugin deactivation hook.
+ */
+register_deactivation_hook( __FILE__, array( Deactivator::class, 'deactivate' ) );
 
 /**
  * Begins execution of the plugin.
