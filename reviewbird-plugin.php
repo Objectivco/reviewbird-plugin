@@ -19,7 +19,6 @@
 
 // If this file is called directly, abort.
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
-use reviewbird\Core\Activator;
 use reviewbird\Core\Deactivator;
 use reviewbird\Core\Plugin;
 
@@ -72,6 +71,11 @@ add_action( 'before_woocommerce_init', function() {
 		FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
 	}
 } );
+
+/**
+ * Plugin deactivation hook.
+ */
+register_deactivation_hook( __FILE__, array( Deactivator::class, 'deactivate' ) );
 
 /**
  * Begins execution of the plugin.
