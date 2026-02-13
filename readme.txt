@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: reviews, woocommerce, product reviews, ratings, customer reviews
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.12
+Stable tag: 1.0.14
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -157,6 +157,13 @@ To build from source:
 For development: `npm run dev`
 
 == Changelog ==
+
+= 1.0.14 =
+* Fix - Add support for ReviewX imports.
+* Fix - Unschedule actions on deactivate.
+
+= 1.0.13 =
+* Fix - Fix URLs to include organization slug
 
 = 1.0.12 =
 * Compatibility updates for WordPress.org submission
