@@ -404,7 +404,7 @@ class Plugin {
 	}
 
 	/**
-	 * Enable WooCommerce authentication for reviewbird REST API endpoints.
+	 * Enable WooCommerce authentication for reviewbird and reviewx REST API endpoints.
 	 *
 	 * @param bool $is_request_to_wc_api Whether this is a request to WC API.
 	 * @return bool
@@ -417,6 +417,15 @@ class Plugin {
 		$rest_prefix = trailingslashit( rest_get_url_prefix() );
 		$request_uri = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 
-		return strpos( $request_uri, $rest_prefix . 'reviewbird/' ) !== false;
+		// Enable WC auth for both reviewbird and reviewx REST API endpoints.
+		if ( strpos( $request_uri, $rest_prefix . 'reviewbird/' ) !== false ) {
+			return true;
+		}
+
+		if ( strpos( $request_uri, $rest_prefix . 'reviewx/' ) !== false ) {
+			return true;
+		}
+
+		return $is_request_to_wc_api;
 	}
 }
