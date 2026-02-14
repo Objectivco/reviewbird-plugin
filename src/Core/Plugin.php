@@ -53,6 +53,13 @@ class Plugin {
 	private static $carousel_script_enqueued = false;
 
 	/**
+	 * Whether the widget has been rendered via shortcode.
+	 *
+	 * @var bool
+	 */
+	private static $shortcode_rendered = false;
+
+	/**
 	 * Initialize the plugin.
 	 */
 	public function __construct() {
@@ -212,7 +219,13 @@ class Plugin {
 			'reviewbird_widget'
 		);
 
-		return wp_kses_post( reviewbird_render_widget( $atts['product_id'] ) );
+		$output = reviewbird_render_widget( $atts['product_id'] );
+
+		if ( $output ) {
+			self::$shortcode_rendered = true;
+		}
+
+		return wp_kses_post( $output );
 	}
 
 	/**
@@ -346,6 +359,10 @@ class Plugin {
 	 * Render the reviewbird widget after product summary.
 	 */
 	public function render_product_widget(): void {
+		if ( self::$shortcode_rendered ) {
+			return;
+		}
+
 		if ( reviewbird_can_show_widget() ) {
 			echo wp_kses_post( reviewbird_render_widget() );
 		}
