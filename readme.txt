@@ -12,7 +12,7 @@ Powerfully simple product review collection, moderation, and management for WooC
 
 == Description ==
 
-Reviewbird supercharges your WooCommerce reviews
+Reviewbird upgrades your WooCommerce Product Reviews, increasing your social proof and growing your sales. Requires a Reviewbird account. [Create an account](https://reviewbird.com) to get started.
 
 **🌟Key Features:**
 
@@ -41,7 +41,11 @@ Reviews from your customers are one of the best sources of SEO content you can g
 
 We include the shortcodes, filters, and action hooks you need to deeply integrate Reviewbird into your store.
 
-Note: Requires a Reviewbird account. [Create an account](https://reviewbird.com/#pricing) to get started.
+== Shortcodes ==
+
+* `[reviewbird_widget]` — Displays the full review widget. Optional `product_id` attribute (defaults to the current product).
+* `[reviewbird_showcase id="123"]` — Displays a review showcase. The `id` attribute is required (get it from your Reviewbird dashboard).
+* `[reviewbird_stars]` — Displays the star rating and review count. Optional `product_id` attribute (defaults to the current product).
 
 == External Services ==
 
