@@ -53,6 +53,13 @@ class Plugin {
 	private static $carousel_script_enqueued = false;
 
 	/**
+	 * Whether the widget has been rendered via shortcode.
+	 *
+	 * @var bool
+	 */
+	private static $shortcode_rendered = false;
+
+	/**
 	 * Initialize the plugin.
 	 */
 	public function __construct() {
@@ -90,6 +97,7 @@ class Plugin {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_star_styles' ) );
 		add_shortcode( 'reviewbird_widget', array( $this, 'widget_shortcode' ) );
 		add_shortcode( 'reviewbird_showcase', array( $this, 'carousel_shortcode' ) );
+		add_shortcode( 'reviewbird_stars', array( $this, 'stars_shortcode' ) );
 
 		// Rating override integration.
 		new RatingOverride();
@@ -212,7 +220,61 @@ class Plugin {
 			'reviewbird_widget'
 		);
 
-		return wp_kses_post( reviewbird_render_widget( $atts['product_id'] ) );
+		$output = reviewbird_render_widget( $atts['product_id'] );
+
+		if ( $output ) {
+			self::$shortcode_rendered = true;
+		}
+
+		return wp_kses_post( $output );
+	}
+
+	/**
+	 * Handle reviewbird stars shortcode.
+	 *
+	 * Outputs the product star rating and review count.
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string
+	 */
+	public function stars_shortcode( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'product_id' => null,
+			),
+			$atts,
+			'reviewbird_stars'
+		);
+
+		$product_id = $atts['product_id'];
+
+		if ( $product_id ) {
+			$product = wc_get_product( $product_id );
+		} else {
+			global $product;
+		}
+
+		if ( ! $product instanceof \WC_Product ) {
+			return '';
+		}
+
+		$rating = $product->get_average_rating();
+		$count  = $product->get_rating_count();
+
+		if ( $rating <= 0 && $count < 1 ) {
+			return '';
+		}
+
+		wp_enqueue_style(
+			'reviewbird-stars',
+			REVIEWBIRD_PLUGIN_URL . 'assets/css/reviewbird-stars.css',
+			array(),
+			$this->version
+		);
+
+		$html = wc_get_rating_html( $rating, $count );
+
+		return wp_kses( $html, StarRatingDisplay::allowed_rating_tags() );
 	}
 
 	/**
@@ -346,6 +408,10 @@ class Plugin {
 	 * Render the reviewbird widget after product summary.
 	 */
 	public function render_product_widget(): void {
+		if ( self::$shortcode_rendered ) {
+			return;
+		}
+
 		if ( reviewbird_can_show_widget() ) {
 			echo wp_kses_post( reviewbird_render_widget() );
 		}
@@ -404,7 +470,7 @@ class Plugin {
 	}
 
 	/**
-	 * Enable WooCommerce authentication for reviewbird REST API endpoints.
+	 * Enable WooCommerce authentication for reviewbird and reviewx REST API endpoints.
 	 *
 	 * @param bool $is_request_to_wc_api Whether this is a request to WC API.
 	 * @return bool
@@ -417,6 +483,15 @@ class Plugin {
 		$rest_prefix = trailingslashit( rest_get_url_prefix() );
 		$request_uri = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 
-		return strpos( $request_uri, $rest_prefix . 'reviewbird/' ) !== false;
+		// Enable WC auth for both reviewbird and reviewx REST API endpoints.
+		if ( strpos( $request_uri, $rest_prefix . 'reviewbird/' ) !== false ) {
+			return true;
+		}
+
+		if ( strpos( $request_uri, $rest_prefix . 'reviewx/' ) !== false ) {
+			return true;
+		}
+
+		return $is_request_to_wc_api;
 	}
 }
