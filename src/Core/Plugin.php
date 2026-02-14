@@ -97,6 +97,7 @@ class Plugin {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_star_styles' ) );
 		add_shortcode( 'reviewbird_widget', array( $this, 'widget_shortcode' ) );
 		add_shortcode( 'reviewbird_showcase', array( $this, 'carousel_shortcode' ) );
+		add_shortcode( 'reviewbird_stars', array( $this, 'stars_shortcode' ) );
 
 		// Rating override integration.
 		new RatingOverride();
@@ -226,6 +227,54 @@ class Plugin {
 		}
 
 		return wp_kses_post( $output );
+	}
+
+	/**
+	 * Handle reviewbird stars shortcode.
+	 *
+	 * Outputs the product star rating and review count.
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string
+	 */
+	public function stars_shortcode( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'product_id' => null,
+			),
+			$atts,
+			'reviewbird_stars'
+		);
+
+		$product_id = $atts['product_id'];
+
+		if ( $product_id ) {
+			$product = wc_get_product( $product_id );
+		} else {
+			global $product;
+		}
+
+		if ( ! $product instanceof \WC_Product ) {
+			return '';
+		}
+
+		$rating = $product->get_average_rating();
+		$count  = $product->get_rating_count();
+
+		if ( $rating <= 0 && $count < 1 ) {
+			return '';
+		}
+
+		wp_enqueue_style(
+			'reviewbird-stars',
+			REVIEWBIRD_PLUGIN_URL . 'assets/css/reviewbird-stars.css',
+			array(),
+			$this->version
+		);
+
+		$html = wc_get_rating_html( $rating, $count );
+
+		return wp_kses( $html, StarRatingDisplay::allowed_rating_tags() );
 	}
 
 	/**

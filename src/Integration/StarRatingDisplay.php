@@ -266,7 +266,7 @@ class StarRatingDisplay {
 	 *
 	 * @return array<string, array<string, bool>>
 	 */
-	private static function allowed_rating_tags(): array {
+	public static function allowed_rating_tags(): array {
 		return array(
 			'div'    => array(
 				'class'      => true,
