@@ -61,7 +61,7 @@ class HealthScheduler {
 		$store_id = get_option( 'reviewbird_store_id' );
 		$status   = get_option( 'reviewbird_store_status' );
 
-		if ( ! $store_id || ! empty( $status ) ) {
+		if ( empty( $store_id ) || ! empty( $status ) ) {
 			return;
 		}
 
