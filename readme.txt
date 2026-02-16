@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: reviews, woocommerce, product reviews, ratings, customer reviews
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.15
+Stable tag: 1.0.16
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -161,6 +161,9 @@ To build from source:
 For development: `npm run dev`
 
 == Changelog ==
+
+= 1.0.15 =
+* Fix - Fix excessive health status checks with store ID is not set.
 
 = 1.0.14 =
 * Fix - Add support for ReviewX imports.
