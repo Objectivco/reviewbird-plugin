@@ -246,7 +246,7 @@ function reviewbird_get_product_reviews( array $product_ids = array(), int $per_
 	if ( isset( $args['rating'] ) ) {
 		$rating = absint( $args['rating'] );
 		$rating = max( 1, min( 5, $rating ) );
-		$query_params['rating'] = $rating;
+		$query_params['min_rating'] = $rating;
 	}
 
 	// Validate and add optional page parameter.

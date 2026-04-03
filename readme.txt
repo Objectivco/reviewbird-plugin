@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: reviews, woocommerce, product reviews, ratings, customer reviews
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.16
+Stable tag: 1.0.17
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -29,7 +29,7 @@ Reviewbird upgrades your WooCommerce Product Reviews, increasing your social pro
 * **Google Merchant Feed** - Sync your reviews to Google shopping search results.
 * **Translated and Localized** - Translate your reviews to your user's language, automatically.
 
-** 🔭 SEO Optimized **
+**🔭 SEO Optimized**
 
 Reviews from your customers are one of the best sources of SEO content you can get. When customers write excellent reviews, they use the same language other potential buyers are searching for - those long-tail keywords that drive qualified traffic to your store.
 
@@ -37,7 +37,7 @@ Reviews from your customers are one of the best sources of SEO content you can g
 - Photos and Videos: Collect customer photos and videos to enhance your reviews
 - Rich Search Results: Display product ratings and review counts in Google results.
 
-** 🛠️Made for Developers by Developers **
+**🛠️Made for Developers by Developers**
 
 We include the shortcodes, filters, and action hooks you need to deeply integrate Reviewbird into your store.
 
