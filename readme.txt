@@ -162,8 +162,16 @@ For development: `npm run dev`
 
 == Changelog ==
 
-= 1.0.15 =
+= 1.0.17 =
+Fix - Fix issue with min_rating parameter for API calls.
+
+= 1.0.16 =
 * Fix - Fix excessive health status checks with store ID is not set.
+
+= 1.0.15 =
+* New - Added [reviewbird_stars] shortcode.
+* Fix - Prevent duplicate widget rendering when [reviewbird_widget] shortcode is used
+* Fix - Fix issues with ReviewX review import
 
 = 1.0.14 =
 * Fix - Add support for ReviewX imports.
