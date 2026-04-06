@@ -148,7 +148,7 @@ class Plugin {
 			'reviewbird-widget',
 			reviewbird_get_api_url() . '/build/review-widget-v2.js',
 			array(),
-			$this->version,
+			null,
 			true
 		);
 
@@ -327,7 +327,7 @@ class Plugin {
 			'reviewbird-carousel',
 			reviewbird_get_api_url() . '/build/review-carousel.js',
 			array(),
-			$this->version,
+			null,
 			true
 		);
 
