@@ -15,10 +15,13 @@
  * Requires Plugins: woocommerce
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * @package reviewbird
  */
 
 // If this file is called directly, abort.
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use reviewbird\Core\Activator;
 use reviewbird\Core\Deactivator;
 use reviewbird\Core\Plugin;
 
@@ -47,7 +50,7 @@ define( 'REVIEWBIRD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'REVIEWBIRD_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 /**
- * reviewbird API URLs for different environments.
+ * Reviewbird API URLs for different environments.
  */
 define( 'REVIEWBIRD_API_URL_PRODUCTION', 'https://app.reviewbird.com' );
 define( 'REVIEWBIRD_API_URL_STAGING', 'https://staging.app.reviewbird.com' );
@@ -66,11 +69,19 @@ require_once REVIEWBIRD_PLUGIN_DIR . 'src/functions.php';
 /**
  * Declare compatibility with WooCommerce features.
  */
-add_action( 'before_woocommerce_init', function() {
-	if ( class_exists( FeaturesUtil::class ) ) {
-		FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+add_action(
+	'before_woocommerce_init',
+	function () {
+		if ( class_exists( FeaturesUtil::class ) ) {
+			FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		}
 	}
-} );
+);
+
+/**
+ * Plugin activation hook.
+ */
+register_activation_hook( __FILE__, array( Activator::class, 'activate' ) );
 
 /**
  * Plugin deactivation hook.

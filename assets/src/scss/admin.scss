@@ -6,6 +6,214 @@
 @tailwind components;
 @tailwind utilities;
 
+body.toplevel_page_reviewbird-settings {
+	background:
+		radial-gradient(circle at top left, rgba(248, 213, 155, 0.45), transparent 28%),
+		radial-gradient(circle at top right, rgba(239, 143, 53, 0.18), transparent 24%),
+		linear-gradient(180deg, #fffaf3 0%, #f8f2e9 46%, #f1f5f7 100%);
+}
+
+body.toplevel_page_reviewbird-settings #wpcontent {
+	padding-left: 0;
+}
+
+body.toplevel_page_reviewbird-settings .wrap {
+	margin: 0;
+	padding: 24px 24px 40px;
+}
+
 #reviewbird-settings-root {
 	min-height: 400px;
+}
+
+.reviewbird-sans {
+	font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+.reviewbird-display-title {
+	font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+	font-weight: 600;
+	letter-spacing: -0.04em;
+}
+
+.reviewbird-eyebrow {
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: #9a5a21;
+}
+
+.reviewbird-admin-shell {
+	border: 1px solid rgba(255, 255, 255, 0.75);
+	border-radius: 32px;
+	background: linear-gradient(145deg, rgba(255, 252, 247, 0.96), rgba(251, 245, 235, 0.94));
+	box-shadow:
+		0 30px 90px rgba(27, 32, 41, 0.12),
+		inset 0 1px 0 rgba(255, 255, 255, 0.75);
+	padding: clamp(1.75rem, 3vw, 3rem);
+}
+
+.reviewbird-background-orb {
+	position: absolute;
+	border-radius: 9999px;
+	filter: blur(20px);
+	pointer-events: none;
+}
+
+.reviewbird-background-orb-left {
+	top: 32px;
+	left: 32px;
+	width: 180px;
+	height: 180px;
+	background: rgba(248, 213, 155, 0.45);
+}
+
+.reviewbird-background-orb-right {
+	right: 8%;
+	top: 4%;
+	width: 220px;
+	height: 220px;
+	background: rgba(239, 143, 53, 0.12);
+}
+
+.reviewbird-pill,
+.reviewbird-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.65rem;
+	border: 1px solid rgba(214, 182, 138, 0.55);
+	background: rgba(255, 248, 238, 0.92);
+	color: #7c4818;
+}
+
+.reviewbird-pill {
+	border-radius: 9999px;
+	padding: 0.75rem 1rem;
+	font-size: 0.83rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.reviewbird-chip {
+	border-radius: 9999px;
+	padding: 0.55rem 0.9rem;
+	font-size: 0.85rem;
+	font-weight: 600;
+}
+
+.reviewbird-button-primary,
+.reviewbird-button-secondary {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	border-radius: 9999px;
+	padding: 0.95rem 1.35rem;
+	font-size: 0.95rem;
+	font-weight: 700;
+	text-decoration: none;
+	transition:
+		transform 160ms ease,
+		box-shadow 160ms ease,
+		background-color 160ms ease,
+		color 160ms ease,
+		border-color 160ms ease;
+}
+
+.reviewbird-button-primary {
+	background: linear-gradient(135deg, #f59f3a 0%, #dd6b37 100%);
+	box-shadow: 0 16px 32px rgba(221, 107, 55, 0.28);
+	color: #fff;
+}
+
+.reviewbird-button-primary:hover,
+.reviewbird-button-primary:focus {
+	color: #fff;
+	transform: translateY(-1px);
+	box-shadow: 0 20px 36px rgba(221, 107, 55, 0.34);
+}
+
+.reviewbird-button-secondary {
+	border: 1px solid rgba(34, 48, 65, 0.12);
+	background: rgba(255, 255, 255, 0.65);
+	color: #223041;
+	box-shadow: 0 10px 25px rgba(34, 48, 65, 0.08);
+}
+
+.reviewbird-button-secondary:hover,
+.reviewbird-button-secondary:focus {
+	color: #18222f;
+	transform: translateY(-1px);
+	border-color: rgba(34, 48, 65, 0.18);
+}
+
+.reviewbird-step-card,
+.reviewbird-feature-card {
+	border-radius: 26px;
+	border: 1px solid rgba(255, 255, 255, 0.8);
+	background: rgba(255, 255, 255, 0.8);
+	box-shadow: 0 18px 48px rgba(19, 28, 37, 0.08);
+}
+
+.reviewbird-step-card {
+	padding: 1.5rem;
+}
+
+.reviewbird-feature-card {
+	padding: 1.7rem;
+}
+
+.reviewbird-feature-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 3rem;
+	height: 3rem;
+	border-radius: 9999px;
+	background: linear-gradient(135deg, #fff2df 0%, #ffe0b6 100%);
+	color: #a8551d;
+}
+
+.reviewbird-dark-panel {
+	border-radius: 30px;
+	background:
+		linear-gradient(180deg, rgba(24, 34, 47, 0.96) 0%, rgba(28, 42, 57, 0.98) 100%);
+	box-shadow: 0 28px 64px rgba(15, 23, 42, 0.2);
+	padding: clamp(1.4rem, 2vw, 2rem);
+}
+
+.reviewbird-stat-tile {
+	display: flex;
+	gap: 0.85rem;
+	align-items: flex-start;
+	padding: 0.95rem 1rem;
+	border-radius: 20px;
+	background: rgba(255, 255, 255, 0.08);
+	color: #fff;
+}
+
+.reviewbird-stat-value {
+	margin: 0;
+	font-size: 1rem;
+	font-weight: 700;
+	color: #fff;
+}
+
+.reviewbird-stat-label {
+	margin: 0.15rem 0 0;
+	font-size: 0.75rem;
+	line-height: 1.4;
+	color: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 782px) {
+	body.toplevel_page_reviewbird-settings .wrap {
+		padding: 16px 12px 28px;
+	}
+
+	.reviewbird-admin-shell {
+		border-radius: 24px;
+	}
 }
