@@ -12,7 +12,7 @@ Powerfully simple product review collection, moderation, and management for WooC
 
 == Description ==
 
-Reviewbird upgrades your WooCommerce Product Reviews, increasing your social proof and growing your sales. Requires a Reviewbird account. [Create an account](https://reviewbird.com) to get started.
+Reviewbird upgrades your WooCommerce Product Reviews, increasing your social proof and growing your sales. Get started free with a Reviewbird account on our free plan. [Create an account](https://reviewbird.com) to get started.
 
 **🌟Key Features:**
 
@@ -85,7 +85,7 @@ By using this plugin, you agree to the Reviewbird Terms and Conditions and Priva
 
 * WooCommerce 5.0 or higher
 * PHP 7.4 or higher
-* A Reviewbird account (sign up at reviewbird.com)
+* A Reviewbird account on any plan, including the free plan (sign up at [reviewbird.com](https://reviewbird.com))
 
 == Installation ==
 
@@ -119,7 +119,7 @@ After you have connected your store to Reviewbird, this is how you configure the
 
 = Do I need a Reviewbird account? =
 
-Yes, you need a Reviewbird account to use this plugin. You can sign up at [reviewbird.com](https://reviewbird.com).
+Yes, you need a Reviewbird account to use this plugin. You can get started on the free plan at [reviewbird.com](https://reviewbird.com).
 
 = Is WooCommerce required? =
 
