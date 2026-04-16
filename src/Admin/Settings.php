@@ -19,6 +19,11 @@ use reviewbird\Integration\StarRatingDisplay;
 class Settings {
 
 	/**
+	 * Help Scout beacon ID for Reviewbird admin screens.
+	 */
+	private const HELP_SCOUT_BEACON_ID = '7486def8-6289-41b2-961f-81c68743d2b5';
+
+	/**
 	 * Menu slug for the Reviewbird get started page.
 	 */
 	private const GET_STARTED_SLUG = 'reviewbird-get-started';
@@ -162,6 +167,8 @@ class Settings {
 			REVIEWBIRD_PLUGIN_DIR . 'languages'
 		);
 
+		$this->enqueue_help_scout_beacon();
+
 		wp_enqueue_style(
 			'reviewbird-admin',
 			REVIEWBIRD_PLUGIN_URL . 'assets/build/admin.css',
@@ -206,6 +213,53 @@ class Settings {
 			'enableWidget'     => reviewbird_is_widget_enabled(),
 			'forceReviewsOpen' => reviewbird_is_force_reviews_open(),
 		);
+	}
+
+	/**
+	 * Load the Help Scout beacon on Reviewbird admin screens.
+	 */
+	private function enqueue_help_scout_beacon(): void {
+		$beacon_id = wp_json_encode( self::HELP_SCOUT_BEACON_ID );
+		$script    = <<<JS
+(function(window, document, beacon) {
+	function loadBeaconScript() {
+		var firstScript = document.getElementsByTagName('script')[0];
+		var script = document.createElement('script');
+
+		script.type = 'text/javascript';
+		script.async = true;
+		script.src = 'https://beacon-v2.helpscout.net';
+
+		firstScript.parentNode.insertBefore(script, firstScript);
+	}
+
+	window.Beacon = beacon = function(method, options, data) {
+		window.Beacon.readyQueue.push({
+			method: method,
+			options: options,
+			data: data
+		});
+	};
+
+	beacon.readyQueue = [];
+
+	if ('complete' === document.readyState) {
+		loadBeaconScript();
+		return;
+	}
+
+	if (window.attachEvent) {
+		window.attachEvent('onload', loadBeaconScript);
+		return;
+	}
+
+	window.addEventListener('load', loadBeaconScript, false);
+}(window, document, window.Beacon || function() {}));
+
+window.Beacon('init', {$beacon_id});
+JS;
+
+		wp_add_inline_script( 'reviewbird-admin', $script, 'after' );
 	}
 
 	/**

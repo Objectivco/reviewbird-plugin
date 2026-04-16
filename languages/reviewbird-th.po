@@ -402,7 +402,7 @@ msgid "A quick look at the Reviewbird widget"
 msgstr "ดูวิดเจ็ต Reviewbird อย่างรวดเร็ว"
 
 #: assets/src/js/components/WelcomeScreen.jsx:154
-msgid "Leaving a review shouldn't feel applying for a loan. Our widget makes review submission easy and painless."
+msgid "Leaving a review shouldn't feel like applying for a loan. Our widget makes review submission easy and painless."
 msgstr "การเขียนรีวิวไม่ควรรู้สึกเหมือนการสมัครสินเชื่อ วิดเจ็ตของเราทำให้การส่งรีวิวง่ายและไม่เจ็บปวด"
 
 #: assets/src/js/components/WelcomeScreen.jsx:165

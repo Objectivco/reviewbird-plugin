@@ -402,8 +402,8 @@ msgid "A quick look at the Reviewbird widget"
 msgstr "Краткий обзор виджета Reviewbird"
 
 #: assets/src/js/components/WelcomeScreen.jsx:154
-msgid "Leaving a review shouldn't feel applying for a loan. Our widget makes review submission easy and painless."
-msgstr "Оставлять отзыв не должно быть сложнее, чем брать кредит. Наш виджет делает процесс простым и безболезненным."
+msgid "Leaving a review shouldn't feel like applying for a loan. Our widget makes review submission easy and painless."
+msgstr "Оставлять отзыв не должно быть так сложно, как подавать заявку на кредит. Наш виджет делает процесс отправки отзывов простым и безболезненным."
 
 #: assets/src/js/components/WelcomeScreen.jsx:165
 msgid "Reviewbird onboarding video"
