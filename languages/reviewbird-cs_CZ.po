@@ -1,0 +1,426 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Reviewbird 1.0.12\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
+"Last-Translator: gpt-po v1.2.3\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-02-02T22:39:13+00:00\n"
+"PO-Revision-Date: 2026-04-16 00:00+0000\n"
+"Language: cs_CZ\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: reviewbird\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: reviewbird-plugin.php
+#: src/Admin/Settings.php:109
+#: src/Admin/Settings.php:110
+msgid "Reviewbird"
+msgstr "Reviewbird"
+
+#. Plugin URI of the plugin
+#: reviewbird-plugin.php
+msgid "https://reviewbird.com"
+msgstr "https://reviewbird.com"
+
+#. Description of the plugin
+#: reviewbird-plugin.php
+msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
+msgstr "Automatizovaný sběr recenzí pro WooCommerce, který blokuje spam, zachycuje stížnosti a zobrazuje vaše nejlepší zpětné vazby."
+
+#: src/Admin/Settings.php:76
+msgid "Reviewbird Connection Error:"
+msgstr "Chyba připojení k Reviewbird:"
+
+#: src/Admin/Settings.php:95
+msgid "Successfully connected to Reviewbird!"
+msgstr "Úspěšně připojeno k Reviewbird!"
+
+#: src/Admin/Settings.php:120
+#: src/Admin/Settings.php:121
+msgid "Get Started"
+msgstr "Začít"
+
+#: src/Admin/Settings.php:129
+#: assets/src/js/components/SettingsApp.jsx:93
+msgid "Reviewbird Settings"
+msgstr "Nastavení Reviewbird"
+
+#: src/Admin/Settings.php:130
+#: src/Core/Plugin.php:465
+msgid "Settings"
+msgstr "Nastavení"
+
+#: src/Admin/Settings.php:268
+msgid "Invalid security token"
+msgstr "Neplatný bezpečnostní token"
+
+#: src/Admin/Settings.php:272
+msgid "Insufficient permissions"
+msgstr "Nedostatečná oprávnění"
+
+#: src/Admin/Settings.php:297
+msgid "Invalid setting"
+msgstr "Neplatné nastavení"
+
+#: src/Admin/Settings.php:307
+msgid "Setting updated successfully"
+msgstr "Nastavení bylo úspěšně aktualizováno"
+
+#: src/Admin/Settings.php:324
+msgid "Health check cache cleared"
+msgstr "Cache kontroly stavu byla vymazána"
+
+#. translators: %d: Store ID number.
+#: src/Api/ConnectionController.php:74
+#, php-format
+msgid "Store ID %d has been saved successfully"
+msgstr "Obchod s ID %d byl úspěšně uložen"
+
+#: src/Api/CouponController.php:79
+#: src/Api/ProductsController.php:43
+msgid "WooCommerce is not active"
+msgstr "WooCommerce není aktivní"
+
+#: src/Api/CouponController.php:89
+msgid "Coupon code is required"
+msgstr "Kód kupónu je povinný"
+
+#. translators: %s: Template coupon code.
+#: src/Api/CouponController.php:126
+#, php-format
+msgid "Template coupon '%s' not found"
+msgstr "Šablona kupónu '%s' nebyla nalezena"
+
+#: src/Api/CouponController.php:155
+msgid "discount_type and amount are required when not using template"
+msgstr "discount_type a amount jsou povinné, pokud není použita šablona"
+
+#: src/Api/RatingsController.php:43
+msgid "Product ID is required"
+msgstr "ID produktu je povinné"
+
+#: src/Api/RatingsController.php:49
+msgid "Invalid product ID"
+msgstr "Neplatné ID produktu"
+
+#: src/Api/RatingsController.php:53
+msgid "Product not found"
+msgstr "Produkt nebyl nalezen"
+
+#: src/Api/RatingsController.php:93
+msgid "Average stars must be a number between 1 and 5"
+msgstr "Průměrné hodnocení musí být číslo mezi 1 a 5"
+
+#: src/Api/RatingsController.php:97
+msgid "Review count must be a non-negative number"
+msgstr "Počet recenzí musí být nezáporné číslo"
+
+#: src/Api/RatingsController.php:101
+msgid "Rating counts must be an array"
+msgstr "Počty hodnocení musí být pole"
+
+#: src/Api/RatingsController.php:174
+msgid "Customer email is required"
+msgstr "Email zákazníka je povinný"
+
+#: src/Api/RatingsController.php:178
+msgid "Invalid email address"
+msgstr "Neplatná emailová adresa"
+
+#: src/functions.php:114
+#: src/functions.php:290
+msgid "API request failed"
+msgstr "API požadavek selhal"
+
+#: src/functions.php:197
+msgid "Store is not connected to Reviewbird."
+msgstr "Obchod není připojen k Reviewbird."
+
+#: src/functions.php:207
+msgid "Unable to generate API key for authentication."
+msgstr "Nelze vygenerovat API klíč pro autentizaci."
+
+#: src/functions.php:221
+msgid "Maximum of 50 product IDs allowed per request."
+msgstr "Maximálně 50 ID produktů na požadavek."
+
+#: src/functions.php:326
+msgid "Failed to decode API response."
+msgstr "Nepodařilo se dekódovat odpověď API."
+
+#. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:177
+#, php-format
+msgid "Rated %s out of 5"
+msgstr "Hodnoceno %s z 5"
+
+#. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:180
+#, php-format
+msgid "Rated %s out of 5, click to view reviews"
+msgstr "Hodnoceno %s z 5, klikněte pro zobrazení recenzí"
+
+#: assets/src/js/components/ConnectionHealth.jsx:10
+msgid "Connected to Reviewbird"
+msgstr "Připojeno k Reviewbird"
+
+#: assets/src/js/components/ConnectionHealth.jsx:11
+msgid "Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly."
+msgstr "Váš WooCommerce obchod je úspěšně připojen k Reviewbird. Data recenzí se správně synchronizují."
+
+#: assets/src/js/components/ConnectionHealth.jsx:12
+msgid "View Dashboard"
+msgstr "Zobrazit panel"
+
+#: assets/src/js/components/ConnectionHealth.jsx:18
+msgid "WooCommerce Not Connected"
+msgstr "WooCommerce není připojen"
+
+#: assets/src/js/components/ConnectionHealth.jsx:19
+msgid "WooCommerce is not yet connected to Reviewbird. Connect your store to start syncing products and reviews."
+msgstr "WooCommerce ještě není připojen k Reviewbird. Připojte svůj obchod pro zahájení synchronizace produktů a recenzí."
+
+#: assets/src/js/components/ConnectionHealth.jsx:20
+msgid "Connect WooCommerce"
+msgstr "Připojit WooCommerce"
+
+#: assets/src/js/components/ConnectionHealth.jsx:26
+msgid "Initial Sync in Progress"
+msgstr "Probíhá počáteční synchronizace"
+
+#: assets/src/js/components/ConnectionHealth.jsx:27
+msgid "Reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
+msgstr "Reviewbird synchronizuje vaše produkty a recenze. Může to trvat několik minut v závislosti na velikosti katalogu. Widget bude dostupný po dokončení synchronizace."
+
+#: assets/src/js/components/ConnectionHealth.jsx:28
+msgid "View Sync Progress"
+msgstr "Zobrazit průběh synchronizace"
+
+#: assets/src/js/components/ConnectionHealth.jsx:34
+msgid "Subscription Required"
+msgstr "Vyžaduje se předplatné"
+
+#: assets/src/js/components/ConnectionHealth.jsx:35
+msgid "Your Reviewbird subscription is inactive. Please update your billing information to continue using the service."
+msgstr "Vaše předplatné Reviewbird je neaktivní. Aktualizujte prosím své platební údaje pro pokračování v používání služby."
+
+#: assets/src/js/components/ConnectionHealth.jsx:36
+msgid "Update Billing"
+msgstr "Aktualizovat platby"
+
+#: assets/src/js/components/ConnectionHealth.jsx:42
+#: assets/src/js/components/ConnectionHealth.jsx:50
+msgid "Connection Issue Detected"
+msgstr "Zjištěn problém s připojením"
+
+#: assets/src/js/components/ConnectionHealth.jsx:43
+msgid "Unable to connect to Reviewbird. Please check your connection settings."
+msgstr "Nelze se připojit k Reviewbird. Zkontrolujte prosím nastavení připojení."
+
+#: assets/src/js/components/ConnectionHealth.jsx:44
+msgid "Fix Connection"
+msgstr "Opravit připojení"
+
+#: assets/src/js/components/ConnectionHealth.jsx:51
+msgid "Unable to reach Reviewbird API. Please check your internet connection."
+msgstr "Nelze dosáhnout API Reviewbird. Zkontrolujte prosím své internetové připojení."
+
+#: assets/src/js/components/ConnectionHealth.jsx:52
+msgid "Get Help"
+msgstr "Získat pomoc"
+
+#: assets/src/js/components/ConnectionHealth.jsx:58
+msgid "Checking connection..."
+msgstr "Kontrola připojení..."
+
+#: assets/src/js/components/ConnectionHealth.jsx:59
+msgid "Verifying connection to Reviewbird..."
+msgstr "Ověřování připojení k Reviewbird..."
+
+#: assets/src/js/components/ConnectionHealth.jsx:60
+msgid "Open Reviewbird"
+msgstr "Otevřít Reviewbird"
+
+#: assets/src/js/components/ConnectionHealth.jsx:191
+msgid "Connection Issue"
+msgstr "Problém s připojením"
+
+#: assets/src/js/components/ConnectionHealth.jsx:260
+msgid "Refresh"
+msgstr "Obnovit"
+
+#: assets/src/js/components/ConnectionHealth.jsx:281
+msgid "Last checked:"
+msgstr "Naposledy kontrolováno:"
+
+#: assets/src/js/components/LoadingSpinner.jsx:8
+msgid "Loading..."
+msgstr "Načítání..."
+
+#: assets/src/js/components/SettingsApp.jsx:44
+msgid "Failed to update setting. Please try again."
+msgstr "Nepodařilo se aktualizovat nastavení. Zkuste to prosím znovu."
+
+#: assets/src/js/components/SettingsApp.jsx:90
+msgid "Connected Store Settings"
+msgstr "Nastavení připojeného obchodu"
+
+#: assets/src/js/components/SettingsApp.jsx:96
+msgid "Manage your Reviewbird integration with WooCommerce."
+msgstr "Spravujte svou integraci Reviewbird s WooCommerce."
+
+#: assets/src/js/components/SettingsApp.jsx:113
+msgid "Reviewbird Widget"
+msgstr "Widget Reviewbird"
+
+#: assets/src/js/components/SettingsApp.jsx:114
+msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
+msgstr "Zobrazte widget recenzí Reviewbird na stránkách produktů. Widget ukazuje zákaznické recenze a umožňuje zákazníkům přidávat nové recenze."
+
+#: assets/src/js/components/SettingsApp.jsx:120
+msgid "Widget is enabled on all WooCommerce product pages."
+msgstr "Widget je povolen na všech stránkách produktů WooCommerce."
+
+#: assets/src/js/components/SettingsApp.jsx:129
+msgid "Forcefully enable reviews on all products"
+msgstr "Násilně povolit recenze u všech produktů"
+
+#: assets/src/js/components/SettingsApp.jsx:135
+msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
+msgstr "Nechte toto vypnuté, pokud chcete ovládat recenze pro každý produkt pomocí zaškrtávacího políčka „Povolit recenze“."
+
+#: assets/src/js/components/SettingsApp.jsx:171
+msgid "SEO Schema Markup"
+msgstr "SEO Schema Markup"
+
+#: assets/src/js/components/SettingsApp.jsx:172
+msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
+msgstr "Povolte strukturovaná data kompatibilní s Googlem (JSON-LD schema) na stránkách produktů pro bohaté úryvky ve výsledcích vyhledávání."
+
+#: assets/src/js/components/SettingsApp.jsx:178
+msgid "Schema markup is active on all WooCommerce product pages."
+msgstr "Schema markup je aktivní na všech stránkách produktů WooCommerce."
+
+#: assets/src/js/components/SettingsApp.jsx:183
+msgid "What is Schema Markup?"
+msgstr "Co je Schema Markup?"
+
+#: assets/src/js/components/SettingsApp.jsx:185
+msgid "Displays star ratings in Google search results"
+msgstr "Zobrazuje hodnocení hvězdičkami ve výsledcích vyhledávání Google"
+
+#: assets/src/js/components/SettingsApp.jsx:189
+msgid "Shows review counts and product information"
+msgstr "Zobrazuje počet recenzí a informace o produktu"
+
+#: assets/src/js/components/SettingsApp.jsx:193
+msgid "Review schema is cached for 4 hours for optimal performance"
+msgstr "Schema recenzí je pro optimální výkon ukládáno do mezipaměti po dobu 4 hodin"
+
+#: assets/src/js/components/SettingsApp.jsx:202
+msgid "Test with Google Rich Results"
+msgstr "Testovat s Google Rich Results"
+
+#: assets/src/js/components/SettingsApp.jsx:209
+msgid "Validate Schema"
+msgstr "Ověřit Schema"
+
+#: assets/src/js/components/TogglePanel.jsx:114
+msgid "Enabled"
+msgstr "Povoleno"
+
+#: assets/src/js/components/TogglePanel.jsx:115
+msgid "Disabled"
+msgstr "Zakázáno"
+
+#: assets/src/js/components/WelcomeScreen.jsx:6
+msgid "Create your Reviewbird account"
+msgstr "Vytvořte si účet Reviewbird"
+
+#: assets/src/js/components/WelcomeScreen.jsx:7
+msgid "Start with the free plan, then connect your WooCommerce store whenever you are ready."
+msgstr "Začněte s bezplatným plánem a připojte svůj obchod WooCommerce, kdykoli budete připraveni."
+
+#: assets/src/js/components/WelcomeScreen.jsx:14
+msgid "Authorize your WooCommerce store"
+msgstr "Autorizujte svůj obchod WooCommerce"
+
+#: assets/src/js/components/WelcomeScreen.jsx:15
+msgid "Connect Reviewbird so it can securely sync products, orders, and review activity."
+msgstr "Připojte Reviewbird, aby mohl bezpečně synchronizovat produkty, objednávky a aktivitu recenzí."
+
+#: assets/src/js/components/WelcomeScreen.jsx:22
+msgid "Turn on your review experience"
+msgstr "Zapněte svou recenzní zkušenost"
+
+#: assets/src/js/components/WelcomeScreen.jsx:23
+msgid "Enable the widget in WordPress and start collecting polished, conversion-friendly product reviews."
+msgstr "Povolte widget ve WordPressu a začněte sbírat vylepšené, konverzní recenze produktů."
+
+#: assets/src/js/components/WelcomeScreen.jsx:53
+msgid "Step"
+msgstr "Krok"
+
+#: assets/src/js/components/WelcomeScreen.jsx:82
+msgid "Welcome to Reviewbird for WooCommerce"
+msgstr "Vítejte u Reviewbird pro WooCommerce"
+
+#: assets/src/js/components/WelcomeScreen.jsx:93
+msgid "Collect more reviews with less friction."
+msgstr "Sbírejte více recenzí s menší námahou."
+
+#: assets/src/js/components/WelcomeScreen.jsx:100
+msgid "Reviewbird helps WooCommerce merchants collect, moderate, and showcase product reviews with a polished experience that feels native to their storefront."
+msgstr "Reviewbird pomáhá obchodníkům WooCommerce sbírat, moderovat a zobrazovat recenze produktů s vylepšeným zážitkem, který působí přirozeně v jejich obchodě."
+
+#: assets/src/js/components/WelcomeScreen.jsx:115
+msgid "Get Started Free"
+msgstr "Začněte zdarma"
+
+#: assets/src/js/components/WelcomeScreen.jsx:122
+msgid "Free plan available. Create your account first, then connect WooCommerce when you are ready."
+msgstr "K dispozici je bezplatný plán. Nejprve si vytvořte účet a poté připojte WooCommerce, až budete připraveni."
+
+#: assets/src/js/components/WelcomeScreen.jsx:129
+msgid "Already have an account?"
+msgstr "Už máte účet?"
+
+#: assets/src/js/components/WelcomeScreen.jsx:136
+msgid "Connect your store"
+msgstr "Připojte svůj obchod"
+
+#: assets/src/js/components/WelcomeScreen.jsx:145
+msgid "See It In Action"
+msgstr "Podívejte se v akci"
+
+#: assets/src/js/components/WelcomeScreen.jsx:148
+msgid "A quick look at the Reviewbird widget"
+msgstr "Rychlý pohled na widget Reviewbird"
+
+#: assets/src/js/components/WelcomeScreen.jsx:154
+msgid "Leaving a review shouldn't feel applying for a loan. Our widget makes review submission easy and painless."
+msgstr "Psaní recenze by nemělo být jako žádost o půjčku. Náš widget činí odesílání recenzí snadným a bezbolestným."
+
+#: assets/src/js/components/WelcomeScreen.jsx:165
+msgid "Reviewbird onboarding video"
+msgstr "Úvodní video Reviewbird"
+
+#: assets/src/js/components/WelcomeScreen.jsx:182
+msgid "Setup"
+msgstr "Nastavení"
+
+#: assets/src/js/components/WelcomeScreen.jsx:185
+msgid "Go live in three quick steps."
+msgstr "Spusťte to ve třech rychlých krocích."
+
+#: assets/src/js/components/WelcomeScreen.jsx:188
+msgid "Create your account, connect WooCommerce, then"
+msgstr "Vytvořte si účet, připojte WooCommerce, pak"
+
+#: assets/src/js/components/WelcomeScreen.jsx:196
+msgid "enable the widget in settings"
+msgstr "povolte widget v nastavení"

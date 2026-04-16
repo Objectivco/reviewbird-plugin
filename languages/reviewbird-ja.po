@@ -1,0 +1,426 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Reviewbird 1.0.12\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
+"Last-Translator: gpt-po v1.2.3\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-02-02T22:39:13+00:00\n"
+"PO-Revision-Date: 2026-04-16 00:00+0000\n"
+"Language: ja\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: reviewbird\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: reviewbird-plugin.php
+#: src/Admin/Settings.php:109
+#: src/Admin/Settings.php:110
+msgid "Reviewbird"
+msgstr "Reviewbird"
+
+#. Plugin URI of the plugin
+#: reviewbird-plugin.php
+msgid "https://reviewbird.com"
+msgstr "https://reviewbird.com"
+
+#. Description of the plugin
+#: reviewbird-plugin.php
+msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
+msgstr "スパムをブロックし、苦情をキャッチし、最高のフィードバックを紹介するWooCommerce向けの自動レビュー収集ツールです。"
+
+#: src/Admin/Settings.php:76
+msgid "Reviewbird Connection Error:"
+msgstr "Reviewbird接続エラー："
+
+#: src/Admin/Settings.php:95
+msgid "Successfully connected to Reviewbird!"
+msgstr "Reviewbirdに正常に接続されました！"
+
+#: src/Admin/Settings.php:120
+#: src/Admin/Settings.php:121
+msgid "Get Started"
+msgstr "開始する"
+
+#: src/Admin/Settings.php:129
+#: assets/src/js/components/SettingsApp.jsx:93
+msgid "Reviewbird Settings"
+msgstr "Reviewbird設定"
+
+#: src/Admin/Settings.php:130
+#: src/Core/Plugin.php:465
+msgid "Settings"
+msgstr "設定"
+
+#: src/Admin/Settings.php:268
+msgid "Invalid security token"
+msgstr "無効なセキュリティトークン"
+
+#: src/Admin/Settings.php:272
+msgid "Insufficient permissions"
+msgstr "権限が不十分です"
+
+#: src/Admin/Settings.php:297
+msgid "Invalid setting"
+msgstr "無効な設定"
+
+#: src/Admin/Settings.php:307
+msgid "Setting updated successfully"
+msgstr "設定が正常に更新されました"
+
+#: src/Admin/Settings.php:324
+msgid "Health check cache cleared"
+msgstr "ヘルスチェックキャッシュがクリアされました"
+
+#. translators: %d: Store ID number.
+#: src/Api/ConnectionController.php:74
+#, php-format
+msgid "Store ID %d has been saved successfully"
+msgstr "ストアID %d が正常に保存されました"
+
+#: src/Api/CouponController.php:79
+#: src/Api/ProductsController.php:43
+msgid "WooCommerce is not active"
+msgstr "WooCommerceがアクティブではありません"
+
+#: src/Api/CouponController.php:89
+msgid "Coupon code is required"
+msgstr "クーポンコードが必要です"
+
+#. translators: %s: Template coupon code.
+#: src/Api/CouponController.php:126
+#, php-format
+msgid "Template coupon '%s' not found"
+msgstr "テンプレートクーポン '%s' が見つかりません"
+
+#: src/Api/CouponController.php:155
+msgid "discount_type and amount are required when not using template"
+msgstr "テンプレートを使用しない場合は、discount_typeとamountが必要です"
+
+#: src/Api/RatingsController.php:43
+msgid "Product ID is required"
+msgstr "商品IDが必要です"
+
+#: src/Api/RatingsController.php:49
+msgid "Invalid product ID"
+msgstr "無効な商品IDです"
+
+#: src/Api/RatingsController.php:53
+msgid "Product not found"
+msgstr "商品が見つかりません"
+
+#: src/Api/RatingsController.php:93
+msgid "Average stars must be a number between 1 and 5"
+msgstr "平均星評価は1から5の間の数字でなければなりません"
+
+#: src/Api/RatingsController.php:97
+msgid "Review count must be a non-negative number"
+msgstr "レビュー数は0以上の数字でなければなりません"
+
+#: src/Api/RatingsController.php:101
+msgid "Rating counts must be an array"
+msgstr "評価数は配列でなければなりません"
+
+#: src/Api/RatingsController.php:174
+msgid "Customer email is required"
+msgstr "顧客のメールアドレスが必要です"
+
+#: src/Api/RatingsController.php:178
+msgid "Invalid email address"
+msgstr "無効なメールアドレスです"
+
+#: src/functions.php:114
+#: src/functions.php:290
+msgid "API request failed"
+msgstr "APIリクエストに失敗しました"
+
+#: src/functions.php:197
+msgid "Store is not connected to Reviewbird."
+msgstr "ストアはReviewbirdに接続されていません。"
+
+#: src/functions.php:207
+msgid "Unable to generate API key for authentication."
+msgstr "認証用のAPIキーを生成できませんでした。"
+
+#: src/functions.php:221
+msgid "Maximum of 50 product IDs allowed per request."
+msgstr "リクエストごとに最大50件の商品のIDが許可されています。"
+
+#: src/functions.php:326
+msgid "Failed to decode API response."
+msgstr "APIレスポンスのデコードに失敗しました。"
+
+#. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:177
+#, php-format
+msgid "Rated %s out of 5"
+msgstr "5点満点中 %s の評価"
+
+#. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:180
+#, php-format
+msgid "Rated %s out of 5, click to view reviews"
+msgstr "5点満点中 %s の評価、クリックしてレビューを見る"
+
+#: assets/src/js/components/ConnectionHealth.jsx:10
+msgid "Connected to Reviewbird"
+msgstr "Reviewbirdに接続されました"
+
+#: assets/src/js/components/ConnectionHealth.jsx:11
+msgid "Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly."
+msgstr "あなたのWooCommerceストアはReviewbirdに正常に接続されています。レビューのデータは正常に同期されています。"
+
+#: assets/src/js/components/ConnectionHealth.jsx:12
+msgid "View Dashboard"
+msgstr "ダッシュボードを見る"
+
+#: assets/src/js/components/ConnectionHealth.jsx:18
+msgid "WooCommerce Not Connected"
+msgstr "WooCommerceが接続されていません"
+
+#: assets/src/js/components/ConnectionHealth.jsx:19
+msgid "WooCommerce is not yet connected to Reviewbird. Connect your store to start syncing products and reviews."
+msgstr "WooCommerceはまだReviewbirdに接続されていません。ストアを接続して商品とレビューの同期を開始してください。"
+
+#: assets/src/js/components/ConnectionHealth.jsx:20
+msgid "Connect WooCommerce"
+msgstr "WooCommerceを接続する"
+
+#: assets/src/js/components/ConnectionHealth.jsx:26
+msgid "Initial Sync in Progress"
+msgstr "初期同期中"
+
+#: assets/src/js/components/ConnectionHealth.jsx:27
+msgid "Reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
+msgstr "Reviewbirdがあなたの商品とレビューを同期しています。カタログのサイズによっては数分かかる場合があります。同期が完了するとウィジェットが利用可能になります。"
+
+#: assets/src/js/components/ConnectionHealth.jsx:28
+msgid "View Sync Progress"
+msgstr "同期の進行状況を見る"
+
+#: assets/src/js/components/ConnectionHealth.jsx:34
+msgid "Subscription Required"
+msgstr "サブスクリプションが必要です"
+
+#: assets/src/js/components/ConnectionHealth.jsx:35
+msgid "Your Reviewbird subscription is inactive. Please update your billing information to continue using the service."
+msgstr "あなたのReviewbirdサブスクリプションは無効です。サービスを継続して利用するには請求情報を更新してください。"
+
+#: assets/src/js/components/ConnectionHealth.jsx:36
+msgid "Update Billing"
+msgstr "請求情報を更新する"
+
+#: assets/src/js/components/ConnectionHealth.jsx:42
+#: assets/src/js/components/ConnectionHealth.jsx:50
+msgid "Connection Issue Detected"
+msgstr "接続問題が検出されました"
+
+#: assets/src/js/components/ConnectionHealth.jsx:43
+msgid "Unable to connect to Reviewbird. Please check your connection settings."
+msgstr "Reviewbirdに接続できません。接続設定を確認してください。"
+
+#: assets/src/js/components/ConnectionHealth.jsx:44
+msgid "Fix Connection"
+msgstr "接続を修正する"
+
+#: assets/src/js/components/ConnectionHealth.jsx:51
+msgid "Unable to reach Reviewbird API. Please check your internet connection."
+msgstr "Reviewbird APIに到達できません。インターネット接続を確認してください。"
+
+#: assets/src/js/components/ConnectionHealth.jsx:52
+msgid "Get Help"
+msgstr "ヘルプを得る"
+
+#: assets/src/js/components/ConnectionHealth.jsx:58
+msgid "Checking connection..."
+msgstr "接続を確認しています..."
+
+#: assets/src/js/components/ConnectionHealth.jsx:59
+msgid "Verifying connection to Reviewbird..."
+msgstr "Reviewbirdへの接続を検証しています..."
+
+#: assets/src/js/components/ConnectionHealth.jsx:60
+msgid "Open Reviewbird"
+msgstr "Reviewbirdを開く"
+
+#: assets/src/js/components/ConnectionHealth.jsx:191
+msgid "Connection Issue"
+msgstr "接続問題"
+
+#: assets/src/js/components/ConnectionHealth.jsx:260
+msgid "Refresh"
+msgstr "更新"
+
+#: assets/src/js/components/ConnectionHealth.jsx:281
+msgid "Last checked:"
+msgstr "最終確認日時："
+
+#: assets/src/js/components/LoadingSpinner.jsx:8
+msgid "Loading..."
+msgstr "読み込み中..."
+
+#: assets/src/js/components/SettingsApp.jsx:44
+msgid "Failed to update setting. Please try again."
+msgstr "設定の更新に失敗しました。もう一度お試しください。"
+
+#: assets/src/js/components/SettingsApp.jsx:90
+msgid "Connected Store Settings"
+msgstr "接続されたストアの設定"
+
+#: assets/src/js/components/SettingsApp.jsx:96
+msgid "Manage your Reviewbird integration with WooCommerce."
+msgstr "WooCommerceでReviewbirdの統合を管理します。"
+
+#: assets/src/js/components/SettingsApp.jsx:113
+msgid "Reviewbird Widget"
+msgstr "Reviewbirdウィジェット"
+
+#: assets/src/js/components/SettingsApp.jsx:114
+msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
+msgstr "商品ページにReviewbirdのレビューウィジェットを表示します。ウィジェットは顧客のレビューを表示し、新しいレビューの投稿を可能にします。"
+
+#: assets/src/js/components/SettingsApp.jsx:120
+msgid "Widget is enabled on all WooCommerce product pages."
+msgstr "すべてのWooCommerce商品ページでウィジェットが有効になっています。"
+
+#: assets/src/js/components/SettingsApp.jsx:129
+msgid "Forcefully enable reviews on all products"
+msgstr "すべての商品でレビューを強制的に有効にする"
+
+#: assets/src/js/components/SettingsApp.jsx:135
+msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
+msgstr "「レビューを有効にする」チェックボックスで商品ごとにレビューを管理したい場合は、オフのままにしてください。"
+
+#: assets/src/js/components/SettingsApp.jsx:171
+msgid "SEO Schema Markup"
+msgstr "SEOスキーママークアップ"
+
+#: assets/src/js/components/SettingsApp.jsx:172
+msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
+msgstr "商品ページでGoogle準拠の構造化データ（JSON-LDスキーマ）を有効にし、検索結果のリッチスニペットを表示します。"
+
+#: assets/src/js/components/SettingsApp.jsx:178
+msgid "Schema markup is active on all WooCommerce product pages."
+msgstr "すべてのWooCommerce商品ページでスキーママークアップが有効です。"
+
+#: assets/src/js/components/SettingsApp.jsx:183
+msgid "What is Schema Markup?"
+msgstr "スキーママークアップとは？"
+
+#: assets/src/js/components/SettingsApp.jsx:185
+msgid "Displays star ratings in Google search results"
+msgstr "Google検索結果に星評価を表示します"
+
+#: assets/src/js/components/SettingsApp.jsx:189
+msgid "Shows review counts and product information"
+msgstr "レビュー数と商品情報を表示します"
+
+#: assets/src/js/components/SettingsApp.jsx:193
+msgid "Review schema is cached for 4 hours for optimal performance"
+msgstr "最適なパフォーマンスのためにレビューのスキーマは4時間キャッシュされます"
+
+#: assets/src/js/components/SettingsApp.jsx:202
+msgid "Test with Google Rich Results"
+msgstr "Googleリッチリザルトでテスト"
+
+#: assets/src/js/components/SettingsApp.jsx:209
+msgid "Validate Schema"
+msgstr "スキーマを検証"
+
+#: assets/src/js/components/TogglePanel.jsx:114
+msgid "Enabled"
+msgstr "有効"
+
+#: assets/src/js/components/TogglePanel.jsx:115
+msgid "Disabled"
+msgstr "無効"
+
+#: assets/src/js/components/WelcomeScreen.jsx:6
+msgid "Create your Reviewbird account"
+msgstr "Reviewbirdアカウントを作成する"
+
+#: assets/src/js/components/WelcomeScreen.jsx:7
+msgid "Start with the free plan, then connect your WooCommerce store whenever you are ready."
+msgstr "無料プランから始めて、準備ができたらWooCommerceストアを接続してください。"
+
+#: assets/src/js/components/WelcomeScreen.jsx:14
+msgid "Authorize your WooCommerce store"
+msgstr "WooCommerceストアを認証する"
+
+#: assets/src/js/components/WelcomeScreen.jsx:15
+msgid "Connect Reviewbird so it can securely sync products, orders, and review activity."
+msgstr "Reviewbirdを接続して、商品、注文、レビュー活動を安全に同期できるようにします。"
+
+#: assets/src/js/components/WelcomeScreen.jsx:22
+msgid "Turn on your review experience"
+msgstr "レビュー体験を開始する"
+
+#: assets/src/js/components/WelcomeScreen.jsx:23
+msgid "Enable the widget in WordPress and start collecting polished, conversion-friendly product reviews."
+msgstr "WordPressでウィジェットを有効にして、洗練されたコンバージョンに適した商品レビューの収集を開始します。"
+
+#: assets/src/js/components/WelcomeScreen.jsx:53
+msgid "Step"
+msgstr "ステップ"
+
+#: assets/src/js/components/WelcomeScreen.jsx:82
+msgid "Welcome to Reviewbird for WooCommerce"
+msgstr "WooCommerce用Reviewbirdへようこそ"
+
+#: assets/src/js/components/WelcomeScreen.jsx:93
+msgid "Collect more reviews with less friction."
+msgstr "より少ない手間でより多くのレビューを集めましょう。"
+
+#: assets/src/js/components/WelcomeScreen.jsx:100
+msgid "Reviewbird helps WooCommerce merchants collect, moderate, and showcase product reviews with a polished experience that feels native to their storefront."
+msgstr "ReviewbirdはWooCommerceの販売者が商品レビューを収集、管理、表示するのを支援し、店舗に自然に馴染む洗練された体験を提供します。"
+
+#: assets/src/js/components/WelcomeScreen.jsx:115
+msgid "Get Started Free"
+msgstr "無料で始める"
+
+#: assets/src/js/components/WelcomeScreen.jsx:122
+msgid "Free plan available. Create your account first, then connect WooCommerce when you are ready."
+msgstr "無料プラン利用可能。まずアカウントを作成し、準備ができたらWooCommerceを接続してください。"
+
+#: assets/src/js/components/WelcomeScreen.jsx:129
+msgid "Already have an account?"
+msgstr "すでにアカウントをお持ちですか？"
+
+#: assets/src/js/components/WelcomeScreen.jsx:136
+msgid "Connect your store"
+msgstr "ストアを接続する"
+
+#: assets/src/js/components/WelcomeScreen.jsx:145
+msgid "See It In Action"
+msgstr "実際の動作を見る"
+
+#: assets/src/js/components/WelcomeScreen.jsx:148
+msgid "A quick look at the Reviewbird widget"
+msgstr "Reviewbirdウィジェットの簡単な紹介"
+
+#: assets/src/js/components/WelcomeScreen.jsx:154
+msgid "Leaving a review shouldn't feel applying for a loan. Our widget makes review submission easy and painless."
+msgstr "レビューを書くのはローン申請のように感じるべきではありません。当社のウィジェットはレビュー投稿を簡単かつストレスフリーにします。"
+
+#: assets/src/js/components/WelcomeScreen.jsx:165
+msgid "Reviewbird onboarding video"
+msgstr "Reviewbirdオンボーディングビデオ"
+
+#: assets/src/js/components/WelcomeScreen.jsx:182
+msgid "Setup"
+msgstr "セットアップ"
+
+#: assets/src/js/components/WelcomeScreen.jsx:185
+msgid "Go live in three quick steps."
+msgstr "3つの簡単なステップで開始しましょう。"
+
+#: assets/src/js/components/WelcomeScreen.jsx:188
+msgid "Create your account, connect WooCommerce, then"
+msgstr "アカウントを作成し、WooCommerceを接続し、"
+
+#: assets/src/js/components/WelcomeScreen.jsx:196
+msgid "enable the widget in settings"
+msgstr "設定でウィジェットを有効にします"

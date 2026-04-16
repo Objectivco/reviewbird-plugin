@@ -53,7 +53,7 @@ function useToggleSetting( settingKey, apiSettingName, onError ) {
 }
 
 export default function SettingsApp() {
-	const storeId = getAdminSetting( 'storeId', null );
+	const pageType = getAdminSetting( 'pageType', 'settings' );
 	const [ errorMessage, setErrorMessage ] = useState( '' );
 	const [ enableWidget, handleWidgetToggle ] = useToggleSetting(
 		'enableWidget',
@@ -70,15 +70,14 @@ export default function SettingsApp() {
 		'force_reviews_open',
 		setErrorMessage
 	);
-	const hasConnectedStore = Boolean( storeId );
-
-	if ( ! hasConnectedStore ) {
+	if ( 'get_started' === pageType ) {
 		return (
 			<div className="mx-auto max-w-7xl py-8">
 				<WelcomeScreen
 					registerUrl={ window.reviewbirdAdmin.registerUrl }
-					appHomeUrl={ window.reviewbirdAdmin.appHomeUrl }
-					marketingUrl={ window.reviewbirdAdmin.marketingUrl }
+					dashboardUrl={ window.reviewbirdAdmin.dashboardUrl }
+					settingsUrl={ window.reviewbirdAdmin.settingsUrl }
+					onboardingVideo={ window.reviewbirdAdmin.onboardingVideo }
 				/>
 			</div>
 		);

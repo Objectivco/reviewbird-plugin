@@ -1,0 +1,426 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Reviewbird 1.0.12\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
+"Last-Translator: gpt-po v1.2.3\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-02-02T22:39:13+00:00\n"
+"PO-Revision-Date: 2026-04-16 00:00+0000\n"
+"Language: th\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: reviewbird\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: reviewbird-plugin.php
+#: src/Admin/Settings.php:109
+#: src/Admin/Settings.php:110
+msgid "Reviewbird"
+msgstr "รีวิวเบิร์ด"
+
+#. Plugin URI of the plugin
+#: reviewbird-plugin.php
+msgid "https://reviewbird.com"
+msgstr "https://reviewbird.com"
+
+#. Description of the plugin
+#: reviewbird-plugin.php
+msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
+msgstr "การรวบรวมรีวิวอัตโนมัติสำหรับ WooCommerce ที่บล็อกสแปม จับข้อร้องเรียน และแสดงผลตอบรับที่ดีที่สุดของคุณ"
+
+#: src/Admin/Settings.php:76
+msgid "Reviewbird Connection Error:"
+msgstr "ข้อผิดพลาดการเชื่อมต่อ Reviewbird:"
+
+#: src/Admin/Settings.php:95
+msgid "Successfully connected to Reviewbird!"
+msgstr "เชื่อมต่อกับ Reviewbird สำเร็จ!"
+
+#: src/Admin/Settings.php:120
+#: src/Admin/Settings.php:121
+msgid "Get Started"
+msgstr "เริ่มต้น"
+
+#: src/Admin/Settings.php:129
+#: assets/src/js/components/SettingsApp.jsx:93
+msgid "Reviewbird Settings"
+msgstr "การตั้งค่า Reviewbird"
+
+#: src/Admin/Settings.php:130
+#: src/Core/Plugin.php:465
+msgid "Settings"
+msgstr "การตั้งค่า"
+
+#: src/Admin/Settings.php:268
+msgid "Invalid security token"
+msgstr "โทเค็นความปลอดภัยไม่ถูกต้อง"
+
+#: src/Admin/Settings.php:272
+msgid "Insufficient permissions"
+msgstr "สิทธิ์ไม่เพียงพอ"
+
+#: src/Admin/Settings.php:297
+msgid "Invalid setting"
+msgstr "การตั้งค่าไม่ถูกต้อง"
+
+#: src/Admin/Settings.php:307
+msgid "Setting updated successfully"
+msgstr "อัปเดตการตั้งค่าสำเร็จ"
+
+#: src/Admin/Settings.php:324
+msgid "Health check cache cleared"
+msgstr "ล้างแคชตรวจสอบสุขภาพเรียบร้อยแล้ว"
+
+#. translators: %d: Store ID number.
+#: src/Api/ConnectionController.php:74
+#, php-format
+msgid "Store ID %d has been saved successfully"
+msgstr "ร้านค้า ID %d ถูกบันทึกเรียบร้อยแล้ว"
+
+#: src/Api/CouponController.php:79
+#: src/Api/ProductsController.php:43
+msgid "WooCommerce is not active"
+msgstr "WooCommerce ไม่ได้เปิดใช้งาน"
+
+#: src/Api/CouponController.php:89
+msgid "Coupon code is required"
+msgstr "ต้องระบุรหัสคูปอง"
+
+#. translators: %s: Template coupon code.
+#: src/Api/CouponController.php:126
+#, php-format
+msgid "Template coupon '%s' not found"
+msgstr "ไม่พบเทมเพลตคูปอง '%s'"
+
+#: src/Api/CouponController.php:155
+msgid "discount_type and amount are required when not using template"
+msgstr "ต้องระบุ discount_type และ amount เมื่อไม่ใช้เทมเพลต"
+
+#: src/Api/RatingsController.php:43
+msgid "Product ID is required"
+msgstr "ต้องระบุรหัสสินค้า"
+
+#: src/Api/RatingsController.php:49
+msgid "Invalid product ID"
+msgstr "รหัสสินค้าผิดพลาด"
+
+#: src/Api/RatingsController.php:53
+msgid "Product not found"
+msgstr "ไม่พบสินค้า"
+
+#: src/Api/RatingsController.php:93
+msgid "Average stars must be a number between 1 and 5"
+msgstr "คะแนนเฉลี่ยต้องเป็นตัวเลขระหว่าง 1 ถึง 5"
+
+#: src/Api/RatingsController.php:97
+msgid "Review count must be a non-negative number"
+msgstr "จำนวนรีวิวต้องเป็นตัวเลขที่ไม่ติดลบ"
+
+#: src/Api/RatingsController.php:101
+msgid "Rating counts must be an array"
+msgstr "จำนวนคะแนนต้องเป็นอาร์เรย์"
+
+#: src/Api/RatingsController.php:174
+msgid "Customer email is required"
+msgstr "ต้องระบุอีเมลลูกค้า"
+
+#: src/Api/RatingsController.php:178
+msgid "Invalid email address"
+msgstr "ที่อยู่อีเมลไม่ถูกต้อง"
+
+#: src/functions.php:114
+#: src/functions.php:290
+msgid "API request failed"
+msgstr "คำขอ API ล้มเหลว"
+
+#: src/functions.php:197
+msgid "Store is not connected to Reviewbird."
+msgstr "ร้านค้าไม่ได้เชื่อมต่อกับ Reviewbird."
+
+#: src/functions.php:207
+msgid "Unable to generate API key for authentication."
+msgstr "ไม่สามารถสร้างคีย์ API สำหรับการยืนยันตัวตนได้."
+
+#: src/functions.php:221
+msgid "Maximum of 50 product IDs allowed per request."
+msgstr "อนุญาตให้ใช้รหัสสินค้าสูงสุด 50 รายการต่อคำขอ."
+
+#: src/functions.php:326
+msgid "Failed to decode API response."
+msgstr "ไม่สามารถถอดรหัสการตอบสนอง API ได้."
+
+#. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:177
+#, php-format
+msgid "Rated %s out of 5"
+msgstr "ให้คะแนน %s จาก 5"
+
+#. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:180
+#, php-format
+msgid "Rated %s out of 5, click to view reviews"
+msgstr "ให้คะแนน %s จาก 5, คลิกเพื่อดูรีวิว"
+
+#: assets/src/js/components/ConnectionHealth.jsx:10
+msgid "Connected to Reviewbird"
+msgstr "เชื่อมต่อกับ Reviewbird แล้ว"
+
+#: assets/src/js/components/ConnectionHealth.jsx:11
+msgid "Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly."
+msgstr "ร้านค้า WooCommerce ของคุณเชื่อมต่อกับ Reviewbird สำเร็จ ข้อมูลรีวิวกำลังซิงค์อย่างถูกต้อง"
+
+#: assets/src/js/components/ConnectionHealth.jsx:12
+msgid "View Dashboard"
+msgstr "ดูแดชบอร์ด"
+
+#: assets/src/js/components/ConnectionHealth.jsx:18
+msgid "WooCommerce Not Connected"
+msgstr "WooCommerce ยังไม่เชื่อมต่อ"
+
+#: assets/src/js/components/ConnectionHealth.jsx:19
+msgid "WooCommerce is not yet connected to Reviewbird. Connect your store to start syncing products and reviews."
+msgstr "WooCommerce ยังไม่ได้เชื่อมต่อกับ Reviewbird เชื่อมต่อร้านค้าของคุณเพื่อเริ่มซิงค์สินค้าและรีวิว"
+
+#: assets/src/js/components/ConnectionHealth.jsx:20
+msgid "Connect WooCommerce"
+msgstr "เชื่อมต่อ WooCommerce"
+
+#: assets/src/js/components/ConnectionHealth.jsx:26
+msgid "Initial Sync in Progress"
+msgstr "กำลังซิงค์ครั้งแรก"
+
+#: assets/src/js/components/ConnectionHealth.jsx:27
+msgid "Reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
+msgstr "Reviewbird กำลังซิงค์สินค้าและรีวิวของคุณ อาจใช้เวลาสักครู่ขึ้นอยู่กับขนาดแคตตาล็อก วิดเจ็ตจะพร้อมใช้งานเมื่อซิงค์เสร็จสิ้น"
+
+#: assets/src/js/components/ConnectionHealth.jsx:28
+msgid "View Sync Progress"
+msgstr "ดูความคืบหน้าการซิงค์"
+
+#: assets/src/js/components/ConnectionHealth.jsx:34
+msgid "Subscription Required"
+msgstr "ต้องสมัครสมาชิก"
+
+#: assets/src/js/components/ConnectionHealth.jsx:35
+msgid "Your Reviewbird subscription is inactive. Please update your billing information to continue using the service."
+msgstr "การสมัครสมาชิก Reviewbird ของคุณไม่ใช้งาน กรุณาอัปเดตข้อมูลการชำระเงินเพื่อใช้บริการต่อ"
+
+#: assets/src/js/components/ConnectionHealth.jsx:36
+msgid "Update Billing"
+msgstr "อัปเดตการชำระเงิน"
+
+#: assets/src/js/components/ConnectionHealth.jsx:42
+#: assets/src/js/components/ConnectionHealth.jsx:50
+msgid "Connection Issue Detected"
+msgstr "ตรวจพบปัญหาการเชื่อมต่อ"
+
+#: assets/src/js/components/ConnectionHealth.jsx:43
+msgid "Unable to connect to Reviewbird. Please check your connection settings."
+msgstr "ไม่สามารถเชื่อมต่อกับ Reviewbird ได้ กรุณาตรวจสอบการตั้งค่าการเชื่อมต่อของคุณ"
+
+#: assets/src/js/components/ConnectionHealth.jsx:44
+msgid "Fix Connection"
+msgstr "แก้ไขการเชื่อมต่อ"
+
+#: assets/src/js/components/ConnectionHealth.jsx:51
+msgid "Unable to reach Reviewbird API. Please check your internet connection."
+msgstr "ไม่สามารถเข้าถึง API ของ Reviewbird ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณ"
+
+#: assets/src/js/components/ConnectionHealth.jsx:52
+msgid "Get Help"
+msgstr "ขอความช่วยเหลือ"
+
+#: assets/src/js/components/ConnectionHealth.jsx:58
+msgid "Checking connection..."
+msgstr "กำลังตรวจสอบการเชื่อมต่อ..."
+
+#: assets/src/js/components/ConnectionHealth.jsx:59
+msgid "Verifying connection to Reviewbird..."
+msgstr "กำลังยืนยันการเชื่อมต่อกับ Reviewbird..."
+
+#: assets/src/js/components/ConnectionHealth.jsx:60
+msgid "Open Reviewbird"
+msgstr "เปิด Reviewbird"
+
+#: assets/src/js/components/ConnectionHealth.jsx:191
+msgid "Connection Issue"
+msgstr "ปัญหาการเชื่อมต่อ"
+
+#: assets/src/js/components/ConnectionHealth.jsx:260
+msgid "Refresh"
+msgstr "รีเฟรช"
+
+#: assets/src/js/components/ConnectionHealth.jsx:281
+msgid "Last checked:"
+msgstr "ตรวจสอบล่าสุด:"
+
+#: assets/src/js/components/LoadingSpinner.jsx:8
+msgid "Loading..."
+msgstr "กำลังโหลด..."
+
+#: assets/src/js/components/SettingsApp.jsx:44
+msgid "Failed to update setting. Please try again."
+msgstr "อัปเดตการตั้งค่าล้มเหลว กรุณาลองใหม่อีกครั้ง"
+
+#: assets/src/js/components/SettingsApp.jsx:90
+msgid "Connected Store Settings"
+msgstr "การตั้งค่าร้านค้าที่เชื่อมต่อ"
+
+#: assets/src/js/components/SettingsApp.jsx:96
+msgid "Manage your Reviewbird integration with WooCommerce."
+msgstr "จัดการการรวม Reviewbird ของคุณกับ WooCommerce"
+
+#: assets/src/js/components/SettingsApp.jsx:113
+msgid "Reviewbird Widget"
+msgstr "วิดเจ็ต Reviewbird"
+
+#: assets/src/js/components/SettingsApp.jsx:114
+msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
+msgstr "แสดงวิดเจ็ตรีวิว Reviewbird บนหน้าผลิตภัณฑ์ วิดเจ็ตจะแสดงรีวิวของลูกค้าและอนุญาตให้ลูกค้าส่งรีวิวใหม่ได้"
+
+#: assets/src/js/components/SettingsApp.jsx:120
+msgid "Widget is enabled on all WooCommerce product pages."
+msgstr "วิดเจ็ตเปิดใช้งานบนหน้าผลิตภัณฑ์ WooCommerce ทั้งหมด"
+
+#: assets/src/js/components/SettingsApp.jsx:129
+msgid "Forcefully enable reviews on all products"
+msgstr "บังคับเปิดใช้งานรีวิวในสินค้าทั้งหมด"
+
+#: assets/src/js/components/SettingsApp.jsx:135
+msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
+msgstr "ปล่อยให้ปิดหากคุณต้องการควบคุมรีวิวต่อผลิตภัณฑ์โดยใช้ช่องทำเครื่องหมาย \"เปิดใช้งานรีวิว\""
+
+#: assets/src/js/components/SettingsApp.jsx:171
+msgid "SEO Schema Markup"
+msgstr "การทำเครื่องหมายสคีมา SEO"
+
+#: assets/src/js/components/SettingsApp.jsx:172
+msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
+msgstr "เปิดใช้งานข้อมูลโครงสร้างที่เป็นไปตาม Google (สคีมา JSON-LD) บนหน้าผลิตภัณฑ์สำหรับสแนปช็อตที่สมบูรณ์ในผลการค้นหา"
+
+#: assets/src/js/components/SettingsApp.jsx:178
+msgid "Schema markup is active on all WooCommerce product pages."
+msgstr "การทำเครื่องหมายสคีมาเปิดใช้งานบนหน้าผลิตภัณฑ์ WooCommerce ทั้งหมด"
+
+#: assets/src/js/components/SettingsApp.jsx:183
+msgid "What is Schema Markup?"
+msgstr "การทำเครื่องหมายสคีมาคืออะไร?"
+
+#: assets/src/js/components/SettingsApp.jsx:185
+msgid "Displays star ratings in Google search results"
+msgstr "แสดงคะแนนดาวในผลการค้นหาของ Google"
+
+#: assets/src/js/components/SettingsApp.jsx:189
+msgid "Shows review counts and product information"
+msgstr "แสดงจำนวนรีวิวและข้อมูลผลิตภัณฑ์"
+
+#: assets/src/js/components/SettingsApp.jsx:193
+msgid "Review schema is cached for 4 hours for optimal performance"
+msgstr "สคีมาริวิวถูกแคชไว้ 4 ชั่วโมงเพื่อประสิทธิภาพที่ดีที่สุด"
+
+#: assets/src/js/components/SettingsApp.jsx:202
+msgid "Test with Google Rich Results"
+msgstr "ทดสอบด้วย Google Rich Results"
+
+#: assets/src/js/components/SettingsApp.jsx:209
+msgid "Validate Schema"
+msgstr "ตรวจสอบความถูกต้องของสคีมา"
+
+#: assets/src/js/components/TogglePanel.jsx:114
+msgid "Enabled"
+msgstr "เปิดใช้งาน"
+
+#: assets/src/js/components/TogglePanel.jsx:115
+msgid "Disabled"
+msgstr "ปิดใช้งาน"
+
+#: assets/src/js/components/WelcomeScreen.jsx:6
+msgid "Create your Reviewbird account"
+msgstr "สร้างบัญชี Reviewbird ของคุณ"
+
+#: assets/src/js/components/WelcomeScreen.jsx:7
+msgid "Start with the free plan, then connect your WooCommerce store whenever you are ready."
+msgstr "เริ่มต้นด้วยแผนฟรี แล้วเชื่อมต่อร้าน WooCommerce ของคุณเมื่อพร้อม"
+
+#: assets/src/js/components/WelcomeScreen.jsx:14
+msgid "Authorize your WooCommerce store"
+msgstr "อนุญาตร้าน WooCommerce ของคุณ"
+
+#: assets/src/js/components/WelcomeScreen.jsx:15
+msgid "Connect Reviewbird so it can securely sync products, orders, and review activity."
+msgstr "เชื่อมต่อ Reviewbird เพื่อให้สามารถซิงค์สินค้า คำสั่งซื้อ และกิจกรรมรีวิวได้อย่างปลอดภัย"
+
+#: assets/src/js/components/WelcomeScreen.jsx:22
+msgid "Turn on your review experience"
+msgstr "เปิดประสบการณ์รีวิวของคุณ"
+
+#: assets/src/js/components/WelcomeScreen.jsx:23
+msgid "Enable the widget in WordPress and start collecting polished, conversion-friendly product reviews."
+msgstr "เปิดใช้งานวิดเจ็ตใน WordPress และเริ่มเก็บรีวิวสินค้าที่ดูดีและช่วยเพิ่มการแปลง"
+
+#: assets/src/js/components/WelcomeScreen.jsx:53
+msgid "Step"
+msgstr "ขั้นตอน"
+
+#: assets/src/js/components/WelcomeScreen.jsx:82
+msgid "Welcome to Reviewbird for WooCommerce"
+msgstr "ยินดีต้อนรับสู่ Reviewbird สำหรับ WooCommerce"
+
+#: assets/src/js/components/WelcomeScreen.jsx:93
+msgid "Collect more reviews with less friction."
+msgstr "เก็บรีวิวได้มากขึ้นโดยมีอุปสรรคน้อยลง"
+
+#: assets/src/js/components/WelcomeScreen.jsx:100
+msgid "Reviewbird helps WooCommerce merchants collect, moderate, and showcase product reviews with a polished experience that feels native to their storefront."
+msgstr "Reviewbird ช่วยพ่อค้า WooCommerce เก็บ ควบคุม และแสดงรีวิวสินค้า ด้วยประสบการณ์ที่ดูดีและเหมือนเป็นส่วนหนึ่งของร้านค้า"
+
+#: assets/src/js/components/WelcomeScreen.jsx:115
+msgid "Get Started Free"
+msgstr "เริ่มต้นฟรี"
+
+#: assets/src/js/components/WelcomeScreen.jsx:122
+msgid "Free plan available. Create your account first, then connect WooCommerce when you are ready."
+msgstr "มีแผนฟรีให้ใช้ สร้างบัญชีก่อน แล้วเชื่อมต่อ WooCommerce เมื่อคุณพร้อม"
+
+#: assets/src/js/components/WelcomeScreen.jsx:129
+msgid "Already have an account?"
+msgstr "มีบัญชีอยู่แล้วหรือ?"
+
+#: assets/src/js/components/WelcomeScreen.jsx:136
+msgid "Connect your store"
+msgstr "เชื่อมต่อร้านของคุณ"
+
+#: assets/src/js/components/WelcomeScreen.jsx:145
+msgid "See It In Action"
+msgstr "ดูการทำงานจริง"
+
+#: assets/src/js/components/WelcomeScreen.jsx:148
+msgid "A quick look at the Reviewbird widget"
+msgstr "ดูวิดเจ็ต Reviewbird อย่างรวดเร็ว"
+
+#: assets/src/js/components/WelcomeScreen.jsx:154
+msgid "Leaving a review shouldn't feel applying for a loan. Our widget makes review submission easy and painless."
+msgstr "การเขียนรีวิวไม่ควรรู้สึกเหมือนการสมัครสินเชื่อ วิดเจ็ตของเราทำให้การส่งรีวิวง่ายและไม่เจ็บปวด"
+
+#: assets/src/js/components/WelcomeScreen.jsx:165
+msgid "Reviewbird onboarding video"
+msgstr "วิดีโอแนะนำ Reviewbird"
+
+#: assets/src/js/components/WelcomeScreen.jsx:182
+msgid "Setup"
+msgstr "การตั้งค่า"
+
+#: assets/src/js/components/WelcomeScreen.jsx:185
+msgid "Go live in three quick steps."
+msgstr "เปิดใช้งานในสามขั้นตอนง่ายๆ"
+
+#: assets/src/js/components/WelcomeScreen.jsx:188
+msgid "Create your account, connect WooCommerce, then"
+msgstr "สร้างบัญชี เชื่อมต่อ WooCommerce แล้ว"
+
+#: assets/src/js/components/WelcomeScreen.jsx:196
+msgid "enable the widget in settings"
+msgstr "เปิดใช้งานวิดเจ็ตในการตั้งค่า"

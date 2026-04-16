@@ -6,18 +6,24 @@
 @tailwind components;
 @tailwind utilities;
 
-body.toplevel_page_reviewbird-settings {
+body.toplevel_page_reviewbird-get-started,
+body.reviewbird-get-started_page_reviewbird-settings,
+body.reviewbird_page_reviewbird-settings {
 	background:
 		radial-gradient(circle at top left, rgba(248, 213, 155, 0.45), transparent 28%),
 		radial-gradient(circle at top right, rgba(239, 143, 53, 0.18), transparent 24%),
 		linear-gradient(180deg, #fffaf3 0%, #f8f2e9 46%, #f1f5f7 100%);
 }
 
-body.toplevel_page_reviewbird-settings #wpcontent {
+body.toplevel_page_reviewbird-get-started #wpcontent,
+body.reviewbird-get-started_page_reviewbird-settings #wpcontent,
+body.reviewbird_page_reviewbird-settings #wpcontent {
 	padding-left: 0;
 }
 
-body.toplevel_page_reviewbird-settings .wrap {
+body.toplevel_page_reviewbird-get-started .wrap,
+body.reviewbird-get-started_page_reviewbird-settings .wrap,
+body.reviewbird_page_reviewbird-settings .wrap {
 	margin: 0;
 	padding: 24px 24px 40px;
 }
@@ -47,9 +53,9 @@ body.toplevel_page_reviewbird-settings .wrap {
 .reviewbird-admin-shell {
 	border: 1px solid rgba(255, 255, 255, 0.75);
 	border-radius: 32px;
-	background: linear-gradient(145deg, rgba(255, 252, 247, 0.96), rgba(251, 245, 235, 0.94));
+	background: linear-gradient(145deg, rgba(255, 252, 247, 0.97), rgba(252, 247, 239, 0.94));
 	box-shadow:
-		0 30px 90px rgba(27, 32, 41, 0.12),
+		0 24px 72px rgba(27, 32, 41, 0.1),
 		inset 0 1px 0 rgba(255, 255, 255, 0.75);
 	padding: clamp(1.75rem, 3vw, 3rem);
 }
@@ -81,7 +87,7 @@ body.toplevel_page_reviewbird-settings .wrap {
 .reviewbird-chip {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.65rem;
+	gap: 0.5rem;
 	border: 1px solid rgba(214, 182, 138, 0.55);
 	background: rgba(255, 248, 238, 0.92);
 	color: #7c4818;
@@ -96,15 +102,7 @@ body.toplevel_page_reviewbird-settings .wrap {
 	text-transform: uppercase;
 }
 
-.reviewbird-chip {
-	border-radius: 9999px;
-	padding: 0.55rem 0.9rem;
-	font-size: 0.85rem;
-	font-weight: 600;
-}
-
-.reviewbird-button-primary,
-.reviewbird-button-secondary {
+.reviewbird-button-primary {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -118,8 +116,7 @@ body.toplevel_page_reviewbird-settings .wrap {
 		transform 160ms ease,
 		box-shadow 160ms ease,
 		background-color 160ms ease,
-		color 160ms ease,
-		border-color 160ms ease;
+		color 160ms ease;
 }
 
 .reviewbird-button-primary {
@@ -135,81 +132,144 @@ body.toplevel_page_reviewbird-settings .wrap {
 	box-shadow: 0 20px 36px rgba(221, 107, 55, 0.34);
 }
 
-.reviewbird-button-secondary {
-	border: 1px solid rgba(34, 48, 65, 0.12);
-	background: rgba(255, 255, 255, 0.65);
-	color: #223041;
-	box-shadow: 0 10px 25px rgba(34, 48, 65, 0.08);
-}
-
-.reviewbird-button-secondary:hover,
-.reviewbird-button-secondary:focus {
-	color: #18222f;
-	transform: translateY(-1px);
-	border-color: rgba(34, 48, 65, 0.18);
-}
-
-.reviewbird-step-card,
-.reviewbird-feature-card {
-	border-radius: 26px;
-	border: 1px solid rgba(255, 255, 255, 0.8);
-	background: rgba(255, 255, 255, 0.8);
+.reviewbird-video-shell {
+	border-radius: 28px;
+	border: 1px solid rgba(255, 255, 255, 0.78);
+	background: rgba(255, 255, 255, 0.82);
 	box-shadow: 0 18px 48px rgba(19, 28, 37, 0.08);
+	padding: clamp(1.1rem, 2vw, 1.5rem);
+}
+
+.reviewbird-video-frame {
+	overflow: hidden;
+	border-radius: 22px;
+	background: #18222f;
+	box-shadow: 0 18px 40px rgba(24, 34, 47, 0.18);
+}
+
+.reviewbird-video-embed {
+	position: relative;
+	padding-top: 78.95%;
+}
+
+.reviewbird-video-iframe {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	background: #18222f;
+}
+
+.reviewbird-steps-shell {
+	border-top: 1px solid rgba(154, 90, 33, 0.12);
+	padding-top: 1.75rem;
+}
+
+.reviewbird-steps-grid {
+	position: relative;
+	display: grid;
+	gap: 1.25rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
 }
 
 .reviewbird-step-card {
-	padding: 1.5rem;
+	position: relative;
+	padding: 0 1rem 0 0;
 }
 
-.reviewbird-feature-card {
-	padding: 1.7rem;
+.reviewbird-step-card > div:last-child {
+	margin-top: 0.95rem;
 }
 
-.reviewbird-feature-icon {
+.reviewbird-step-chip {
+	position: relative;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.55rem;
+	padding: 0.45rem 0.75rem;
+	border: 1px solid rgba(214, 182, 138, 0.55);
+	border-radius: 9999px;
+	background: rgba(255, 250, 243, 0.98);
+	box-shadow: 0 10px 24px rgba(24, 34, 47, 0.06);
+}
+
+.reviewbird-step-chip-label {
+	font-size: 0.68rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: #9a5a21;
+}
+
+.reviewbird-step-chip-number {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 3rem;
-	height: 3rem;
+	min-width: 1.9rem;
+	height: 1.9rem;
 	border-radius: 9999px;
-	background: linear-gradient(135deg, #fff2df 0%, #ffe0b6 100%);
-	color: #a8551d;
-}
-
-.reviewbird-dark-panel {
-	border-radius: 30px;
-	background:
-		linear-gradient(180deg, rgba(24, 34, 47, 0.96) 0%, rgba(28, 42, 57, 0.98) 100%);
-	box-shadow: 0 28px 64px rgba(15, 23, 42, 0.2);
-	padding: clamp(1.4rem, 2vw, 2rem);
-}
-
-.reviewbird-stat-tile {
-	display: flex;
-	gap: 0.85rem;
-	align-items: flex-start;
-	padding: 0.95rem 1rem;
-	border-radius: 20px;
-	background: rgba(255, 255, 255, 0.08);
-	color: #fff;
-}
-
-.reviewbird-stat-value {
-	margin: 0;
-	font-size: 1rem;
+	background: linear-gradient(135deg, #fff1de 0%, #ffe1bc 100%);
+	color: #9a5a21;
+	font-size: 0.88rem;
 	font-weight: 700;
-	color: #fff;
 }
 
-.reviewbird-stat-label {
-	margin: 0.15rem 0 0;
-	font-size: 0.75rem;
-	line-height: 1.4;
-	color: rgba(255, 255, 255, 0.72);
+@media (min-width: 900px) {
+	.reviewbird-steps-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1.75rem;
+	}
+
+	.reviewbird-steps-grid::before {
+		content: "";
+		position: absolute;
+		top: 1rem;
+		left: 1.5rem;
+		right: 1.5rem;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			rgba(154, 90, 33, 0.14) 0%,
+			rgba(239, 143, 53, 0.26) 50%,
+			rgba(154, 90, 33, 0.14) 100%
+		);
+	}
+}
+
+@media (max-width: 899px) {
+	.reviewbird-steps-grid {
+		padding-left: 1rem;
+	}
+
+	.reviewbird-steps-grid::before {
+		content: "";
+		position: absolute;
+		top: 0.75rem;
+		bottom: 0.75rem;
+		left: 0;
+		width: 1px;
+		background: linear-gradient(
+			180deg,
+			rgba(154, 90, 33, 0.1) 0%,
+			rgba(239, 143, 53, 0.24) 50%,
+			rgba(154, 90, 33, 0.1) 100%
+		);
+	}
+
+	.reviewbird-step-card {
+		padding-left: 0.25rem;
+	}
 }
 
 @media (max-width: 782px) {
-	body.toplevel_page_reviewbird-settings .wrap {
+	body.toplevel_page_reviewbird-get-started .wrap,
+	body.reviewbird-get-started_page_reviewbird-settings .wrap,
+	body.reviewbird_page_reviewbird-settings .wrap {
 		padding: 16px 12px 28px;
 	}
 

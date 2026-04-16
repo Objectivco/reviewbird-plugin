@@ -495,7 +495,7 @@ class Plugin {
 			return;
 		}
 
-		wp_safe_redirect( admin_url( 'admin.php?page=reviewbird-settings' ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=reviewbird-get-started' ) );
 		exit;
 	}
 
