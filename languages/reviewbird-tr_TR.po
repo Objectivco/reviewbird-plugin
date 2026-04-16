@@ -1,0 +1,426 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Reviewbird 1.0.12\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
+"Last-Translator: gpt-po v1.2.3\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-02-02T22:39:13+00:00\n"
+"PO-Revision-Date: 2026-04-16 00:00+0000\n"
+"Language: tr_TR\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: reviewbird\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: reviewbird-plugin.php
+#: src/Admin/Settings.php:109
+#: src/Admin/Settings.php:110
+msgid "Reviewbird"
+msgstr "Reviewbird"
+
+#. Plugin URI of the plugin
+#: reviewbird-plugin.php
+msgid "https://reviewbird.com"
+msgstr "https://reviewbird.com"
+
+#. Description of the plugin
+#: reviewbird-plugin.php
+msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
+msgstr "Spam'i engelleyen, şikayetleri yakalayan ve en iyi geri bildirimlerinizi sergileyen WooCommerce için otomatik inceleme toplama."
+
+#: src/Admin/Settings.php:76
+msgid "Reviewbird Connection Error:"
+msgstr "Reviewbird Bağlantı Hatası:"
+
+#: src/Admin/Settings.php:95
+msgid "Successfully connected to Reviewbird!"
+msgstr "Reviewbird'e başarıyla bağlanıldı!"
+
+#: src/Admin/Settings.php:120
+#: src/Admin/Settings.php:121
+msgid "Get Started"
+msgstr "Başlayın"
+
+#: src/Admin/Settings.php:129
+#: assets/src/js/components/SettingsApp.jsx:93
+msgid "Reviewbird Settings"
+msgstr "Reviewbird Ayarları"
+
+#: src/Admin/Settings.php:130
+#: src/Core/Plugin.php:465
+msgid "Settings"
+msgstr "Ayarlar"
+
+#: src/Admin/Settings.php:268
+msgid "Invalid security token"
+msgstr "Geçersiz güvenlik belirteci"
+
+#: src/Admin/Settings.php:272
+msgid "Insufficient permissions"
+msgstr "Yetersiz izinler"
+
+#: src/Admin/Settings.php:297
+msgid "Invalid setting"
+msgstr "Geçersiz ayar"
+
+#: src/Admin/Settings.php:307
+msgid "Setting updated successfully"
+msgstr "Ayar başarıyla güncellendi"
+
+#: src/Admin/Settings.php:324
+msgid "Health check cache cleared"
+msgstr "Sağlık kontrolü önbelleği temizlendi"
+
+#. translators: %d: Store ID number.
+#: src/Api/ConnectionController.php:74
+#, php-format
+msgid "Store ID %d has been saved successfully"
+msgstr "Mağaza ID %d başarıyla kaydedildi"
+
+#: src/Api/CouponController.php:79
+#: src/Api/ProductsController.php:43
+msgid "WooCommerce is not active"
+msgstr "WooCommerce etkin değil"
+
+#: src/Api/CouponController.php:89
+msgid "Coupon code is required"
+msgstr "Kupon kodu gereklidir"
+
+#. translators: %s: Template coupon code.
+#: src/Api/CouponController.php:126
+#, php-format
+msgid "Template coupon '%s' not found"
+msgstr "Şablon kuponu '%s' bulunamadı"
+
+#: src/Api/CouponController.php:155
+msgid "discount_type and amount are required when not using template"
+msgstr "Şablon kullanılmadığında discount_type ve amount gereklidir"
+
+#: src/Api/RatingsController.php:43
+msgid "Product ID is required"
+msgstr "Ürün ID gereklidir"
+
+#: src/Api/RatingsController.php:49
+msgid "Invalid product ID"
+msgstr "Geçersiz ürün ID"
+
+#: src/Api/RatingsController.php:53
+msgid "Product not found"
+msgstr "Ürün bulunamadı"
+
+#: src/Api/RatingsController.php:93
+msgid "Average stars must be a number between 1 and 5"
+msgstr "Ortalama yıldız sayısı 1 ile 5 arasında bir sayı olmalıdır"
+
+#: src/Api/RatingsController.php:97
+msgid "Review count must be a non-negative number"
+msgstr "İnceleme sayısı negatif olmayan bir sayı olmalıdır"
+
+#: src/Api/RatingsController.php:101
+msgid "Rating counts must be an array"
+msgstr "Değerlendirme sayıları bir dizi olmalıdır"
+
+#: src/Api/RatingsController.php:174
+msgid "Customer email is required"
+msgstr "Müşteri e-postası gereklidir"
+
+#: src/Api/RatingsController.php:178
+msgid "Invalid email address"
+msgstr "Geçersiz e-posta adresi"
+
+#: src/functions.php:114
+#: src/functions.php:290
+msgid "API request failed"
+msgstr "API isteği başarısız oldu"
+
+#: src/functions.php:197
+msgid "Store is not connected to Reviewbird."
+msgstr "Mağaza Reviewbird'e bağlı değil."
+
+#: src/functions.php:207
+msgid "Unable to generate API key for authentication."
+msgstr "Kimlik doğrulama için API anahtarı oluşturulamıyor."
+
+#: src/functions.php:221
+msgid "Maximum of 50 product IDs allowed per request."
+msgstr "İstek başına en fazla 50 ürün ID'si izin verilir."
+
+#: src/functions.php:326
+msgid "Failed to decode API response."
+msgstr "API yanıtı çözülemedi."
+
+#. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:177
+#, php-format
+msgid "Rated %s out of 5"
+msgstr "5 üzerinden %s puan verildi"
+
+#. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:180
+#, php-format
+msgid "Rated %s out of 5, click to view reviews"
+msgstr "5 üzerinden %s puan verildi, incelemeleri görmek için tıklayın"
+
+#: assets/src/js/components/ConnectionHealth.jsx:10
+msgid "Connected to Reviewbird"
+msgstr "Reviewbird'e bağlandı"
+
+#: assets/src/js/components/ConnectionHealth.jsx:11
+msgid "Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly."
+msgstr "WooCommerce mağazanız başarıyla Reviewbird'e bağlandı. İnceleme verileri düzgün şekilde senkronize ediliyor."
+
+#: assets/src/js/components/ConnectionHealth.jsx:12
+msgid "View Dashboard"
+msgstr "Gösterge Tablosunu Görüntüle"
+
+#: assets/src/js/components/ConnectionHealth.jsx:18
+msgid "WooCommerce Not Connected"
+msgstr "WooCommerce Bağlı Değil"
+
+#: assets/src/js/components/ConnectionHealth.jsx:19
+msgid "WooCommerce is not yet connected to Reviewbird. Connect your store to start syncing products and reviews."
+msgstr "WooCommerce henüz Reviewbird'e bağlı değil. Ürünleri ve incelemeleri senkronize etmeye başlamak için mağazanızı bağlayın."
+
+#: assets/src/js/components/ConnectionHealth.jsx:20
+msgid "Connect WooCommerce"
+msgstr "WooCommerce Bağla"
+
+#: assets/src/js/components/ConnectionHealth.jsx:26
+msgid "Initial Sync in Progress"
+msgstr "İlk Senkronizasyon Devam Ediyor"
+
+#: assets/src/js/components/ConnectionHealth.jsx:27
+msgid "Reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
+msgstr "Reviewbird ürünlerinizi ve incelemelerinizi senkronize ediyor. Katalog boyutunuza bağlı olarak birkaç dakika sürebilir. Senkronizasyon tamamlandığında widget kullanılabilir olacak."
+
+#: assets/src/js/components/ConnectionHealth.jsx:28
+msgid "View Sync Progress"
+msgstr "Senkronizasyon İlerlemesini Görüntüle"
+
+#: assets/src/js/components/ConnectionHealth.jsx:34
+msgid "Subscription Required"
+msgstr "Abonelik Gerekiyor"
+
+#: assets/src/js/components/ConnectionHealth.jsx:35
+msgid "Your Reviewbird subscription is inactive. Please update your billing information to continue using the service."
+msgstr "Reviewbird aboneliğiniz etkin değil. Hizmeti kullanmaya devam etmek için fatura bilgilerinizi güncelleyin."
+
+#: assets/src/js/components/ConnectionHealth.jsx:36
+msgid "Update Billing"
+msgstr "Faturayı Güncelle"
+
+#: assets/src/js/components/ConnectionHealth.jsx:42
+#: assets/src/js/components/ConnectionHealth.jsx:50
+msgid "Connection Issue Detected"
+msgstr "Bağlantı Sorunu Tespit Edildi"
+
+#: assets/src/js/components/ConnectionHealth.jsx:43
+msgid "Unable to connect to Reviewbird. Please check your connection settings."
+msgstr "Reviewbird'e bağlanılamıyor. Lütfen bağlantı ayarlarınızı kontrol edin."
+
+#: assets/src/js/components/ConnectionHealth.jsx:44
+msgid "Fix Connection"
+msgstr "Bağlantıyı Düzelt"
+
+#: assets/src/js/components/ConnectionHealth.jsx:51
+msgid "Unable to reach Reviewbird API. Please check your internet connection."
+msgstr "Reviewbird API'sine ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin."
+
+#: assets/src/js/components/ConnectionHealth.jsx:52
+msgid "Get Help"
+msgstr "Yardım Al"
+
+#: assets/src/js/components/ConnectionHealth.jsx:58
+msgid "Checking connection..."
+msgstr "Bağlantı kontrol ediliyor..."
+
+#: assets/src/js/components/ConnectionHealth.jsx:59
+msgid "Verifying connection to Reviewbird..."
+msgstr "Reviewbird bağlantısı doğrulanıyor..."
+
+#: assets/src/js/components/ConnectionHealth.jsx:60
+msgid "Open Reviewbird"
+msgstr "Reviewbird'i Aç"
+
+#: assets/src/js/components/ConnectionHealth.jsx:191
+msgid "Connection Issue"
+msgstr "Bağlantı Sorunu"
+
+#: assets/src/js/components/ConnectionHealth.jsx:260
+msgid "Refresh"
+msgstr "Yenile"
+
+#: assets/src/js/components/ConnectionHealth.jsx:281
+msgid "Last checked:"
+msgstr "Son kontrol:"
+
+#: assets/src/js/components/LoadingSpinner.jsx:8
+msgid "Loading..."
+msgstr "Yükleniyor..."
+
+#: assets/src/js/components/SettingsApp.jsx:44
+msgid "Failed to update setting. Please try again."
+msgstr "Ayar güncellenemedi. Lütfen tekrar deneyin."
+
+#: assets/src/js/components/SettingsApp.jsx:90
+msgid "Connected Store Settings"
+msgstr "Bağlı Mağaza Ayarları"
+
+#: assets/src/js/components/SettingsApp.jsx:96
+msgid "Manage your Reviewbird integration with WooCommerce."
+msgstr "WooCommerce ile Reviewbird entegrasyonunuzu yönetin."
+
+#: assets/src/js/components/SettingsApp.jsx:113
+msgid "Reviewbird Widget"
+msgstr "Reviewbird Widget'ı"
+
+#: assets/src/js/components/SettingsApp.jsx:114
+msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
+msgstr "Ürün sayfalarında Reviewbird inceleme widget'ını gösterin. Widget, müşteri yorumlarını gösterir ve müşterilerin yeni yorumlar göndermesine olanak tanır."
+
+#: assets/src/js/components/SettingsApp.jsx:120
+msgid "Widget is enabled on all WooCommerce product pages."
+msgstr "Widget, tüm WooCommerce ürün sayfalarında etkinleştirilmiştir."
+
+#: assets/src/js/components/SettingsApp.jsx:129
+msgid "Forcefully enable reviews on all products"
+msgstr "Tüm ürünlerde yorumları zorunlu olarak etkinleştir"
+
+#: assets/src/js/components/SettingsApp.jsx:135
+msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
+msgstr "\"Yorumları etkinleştir\" onay kutusunu kullanarak yorumları ürün bazında kontrol etmeyi tercih ediyorsanız bunu kapalı bırakın."
+
+#: assets/src/js/components/SettingsApp.jsx:171
+msgid "SEO Schema Markup"
+msgstr "SEO Şema İşaretlemesi"
+
+#: assets/src/js/components/SettingsApp.jsx:172
+msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
+msgstr "Arama sonuçlarında zengin snippet'lar için ürün sayfalarında Google uyumlu yapılandırılmış veriyi (JSON-LD şeması) etkinleştirin."
+
+#: assets/src/js/components/SettingsApp.jsx:178
+msgid "Schema markup is active on all WooCommerce product pages."
+msgstr "Şema işaretlemesi tüm WooCommerce ürün sayfalarında aktiftir."
+
+#: assets/src/js/components/SettingsApp.jsx:183
+msgid "What is Schema Markup?"
+msgstr "Şema İşaretlemesi Nedir?"
+
+#: assets/src/js/components/SettingsApp.jsx:185
+msgid "Displays star ratings in Google search results"
+msgstr "Google arama sonuçlarında yıldız derecelendirmelerini gösterir"
+
+#: assets/src/js/components/SettingsApp.jsx:189
+msgid "Shows review counts and product information"
+msgstr "İnceleme sayıları ve ürün bilgilerini gösterir"
+
+#: assets/src/js/components/SettingsApp.jsx:193
+msgid "Review schema is cached for 4 hours for optimal performance"
+msgstr "İnceleme şeması, optimal performans için 4 saat boyunca önbelleğe alınır"
+
+#: assets/src/js/components/SettingsApp.jsx:202
+msgid "Test with Google Rich Results"
+msgstr "Google Zengin Sonuçları ile Test Et"
+
+#: assets/src/js/components/SettingsApp.jsx:209
+msgid "Validate Schema"
+msgstr "Şemayı Doğrula"
+
+#: assets/src/js/components/TogglePanel.jsx:114
+msgid "Enabled"
+msgstr "Etkin"
+
+#: assets/src/js/components/TogglePanel.jsx:115
+msgid "Disabled"
+msgstr "Devre Dışı"
+
+#: assets/src/js/components/WelcomeScreen.jsx:6
+msgid "Create your Reviewbird account"
+msgstr "Reviewbird hesabınızı oluşturun"
+
+#: assets/src/js/components/WelcomeScreen.jsx:7
+msgid "Start with the free plan, then connect your WooCommerce store whenever you are ready."
+msgstr "Ücretsiz planla başlayın, ardından hazır olduğunuzda WooCommerce mağazanızı bağlayın."
+
+#: assets/src/js/components/WelcomeScreen.jsx:14
+msgid "Authorize your WooCommerce store"
+msgstr "WooCommerce mağazanızı yetkilendirin"
+
+#: assets/src/js/components/WelcomeScreen.jsx:15
+msgid "Connect Reviewbird so it can securely sync products, orders, and review activity."
+msgstr "Reviewbird'i bağlayarak ürünlerin, siparişlerin ve inceleme aktivitelerinin güvenli şekilde senkronize edilmesini sağlayın."
+
+#: assets/src/js/components/WelcomeScreen.jsx:22
+msgid "Turn on your review experience"
+msgstr "İnceleme deneyiminizi açın"
+
+#: assets/src/js/components/WelcomeScreen.jsx:23
+msgid "Enable the widget in WordPress and start collecting polished, conversion-friendly product reviews."
+msgstr "WordPress'te widget'ı etkinleştirin ve şık, dönüşüm dostu ürün yorumları toplamaya başlayın."
+
+#: assets/src/js/components/WelcomeScreen.jsx:53
+msgid "Step"
+msgstr "Adım"
+
+#: assets/src/js/components/WelcomeScreen.jsx:82
+msgid "Welcome to Reviewbird for WooCommerce"
+msgstr "WooCommerce için Reviewbird'a hoş geldiniz"
+
+#: assets/src/js/components/WelcomeScreen.jsx:93
+msgid "Collect more reviews with less friction."
+msgstr "Daha az zorlukla daha fazla yorum toplayın."
+
+#: assets/src/js/components/WelcomeScreen.jsx:100
+msgid "Reviewbird helps WooCommerce merchants collect, moderate, and showcase product reviews with a polished experience that feels native to their storefront."
+msgstr "Reviewbird, WooCommerce satıcılarının ürün yorumlarını toplamasına, denetlemesine ve mağaza görünümüne doğal bir deneyimle sergilemesine yardımcı olur."
+
+#: assets/src/js/components/WelcomeScreen.jsx:115
+msgid "Get Started Free"
+msgstr "Ücretsiz Başlayın"
+
+#: assets/src/js/components/WelcomeScreen.jsx:122
+msgid "Free plan available. Create your account first, then connect WooCommerce when you are ready."
+msgstr "Ücretsiz plan mevcut. Önce hesabınızı oluşturun, ardından hazır olduğunuzda WooCommerce'u bağlayın."
+
+#: assets/src/js/components/WelcomeScreen.jsx:129
+msgid "Already have an account?"
+msgstr "Zaten hesabınız var mı?"
+
+#: assets/src/js/components/WelcomeScreen.jsx:136
+msgid "Connect your store"
+msgstr "Mağazanızı bağlayın"
+
+#: assets/src/js/components/WelcomeScreen.jsx:145
+msgid "See It In Action"
+msgstr "Canlı Görün"
+
+#: assets/src/js/components/WelcomeScreen.jsx:148
+msgid "A quick look at the Reviewbird widget"
+msgstr "Reviewbird widget'ına hızlı bir bakış"
+
+#: assets/src/js/components/WelcomeScreen.jsx:154
+msgid "Leaving a review shouldn't feel applying for a loan. Our widget makes review submission easy and painless."
+msgstr "Yorum bırakmak kredi başvurusu yapmak gibi hissettirmemeli. Widget'ımız yorum göndermeyi kolay ve sorunsuz hale getirir."
+
+#: assets/src/js/components/WelcomeScreen.jsx:165
+msgid "Reviewbird onboarding video"
+msgstr "Reviewbird başlangıç videosu"
+
+#: assets/src/js/components/WelcomeScreen.jsx:182
+msgid "Setup"
+msgstr "Kurulum"
+
+#: assets/src/js/components/WelcomeScreen.jsx:185
+msgid "Go live in three quick steps."
+msgstr "Üç hızlı adımda yayına geçin."
+
+#: assets/src/js/components/WelcomeScreen.jsx:188
+msgid "Create your account, connect WooCommerce, then"
+msgstr "Hesabınızı oluşturun, WooCommerce'u bağlayın, sonra"
+
+#: assets/src/js/components/WelcomeScreen.jsx:196
+msgid "enable the widget in settings"
+msgstr "ayarlar bölümünde widget'ı etkinleştirin"

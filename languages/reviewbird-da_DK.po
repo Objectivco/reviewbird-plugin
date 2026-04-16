@@ -1,0 +1,426 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Reviewbird 1.0.12\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
+"Last-Translator: gpt-po v1.2.3\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-02-02T22:39:13+00:00\n"
+"PO-Revision-Date: 2026-04-16 00:00+0000\n"
+"Language: da_DK\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: reviewbird\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: reviewbird-plugin.php
+#: src/Admin/Settings.php:109
+#: src/Admin/Settings.php:110
+msgid "Reviewbird"
+msgstr "Reviewbird"
+
+#. Plugin URI of the plugin
+#: reviewbird-plugin.php
+msgid "https://reviewbird.com"
+msgstr "https://reviewbird.com"
+
+#. Description of the plugin
+#: reviewbird-plugin.php
+msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
+msgstr "Automatiseret anmeldelsessamling til WooCommerce, der blokerer spam, fanger klager og fremviser din bedste feedback."
+
+#: src/Admin/Settings.php:76
+msgid "Reviewbird Connection Error:"
+msgstr "Reviewbird forbindelsesfejl:"
+
+#: src/Admin/Settings.php:95
+msgid "Successfully connected to Reviewbird!"
+msgstr "Forbundet til Reviewbird!"
+
+#: src/Admin/Settings.php:120
+#: src/Admin/Settings.php:121
+msgid "Get Started"
+msgstr "Kom i gang"
+
+#: src/Admin/Settings.php:129
+#: assets/src/js/components/SettingsApp.jsx:93
+msgid "Reviewbird Settings"
+msgstr "Reviewbird-indstillinger"
+
+#: src/Admin/Settings.php:130
+#: src/Core/Plugin.php:465
+msgid "Settings"
+msgstr "Indstillinger"
+
+#: src/Admin/Settings.php:268
+msgid "Invalid security token"
+msgstr "Ugyldig sikkerhedstoken"
+
+#: src/Admin/Settings.php:272
+msgid "Insufficient permissions"
+msgstr "Utilstrækkelige tilladelser"
+
+#: src/Admin/Settings.php:297
+msgid "Invalid setting"
+msgstr "Ugyldig indstilling"
+
+#: src/Admin/Settings.php:307
+msgid "Setting updated successfully"
+msgstr "Indstilling opdateret"
+
+#: src/Admin/Settings.php:324
+msgid "Health check cache cleared"
+msgstr "Cache til sundhedstjek ryddet"
+
+#. translators: %d: Store ID number.
+#: src/Api/ConnectionController.php:74
+#, php-format
+msgid "Store ID %d has been saved successfully"
+msgstr "Butik ID %d er gemt"
+
+#: src/Api/CouponController.php:79
+#: src/Api/ProductsController.php:43
+msgid "WooCommerce is not active"
+msgstr "WooCommerce er ikke aktiv"
+
+#: src/Api/CouponController.php:89
+msgid "Coupon code is required"
+msgstr "Kuponkode er påkrævet"
+
+#. translators: %s: Template coupon code.
+#: src/Api/CouponController.php:126
+#, php-format
+msgid "Template coupon '%s' not found"
+msgstr "Skabelonkupon '%s' ikke fundet"
+
+#: src/Api/CouponController.php:155
+msgid "discount_type and amount are required when not using template"
+msgstr "discount_type og amount er påkrævet, når skabelon ikke bruges"
+
+#: src/Api/RatingsController.php:43
+msgid "Product ID is required"
+msgstr "Produkt ID er påkrævet"
+
+#: src/Api/RatingsController.php:49
+msgid "Invalid product ID"
+msgstr "Ugyldigt produkt ID"
+
+#: src/Api/RatingsController.php:53
+msgid "Product not found"
+msgstr "Produkt ikke fundet"
+
+#: src/Api/RatingsController.php:93
+msgid "Average stars must be a number between 1 and 5"
+msgstr "Gennemsnitlige stjerner skal være et tal mellem 1 og 5"
+
+#: src/Api/RatingsController.php:97
+msgid "Review count must be a non-negative number"
+msgstr "Antal anmeldelser skal være et ikke-negativt tal"
+
+#: src/Api/RatingsController.php:101
+msgid "Rating counts must be an array"
+msgstr "Bedømmelsesantal skal være et array"
+
+#: src/Api/RatingsController.php:174
+msgid "Customer email is required"
+msgstr "Kundeemail er påkrævet"
+
+#: src/Api/RatingsController.php:178
+msgid "Invalid email address"
+msgstr "Ugyldig emailadresse"
+
+#: src/functions.php:114
+#: src/functions.php:290
+msgid "API request failed"
+msgstr "API-anmodning mislykkedes"
+
+#: src/functions.php:197
+msgid "Store is not connected to Reviewbird."
+msgstr "Butikken er ikke forbundet til Reviewbird."
+
+#: src/functions.php:207
+msgid "Unable to generate API key for authentication."
+msgstr "Kan ikke generere API-nøgle til autentificering."
+
+#: src/functions.php:221
+msgid "Maximum of 50 product IDs allowed per request."
+msgstr "Maksimum 50 produkt-ID'er tilladt pr. anmodning."
+
+#: src/functions.php:326
+msgid "Failed to decode API response."
+msgstr "Kunne ikke afkode API-svar."
+
+#. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:177
+#, php-format
+msgid "Rated %s out of 5"
+msgstr "Bedømt %s ud af 5"
+
+#. translators: %s is the average rating.
+#: src/Integration/StarRatingDisplay.php:180
+#, php-format
+msgid "Rated %s out of 5, click to view reviews"
+msgstr "Bedømt %s ud af 5, klik for at se anmeldelser"
+
+#: assets/src/js/components/ConnectionHealth.jsx:10
+msgid "Connected to Reviewbird"
+msgstr "Forbundet til Reviewbird"
+
+#: assets/src/js/components/ConnectionHealth.jsx:11
+msgid "Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly."
+msgstr "Din WooCommerce-butik er forbundet til Reviewbird. Anmeldelsesdata synkroniseres korrekt."
+
+#: assets/src/js/components/ConnectionHealth.jsx:12
+msgid "View Dashboard"
+msgstr "Se dashboard"
+
+#: assets/src/js/components/ConnectionHealth.jsx:18
+msgid "WooCommerce Not Connected"
+msgstr "WooCommerce ikke forbundet"
+
+#: assets/src/js/components/ConnectionHealth.jsx:19
+msgid "WooCommerce is not yet connected to Reviewbird. Connect your store to start syncing products and reviews."
+msgstr "WooCommerce er endnu ikke forbundet til Reviewbird. Forbind din butik for at begynde at synkronisere produkter og anmeldelser."
+
+#: assets/src/js/components/ConnectionHealth.jsx:20
+msgid "Connect WooCommerce"
+msgstr "Forbind WooCommerce"
+
+#: assets/src/js/components/ConnectionHealth.jsx:26
+msgid "Initial Sync in Progress"
+msgstr "Initial synkronisering i gang"
+
+#: assets/src/js/components/ConnectionHealth.jsx:27
+msgid "Reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
+msgstr "Reviewbird synkroniserer dine produkter og anmeldelser. Dette kan tage et par minutter afhængigt af din katalogstørrelse. Widgetten vil være tilgængelig, når synkroniseringen er færdig."
+
+#: assets/src/js/components/ConnectionHealth.jsx:28
+msgid "View Sync Progress"
+msgstr "Se synkroniseringsstatus"
+
+#: assets/src/js/components/ConnectionHealth.jsx:34
+msgid "Subscription Required"
+msgstr "Abonnement påkrævet"
+
+#: assets/src/js/components/ConnectionHealth.jsx:35
+msgid "Your Reviewbird subscription is inactive. Please update your billing information to continue using the service."
+msgstr "Dit Reviewbird-abonnement er inaktivt. Opdater venligst dine betalingsoplysninger for at fortsætte med at bruge tjenesten."
+
+#: assets/src/js/components/ConnectionHealth.jsx:36
+msgid "Update Billing"
+msgstr "Opdater betaling"
+
+#: assets/src/js/components/ConnectionHealth.jsx:42
+#: assets/src/js/components/ConnectionHealth.jsx:50
+msgid "Connection Issue Detected"
+msgstr "Forbindelsesproblem opdaget"
+
+#: assets/src/js/components/ConnectionHealth.jsx:43
+msgid "Unable to connect to Reviewbird. Please check your connection settings."
+msgstr "Kan ikke oprette forbindelse til Reviewbird. Tjek dine forbindelsesindstillinger."
+
+#: assets/src/js/components/ConnectionHealth.jsx:44
+msgid "Fix Connection"
+msgstr "Ret forbindelse"
+
+#: assets/src/js/components/ConnectionHealth.jsx:51
+msgid "Unable to reach Reviewbird API. Please check your internet connection."
+msgstr "Kan ikke nå Reviewbird API. Tjek din internetforbindelse."
+
+#: assets/src/js/components/ConnectionHealth.jsx:52
+msgid "Get Help"
+msgstr "Få hjælp"
+
+#: assets/src/js/components/ConnectionHealth.jsx:58
+msgid "Checking connection..."
+msgstr "Tjekker forbindelse..."
+
+#: assets/src/js/components/ConnectionHealth.jsx:59
+msgid "Verifying connection to Reviewbird..."
+msgstr "Bekræfter forbindelse til Reviewbird..."
+
+#: assets/src/js/components/ConnectionHealth.jsx:60
+msgid "Open Reviewbird"
+msgstr "Åbn Reviewbird"
+
+#: assets/src/js/components/ConnectionHealth.jsx:191
+msgid "Connection Issue"
+msgstr "Forbindelsesproblem"
+
+#: assets/src/js/components/ConnectionHealth.jsx:260
+msgid "Refresh"
+msgstr "Opdater"
+
+#: assets/src/js/components/ConnectionHealth.jsx:281
+msgid "Last checked:"
+msgstr "Sidst tjekket:"
+
+#: assets/src/js/components/LoadingSpinner.jsx:8
+msgid "Loading..."
+msgstr "Indlæser..."
+
+#: assets/src/js/components/SettingsApp.jsx:44
+msgid "Failed to update setting. Please try again."
+msgstr "Opdatering af indstilling mislykkedes. Prøv igen."
+
+#: assets/src/js/components/SettingsApp.jsx:90
+msgid "Connected Store Settings"
+msgstr "Indstillinger for tilsluttet butik"
+
+#: assets/src/js/components/SettingsApp.jsx:96
+msgid "Manage your Reviewbird integration with WooCommerce."
+msgstr "Administrer din Reviewbird-integration med WooCommerce."
+
+#: assets/src/js/components/SettingsApp.jsx:113
+msgid "Reviewbird Widget"
+msgstr "Reviewbird-widget"
+
+#: assets/src/js/components/SettingsApp.jsx:114
+msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
+msgstr "Vis Reviewbird-anmeldelseswidget på produktsider. Widgeten viser kundeanmeldelser og giver kunder mulighed for at indsende nye anmeldelser."
+
+#: assets/src/js/components/SettingsApp.jsx:120
+msgid "Widget is enabled on all WooCommerce product pages."
+msgstr "Widgeten er aktiveret på alle WooCommerce-produktsider."
+
+#: assets/src/js/components/SettingsApp.jsx:129
+msgid "Forcefully enable reviews on all products"
+msgstr "Tving anmeldelser til at være aktiveret på alle produkter"
+
+#: assets/src/js/components/SettingsApp.jsx:135
+msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
+msgstr "Lad dette være slået fra, hvis du foretrækker at styre anmeldelser pr. produkt ved hjælp af afkrydsningsfeltet \"Aktiver anmeldelser\"."
+
+#: assets/src/js/components/SettingsApp.jsx:171
+msgid "SEO Schema Markup"
+msgstr "SEO Schema Markup"
+
+#: assets/src/js/components/SettingsApp.jsx:172
+msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
+msgstr "Aktivér Google-kompatible strukturerede data (JSON-LD schema) på produktsider for rige uddrag i søgeresultater."
+
+#: assets/src/js/components/SettingsApp.jsx:178
+msgid "Schema markup is active on all WooCommerce product pages."
+msgstr "Schema markup er aktiv på alle WooCommerce-produktsider."
+
+#: assets/src/js/components/SettingsApp.jsx:183
+msgid "What is Schema Markup?"
+msgstr "Hvad er Schema Markup?"
+
+#: assets/src/js/components/SettingsApp.jsx:185
+msgid "Displays star ratings in Google search results"
+msgstr "Viser stjernebedømmelser i Googles søgeresultater"
+
+#: assets/src/js/components/SettingsApp.jsx:189
+msgid "Shows review counts and product information"
+msgstr "Viser antal anmeldelser og produktinformation"
+
+#: assets/src/js/components/SettingsApp.jsx:193
+msgid "Review schema is cached for 4 hours for optimal performance"
+msgstr "Anmeldelsesschema caches i 4 timer for optimal ydeevne"
+
+#: assets/src/js/components/SettingsApp.jsx:202
+msgid "Test with Google Rich Results"
+msgstr "Test med Google Rich Results"
+
+#: assets/src/js/components/SettingsApp.jsx:209
+msgid "Validate Schema"
+msgstr "Valider Schema"
+
+#: assets/src/js/components/TogglePanel.jsx:114
+msgid "Enabled"
+msgstr "Aktiveret"
+
+#: assets/src/js/components/TogglePanel.jsx:115
+msgid "Disabled"
+msgstr "Deaktiveret"
+
+#: assets/src/js/components/WelcomeScreen.jsx:6
+msgid "Create your Reviewbird account"
+msgstr "Opret din Reviewbird-konto"
+
+#: assets/src/js/components/WelcomeScreen.jsx:7
+msgid "Start with the free plan, then connect your WooCommerce store whenever you are ready."
+msgstr "Start med den gratis plan, og forbind derefter din WooCommerce-butik, når du er klar."
+
+#: assets/src/js/components/WelcomeScreen.jsx:14
+msgid "Authorize your WooCommerce store"
+msgstr "Godkend din WooCommerce-butik"
+
+#: assets/src/js/components/WelcomeScreen.jsx:15
+msgid "Connect Reviewbird so it can securely sync products, orders, and review activity."
+msgstr "Forbind Reviewbird, så det sikkert kan synkronisere produkter, ordrer og anmeldelsesaktivitet."
+
+#: assets/src/js/components/WelcomeScreen.jsx:22
+msgid "Turn on your review experience"
+msgstr "Tænd for din anmeldelsesoplevelse"
+
+#: assets/src/js/components/WelcomeScreen.jsx:23
+msgid "Enable the widget in WordPress and start collecting polished, conversion-friendly product reviews."
+msgstr "Aktivér widgeten i WordPress og begynd at indsamle polerede, konverteringsvenlige produktanmeldelser."
+
+#: assets/src/js/components/WelcomeScreen.jsx:53
+msgid "Step"
+msgstr "Trin"
+
+#: assets/src/js/components/WelcomeScreen.jsx:82
+msgid "Welcome to Reviewbird for WooCommerce"
+msgstr "Velkommen til Reviewbird for WooCommerce"
+
+#: assets/src/js/components/WelcomeScreen.jsx:93
+msgid "Collect more reviews with less friction."
+msgstr "Indsaml flere anmeldelser med mindre besvær."
+
+#: assets/src/js/components/WelcomeScreen.jsx:100
+msgid "Reviewbird helps WooCommerce merchants collect, moderate, and showcase product reviews with a polished experience that feels native to their storefront."
+msgstr "Reviewbird hjælper WooCommerce-forhandlere med at indsamle, moderere og fremvise produktanmeldelser med en poleret oplevelse, der føles naturlig for deres butik."
+
+#: assets/src/js/components/WelcomeScreen.jsx:115
+msgid "Get Started Free"
+msgstr "Kom i gang gratis"
+
+#: assets/src/js/components/WelcomeScreen.jsx:122
+msgid "Free plan available. Create your account first, then connect WooCommerce when you are ready."
+msgstr "Gratis plan tilgængelig. Opret først din konto, og forbind derefter WooCommerce, når du er klar."
+
+#: assets/src/js/components/WelcomeScreen.jsx:129
+msgid "Already have an account?"
+msgstr "Har du allerede en konto?"
+
+#: assets/src/js/components/WelcomeScreen.jsx:136
+msgid "Connect your store"
+msgstr "Forbind din butik"
+
+#: assets/src/js/components/WelcomeScreen.jsx:145
+msgid "See It In Action"
+msgstr "Se det i aktion"
+
+#: assets/src/js/components/WelcomeScreen.jsx:148
+msgid "A quick look at the Reviewbird widget"
+msgstr "Et hurtigt kig på Reviewbird-widgeten"
+
+#: assets/src/js/components/WelcomeScreen.jsx:154
+msgid "Leaving a review shouldn't feel applying for a loan. Our widget makes review submission easy and painless."
+msgstr "Det skal ikke føles som at ansøge om et lån at afgive en anmeldelse. Vores widget gør anmeldelsesindsendelse nem og smertefri."
+
+#: assets/src/js/components/WelcomeScreen.jsx:165
+msgid "Reviewbird onboarding video"
+msgstr "Reviewbird onboarding-video"
+
+#: assets/src/js/components/WelcomeScreen.jsx:182
+msgid "Setup"
+msgstr "Opsætning"
+
+#: assets/src/js/components/WelcomeScreen.jsx:185
+msgid "Go live in three quick steps."
+msgstr "Gå live på tre hurtige trin."
+
+#: assets/src/js/components/WelcomeScreen.jsx:188
+msgid "Create your account, connect WooCommerce, then"
+msgstr "Opret din konto, forbind WooCommerce, og"
+
+#: assets/src/js/components/WelcomeScreen.jsx:196
+msgid "enable the widget in settings"
+msgstr "aktiver widgeten i indstillinger"
