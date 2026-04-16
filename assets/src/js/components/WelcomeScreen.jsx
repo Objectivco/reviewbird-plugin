@@ -152,7 +152,7 @@ export default function WelcomeScreen( {
 						</h2>
 						<p className="text-sm leading-6 text-slate-600">
 							{ __(
-								"Leaving a review shouldn't feel applying for a loan. Our widget makes review submission easy and painless.",
+									"Leaving a review shouldn't feel like applying for a loan. Our widget makes review submission easy and painless.",
 								'reviewbird'
 							) }
 						</p>
