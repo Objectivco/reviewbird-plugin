@@ -87,6 +87,7 @@ class Plugin {
 		// Admin hooks.
 		if ( is_admin() ) {
 			$settings = new Settings();
+			add_action( 'admin_init', array( $this, 'maybe_redirect_after_activation' ) );
 			add_action( 'admin_menu', array( $settings, 'add_admin_menu' ) );
 			add_action( 'admin_enqueue_scripts', array( $settings, 'enqueue_scripts' ) );
 			add_filter( 'plugin_action_links_' . REVIEWBIRD_PLUGIN_BASENAME, array( $this, 'add_plugin_action_links' ) );
@@ -467,6 +468,35 @@ class Plugin {
 		array_unshift( $links, $settings_link );
 
 		return $links;
+	}
+
+	/**
+	 * Redirect admins to the Reviewbird screen immediately after activation.
+	 */
+	public function maybe_redirect_after_activation(): void {
+		if ( 'yes' !== get_option( 'reviewbird_do_activation_redirect' ) ) {
+			return;
+		}
+
+		delete_option( 'reviewbird_do_activation_redirect' );
+
+		if ( wp_doing_ajax() || wp_doing_cron() ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Checking a core activation query flag before redirecting.
+		$is_bulk_activation = isset( $_GET['activate-multi'] );
+
+		if ( is_network_admin() || $is_bulk_activation ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		wp_safe_redirect( admin_url( 'admin.php?page=reviewbird-get-started' ) );
+		exit;
 	}
 
 	/**
