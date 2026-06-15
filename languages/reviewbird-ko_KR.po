@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:109
-#: src/Admin/Settings.php:110
+#: src/Admin/Settings.php:114
+#: src/Admin/Settings.php:115
 msgid "Reviewbird"
 msgstr "리뷰버드"
 
@@ -31,46 +31,50 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "스팸을 차단하고 불만을 포착하며 최고의 피드백을 보여주는 WooCommerce용 자동 리뷰 수집기입니다."
 
-#: src/Admin/Settings.php:76
+#: src/Admin/Settings.php:81
 msgid "Reviewbird Connection Error:"
 msgstr "리뷰버드 연결 오류:"
 
-#: src/Admin/Settings.php:95
+#: src/Admin/Settings.php:100
 msgid "Successfully connected to Reviewbird!"
 msgstr "리뷰버드에 성공적으로 연결되었습니다!"
 
-#: src/Admin/Settings.php:120
-#: src/Admin/Settings.php:121
+#: src/Admin/Settings.php:125
+#: src/Admin/Settings.php:126
 msgid "Get Started"
 msgstr "시작하기"
 
-#: src/Admin/Settings.php:129
+#: src/Admin/Settings.php:134
 #: assets/src/js/components/SettingsApp.jsx:93
 msgid "Reviewbird Settings"
 msgstr "리뷰버드 설정"
 
-#: src/Admin/Settings.php:130
-#: src/Core/Plugin.php:465
+#: src/Admin/Settings.php:135
+#: src/Core/Plugin.php:489
 msgid "Settings"
 msgstr "설정"
 
-#: src/Admin/Settings.php:268
+#: src/Admin/Settings.php:275
+msgid "View the Reviewbird documentation"
+msgstr "Reviewbird 문서 보기"
+
+#: src/Admin/Settings.php:328
 msgid "Invalid security token"
 msgstr "잘못된 보안 토큰"
 
-#: src/Admin/Settings.php:272
+#: src/Admin/Settings.php:332
 msgid "Insufficient permissions"
 msgstr "권한이 부족합니다"
 
-#: src/Admin/Settings.php:297
+#: src/Admin/Settings.php:357
 msgid "Invalid setting"
 msgstr "잘못된 설정"
 
-#: src/Admin/Settings.php:307
+#: src/Admin/Settings.php:367
 msgid "Setting updated successfully"
 msgstr "설정이 성공적으로 업데이트되었습니다"
 
-#: src/Admin/Settings.php:324
+#: src/Admin/Settings.php:384
 msgid "Health check cache cleared"
 msgstr "헬스 체크 캐시가 삭제되었습니다"
 
@@ -131,6 +135,10 @@ msgstr "고객 이메일이 필요합니다"
 msgid "Invalid email address"
 msgstr "잘못된 이메일 주소"
 
+#: src/Core/Plugin.php:495
+msgid "Documentation"
+msgstr "문서"
+
 #: src/functions.php:114
 #: src/functions.php:290
 msgid "API request failed"
@@ -153,13 +161,13 @@ msgid "Failed to decode API response."
 msgstr "API 응답을 디코딩하지 못했습니다."
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:177
+#: src/Integration/StarRatingDisplay.php:167
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "5점 만점에 %s점 평가됨"
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:180
+#: src/Integration/StarRatingDisplay.php:170
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "5점 만점에 %s점 평가됨, 리뷰를 보려면 클릭하세요"

@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:109
-#: src/Admin/Settings.php:110
+#: src/Admin/Settings.php:114
+#: src/Admin/Settings.php:115
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -31,46 +31,50 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "Automatisert innsamling av anmeldelser for WooCommerce som blokkerer spam, fanger klager og viser frem dine beste tilbakemeldinger."
 
-#: src/Admin/Settings.php:76
+#: src/Admin/Settings.php:81
 msgid "Reviewbird Connection Error:"
 msgstr "Reviewbird tilkoblingsfeil:"
 
-#: src/Admin/Settings.php:95
+#: src/Admin/Settings.php:100
 msgid "Successfully connected to Reviewbird!"
 msgstr "Vellykket tilkoblet til Reviewbird!"
 
-#: src/Admin/Settings.php:120
-#: src/Admin/Settings.php:121
+#: src/Admin/Settings.php:125
+#: src/Admin/Settings.php:126
 msgid "Get Started"
 msgstr "Kom i gang"
 
-#: src/Admin/Settings.php:129
+#: src/Admin/Settings.php:134
 #: assets/src/js/components/SettingsApp.jsx:93
 msgid "Reviewbird Settings"
 msgstr "Reviewbird-innstillinger"
 
-#: src/Admin/Settings.php:130
-#: src/Core/Plugin.php:465
+#: src/Admin/Settings.php:135
+#: src/Core/Plugin.php:489
 msgid "Settings"
 msgstr "Innstillinger"
 
-#: src/Admin/Settings.php:268
+#: src/Admin/Settings.php:275
+msgid "View the Reviewbird documentation"
+msgstr "Se Reviewbird-dokumentasjonen"
+
+#: src/Admin/Settings.php:328
 msgid "Invalid security token"
 msgstr "Ugyldig sikkerhetstoken"
 
-#: src/Admin/Settings.php:272
+#: src/Admin/Settings.php:332
 msgid "Insufficient permissions"
 msgstr "Utilstrekkelige tillatelser"
 
-#: src/Admin/Settings.php:297
+#: src/Admin/Settings.php:357
 msgid "Invalid setting"
 msgstr "Ugyldig innstilling"
 
-#: src/Admin/Settings.php:307
+#: src/Admin/Settings.php:367
 msgid "Setting updated successfully"
 msgstr "Innstilling oppdatert"
 
-#: src/Admin/Settings.php:324
+#: src/Admin/Settings.php:384
 msgid "Health check cache cleared"
 msgstr "Helsesjekkbuffer tømt"
 
@@ -131,6 +135,10 @@ msgstr "Kunde-e-post er påkrevd"
 msgid "Invalid email address"
 msgstr "Ugyldig e-postadresse"
 
+#: src/Core/Plugin.php:495
+msgid "Documentation"
+msgstr "Dokumentasjon"
+
 #: src/functions.php:114
 #: src/functions.php:290
 msgid "API request failed"
@@ -153,13 +161,13 @@ msgid "Failed to decode API response."
 msgstr "Kunne ikke dekode API-svar."
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:177
+#: src/Integration/StarRatingDisplay.php:167
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "Vurdert %s av 5"
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:180
+#: src/Integration/StarRatingDisplay.php:170
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "Vurdert %s av 5, klikk for å se anmeldelser"

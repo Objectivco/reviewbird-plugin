@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:109
-#: src/Admin/Settings.php:110
+#: src/Admin/Settings.php:114
+#: src/Admin/Settings.php:115
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -31,46 +31,50 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "Recolha automática de avaliações para WooCommerce que bloqueia spam, deteta reclamações e destaca o seu melhor feedback."
 
-#: src/Admin/Settings.php:76
+#: src/Admin/Settings.php:81
 msgid "Reviewbird Connection Error:"
 msgstr "Erro de Conexão Reviewbird:"
 
-#: src/Admin/Settings.php:95
+#: src/Admin/Settings.php:100
 msgid "Successfully connected to Reviewbird!"
 msgstr "Conectado com sucesso ao Reviewbird!"
 
-#: src/Admin/Settings.php:120
-#: src/Admin/Settings.php:121
+#: src/Admin/Settings.php:125
+#: src/Admin/Settings.php:126
 msgid "Get Started"
 msgstr "Começar"
 
-#: src/Admin/Settings.php:129
+#: src/Admin/Settings.php:134
 #: assets/src/js/components/SettingsApp.jsx:93
 msgid "Reviewbird Settings"
 msgstr "Configurações do Reviewbird"
 
-#: src/Admin/Settings.php:130
-#: src/Core/Plugin.php:465
+#: src/Admin/Settings.php:135
+#: src/Core/Plugin.php:489
 msgid "Settings"
 msgstr "Definições"
 
-#: src/Admin/Settings.php:268
+#: src/Admin/Settings.php:275
+msgid "View the Reviewbird documentation"
+msgstr "Consulte a documentação do Reviewbird"
+
+#: src/Admin/Settings.php:328
 msgid "Invalid security token"
 msgstr "Token de segurança inválido"
 
-#: src/Admin/Settings.php:272
+#: src/Admin/Settings.php:332
 msgid "Insufficient permissions"
 msgstr "Permissões insuficientes"
 
-#: src/Admin/Settings.php:297
+#: src/Admin/Settings.php:357
 msgid "Invalid setting"
 msgstr "Definição inválida"
 
-#: src/Admin/Settings.php:307
+#: src/Admin/Settings.php:367
 msgid "Setting updated successfully"
 msgstr "Definição atualizada com sucesso"
 
-#: src/Admin/Settings.php:324
+#: src/Admin/Settings.php:384
 msgid "Health check cache cleared"
 msgstr "Cache de verificação de integridade limpa"
 
@@ -131,6 +135,10 @@ msgstr "Email do cliente é obrigatório"
 msgid "Invalid email address"
 msgstr "Endereço de email inválido"
 
+#: src/Core/Plugin.php:495
+msgid "Documentation"
+msgstr "Documentação"
+
 #: src/functions.php:114
 #: src/functions.php:290
 msgid "API request failed"
@@ -153,13 +161,13 @@ msgid "Failed to decode API response."
 msgstr "Falha ao decodificar resposta da API."
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:177
+#: src/Integration/StarRatingDisplay.php:167
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "Avaliado %s de 5"
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:180
+#: src/Integration/StarRatingDisplay.php:170
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "Avaliado %s de 5, clique para ver avaliações"
