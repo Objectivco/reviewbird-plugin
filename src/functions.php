@@ -620,3 +620,47 @@ function reviewbird_render_widget( $product_id = null ): string {
 		$widget_attrs
 	);
 }
+
+/**
+ * Output the reviewbird star rating in the single product summary.
+ *
+ * Hooked onto `woocommerce_single_product_summary` at priority 6 for classic
+ * themes (see StarRatingDisplay::replace_single_product_rating()). This is a
+ * plain named function — not a closure or object method — so site owners can
+ * relocate or remove it with an ordinary remove_action()/add_action() call.
+ *
+ * Because the hook is registered on `init`, those calls must run later; nest
+ * them in a `wp` hook for correct timing:
+ *
+ *     add_action( 'wp', function () {
+ *         // Move the stars lower in the summary (e.g. after the short description).
+ *         remove_action( 'woocommerce_single_product_summary', 'reviewbird_display_single_rating', 6 );
+ *         add_action( 'woocommerce_single_product_summary', 'reviewbird_display_single_rating', 25 );
+ *     } );
+ *
+ * @return void
+ */
+function reviewbird_display_single_rating(): void {
+	global $product;
+
+	if ( ! $product || ! wc_review_ratings_enabled() ) {
+		return;
+	}
+
+	// Don't show rating if reviews are disabled for this product.
+	if ( ! comments_open( $product->get_id() ) ) {
+		return;
+	}
+
+	$rating_count = $product->get_rating_count();
+	if ( $rating_count < 1 ) {
+		return;
+	}
+
+	echo '<div class="woocommerce-product-rating">';
+	echo wp_kses(
+		wc_get_rating_html( $product->get_average_rating(), $rating_count ),
+		\reviewbird\Integration\StarRatingDisplay::allowed_rating_tags()
+	);
+	echo '</div>';
+}
