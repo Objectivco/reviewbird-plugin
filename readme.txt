@@ -41,6 +41,10 @@ Reviews from your customers are one of the best sources of SEO content you can g
 
 We include the shortcodes, filters, and action hooks you need to deeply integrate Reviewbird into your store.
 
+**📚 Documentation**
+
+Setup guides, shortcode reference, and developer hooks are documented at [reviewbird.com/documentation](https://reviewbird.com/documentation/).
+
 == Shortcodes ==
 
 * `[reviewbird_widget]` — Displays the full review widget. Optional `product_id` attribute (defaults to the current product).
