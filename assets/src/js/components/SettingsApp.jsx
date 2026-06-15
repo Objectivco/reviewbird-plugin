@@ -77,6 +77,7 @@ export default function SettingsApp() {
 					registerUrl={ window.reviewbirdAdmin.registerUrl }
 					dashboardUrl={ window.reviewbirdAdmin.dashboardUrl }
 					settingsUrl={ window.reviewbirdAdmin.settingsUrl }
+					documentationUrl={ window.reviewbirdAdmin.documentationUrl }
 					onboardingVideo={ window.reviewbirdAdmin.onboardingVideo }
 				/>
 			</div>

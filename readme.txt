@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: reviews, woocommerce, product reviews, ratings, customer reviews
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.19
+Stable tag: 1.0.20
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -40,6 +40,10 @@ Reviews from your customers are one of the best sources of SEO content you can g
 **🛠️Made for Developers by Developers**
 
 We include the shortcodes, filters, and action hooks you need to deeply integrate Reviewbird into your store.
+
+**📚 Documentation**
+
+Setup guides, shortcode reference, and developer hooks are documented at [reviewbird.com/documentation](https://reviewbird.com/documentation/).
 
 == Shortcodes ==
 
@@ -161,6 +165,9 @@ To build from source:
 For development: `npm run dev`
 
 == Changelog ==
+
+= 1.0.20 =
+New - Hook adjustments to make managing widget output locations easier.
 
 = 1.0.19 =
 New - Add new welcome screen.

@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:109
-#: src/Admin/Settings.php:110
+#: src/Admin/Settings.php:114
+#: src/Admin/Settings.php:115
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -31,46 +31,46 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "Recopilación automática de reseñas para WooCommerce que bloquea el spam, detecta quejas y muestra tus mejores opiniones."
 
-#: src/Admin/Settings.php:76
+#: src/Admin/Settings.php:81
 msgid "Reviewbird Connection Error:"
 msgstr "Error de conexión con Reviewbird:"
 
-#: src/Admin/Settings.php:95
+#: src/Admin/Settings.php:100
 msgid "Successfully connected to Reviewbird!"
 msgstr "¡Conectado exitosamente a Reviewbird!"
 
-#: src/Admin/Settings.php:120
-#: src/Admin/Settings.php:121
+#: src/Admin/Settings.php:125
+#: src/Admin/Settings.php:126
 msgid "Get Started"
 msgstr "Comenzar"
 
-#: src/Admin/Settings.php:129
-#: assets/src/js/components/SettingsApp.jsx:93
+#: src/Admin/Settings.php:134
+#: assets/src/js/components/SettingsApp.jsx:94
 msgid "Reviewbird Settings"
 msgstr "Configuración de Reviewbird"
 
-#: src/Admin/Settings.php:130
-#: src/Core/Plugin.php:465
+#: src/Admin/Settings.php:135
+#: src/Core/Plugin.php:489
 msgid "Settings"
 msgstr "Configuraciones"
 
-#: src/Admin/Settings.php:268
+#: src/Admin/Settings.php:323
 msgid "Invalid security token"
 msgstr "Token de seguridad inválido"
 
-#: src/Admin/Settings.php:272
+#: src/Admin/Settings.php:327
 msgid "Insufficient permissions"
 msgstr "Permisos insuficientes"
 
-#: src/Admin/Settings.php:297
+#: src/Admin/Settings.php:352
 msgid "Invalid setting"
 msgstr "Configuración inválida"
 
-#: src/Admin/Settings.php:307
+#: src/Admin/Settings.php:362
 msgid "Setting updated successfully"
 msgstr "Configuración actualizada con éxito"
 
-#: src/Admin/Settings.php:324
+#: src/Admin/Settings.php:379
 msgid "Health check cache cleared"
 msgstr "Caché de verificación de estado borrada"
 
@@ -131,6 +131,10 @@ msgstr "Se requiere correo electrónico del cliente"
 msgid "Invalid email address"
 msgstr "Dirección de correo electrónico inválida"
 
+#: src/Core/Plugin.php:495
+msgid "Documentation"
+msgstr "Documentación"
+
 #: src/functions.php:114
 #: src/functions.php:290
 msgid "API request failed"
@@ -153,13 +157,13 @@ msgid "Failed to decode API response."
 msgstr "Error al decodificar la respuesta de la API."
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:177
+#: src/Integration/StarRatingDisplay.php:167
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "Calificado %s de 5"
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:180
+#: src/Integration/StarRatingDisplay.php:170
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "Calificado %s de 5, haz clic para ver reseñas"
@@ -265,67 +269,67 @@ msgstr "Cargando..."
 msgid "Failed to update setting. Please try again."
 msgstr "Error al actualizar la configuración. Por favor, inténtalo de nuevo."
 
-#: assets/src/js/components/SettingsApp.jsx:90
+#: assets/src/js/components/SettingsApp.jsx:91
 msgid "Connected Store Settings"
 msgstr "Configuración de la tienda conectada"
 
-#: assets/src/js/components/SettingsApp.jsx:96
+#: assets/src/js/components/SettingsApp.jsx:97
 msgid "Manage your Reviewbird integration with WooCommerce."
 msgstr "Gestiona tu integración de Reviewbird con WooCommerce."
 
-#: assets/src/js/components/SettingsApp.jsx:113
+#: assets/src/js/components/SettingsApp.jsx:114
 msgid "Reviewbird Widget"
 msgstr "Widget de Reviewbird"
 
-#: assets/src/js/components/SettingsApp.jsx:114
+#: assets/src/js/components/SettingsApp.jsx:115
 msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
 msgstr "Muestra el widget de reseñas de Reviewbird en las páginas de productos. El widget muestra reseñas de clientes y permite que los clientes envíen nuevas reseñas."
 
-#: assets/src/js/components/SettingsApp.jsx:120
+#: assets/src/js/components/SettingsApp.jsx:121
 msgid "Widget is enabled on all WooCommerce product pages."
 msgstr "El widget está habilitado en todas las páginas de productos de WooCommerce."
 
-#: assets/src/js/components/SettingsApp.jsx:129
+#: assets/src/js/components/SettingsApp.jsx:130
 msgid "Forcefully enable reviews on all products"
 msgstr "Forzar la habilitación de reseñas en todos los productos"
 
-#: assets/src/js/components/SettingsApp.jsx:135
+#: assets/src/js/components/SettingsApp.jsx:136
 msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
 msgstr "Deje esto desactivado si prefiere controlar las reseñas por producto usando la casilla \"Habilitar reseñas\"."
 
-#: assets/src/js/components/SettingsApp.jsx:171
+#: assets/src/js/components/SettingsApp.jsx:172
 msgid "SEO Schema Markup"
 msgstr "Marcado de esquema SEO"
 
-#: assets/src/js/components/SettingsApp.jsx:172
+#: assets/src/js/components/SettingsApp.jsx:173
 msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
 msgstr "Habilitar datos estructurados compatibles con Google (esquema JSON-LD) en las páginas de productos para fragmentos enriquecidos en los resultados de búsqueda."
 
-#: assets/src/js/components/SettingsApp.jsx:178
+#: assets/src/js/components/SettingsApp.jsx:179
 msgid "Schema markup is active on all WooCommerce product pages."
 msgstr "El marcado de esquema está activo en todas las páginas de productos de WooCommerce."
 
-#: assets/src/js/components/SettingsApp.jsx:183
+#: assets/src/js/components/SettingsApp.jsx:184
 msgid "What is Schema Markup?"
 msgstr "¿Qué es el marcado de esquema?"
 
-#: assets/src/js/components/SettingsApp.jsx:185
+#: assets/src/js/components/SettingsApp.jsx:186
 msgid "Displays star ratings in Google search results"
 msgstr "Muestra valoraciones con estrellas en los resultados de búsqueda de Google"
 
-#: assets/src/js/components/SettingsApp.jsx:189
+#: assets/src/js/components/SettingsApp.jsx:190
 msgid "Shows review counts and product information"
 msgstr "Muestra el recuento de reseñas e información del producto"
 
-#: assets/src/js/components/SettingsApp.jsx:193
+#: assets/src/js/components/SettingsApp.jsx:194
 msgid "Review schema is cached for 4 hours for optimal performance"
 msgstr "El esquema de reseñas se almacena en caché durante 4 horas para un rendimiento óptimo"
 
-#: assets/src/js/components/SettingsApp.jsx:202
+#: assets/src/js/components/SettingsApp.jsx:203
 msgid "Test with Google Rich Results"
 msgstr "Probar con Google Rich Results"
 
-#: assets/src/js/components/SettingsApp.jsx:209
+#: assets/src/js/components/SettingsApp.jsx:210
 msgid "Validate Schema"
 msgstr "Validar esquema"
 
@@ -365,62 +369,70 @@ msgstr "Habilita el widget en WordPress y comienza a recopilar reseñas de produ
 msgid "Step"
 msgstr "Paso"
 
-#: assets/src/js/components/WelcomeScreen.jsx:82
+#: assets/src/js/components/WelcomeScreen.jsx:83
 msgid "Welcome to Reviewbird for WooCommerce"
 msgstr "Bienvenido a Reviewbird para WooCommerce"
 
-#: assets/src/js/components/WelcomeScreen.jsx:93
+#: assets/src/js/components/WelcomeScreen.jsx:94
 msgid "Collect more reviews with less friction."
 msgstr "Recopila más reseñas con menos fricción."
 
-#: assets/src/js/components/WelcomeScreen.jsx:100
+#: assets/src/js/components/WelcomeScreen.jsx:101
 msgid "Reviewbird helps WooCommerce merchants collect, moderate, and showcase product reviews with a polished experience that feels native to their storefront."
 msgstr "Reviewbird ayuda a los comerciantes de WooCommerce a recopilar, moderar y mostrar reseñas de productos con una experiencia pulida que se siente nativa en su tienda."
 
-#: assets/src/js/components/WelcomeScreen.jsx:115
+#: assets/src/js/components/WelcomeScreen.jsx:116
 msgid "Get Started Free"
 msgstr "Comenzar gratis"
 
-#: assets/src/js/components/WelcomeScreen.jsx:122
+#: assets/src/js/components/WelcomeScreen.jsx:123
 msgid "Free plan available. Create your account first, then connect WooCommerce when you are ready."
 msgstr "Plan gratuito disponible. Crea tu cuenta primero, luego conecta WooCommerce cuando estés listo."
 
-#: assets/src/js/components/WelcomeScreen.jsx:129
+#: assets/src/js/components/WelcomeScreen.jsx:130
 msgid "Already have an account?"
 msgstr "¿Ya tienes una cuenta?"
 
-#: assets/src/js/components/WelcomeScreen.jsx:136
+#: assets/src/js/components/WelcomeScreen.jsx:137
 msgid "Connect your store"
 msgstr "Conecta tu tienda"
 
-#: assets/src/js/components/WelcomeScreen.jsx:145
+#: assets/src/js/components/WelcomeScreen.jsx:144
+msgid "Need help getting set up?"
+msgstr "¿Necesita ayuda para configurarse?"
+
+#: assets/src/js/components/WelcomeScreen.jsx:151
+msgid "Read the documentation"
+msgstr "Lea la documentación"
+
+#: assets/src/js/components/WelcomeScreen.jsx:161
 msgid "See It In Action"
 msgstr "Ver en acción"
 
-#: assets/src/js/components/WelcomeScreen.jsx:148
+#: assets/src/js/components/WelcomeScreen.jsx:164
 msgid "A quick look at the Reviewbird widget"
 msgstr "Una mirada rápida al widget de Reviewbird"
 
-#: assets/src/js/components/WelcomeScreen.jsx:154
+#: assets/src/js/components/WelcomeScreen.jsx:170
 msgid "Leaving a review shouldn't feel like applying for a loan. Our widget makes review submission easy and painless."
 msgstr "Dejar una reseña no debería sentirse como solicitar un préstamo. Nuestro widget hace que enviar reseñas sea fácil y sin dolor."
 
-#: assets/src/js/components/WelcomeScreen.jsx:165
+#: assets/src/js/components/WelcomeScreen.jsx:181
 msgid "Reviewbird onboarding video"
 msgstr "Video de introducción a Reviewbird"
 
-#: assets/src/js/components/WelcomeScreen.jsx:182
+#: assets/src/js/components/WelcomeScreen.jsx:198
 msgid "Setup"
 msgstr "Configuración"
 
-#: assets/src/js/components/WelcomeScreen.jsx:185
+#: assets/src/js/components/WelcomeScreen.jsx:201
 msgid "Go live in three quick steps."
 msgstr "Activa en tres pasos rápidos."
 
-#: assets/src/js/components/WelcomeScreen.jsx:188
+#: assets/src/js/components/WelcomeScreen.jsx:204
 msgid "Create your account, connect WooCommerce, then"
 msgstr "Crea tu cuenta, conecta WooCommerce, luego"
 
-#: assets/src/js/components/WelcomeScreen.jsx:196
+#: assets/src/js/components/WelcomeScreen.jsx:212
 msgid "enable the widget in settings"
 msgstr "habilita el widget en la configuración"

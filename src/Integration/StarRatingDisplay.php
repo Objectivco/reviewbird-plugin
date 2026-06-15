@@ -69,32 +69,22 @@ class StarRatingDisplay {
 	 */
 	public function replace_single_product_rating(): void {
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating', 10 );
-		add_action( 'woocommerce_single_product_summary', array( $this, 'display_single_rating' ), 6 );
-	}
 
-	/**
-	 * Display rating on single product page without the review link.
-	 */
-	public function display_single_rating(): void {
-		global $product;
+		/**
+		 * Filters the priority at which the reviewbird star rating is output in
+		 * the single product summary. The simplest way to move the rating: return
+		 * a different priority (e.g. 25 to place it below the short description).
+		 *
+		 * @param int $priority Hook priority. Default 6 (just below the title).
+		 */
+		$priority = (int) apply_filters( 'reviewbird_single_rating_priority', 6 );
 
-		if ( ! $product || ! wc_review_ratings_enabled() ) {
-			return;
-		}
-
-		// Don't show rating if reviews are disabled for this product.
-		if ( ! comments_open( $product->get_id() ) ) {
-			return;
-		}
-
-		$rating_count = $product->get_rating_count();
-		if ( $rating_count < 1 ) {
-			return;
-		}
-
-		echo '<div class="woocommerce-product-rating">';
-		echo wp_kses( wc_get_rating_html( $product->get_average_rating(), $rating_count ), self::allowed_rating_tags() );
-		echo '</div>';
+		// Registered via a named procedural callback (reviewbird_display_single_rating)
+		// rather than an object method, so site owners can also relocate or remove
+		// it with a plain remove_action()/add_action() call. Because this runs on
+		// `init`, those calls must be nested in a later hook (e.g. `wp`) for timing,
+		// and must pass the same priority. See reviewbird_display_single_rating().
+		add_action( 'woocommerce_single_product_summary', 'reviewbird_display_single_rating', $priority );
 	}
 
 	/**

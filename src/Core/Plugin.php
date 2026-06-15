@@ -122,7 +122,11 @@ class Plugin {
 
 		// Widget display on product pages (only when connected).
 		add_filter( 'woocommerce_product_tabs', array( $this, 'remove_reviews_tab' ), 98 );
-		add_action( 'woocommerce_after_single_product_summary', array( $this, 'render_product_widget' ), 14 );
+
+		// Register the product-page widget on `init` (not here at plugin-include
+		// time) so the reviewbird_product_widget_priority filter can be set from a
+		// theme's functions.php. See register_product_widget_hook().
+		add_action( 'init', array( $this, 'register_product_widget_hook' ) );
 
 		// Force reviews open on products when enabled.
 		add_filter( 'comments_open', array( $this, 'maybe_force_comments_open' ), 10, 2 );
@@ -406,6 +410,26 @@ class Plugin {
 	}
 
 	/**
+	 * Register the auto-rendered review widget on single product pages.
+	 *
+	 * Hooked on `init` so the priority can be adjusted via filter from a theme's
+	 * functions.php (which loads before `init` fires).
+	 */
+	public function register_product_widget_hook(): void {
+		/**
+		 * Filters the priority at which the reviewbird review widget is
+		 * auto-rendered on single product pages. The simplest way to move the
+		 * widget relative to other `woocommerce_after_single_product_summary`
+		 * output (e.g. product tabs at 10, related products at 20).
+		 *
+		 * @param int $priority Hook priority. Default 14.
+		 */
+		$priority = (int) apply_filters( 'reviewbird_product_widget_priority', 14 );
+
+		add_action( 'woocommerce_after_single_product_summary', array( $this, 'render_product_widget' ), $priority );
+	}
+
+	/**
 	 * Render the reviewbird widget after product summary.
 	 */
 	public function render_product_widget(): void {
@@ -465,7 +489,13 @@ class Plugin {
 			__( 'Settings', 'reviewbird' )
 		);
 
-		array_unshift( $links, $settings_link );
+		$docs_link = sprintf(
+			'<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
+			esc_url( 'https://reviewbird.com/documentation/' ),
+			__( 'Documentation', 'reviewbird' )
+		);
+
+		array_unshift( $links, $settings_link, $docs_link );
 
 		return $links;
 	}

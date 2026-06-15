@@ -207,6 +207,7 @@ class Settings {
 			'pageType'         => false !== strpos( $hook, self::SETTINGS_SLUG ) ? 'settings' : 'get_started',
 			'registerUrl'      => reviewbird_get_api_url() . '/register',
 			'dashboardUrl'     => 'https://app.reviewbird.com/dashboard',
+			'documentationUrl' => 'https://reviewbird.com/documentation/',
 			'settingsUrl'      => admin_url( 'admin.php?page=' . self::SETTINGS_SLUG ),
 			'onboardingVideo'  => 'https://customer-4hlalxgkzo6kqqua.cloudflarestream.com/3bfe46e1308b101d1dc94982920a7b1b/iframe?autoplay=true&muted=true&loop=true',
 			'enableSchema'     => reviewbird_is_schema_enabled(),

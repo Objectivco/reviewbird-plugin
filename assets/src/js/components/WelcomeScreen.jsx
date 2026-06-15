@@ -70,6 +70,7 @@ export default function WelcomeScreen( {
 	registerUrl,
 	dashboardUrl,
 	settingsUrl,
+	documentationUrl,
 	onboardingVideo,
 } ) {
 	return (
@@ -137,6 +138,21 @@ export default function WelcomeScreen( {
 						</a>
 						.
 					</p>
+
+					{ documentationUrl && (
+						<p className="text-sm leading-6 text-slate-500">
+							{ __( 'Need help getting set up?', 'reviewbird' ) }{ ' ' }
+							<a
+								className="font-semibold text-slate-900 underline decoration-[#ef8f35] underline-offset-4"
+								href={ documentationUrl }
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								{ __( 'Read the documentation', 'reviewbird' ) }
+							</a>
+							.
+						</p>
+					) }
 				</div>
 
 				<div className="reviewbird-video-shell">
