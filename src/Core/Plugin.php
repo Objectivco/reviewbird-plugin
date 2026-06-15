@@ -489,7 +489,13 @@ class Plugin {
 			__( 'Settings', 'reviewbird' )
 		);
 
-		array_unshift( $links, $settings_link );
+		$docs_link = sprintf(
+			'<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
+			esc_url( 'https://reviewbird.com/documentation/' ),
+			__( 'Documentation', 'reviewbird' )
+		);
+
+		array_unshift( $links, $settings_link, $docs_link );
 
 		return $links;
 	}
