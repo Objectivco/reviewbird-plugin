@@ -221,44 +221,47 @@ class Settings {
 	 */
 	private function enqueue_help_scout_beacon(): void {
 		$beacon_id = wp_json_encode( self::HELP_SCOUT_BEACON_ID );
-		$script    = <<<JS
-(function(window, document, beacon) {
-	function loadBeaconScript() {
-		var firstScript = document.getElementsByTagName('script')[0];
-		var script = document.createElement('script');
-
-		script.type = 'text/javascript';
-		script.async = true;
-		script.src = 'https://beacon-v2.helpscout.net';
-
-		firstScript.parentNode.insertBefore(script, firstScript);
-	}
-
-	window.Beacon = beacon = function(method, options, data) {
-		window.Beacon.readyQueue.push({
-			method: method,
-			options: options,
-			data: data
-		});
-	};
-
-	beacon.readyQueue = [];
-
-	if ('complete' === document.readyState) {
-		loadBeaconScript();
-		return;
-	}
-
-	if (window.attachEvent) {
-		window.attachEvent('onload', loadBeaconScript);
-		return;
-	}
-
-	window.addEventListener('load', loadBeaconScript, false);
-}(window, document, window.Beacon || function() {}));
-
-window.Beacon('init', {$beacon_id});
-JS;
+		$script    = implode(
+			"\n",
+			array(
+				'(function(window, document, beacon) {',
+				"\tfunction loadBeaconScript() {",
+				"\t\tvar firstScript = document.getElementsByTagName('script')[0];",
+				"\t\tvar script = document.createElement('script');",
+				'',
+				"\t\tscript.type = 'text/javascript';",
+				"\t\tscript.async = true;",
+				"\t\tscript.src = 'https://beacon-v2.helpscout.net';",
+				'',
+				"\t\tfirstScript.parentNode.insertBefore(script, firstScript);",
+				"\t}",
+				'',
+				"\twindow.Beacon = beacon = function(method, options, data) {",
+				"\t\twindow.Beacon.readyQueue.push({",
+				"\t\t\tmethod: method,",
+				"\t\t\toptions: options,",
+				"\t\t\tdata: data",
+				"\t\t});",
+				"\t};",
+				'',
+				"\tbeacon.readyQueue = [];",
+				'',
+				"\tif ('complete' === document.readyState) {",
+				"\t\tloadBeaconScript();",
+				"\t\treturn;",
+				"\t}",
+				'',
+				"\tif (window.attachEvent) {",
+				"\t\twindow.attachEvent('onload', loadBeaconScript);",
+				"\t\treturn;",
+				"\t}",
+				'',
+				"\twindow.addEventListener('load', loadBeaconScript, false);",
+				'}(window, document, window.Beacon || function() {}));',
+				'',
+				"window.Beacon('init', {$beacon_id});",
+			)
+		);
 
 		wp_add_inline_script( 'reviewbird-admin', $script, 'after' );
 	}
