@@ -3,15 +3,15 @@
  * Plugin Name: Reviewbird
  * Plugin URI: https://reviewbird.com
  * Description: Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback.
- * Version: 1.0.20
+ * Version: 1.0.21
  * Author: Reviewbird
  * Text Domain: reviewbird
  * Domain Path: /languages
- * Requires at least: 5.0
+ * Requires at least: 5.9
  * Tested up to: 6.9
  * Requires PHP: 7.4
  * WC requires at least: 5.0
- * WC tested up to: 8.4
+ * WC tested up to: 10.9.1
  * Requires Plugins: woocommerce
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -32,7 +32,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Currently plugin version.
  */
-define( 'REVIEWBIRD_VERSION', '1.0.20' );
+define( 'REVIEWBIRD_VERSION', '1.0.21' );
 
 /**
  * Plugin directory path.
