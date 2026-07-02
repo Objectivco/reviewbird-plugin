@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: reviews, woocommerce, product reviews, ratings, customer reviews
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 1.0.20
+Stable tag: 1.0.21
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -165,6 +165,10 @@ To build from source:
 For development: `npm run dev`
 
 == Changelog ==
+
+= 1.0.21 =
+Fix - Fix a couple of linting issues.
+Fix - Fix min/tested versions.
 
 = 1.0.20 =
 New - Hook adjustments to make managing widget output locations easier.
