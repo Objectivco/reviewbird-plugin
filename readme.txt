@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: reviews, woocommerce, product reviews, ratings, customer reviews
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 1.0.21
+Stable tag: 1.0.22
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -165,6 +165,11 @@ To build from source:
 For development: `npm run dev`
 
 == Changelog ==
+
+= 1.0.22 =
+New - Include product tags and hierarchical categories in the products sync endpoint.
+New - Report plugin version to Reviewbird via the X-Reviewbird-Version response header.
+New - Add single product endpoint for on-demand widget product syncing.
 
 = 1.0.21 =
 Fix - Fix a couple of linting issues.
