@@ -86,6 +86,22 @@ class ProductsController {
 				),
 			)
 		);
+
+		register_rest_route(
+			'reviewbird/v1',
+			'/products/(?P<id>\d+)',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_product' ),
+				'permission_callback' => array( $this, 'permission_callback' ),
+				'args'                => array(
+					'id' => array(
+						'required'          => true,
+						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -118,7 +134,45 @@ class ProductsController {
 
 		$products = array_map( array( $this, 'format_product_with_variations' ), $results->products );
 
-		return new WP_REST_Response( $products, 200 );
+		$response = new WP_REST_Response( $products, 200 );
+		$response->header( 'X-Reviewbird-Version', REVIEWBIRD_VERSION );
+
+		return $response;
+	}
+
+	/**
+	 * Get a single product with embedded variations.
+	 *
+	 * Variation IDs resolve to their parent product so the response always
+	 * describes the full product with its variations.
+	 *
+	 * @param WP_REST_Request $request The REST API request.
+	 * @return WP_REST_Response|WP_Error Response or error.
+	 */
+	public function get_product( WP_REST_Request $request ) {
+		$wc_error = self::require_woocommerce();
+		if ( $wc_error ) {
+			return $wc_error;
+		}
+
+		$product = wc_get_product( absint( $request->get_param( 'id' ) ) );
+
+		if ( ! $product || ! $product->exists() ) {
+			return self::error( 'product_not_found', __( 'Product not found', 'reviewbird' ), 404 );
+		}
+
+		if ( $product->is_type( 'variation' ) ) {
+			$parent = wc_get_product( $product->get_parent_id() );
+
+			if ( $parent && $parent->exists() ) {
+				$product = $parent;
+			}
+		}
+
+		$response = new WP_REST_Response( $this->format_product_with_variations( $product ), 200 );
+		$response->header( 'X-Reviewbird-Version', REVIEWBIRD_VERSION );
+
+		return $response;
 	}
 
 	/**
@@ -158,7 +212,82 @@ class ProductsController {
 			'images'           => self::get_image_urls( $product->get_gallery_image_ids() ),
 			'stock_status'     => $product->get_stock_status(),
 			'in_stock'         => $product->is_in_stock(),
+			'tags'             => $this->get_product_tags( $product ),
+			'categories'       => $this->get_product_categories( $product ),
 		);
+	}
+
+	/**
+	 * Get product tags.
+	 *
+	 * @param \WC_Product $product Product object.
+	 * @return array Array of tags with id, name, and slug.
+	 */
+	private function get_product_tags( $product ): array {
+		$terms = get_the_terms( $product->get_id(), 'product_tag' );
+
+		if ( is_wp_error( $terms ) || empty( $terms ) ) {
+			return array();
+		}
+
+		$tags = array();
+
+		foreach ( $terms as $term ) {
+			$tags[] = array(
+				'id'   => $term->term_id,
+				'name' => $term->name,
+				'slug' => $term->slug,
+			);
+		}
+
+		return $tags;
+	}
+
+	/**
+	 * Get product categories with their ancestors (root first).
+	 *
+	 * @param \WC_Product $product Product object.
+	 * @return array Array of categories with id, name, slug, full_name, and ancestors.
+	 */
+	private function get_product_categories( $product ): array {
+		$terms = get_the_terms( $product->get_id(), 'product_cat' );
+
+		if ( is_wp_error( $terms ) || empty( $terms ) ) {
+			return array();
+		}
+
+		$categories = array();
+
+		foreach ( $terms as $term ) {
+			$ancestors      = array();
+			$ancestor_names = array();
+
+			foreach ( array_reverse( get_ancestors( $term->term_id, 'product_cat' ) ) as $ancestor_id ) {
+				$ancestor = get_term( $ancestor_id, 'product_cat' );
+
+				if ( ! $ancestor || is_wp_error( $ancestor ) ) {
+					continue;
+				}
+
+				$ancestor_names[] = $ancestor->name;
+				$ancestors[]      = array(
+					'id'        => $ancestor->term_id,
+					'name'      => $ancestor->name,
+					'slug'      => $ancestor->slug,
+					'full_name' => implode( ' > ', $ancestor_names ),
+				);
+			}
+
+			$categories[] = array(
+				'id'        => $term->term_id,
+				'name'      => $term->name,
+				'slug'      => $term->slug,
+				'full_name' => implode( ' > ', array_merge( $ancestor_names, array( $term->name ) ) ),
+				'ancestors' => $ancestors,
+			);
+		}
+
+		return $categories;
 	}
 
 	/**
