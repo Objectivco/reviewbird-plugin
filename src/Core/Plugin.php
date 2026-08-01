@@ -109,6 +109,9 @@ class Plugin {
 		// WooCommerce integration (adds CusRev media to reviews REST API).
 		new WooCommerce();
 
+		// Do not copy cached Reviewbird data when a product is duplicated.
+		add_filter( 'woocommerce_duplicate_product_exclude_meta', array( $this, 'exclude_reviewbird_meta_from_product_duplicates' ) );
+
 		// Action Scheduler integrations for async API calls.
 		$health_scheduler = new HealthScheduler();
 		$health_scheduler->init();
@@ -131,6 +134,23 @@ class Plugin {
 		// Force reviews open on products when enabled.
 		add_filter( 'comments_open', array( $this, 'maybe_force_comments_open' ), 10, 2 );
 		add_filter( 'woocommerce_product_get_reviews_allowed', array( $this, 'maybe_force_reviews_allowed' ), 10, 2 );
+	}
+
+	/**
+	 * Exclude cached Reviewbird data from product duplicates.
+	 *
+	 * @param array $excluded_meta Meta keys that WooCommerce will not copy.
+	 * @return array
+	 */
+	public function exclude_reviewbird_meta_from_product_duplicates( array $excluded_meta ): array {
+		$reviewbird_meta = array(
+			'_reviewbird_avg_stars',
+			'_reviewbird_reviews_count',
+			'_reviewbird_rating_counts',
+			'_reviewbird_schema_reviews',
+		);
+
+		return array_values( array_unique( array_merge( $excluded_meta, $reviewbird_meta ) ) );
 	}
 
 	/**
