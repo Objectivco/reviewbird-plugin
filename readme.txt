@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: reviews, woocommerce, product reviews, ratings, customer reviews
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 1.0.23
+Stable tag: 1.0.24
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -168,6 +168,10 @@ To build from source:
 For development: `npm run dev`
 
 == Changelog ==
+
+= 1.0.24 =
+New - Redesign the Get Started page for a clearer setup flow.
+New - Prefill Reviewbird registration with the administrator email, site name, and public site URL.
 
 = 1.0.23 =
 Fix - Do not copy Reviewbird rating and schema metadata when a WooCommerce product is duplicated.

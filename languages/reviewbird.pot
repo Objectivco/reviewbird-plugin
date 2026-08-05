@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Reviewbird 1.0.23\n"
+"Project-Id-Version: Reviewbird 1.0.24\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-05T15:43:04+00:00\n"
+"POT-Creation-Date: 2026-08-05T17:53:54+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
@@ -17,9 +17,9 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:114
-#: src/Admin/Settings.php:115
-#: assets/src/js/components/WelcomeScreen.jsx:188
+#: src/Admin/Settings.php:125
+#: src/Admin/Settings.php:126
+#: assets/src/js/components/WelcomeScreen.jsx:194
 msgid "Reviewbird"
 msgstr ""
 
@@ -33,46 +33,47 @@ msgstr ""
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr ""
 
-#: src/Admin/Settings.php:81
+#: src/Admin/Settings.php:92
 msgid "Reviewbird Connection Error:"
 msgstr ""
 
-#: src/Admin/Settings.php:100
+#: src/Admin/Settings.php:111
 msgid "Successfully connected to Reviewbird!"
 msgstr ""
 
-#: src/Admin/Settings.php:125
-#: src/Admin/Settings.php:126
+#: src/Admin/Settings.php:136
+#: src/Admin/Settings.php:137
 msgid "Get Started"
 msgstr ""
 
-#: src/Admin/Settings.php:134
+#: src/Admin/Settings.php:145
 #: assets/src/js/components/SettingsApp.jsx:91
 msgid "Reviewbird Settings"
 msgstr ""
 
-#: src/Admin/Settings.php:135
+#: src/Admin/Settings.php:146
 #: src/Core/Plugin.php:509
 msgid "Settings"
 msgstr ""
 
-#: src/Admin/Settings.php:323
+#: src/Admin/Settings.php:340
 msgid "Invalid security token"
 msgstr ""
 
-#: src/Admin/Settings.php:327
+#: src/Admin/Settings.php:344
+#: src/Admin/Settings.php:406
 msgid "Insufficient permissions"
 msgstr ""
 
-#: src/Admin/Settings.php:352
+#: src/Admin/Settings.php:369
 msgid "Invalid setting"
 msgstr ""
 
-#: src/Admin/Settings.php:362
+#: src/Admin/Settings.php:379
 msgid "Setting updated successfully"
 msgstr ""
 
-#: src/Admin/Settings.php:379
+#: src/Admin/Settings.php:396
 msgid "Health check cache cleared"
 msgstr ""
 
@@ -361,11 +362,11 @@ msgid "one secure click"
 msgstr ""
 
 #: assets/src/js/components/WelcomeScreen.jsx:35
-msgid "Turn on review requests"
+msgid "Turn on automatic review requests"
 msgstr ""
 
 #: assets/src/js/components/WelcomeScreen.jsx:36
-msgid "choose when they go out"
+msgid "you set the timing and content"
 msgstr ""
 
 #: assets/src/js/components/WelcomeScreen.jsx:53
@@ -381,11 +382,11 @@ msgid "Getting started"
 msgstr ""
 
 #: assets/src/js/components/WelcomeScreen.jsx:80
-msgid "You're three steps from your first five-star review."
+msgid "Turn your orders into powerful social proof."
 msgstr ""
 
 #: assets/src/js/components/WelcomeScreen.jsx:87
-msgid "Reviewbird emails customers after delivery and turns their feedback into product reviews on your WooCommerce site—automatically."
+msgid "You're three quick steps from your first five-star review!"
 msgstr ""
 
 #: assets/src/js/components/WelcomeScreen.jsx:114
@@ -412,50 +413,54 @@ msgstr ""
 msgid "Import your existing reviews"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:159
+#: assets/src/js/components/WelcomeScreen.jsx:149
+msgid "Send a bulk request to past customers"
+msgstr ""
+
+#: assets/src/js/components/WelcomeScreen.jsx:165
 msgid "Built by the team behind CheckoutWC, trusted by <strong>8,000+ WooCommerce stores.</strong>"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:172
+#: assets/src/js/components/WelcomeScreen.jsx:178
 msgid "Example Reviewbird product review request email"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:193
+#: assets/src/js/components/WelcomeScreen.jsx:199
 msgid "for Aster & Oak"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:200
+#: assets/src/js/components/WelcomeScreen.jsx:206
 msgid "To: jamie@example.com"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:208
+#: assets/src/js/components/WelcomeScreen.jsx:214
 msgid "Sent 3 days after delivery"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:218
+#: assets/src/js/components/WelcomeScreen.jsx:224
 msgid "How would you rate this product?"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:224
+#: assets/src/js/components/WelcomeScreen.jsx:230
 msgid "We would love it if you would share a bit about your experience."
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:268
+#: assets/src/js/components/WelcomeScreen.jsx:274
 msgid "Linen Throw Blanket — Sage"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:279
+#: assets/src/js/components/WelcomeScreen.jsx:285
 msgid "Poor"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:282
+#: assets/src/js/components/WelcomeScreen.jsx:288
 msgid "Great"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:287
+#: assets/src/js/components/WelcomeScreen.jsx:293
 msgid "You received this email because you made a purchase from Aster & Oak."
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:293
+#: assets/src/js/components/WelcomeScreen.jsx:299
 msgid "Unsubscribe from review emails"
 msgstr ""
