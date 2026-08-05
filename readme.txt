@@ -73,7 +73,7 @@ This plugin connects to the Reviewbird API to enable review collection, manageme
 
 **Data Transmitted:**
 - **Account Verification:** Connection status
-- **Registration Prefill:** Current administrator email address, site name, and public site URL
+- **Registration Prefill:** Current administrator name and email address, site name, and public site URL
 - **Order Data:** Order ID, customer email, customer name, line items, order date, status, locale
 - **Product Data:** Product ID, name, SKU, slug, GTIN, brand, price, attributes (for variations), image URL, permalink, stock status
 - **Customer Data:** Email address, name, review content and media
@@ -171,7 +171,7 @@ For development: `npm run dev`
 
 = 1.0.24 =
 New - Redesign the Get Started page for a clearer setup flow.
-New - Prefill Reviewbird registration with the administrator email, site name, and public site URL.
+New - Prefill Reviewbird registration with the administrator name, email address, site name, and public site URL.
 
 = 1.0.23 =
 Fix - Do not copy Reviewbird rating and schema metadata when a WooCommerce product is duplicated.

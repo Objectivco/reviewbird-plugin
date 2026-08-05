@@ -413,6 +413,7 @@ class Settings {
 			self::REGISTRATION_INTENT_ENDPOINT,
 			array(
 				'email'      => sanitize_email( $user->user_email ),
+				'name'       => sanitize_text_field( $user->display_name ),
 				'store_name' => sanitize_text_field( get_bloginfo( 'name' ) ),
 				'store_url'  => esc_url_raw( home_url( '/' ) ),
 				'source'     => 'woocommerce_plugin',
