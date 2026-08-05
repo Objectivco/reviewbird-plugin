@@ -65,6 +65,7 @@ This plugin connects to the Reviewbird API to enable review collection, manageme
 
 **Purpose:**
 - Verify your Reviewbird account
+- Prefill account and store setup when you start registration from WordPress
 - Allow Reviewbird to collect order data to trigger review request emails
 - Retrieve review widgets and showcases for your website
 - Allow Reviewbird to collect product information for review display and product groups
@@ -72,11 +73,13 @@ This plugin connects to the Reviewbird API to enable review collection, manageme
 
 **Data Transmitted:**
 - **Account Verification:** Connection status
+- **Registration Prefill:** Current administrator email address, site name, and public site URL
 - **Order Data:** Order ID, customer email, customer name, line items, order date, status, locale
 - **Product Data:** Product ID, name, SKU, slug, GTIN, brand, price, attributes (for variations), image URL, permalink, stock status
 - **Customer Data:** Email address, name, review content and media
 
 **When Data is Sent:**
+- When an administrator clicks Create free account on the Reviewbird Get Started page
 - During OAuth connection from Reviewbird to WooCommerce
 - During initial product sync after connection
 - During scheduled order sync

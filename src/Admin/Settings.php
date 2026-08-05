@@ -34,6 +34,16 @@ class Settings {
 	private const SETTINGS_SLUG = 'reviewbird-settings';
 
 	/**
+	 * Admin action that starts Reviewbird registration.
+	 */
+	private const REGISTRATION_INTENT_ACTION = 'reviewbird_create_registration_intent';
+
+	/**
+	 * Reviewbird endpoint that creates a short-lived registration intent.
+	 */
+	private const REGISTRATION_INTENT_ENDPOINT = '/api/registration-intents';
+
+	/**
 	 * Allowed settings that can be updated via AJAX.
 	 *
 	 * @var array
@@ -50,6 +60,7 @@ class Settings {
 	public function __construct() {
 		add_action( 'wp_ajax_reviewbird_update_setting', array( $this, 'handle_setting_update' ) );
 		add_action( 'wp_ajax_reviewbird_clear_health_cache', array( $this, 'handle_clear_health_cache' ) );
+		add_action( 'admin_post_' . self::REGISTRATION_INTENT_ACTION, array( $this, 'handle_registration_intent' ) );
 		add_action( 'admin_notices', array( $this, 'display_oauth_notices' ) );
 	}
 
@@ -205,7 +216,13 @@ class Settings {
 			'apiUrl'           => reviewbird_get_api_url(),
 			'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
 			'pageType'         => false !== strpos( $hook, self::SETTINGS_SLUG ) ? 'settings' : 'get_started',
-			'registerUrl'      => reviewbird_get_api_url() . '/register',
+			'registerUrl'      => add_query_arg(
+				array(
+					'action'   => self::REGISTRATION_INTENT_ACTION,
+					'_wpnonce' => wp_create_nonce( self::REGISTRATION_INTENT_ACTION ),
+				),
+				admin_url( 'admin-post.php' )
+			),
 			'dashboardUrl'     => 'https://app.reviewbird.com/dashboard',
 			'enableSchema'     => reviewbird_is_schema_enabled(),
 			'enableWidget'     => reviewbird_is_widget_enabled(),
@@ -379,5 +396,39 @@ class Settings {
 				'message' => __( 'Health check cache cleared', 'reviewbird' ),
 			)
 		);
+	}
+
+	/**
+	 * Create a registration intent and send the administrator to Reviewbird.
+	 */
+	public function handle_registration_intent(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Insufficient permissions', 'reviewbird' ), '', array( 'response' => 403 ) );
+		}
+
+		check_admin_referer( self::REGISTRATION_INTENT_ACTION );
+
+		$user     = wp_get_current_user();
+		$response = reviewbird_api_request(
+			self::REGISTRATION_INTENT_ENDPOINT,
+			array(
+				'email'      => sanitize_email( $user->user_email ),
+				'store_name' => sanitize_text_field( get_bloginfo( 'name' ) ),
+				'store_url'  => esc_url_raw( home_url( '/' ) ),
+				'source'     => 'woocommerce_plugin',
+			),
+			'POST'
+		);
+
+		$token            = is_array( $response ) && isset( $response['token'] ) ? (string) $response['token'] : '';
+		$registration_url = reviewbird_get_api_url() . '/register';
+
+		if ( preg_match( '/\A[A-Za-z0-9_-]{32,128}\z/', $token ) ) {
+			$registration_url = reviewbird_get_api_url() . '/register/woocommerce/' . $token;
+		}
+
+		// phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Target is the configured Reviewbird URL.
+		wp_redirect( $registration_url );
+		exit;
 	}
 }
