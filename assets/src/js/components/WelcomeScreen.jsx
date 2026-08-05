@@ -78,14 +78,14 @@ export default function WelcomeScreen( { registerUrl, dashboardUrl } ) {
 								className="reviewbird-display-title reviewbird-start-title"
 							>
 								{ __(
-									"Turn your orders into powerful social proof.",
+									'Turn your orders into powerful social proof.',
 									'reviewbird'
 								) }
 							</h1>
 
 							<p className="reviewbird-start-lede">
 								{ __(
-									'You\'re three quick steps away your first five-star review!',
+									"You're three quick steps from your first five-star review!",
 									'reviewbird'
 								) }
 							</p>

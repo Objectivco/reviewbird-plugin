@@ -2,21 +2,23 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reviewbird 1.0.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
-"POT-Creation-Date: 2026-08-05T15:43:04+00:00\n"
-"PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: gpt-po v1.2.3\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: pl_PL\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-08-05T15:43:04+00:00\n"
+"PO-Revision-Date: 2026-04-16 00:00+0000\n"
+"Language: pl_PL\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
 
 #. Plugin Name of the plugin
 #. Author of the plugin
-#: reviewbird-plugin.php src/Admin/Settings.php:114 src/Admin/Settings.php:115
-#: assets/src/js/components/WelcomeScreen.jsx:188
+#: reviewbird-plugin.php
+#: src/Admin/Settings.php:125
+#: src/Admin/Settings.php:126
+#: assets/src/js/components/WelcomeScreen.jsx:194
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -27,50 +29,50 @@ msgstr "https://reviewbird.com"
 
 #. Description of the plugin
 #: reviewbird-plugin.php
-msgid ""
-"Automated review collection for WooCommerce that blocks spam, catches "
-"complaints, and showcases your best feedback."
-msgstr ""
-"Automatyczne zbieranie opinii dla WooCommerce, które blokuje spam, "
-"wychwytuje skargi i prezentuje najlepsze opinie."
+msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
+msgstr "Automatyczne zbieranie opinii dla WooCommerce, które blokuje spam, wychwytuje skargi i prezentuje najlepsze opinie."
 
-#: src/Admin/Settings.php:81
+#: src/Admin/Settings.php:92
 msgid "Reviewbird Connection Error:"
 msgstr "Błąd połączenia z Reviewbird:"
 
-#: src/Admin/Settings.php:100
+#: src/Admin/Settings.php:111
 msgid "Successfully connected to Reviewbird!"
 msgstr "Pomyślnie połączono z Reviewbird!"
 
-#: src/Admin/Settings.php:125 src/Admin/Settings.php:126
+#: src/Admin/Settings.php:136
+#: src/Admin/Settings.php:137
 msgid "Get Started"
 msgstr "Rozpocznij"
 
-#: src/Admin/Settings.php:134 assets/src/js/components/SettingsApp.jsx:91
+#: src/Admin/Settings.php:145
+#: assets/src/js/components/SettingsApp.jsx:91
 msgid "Reviewbird Settings"
 msgstr "Ustawienia Reviewbird"
 
-#: src/Admin/Settings.php:135 src/Core/Plugin.php:509
+#: src/Admin/Settings.php:146
+#: src/Core/Plugin.php:509
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: src/Admin/Settings.php:323
+#: src/Admin/Settings.php:340
 msgid "Invalid security token"
 msgstr "Nieprawidłowy token bezpieczeństwa"
 
-#: src/Admin/Settings.php:327
+#: src/Admin/Settings.php:344
+#: src/Admin/Settings.php:406
 msgid "Insufficient permissions"
 msgstr "Niewystarczające uprawnienia"
 
-#: src/Admin/Settings.php:352
+#: src/Admin/Settings.php:369
 msgid "Invalid setting"
 msgstr "Nieprawidłowe ustawienie"
 
-#: src/Admin/Settings.php:362
+#: src/Admin/Settings.php:379
 msgid "Setting updated successfully"
 msgstr "Ustawienie zostało pomyślnie zaktualizowane"
 
-#: src/Admin/Settings.php:379
+#: src/Admin/Settings.php:396
 msgid "Health check cache cleared"
 msgstr "Pamięć podręczna kontroli stanu została wyczyszczona"
 
@@ -80,7 +82,8 @@ msgstr "Pamięć podręczna kontroli stanu została wyczyszczona"
 msgid "Store ID %d has been saved successfully"
 msgstr "Sklep o ID %d został pomyślnie zapisany"
 
-#: src/Api/CouponController.php:79 src/Api/ProductsController.php:43
+#: src/Api/CouponController.php:79
+#: src/Api/ProductsController.php:43
 msgid "WooCommerce is not active"
 msgstr "WooCommerce nie jest aktywny"
 
@@ -98,7 +101,8 @@ msgstr "Szablon kuponu '%s' nie został znaleziony"
 msgid "discount_type and amount are required when not using template"
 msgstr "discount_type i amount są wymagane, gdy nie używa się szablonu"
 
-#: src/Api/ProductsController.php:161 src/Api/RatingsController.php:53
+#: src/Api/ProductsController.php:161
+#: src/Api/RatingsController.php:53
 msgid "Product not found"
 msgstr "Produkt nie został znaleziony"
 
@@ -134,7 +138,8 @@ msgstr "Nieprawidłowy adres e-mail"
 msgid "Documentation"
 msgstr "Dokumentacja"
 
-#: src/functions.php:114 src/functions.php:290
+#: src/functions.php:114
+#: src/functions.php:290
 msgid "API request failed"
 msgstr "Żądanie API nie powiodło się"
 
@@ -171,12 +176,8 @@ msgid "Connected to Reviewbird"
 msgstr "Połączono z Reviewbird"
 
 #: assets/src/js/components/ConnectionHealth.jsx:11
-msgid ""
-"Your WooCommerce store is successfully connected to Reviewbird. Review data "
-"is syncing properly."
-msgstr ""
-"Twój sklep WooCommerce został pomyślnie połączony z Reviewbird. Dane opinii "
-"są poprawnie synchronizowane."
+msgid "Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly."
+msgstr "Twój sklep WooCommerce został pomyślnie połączony z Reviewbird. Dane opinii są poprawnie synchronizowane."
 
 #: assets/src/js/components/ConnectionHealth.jsx:12
 msgid "View Dashboard"
@@ -187,12 +188,8 @@ msgid "WooCommerce Not Connected"
 msgstr "WooCommerce nie jest połączony"
 
 #: assets/src/js/components/ConnectionHealth.jsx:19
-msgid ""
-"WooCommerce is not yet connected to Reviewbird. Connect your store to start "
-"syncing products and reviews."
-msgstr ""
-"WooCommerce nie jest jeszcze połączony z Reviewbird. Połącz swój sklep, aby "
-"rozpocząć synchronizację produktów i opinii."
+msgid "WooCommerce is not yet connected to Reviewbird. Connect your store to start syncing products and reviews."
+msgstr "WooCommerce nie jest jeszcze połączony z Reviewbird. Połącz swój sklep, aby rozpocząć synchronizację produktów i opinii."
 
 #: assets/src/js/components/ConnectionHealth.jsx:20
 msgid "Connect WooCommerce"
@@ -203,14 +200,8 @@ msgid "Initial Sync in Progress"
 msgstr "Trwa początkowa synchronizacja"
 
 #: assets/src/js/components/ConnectionHealth.jsx:27
-msgid ""
-"Reviewbird is syncing your products and reviews. This may take a few minutes "
-"depending on your catalog size. The widget will be available once sync "
-"completes."
-msgstr ""
-"Reviewbird synchronizuje Twoje produkty i opinie. Może to potrwać kilka "
-"minut w zależności od wielkości katalogu. Widget będzie dostępny po "
-"zakończeniu synchronizacji."
+msgid "Reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
+msgstr "Reviewbird synchronizuje Twoje produkty i opinie. Może to potrwać kilka minut w zależności od wielkości katalogu. Widget będzie dostępny po zakończeniu synchronizacji."
 
 #: assets/src/js/components/ConnectionHealth.jsx:28
 msgid "View Sync Progress"
@@ -221,12 +212,8 @@ msgid "Subscription Required"
 msgstr "Wymagana subskrypcja"
 
 #: assets/src/js/components/ConnectionHealth.jsx:35
-msgid ""
-"Your Reviewbird subscription is inactive. Please update your billing "
-"information to continue using the service."
-msgstr ""
-"Twoja subskrypcja Reviewbird jest nieaktywna. Proszę zaktualizuj informacje "
-"rozliczeniowe, aby kontynuować korzystanie z usługi."
+msgid "Your Reviewbird subscription is inactive. Please update your billing information to continue using the service."
+msgstr "Twoja subskrypcja Reviewbird jest nieaktywna. Proszę zaktualizuj informacje rozliczeniowe, aby kontynuować korzystanie z usługi."
 
 #: assets/src/js/components/ConnectionHealth.jsx:36
 msgid "Update Billing"
@@ -239,8 +226,7 @@ msgstr "Wykryto problem z połączeniem"
 
 #: assets/src/js/components/ConnectionHealth.jsx:43
 msgid "Unable to connect to Reviewbird. Please check your connection settings."
-msgstr ""
-"Nie można połączyć się z Reviewbird. Proszę sprawdź ustawienia połączenia."
+msgstr "Nie można połączyć się z Reviewbird. Proszę sprawdź ustawienia połączenia."
 
 #: assets/src/js/components/ConnectionHealth.jsx:44
 msgid "Fix Connection"
@@ -248,9 +234,7 @@ msgstr "Napraw połączenie"
 
 #: assets/src/js/components/ConnectionHealth.jsx:51
 msgid "Unable to reach Reviewbird API. Please check your internet connection."
-msgstr ""
-"Nie można połączyć się z API Reviewbird. Proszę sprawdź swoje połączenie "
-"internetowe."
+msgstr "Nie można połączyć się z API Reviewbird. Proszę sprawdź swoje połączenie internetowe."
 
 #: assets/src/js/components/ConnectionHealth.jsx:52
 msgid "Get Help"
@@ -301,12 +285,8 @@ msgid "Reviewbird Widget"
 msgstr "Widżet Reviewbird"
 
 #: assets/src/js/components/SettingsApp.jsx:112
-msgid ""
-"Display Reviewbird review widget on product pages. The widget shows customer "
-"reviews and allows customers to submit new reviews."
-msgstr ""
-"Wyświetl widżet recenzji Reviewbird na stronach produktów. Widżet pokazuje "
-"opinie klientów i pozwala klientom na dodawanie nowych recenzji."
+msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
+msgstr "Wyświetl widżet recenzji Reviewbird na stronach produktów. Widżet pokazuje opinie klientów i pozwala klientom na dodawanie nowych recenzji."
 
 #: assets/src/js/components/SettingsApp.jsx:118
 msgid "Widget is enabled on all WooCommerce product pages."
@@ -317,29 +297,20 @@ msgid "Forcefully enable reviews on all products"
 msgstr "Wymuś włączanie recenzji dla wszystkich produktów"
 
 #: assets/src/js/components/SettingsApp.jsx:133
-msgid ""
-"Leave this off if you prefer to control reviews per product using the "
-"\"Enable reviews\" checkbox."
-msgstr ""
-"Pozostaw wyłączone, jeśli wolisz kontrolować recenzje dla poszczególnych "
-"produktów za pomocą pola wyboru „Włącz recenzje”."
+msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
+msgstr "Pozostaw wyłączone, jeśli wolisz kontrolować recenzje dla poszczególnych produktów za pomocą pola wyboru „Włącz recenzje”."
 
 #: assets/src/js/components/SettingsApp.jsx:169
 msgid "SEO Schema Markup"
 msgstr "SEO Schema Markup"
 
 #: assets/src/js/components/SettingsApp.jsx:170
-msgid ""
-"Enable Google-compliant structured data (JSON-LD schema) on product pages "
-"for rich snippets in search results."
-msgstr ""
-"Włącz zgodne z Google ustrukturyzowane dane (schemat JSON-LD) na stronach "
-"produktów dla rozszerzonych wyników w wyszukiwarce."
+msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
+msgstr "Włącz zgodne z Google ustrukturyzowane dane (schemat JSON-LD) na stronach produktów dla rozszerzonych wyników w wyszukiwarce."
 
 #: assets/src/js/components/SettingsApp.jsx:176
 msgid "Schema markup is active on all WooCommerce product pages."
-msgstr ""
-"Schema markup jest aktywny na wszystkich stronach produktów WooCommerce."
+msgstr "Schema markup jest aktywny na wszystkich stronach produktów WooCommerce."
 
 #: assets/src/js/components/SettingsApp.jsx:181
 msgid "What is Schema Markup?"
@@ -355,8 +326,7 @@ msgstr "Pokazuje liczbę recenzji i informacje o produkcie"
 
 #: assets/src/js/components/SettingsApp.jsx:191
 msgid "Review schema is cached for 4 hours for optimal performance"
-msgstr ""
-"Schema recenzji jest buforowana przez 4 godziny dla optymalnej wydajności"
+msgstr "Schema recenzji jest buforowana przez 4 godziny dla optymalnej wydajności"
 
 #: assets/src/js/components/SettingsApp.jsx:200
 msgid "Test with Google Rich Results"
@@ -376,120 +346,120 @@ msgstr "Wyłączone"
 
 #: assets/src/js/components/WelcomeScreen.jsx:27
 msgid "Create your free account"
-msgstr ""
+msgstr "Utwórz swoje darmowe konto"
 
 #: assets/src/js/components/WelcomeScreen.jsx:28
 msgid "takes about a minute"
-msgstr ""
+msgstr "zajmuje około minuty"
 
 #: assets/src/js/components/WelcomeScreen.jsx:31
 msgid "Connect your WooCommerce site"
-msgstr ""
+msgstr "Połącz swoją stronę WooCommerce"
 
 #: assets/src/js/components/WelcomeScreen.jsx:32
 msgid "one secure click"
-msgstr ""
+msgstr "jednym bezpiecznym kliknięciem"
 
 #: assets/src/js/components/WelcomeScreen.jsx:35
-msgid "Turn on review requests"
-msgstr ""
+msgid "Turn on automatic review requests"
+msgstr "Włącz automatyczne prośby o recenzje"
 
 #: assets/src/js/components/WelcomeScreen.jsx:36
-msgid "choose when they go out"
-msgstr ""
+msgid "you set the timing and content"
+msgstr "ustalasz czas i treść"
 
 #: assets/src/js/components/WelcomeScreen.jsx:53
 msgid "Already have an account?"
-msgstr ""
+msgstr "Masz już konto?"
 
 #: assets/src/js/components/WelcomeScreen.jsx:60
 msgid "Sign in"
-msgstr ""
+msgstr "Zaloguj się"
 
 #: assets/src/js/components/WelcomeScreen.jsx:73
 msgid "Getting started"
-msgstr ""
+msgstr "Pierwsze kroki"
 
 #: assets/src/js/components/WelcomeScreen.jsx:80
-msgid "You're three steps from your first five-star review."
-msgstr ""
+msgid "Turn your orders into powerful social proof."
+msgstr "Zamień swoje zamówienia w potężny dowód społeczny."
 
 #: assets/src/js/components/WelcomeScreen.jsx:87
-msgid ""
-"Reviewbird emails customers after delivery and turns their feedback into "
-"product reviews on your WooCommerce site—automatically."
-msgstr ""
+msgid "You're three quick steps from your first five-star review!"
+msgstr "Jesteś trzy szybkie kroki od swojej pierwszej pięciogwiazdkowej recenzji!"
 
 #: assets/src/js/components/WelcomeScreen.jsx:114
 msgid "Create free account"
-msgstr ""
+msgstr "Utwórz darmowe konto"
 
 #: assets/src/js/components/WelcomeScreen.jsx:124
 msgid "Free plan details"
-msgstr ""
+msgstr "Szczegóły darmowego planu"
 
 #: assets/src/js/components/WelcomeScreen.jsx:129
 msgid "Free plan"
-msgstr ""
+msgstr "Darmowy plan"
 
 #: assets/src/js/components/WelcomeScreen.jsx:131
 msgid "No credit card required"
-msgstr ""
+msgstr "Nie wymaga karty kredytowej"
 
 #: assets/src/js/components/WelcomeScreen.jsx:137
 msgid "25 review requests a month"
-msgstr ""
+msgstr "25 próśb o recenzje miesięcznie"
 
 #: assets/src/js/components/WelcomeScreen.jsx:143
 msgid "Import your existing reviews"
-msgstr ""
+msgstr "Importuj swoje istniejące recenzje"
 
-#: assets/src/js/components/WelcomeScreen.jsx:159
-msgid ""
-"Built by the team behind CheckoutWC, trusted by <strong>8,000+ WooCommerce "
-"stores.</strong>"
-msgstr ""
+#: assets/src/js/components/WelcomeScreen.jsx:149
+msgid "Send a bulk request to past customers"
+msgstr "Wyślij zbiorczą prośbę do poprzednich klientów"
 
-#: assets/src/js/components/WelcomeScreen.jsx:172
+#: assets/src/js/components/WelcomeScreen.jsx:165
+msgid "Built by the team behind CheckoutWC, trusted by <strong>8,000+ WooCommerce stores.</strong>"
+msgstr "Stworzone przez zespół stojący za CheckoutWC, zaufane przez <strong>ponad 8 000 sklepów WooCommerce.</strong>"
+
+#: assets/src/js/components/WelcomeScreen.jsx:178
 msgid "Example Reviewbird product review request email"
-msgstr ""
+msgstr "Przykładowy e-mail z prośbą o recenzję produktu Reviewbird"
 
-#: assets/src/js/components/WelcomeScreen.jsx:193
+#: assets/src/js/components/WelcomeScreen.jsx:199
 msgid "for Aster & Oak"
-msgstr ""
+msgstr "dla Aster & Oak"
 
-#: assets/src/js/components/WelcomeScreen.jsx:200
+#: assets/src/js/components/WelcomeScreen.jsx:206
 msgid "To: jamie@example.com"
-msgstr ""
+msgstr "Do: jamie@example.com"
 
-#: assets/src/js/components/WelcomeScreen.jsx:208
+#: assets/src/js/components/WelcomeScreen.jsx:214
 msgid "Sent 3 days after delivery"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:218
-msgid "How would you rate this product?"
-msgstr ""
+msgstr "Wysłano 3 dni po dostawie"
 
 #: assets/src/js/components/WelcomeScreen.jsx:224
+msgid "How would you rate this product?"
+msgstr "Jak oceniasz ten produkt?"
+
+#: assets/src/js/components/WelcomeScreen.jsx:230
 msgid "We would love it if you would share a bit about your experience."
-msgstr ""
+msgstr "Byłoby nam miło, gdybyś podzielił się swoimi doświadczeniami."
 
-#: assets/src/js/components/WelcomeScreen.jsx:268
+#: assets/src/js/components/WelcomeScreen.jsx:274
 msgid "Linen Throw Blanket — Sage"
-msgstr ""
+msgstr "Lniany koc — Szałwia"
 
-#: assets/src/js/components/WelcomeScreen.jsx:279
+#: assets/src/js/components/WelcomeScreen.jsx:285
 msgid "Poor"
-msgstr ""
+msgstr "Słabo"
 
-#: assets/src/js/components/WelcomeScreen.jsx:282
+#: assets/src/js/components/WelcomeScreen.jsx:288
 msgid "Great"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:287
-msgid "You received this email because you made a purchase from Aster & Oak."
-msgstr ""
+msgstr "Świetnie"
 
 #: assets/src/js/components/WelcomeScreen.jsx:293
+msgid "You received this email because you made a purchase from Aster & Oak."
+msgstr "Otrzymałeś ten e-mail, ponieważ dokonałeś zakupu w Aster & Oak."
+
+#: assets/src/js/components/WelcomeScreen.jsx:299
 msgid "Unsubscribe from review emails"
-msgstr ""
+msgstr "Wypisz się z e-maili z recenzjami"
