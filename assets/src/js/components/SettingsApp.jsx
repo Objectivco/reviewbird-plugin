@@ -72,13 +72,10 @@ export default function SettingsApp() {
 	);
 	if ( 'get_started' === pageType ) {
 		return (
-			<div className="mx-auto max-w-7xl py-8">
+			<div className="reviewbird-get-started-page">
 				<WelcomeScreen
 					registerUrl={ window.reviewbirdAdmin.registerUrl }
 					dashboardUrl={ window.reviewbirdAdmin.dashboardUrl }
-					settingsUrl={ window.reviewbirdAdmin.settingsUrl }
-					documentationUrl={ window.reviewbirdAdmin.documentationUrl }
-					onboardingVideo={ window.reviewbirdAdmin.onboardingVideo }
 				/>
 			</div>
 		);
