@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reviewbird 1.0.11\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
-"POT-Creation-Date: 2026-08-05T15:17:35+00:00\n"
+"POT-Creation-Date: 2026-08-05T15:43:04+00:00\n"
 "PO-Revision-Date: 2026-01-30 00:00+0000\n"
 "Last-Translator: gpt-po v1.2.3\n"
 "Language-Team: reviewbird <support@reviewbird.com>\n"
@@ -16,6 +16,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php src/Admin/Settings.php:114 src/Admin/Settings.php:115
+#: assets/src/js/components/WelcomeScreen.jsx:188
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -376,110 +377,122 @@ msgstr "Ativado"
 msgid "Disabled"
 msgstr "Desativado"
 
-#: assets/src/js/components/WelcomeScreen.jsx:26
+#: assets/src/js/components/WelcomeScreen.jsx:27
 msgid "Create your free account"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:27
+#: assets/src/js/components/WelcomeScreen.jsx:28
 msgid "takes about a minute"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:30
+#: assets/src/js/components/WelcomeScreen.jsx:31
 msgid "Connect your WooCommerce site"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:31
+#: assets/src/js/components/WelcomeScreen.jsx:32
 msgid "one secure click"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:34
+#: assets/src/js/components/WelcomeScreen.jsx:35
 msgid "Turn on review requests"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:35
+#: assets/src/js/components/WelcomeScreen.jsx:36
 msgid "choose when they go out"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:52
+#: assets/src/js/components/WelcomeScreen.jsx:53
 msgid "Already have an account?"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:59
+#: assets/src/js/components/WelcomeScreen.jsx:60
 msgid "Sign in"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:72
+#: assets/src/js/components/WelcomeScreen.jsx:73
 msgid "Getting started"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:79
+#: assets/src/js/components/WelcomeScreen.jsx:80
 msgid "You're three steps from your first five-star review."
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:86
+#: assets/src/js/components/WelcomeScreen.jsx:87
 msgid ""
 "Reviewbird emails customers after delivery and turns their feedback into "
 "product reviews on your WooCommerce site—automatically."
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:111
+#: assets/src/js/components/WelcomeScreen.jsx:114
 msgid "Create free account"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:121
+#: assets/src/js/components/WelcomeScreen.jsx:124
 msgid "Free plan details"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:126
+#: assets/src/js/components/WelcomeScreen.jsx:129
 msgid "Free plan"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:128
+#: assets/src/js/components/WelcomeScreen.jsx:131
 msgid "No credit card required"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:134
+#: assets/src/js/components/WelcomeScreen.jsx:137
 msgid "25 review requests a month"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:140
+#: assets/src/js/components/WelcomeScreen.jsx:143
 msgid "Import your existing reviews"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:154
+#: assets/src/js/components/WelcomeScreen.jsx:159
 msgid ""
-"Built by the team behind CheckoutWC, trusted by more than 8,000 WooCommerce "
-"stores."
+"Built by the team behind CheckoutWC, trusted by <strong>8,000+ WooCommerce "
+"stores.</strong>"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:164
+#: assets/src/js/components/WelcomeScreen.jsx:172
 msgid "Example Reviewbird product review request email"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:182
+#: assets/src/js/components/WelcomeScreen.jsx:193
+msgid "for Aster & Oak"
+msgstr ""
+
+#: assets/src/js/components/WelcomeScreen.jsx:200
+msgid "To: jamie@example.com"
+msgstr ""
+
+#: assets/src/js/components/WelcomeScreen.jsx:208
+msgid "Sent 3 days after delivery"
+msgstr ""
+
+#: assets/src/js/components/WelcomeScreen.jsx:218
 msgid "How would you rate this product?"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:188
+#: assets/src/js/components/WelcomeScreen.jsx:224
 msgid "We would love it if you would share a bit about your experience."
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:232
+#: assets/src/js/components/WelcomeScreen.jsx:268
 msgid "Linen Throw Blanket — Sage"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:243
+#: assets/src/js/components/WelcomeScreen.jsx:279
 msgid "Poor"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:246
+#: assets/src/js/components/WelcomeScreen.jsx:282
 msgid "Great"
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:251
+#: assets/src/js/components/WelcomeScreen.jsx:287
 msgid "You received this email because you made a purchase from Aster & Oak."
 msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:257
+#: assets/src/js/components/WelcomeScreen.jsx:293
 msgid "Unsubscribe from review emails"
 msgstr ""

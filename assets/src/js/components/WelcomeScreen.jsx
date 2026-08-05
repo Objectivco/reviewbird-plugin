@@ -1,3 +1,4 @@
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import reviewbirdLogo from '../../images/logo-dark.svg';
 
@@ -94,7 +95,9 @@ export default function WelcomeScreen( { registerUrl, dashboardUrl } ) {
 									<li key={ step.title }>
 										<span>{ index + 1 }</span>
 										<div>
-											<strong>{ step.title }</strong>
+											<strong className="reviewbird-setup-step-title">
+												{ step.title }
+											</strong>
 											<small>{ step.description }</small>
 										</div>
 									</li>
@@ -151,10 +154,15 @@ export default function WelcomeScreen( { registerUrl, dashboardUrl } ) {
 								>
 									★★★★★
 								</span>
-								{ __(
-									'Built by the team behind CheckoutWC, trusted by more than 8,000 WooCommerce stores.',
-									'reviewbird'
-								) }
+								<span>
+									{ createInterpolateElement(
+										__(
+											'Built by the team behind CheckoutWC, trusted by <strong>8,000+ WooCommerce stores.</strong>',
+											'reviewbird'
+										),
+										{ strong: <strong /> }
+									) }
+								</span>
 							</p>
 						</div>
 
@@ -167,98 +175,127 @@ export default function WelcomeScreen( { registerUrl, dashboardUrl } ) {
 							) }
 						>
 							<div
-								className="reviewbird-email-canvas"
+								className="reviewbird-email-window"
 								aria-hidden="true"
 							>
-								<div className="reviewbird-email-merchant-logo">
-									<span className="reviewbird-email-merchant-mark">
-										✦
+								<div className="reviewbird-email-window-header">
+									<div className="reviewbird-email-sender">
+										<span className="reviewbird-email-merchant-mark">
+											★
+										</span>
+										<span className="reviewbird-email-sender-copy">
+											<strong>
+												{ __(
+													'Reviewbird',
+													'reviewbird'
+												) }{ ' ' }
+												<span className="reviewbird-email-sender-store">
+													{ __(
+														'for Aster & Oak',
+														'reviewbird'
+													) }
+												</span>
+											</strong>
+											<small>
+												{ __(
+													'To: jamie@example.com',
+													'reviewbird'
+												) }
+											</small>
+										</span>
+									</div>
+									<span className="reviewbird-email-timing">
+										{ __(
+											'Sent 3 days after delivery',
+											'reviewbird'
+										) }
 									</span>
-									Aster &amp; Oak
 								</div>
 
-								<div className="reviewbird-email-card">
-									<h2>
-										{ __(
-											'How would you rate this product?',
-											'reviewbird'
-										) }
-									</h2>
-									<p>
-										{ __(
-											'We would love it if you would share a bit about your experience.',
-											'reviewbird'
-										) }
-									</p>
-
-									<svg
-										className="reviewbird-email-product-art"
-										viewBox="0 0 180 130"
-										aria-hidden="true"
-									>
-										<rect
-											x="35"
-											y="29"
-											width="110"
-											height="76"
-											rx="14"
-											fill="#d5dfda"
-											transform="rotate(-6 90 67)"
-										/>
-										<rect
-											x="40"
-											y="25"
-											width="108"
-											height="76"
-											rx="14"
-											fill="#edf1ee"
-											transform="rotate(5 94 63)"
-										/>
-										<path
-											d="M51 47h85M50 61h86M49 75h87"
-											stroke="#b9cbc2"
-											strokeWidth="6"
-											strokeLinecap="round"
-										/>
-										<path
-											d="M48 92h91"
-											stroke="#0f766e"
-											strokeWidth="5"
-											strokeLinecap="round"
-										/>
-									</svg>
-
-									<strong>
-										{ __(
-											'Linen Throw Blanket — Sage',
-											'reviewbird'
-										) }
-									</strong>
-
-									<div className="reviewbird-email-stars">
-										☆☆☆☆☆
-									</div>
-									<div className="reviewbird-email-star-labels">
-										<span>
-											{ __( 'Poor', 'reviewbird' ) }
-										</span>
-										<span>
-											{ __( 'Great', 'reviewbird' ) }
-										</span>
-									</div>
-
-									<div className="reviewbird-email-footer">
-										{ __(
-											'You received this email because you made a purchase from Aster & Oak.',
-											'reviewbird'
-										) }
-										<br />
-										<u>
+								<div className="reviewbird-email-canvas">
+									<div className="reviewbird-email-card">
+										<h2>
 											{ __(
-												'Unsubscribe from review emails',
+												'How would you rate this product?',
 												'reviewbird'
 											) }
-										</u>
+										</h2>
+										<p>
+											{ __(
+												'We would love it if you would share a bit about your experience.',
+												'reviewbird'
+											) }
+										</p>
+
+										<svg
+											className="reviewbird-email-product-art"
+											viewBox="0 0 180 130"
+											aria-hidden="true"
+										>
+											<rect
+												x="35"
+												y="29"
+												width="110"
+												height="76"
+												rx="14"
+												fill="#d5dfda"
+												transform="rotate(-6 90 67)"
+											/>
+											<rect
+												x="40"
+												y="25"
+												width="108"
+												height="76"
+												rx="14"
+												fill="#edf1ee"
+												transform="rotate(5 94 63)"
+											/>
+											<path
+												d="M51 47h85M50 61h86M49 75h87"
+												stroke="#b9cbc2"
+												strokeWidth="6"
+												strokeLinecap="round"
+											/>
+											<path
+												d="M48 92h91"
+												stroke="#0f766e"
+												strokeWidth="5"
+												strokeLinecap="round"
+											/>
+										</svg>
+
+										<strong>
+											{ __(
+												'Linen Throw Blanket — Sage',
+												'reviewbird'
+											) }
+										</strong>
+
+										<div className="reviewbird-email-stars">
+											☆☆☆☆☆
+										</div>
+										<div className="reviewbird-email-star-labels">
+											<span>
+												{ __( 'Poor', 'reviewbird' ) }
+											</span>
+											<span>
+												{ __( 'Great', 'reviewbird' ) }
+											</span>
+										</div>
+
+										<div className="reviewbird-email-footer">
+											{ __(
+												'You received this email because you made a purchase from Aster & Oak.',
+												'reviewbird'
+											) }
+											<br />
+											<u>
+												{ __(
+													'Unsubscribe from review emails',
+													'reviewbird'
+												) }
+											</u>
+										</div>
 									</div>
 								</div>
 							</div>

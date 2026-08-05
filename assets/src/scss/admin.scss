@@ -17,14 +17,6 @@
 	font-display: swap;
 }
 
-@font-face {
-	font-family: "Reviewbird Fraunces";
-	src: url(../fonts/Fraunces.woff2) format("woff2");
-	font-style: normal;
-	font-weight: 100 900;
-	font-display: swap;
-}
-
 body.toplevel_page_reviewbird-get-started {
 	--reviewbird-admin-bar-height: 32px;
 	background: #fff;
@@ -89,9 +81,9 @@ body.reviewbird_page_reviewbird-settings .wrap {
 }
 
 .reviewbird-display-title {
-	font-family: "Reviewbird Fraunces", Georgia, serif;
-	font-weight: 800;
-	letter-spacing: -0.035em;
+	font-family: Georgia, "Times New Roman", serif;
+	font-weight: 400;
+	letter-spacing: -0.025em;
 }
 
 .reviewbird-eyebrow {
@@ -101,7 +93,7 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	margin: 0;
 	color: var(--reviewbird-teal-dark);
 	font-size: 0.75rem;
-	font-weight: 800;
+	font-weight: 700;
 	letter-spacing: 0.11em;
 	text-transform: uppercase;
 }
@@ -153,7 +145,7 @@ body.reviewbird_page_reviewbird-settings .wrap {
 
 .reviewbird-header-account a {
 	color: var(--reviewbird-ink);
-	font-weight: 750;
+	font-weight: 600;
 	text-decoration-color: var(--reviewbird-teal);
 	text-underline-offset: 4px;
 }
@@ -204,7 +196,7 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	margin: 0 0 1.25rem;
 	color: var(--reviewbird-teal-dark);
 	font-size: 0.75rem;
-	font-weight: 850;
+	font-weight: 700;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
 }
@@ -214,7 +206,7 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	margin: 0 0 1.5rem;
 	color: var(--reviewbird-ink);
 	font-size: clamp(3rem, 4.4vw, 4.15rem);
-	font-weight: 800;
+	font-weight: 400;
 	line-height: 1.02;
 	text-wrap: balance;
 }
@@ -252,7 +244,7 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	border-radius: 50%;
 	color: var(--reviewbird-muted);
 	font-size: 0.8rem;
-	font-weight: 800;
+	font-weight: 700;
 }
 
 .reviewbird-setup-steps li:first-child > span {
@@ -261,17 +253,22 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	color: #fff;
 }
 
-.reviewbird-setup-steps strong {
-	color: var(--reviewbird-ink);
+.reviewbird-setup-step-title {
+	color: var(--reviewbird-muted);
 	font-size: 0.93rem;
-	font-weight: 800;
+	font-weight: 500;
+}
+
+.reviewbird-setup-steps li:first-child .reviewbird-setup-step-title {
+	color: var(--reviewbird-ink);
+	font-weight: 700;
 }
 
 .reviewbird-setup-steps small {
 	margin-left: 0.35rem;
 	color: var(--reviewbird-muted);
 	font-size: 0.85rem;
-	font-weight: 500;
+	font-weight: 450;
 }
 
 .reviewbird-setup-steps small::before {
@@ -292,7 +289,7 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	box-shadow: 0 12px 26px rgba(13, 148, 136, 0.23);
 	color: #fff;
 	font-size: 1rem;
-	font-weight: 800;
+	font-weight: 700;
 	line-height: 1;
 	text-decoration: none;
 	transition:
@@ -323,14 +320,14 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	padding: 0;
 	color: var(--reviewbird-muted);
 	font-size: 0.82rem;
-	font-weight: 650;
+	font-weight: 500;
 	list-style: none;
 }
 
 .reviewbird-risk-line li::before {
 	margin-right: 0.35rem;
 	color: var(--reviewbird-teal-dark);
-	font-weight: 900;
+	font-weight: 750;
 	content: "✓";
 }
 
@@ -344,7 +341,7 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	padding-top: 1.35rem;
 	color: var(--reviewbird-muted);
 	font-size: 0.82rem;
-	font-weight: 650;
+	font-weight: 450;
 	line-height: 1.55;
 }
 
@@ -355,6 +352,11 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	letter-spacing: 0.08em;
 }
 
+.reviewbird-trust-line strong {
+	color: var(--reviewbird-ink);
+	font-weight: 700;
+}
+
 .reviewbird-email-visual {
 	position: relative;
 	z-index: 1;
@@ -362,24 +364,67 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	justify-self: end;
 }
 
-.reviewbird-email-canvas {
-	border: 1px solid rgba(15, 118, 110, 0.12);
+.reviewbird-email-window {
+	overflow: hidden;
+	border: 1px solid rgba(24, 24, 27, 0.1);
 	border-radius: 22px;
-	padding: 1.8rem 2rem 2rem;
-	background: #edf7f4;
+	background: #fff;
 	box-shadow: 0 30px 70px rgba(24, 24, 27, 0.14);
 }
 
-.reviewbird-email-merchant-logo {
+.reviewbird-email-window-header {
 	display: flex;
+	min-height: 68px;
 	align-items: center;
-	justify-content: center;
-	gap: 0.55rem;
-	margin: 0 0 1.35rem;
-	color: #17211f;
-	font-size: 1rem;
-	font-weight: 850;
-	letter-spacing: -0.02em;
+	gap: 1rem;
+	padding: 0.85rem 1rem;
+	border-bottom: 1px solid var(--reviewbird-border);
+	background: #fff;
+}
+
+.reviewbird-email-sender {
+	display: flex;
+	min-width: 0;
+	align-items: center;
+	gap: 0.65rem;
+}
+
+.reviewbird-email-sender-copy {
+	display: grid;
+	min-width: 0;
+	color: #202624;
+	font-size: 0.72rem;
+	line-height: 1.25;
+}
+
+.reviewbird-email-sender-copy strong {
+	overflow: hidden;
+	font-weight: 650;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.reviewbird-email-sender-store,
+.reviewbird-email-sender-copy small {
+	color: #707875;
+	font-weight: 450;
+}
+
+.reviewbird-email-timing {
+	flex: 0 0 auto;
+	margin-left: auto;
+	border-radius: 999px;
+	padding: 0.4rem 0.65rem;
+	background: #e1f4ee;
+	color: var(--reviewbird-teal-dark);
+	font-size: 0.62rem;
+	font-weight: 650;
+	white-space: nowrap;
+}
+
+.reviewbird-email-canvas {
+	padding: 1.8rem 2rem 2rem;
+	background: #edf7f4;
 }
 
 .reviewbird-email-merchant-mark {
@@ -408,7 +453,7 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	color: #202624;
 	font-family: "Reviewbird DM Sans", sans-serif;
 	font-size: clamp(1.25rem, 2vw, 1.55rem);
-	font-weight: 700;
+	font-weight: 600;
 	letter-spacing: -0.025em;
 	line-height: 1.25;
 }
@@ -434,6 +479,7 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	margin: 0 auto;
 	color: #242a28;
 	font-size: 0.9rem;
+	font-weight: 600;
 	line-height: 1.4;
 }
 
