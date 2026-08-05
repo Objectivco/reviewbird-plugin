@@ -5,7 +5,7 @@ msgstr ""
 "Last-Translator: gpt-po v1.2.3\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-08-05T15:43:04+00:00\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
@@ -346,120 +346,120 @@ msgstr "Desativado"
 
 #: assets/src/js/components/WelcomeScreen.jsx:27
 msgid "Create your free account"
-msgstr ""
+msgstr "Crie sua conta gratuita"
 
 #: assets/src/js/components/WelcomeScreen.jsx:28
 msgid "takes about a minute"
-msgstr ""
+msgstr "leva cerca de um minuto"
 
 #: assets/src/js/components/WelcomeScreen.jsx:31
 msgid "Connect your WooCommerce site"
-msgstr ""
+msgstr "Conecte seu site WooCommerce"
 
 #: assets/src/js/components/WelcomeScreen.jsx:32
 msgid "one secure click"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:53
-msgid "Already have an account?"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:60
-msgid "Sign in"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:73
-msgid "Getting started"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:114
-msgid "Create free account"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:124
-msgid "Free plan details"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:129
-msgid "Free plan"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:131
-msgid "No credit card required"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:137
-msgid "25 review requests a month"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:143
-msgid "Import your existing reviews"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:165
-msgid "Built by the team behind CheckoutWC, trusted by <strong>8,000+ WooCommerce stores.</strong>"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:178
-msgid "Example Reviewbird product review request email"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:199
-msgid "for Aster & Oak"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:206
-msgid "To: jamie@example.com"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:214
-msgid "Sent 3 days after delivery"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:224
-msgid "How would you rate this product?"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:230
-msgid "We would love it if you would share a bit about your experience."
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:274
-msgid "Linen Throw Blanket — Sage"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:285
-msgid "Poor"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:288
-msgid "Great"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:293
-msgid "You received this email because you made a purchase from Aster & Oak."
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:299
-msgid "Unsubscribe from review emails"
-msgstr ""
+msgstr "um clique seguro"
 
 #: assets/src/js/components/WelcomeScreen.jsx:35
 msgid "Turn on automatic review requests"
-msgstr ""
+msgstr "Ative solicitações automáticas de avaliação"
 
 #: assets/src/js/components/WelcomeScreen.jsx:36
 msgid "you set the timing and content"
-msgstr ""
+msgstr "você define o tempo e o conteúdo"
+
+#: assets/src/js/components/WelcomeScreen.jsx:53
+msgid "Already have an account?"
+msgstr "Já tem uma conta?"
+
+#: assets/src/js/components/WelcomeScreen.jsx:60
+msgid "Sign in"
+msgstr "Entrar"
+
+#: assets/src/js/components/WelcomeScreen.jsx:73
+msgid "Getting started"
+msgstr "Começando"
 
 #: assets/src/js/components/WelcomeScreen.jsx:80
 msgid "Turn your orders into powerful social proof."
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:149
-msgid "Send a bulk request to past customers"
-msgstr ""
+msgstr "Transforme seus pedidos em prova social poderosa."
 
 #: assets/src/js/components/WelcomeScreen.jsx:87
 msgid "You're three quick steps from your first five-star review!"
-msgstr ""
+msgstr "Você está a três passos rápidos da sua primeira avaliação cinco estrelas!"
+
+#: assets/src/js/components/WelcomeScreen.jsx:114
+msgid "Create free account"
+msgstr "Criar conta gratuita"
+
+#: assets/src/js/components/WelcomeScreen.jsx:124
+msgid "Free plan details"
+msgstr "Detalhes do plano gratuito"
+
+#: assets/src/js/components/WelcomeScreen.jsx:129
+msgid "Free plan"
+msgstr "Plano gratuito"
+
+#: assets/src/js/components/WelcomeScreen.jsx:131
+msgid "No credit card required"
+msgstr "Não é necessário cartão de crédito"
+
+#: assets/src/js/components/WelcomeScreen.jsx:137
+msgid "25 review requests a month"
+msgstr "25 solicitações de avaliação por mês"
+
+#: assets/src/js/components/WelcomeScreen.jsx:143
+msgid "Import your existing reviews"
+msgstr "Importe suas avaliações existentes"
+
+#: assets/src/js/components/WelcomeScreen.jsx:149
+msgid "Send a bulk request to past customers"
+msgstr "Envie uma solicitação em massa para clientes anteriores"
+
+#: assets/src/js/components/WelcomeScreen.jsx:165
+msgid "Built by the team behind CheckoutWC, trusted by <strong>8,000+ WooCommerce stores.</strong>"
+msgstr "Desenvolvido pela equipe por trás do CheckoutWC, confiado por <strong>mais de 8.000 lojas WooCommerce.</strong>"
+
+#: assets/src/js/components/WelcomeScreen.jsx:178
+msgid "Example Reviewbird product review request email"
+msgstr "Exemplo de email de solicitação de avaliação de produto Reviewbird"
+
+#: assets/src/js/components/WelcomeScreen.jsx:199
+msgid "for Aster & Oak"
+msgstr "para Aster & Oak"
+
+#: assets/src/js/components/WelcomeScreen.jsx:206
+msgid "To: jamie@example.com"
+msgstr "Para: jamie@example.com"
+
+#: assets/src/js/components/WelcomeScreen.jsx:214
+msgid "Sent 3 days after delivery"
+msgstr "Enviado 3 dias após a entrega"
+
+#: assets/src/js/components/WelcomeScreen.jsx:224
+msgid "How would you rate this product?"
+msgstr "Como você avaliaria este produto?"
+
+#: assets/src/js/components/WelcomeScreen.jsx:230
+msgid "We would love it if you would share a bit about your experience."
+msgstr "Adoraríamos se você compartilhasse um pouco sobre sua experiência."
+
+#: assets/src/js/components/WelcomeScreen.jsx:274
+msgid "Linen Throw Blanket — Sage"
+msgstr "Manta de linho — Sage"
+
+#: assets/src/js/components/WelcomeScreen.jsx:285
+msgid "Poor"
+msgstr "Ruim"
+
+#: assets/src/js/components/WelcomeScreen.jsx:288
+msgid "Great"
+msgstr "Ótimo"
+
+#: assets/src/js/components/WelcomeScreen.jsx:293
+msgid "You received this email because you made a purchase from Aster & Oak."
+msgstr "Você recebeu este email porque fez uma compra na Aster & Oak."
+
+#: assets/src/js/components/WelcomeScreen.jsx:299
+msgid "Unsubscribe from review emails"
+msgstr "Cancelar inscrição de emails de avaliação"

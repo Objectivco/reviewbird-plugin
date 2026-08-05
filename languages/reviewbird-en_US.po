@@ -2,10 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reviewbird 1.0.23\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
-"Last-Translator: Automatically generated\n"
+"Last-Translator: gpt-po v1.2.3\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-08-05T15:43:04+00:00\n"
 "PO-Revision-Date: 2026-08-05T15:43:04+00:00\n"
@@ -361,6 +361,14 @@ msgstr "Connect your WooCommerce site"
 msgid "one secure click"
 msgstr "one secure click"
 
+#: assets/src/js/components/WelcomeScreen.jsx:35
+msgid "Turn on automatic review requests"
+msgstr "Turn on automatic review requests"
+
+#: assets/src/js/components/WelcomeScreen.jsx:36
+msgid "you set the timing and content"
+msgstr "you set the timing and content"
+
 #: assets/src/js/components/WelcomeScreen.jsx:53
 msgid "Already have an account?"
 msgstr "Already have an account?"
@@ -372,6 +380,14 @@ msgstr "Sign in"
 #: assets/src/js/components/WelcomeScreen.jsx:73
 msgid "Getting started"
 msgstr "Getting started"
+
+#: assets/src/js/components/WelcomeScreen.jsx:80
+msgid "Turn your orders into powerful social proof."
+msgstr "Turn your orders into powerful social proof."
+
+#: assets/src/js/components/WelcomeScreen.jsx:87
+msgid "You're three quick steps from your first five-star review!"
+msgstr "You're three quick steps from your first five-star review!"
 
 #: assets/src/js/components/WelcomeScreen.jsx:114
 msgid "Create free account"
@@ -396,6 +412,10 @@ msgstr "25 review requests a month"
 #: assets/src/js/components/WelcomeScreen.jsx:143
 msgid "Import your existing reviews"
 msgstr "Import your existing reviews"
+
+#: assets/src/js/components/WelcomeScreen.jsx:149
+msgid "Send a bulk request to past customers"
+msgstr "Send a bulk request to past customers"
 
 #: assets/src/js/components/WelcomeScreen.jsx:165
 msgid "Built by the team behind CheckoutWC, trusted by <strong>8,000+ WooCommerce stores.</strong>"
@@ -444,23 +464,3 @@ msgstr "You received this email because you made a purchase from Aster & Oak."
 #: assets/src/js/components/WelcomeScreen.jsx:299
 msgid "Unsubscribe from review emails"
 msgstr "Unsubscribe from review emails"
-
-#: assets/src/js/components/WelcomeScreen.jsx:35
-msgid "Turn on automatic review requests"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:36
-msgid "you set the timing and content"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:80
-msgid "Turn your orders into powerful social proof."
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:149
-msgid "Send a bulk request to past customers"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:87
-msgid "You're three quick steps from your first five-star review!"
-msgstr ""

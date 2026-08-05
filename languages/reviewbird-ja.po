@@ -5,7 +5,7 @@ msgstr ""
 "Last-Translator: gpt-po v1.2.3\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-08-05T15:43:04+00:00\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
@@ -346,120 +346,120 @@ msgstr "無効"
 
 #: assets/src/js/components/WelcomeScreen.jsx:27
 msgid "Create your free account"
-msgstr ""
+msgstr "無料アカウントを作成する"
 
 #: assets/src/js/components/WelcomeScreen.jsx:28
 msgid "takes about a minute"
-msgstr ""
+msgstr "約1分かかります"
 
 #: assets/src/js/components/WelcomeScreen.jsx:31
 msgid "Connect your WooCommerce site"
-msgstr ""
+msgstr "WooCommerceサイトを接続する"
 
 #: assets/src/js/components/WelcomeScreen.jsx:32
 msgid "one secure click"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:53
-msgid "Already have an account?"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:60
-msgid "Sign in"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:73
-msgid "Getting started"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:114
-msgid "Create free account"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:124
-msgid "Free plan details"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:129
-msgid "Free plan"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:131
-msgid "No credit card required"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:137
-msgid "25 review requests a month"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:143
-msgid "Import your existing reviews"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:165
-msgid "Built by the team behind CheckoutWC, trusted by <strong>8,000+ WooCommerce stores.</strong>"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:178
-msgid "Example Reviewbird product review request email"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:199
-msgid "for Aster & Oak"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:206
-msgid "To: jamie@example.com"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:214
-msgid "Sent 3 days after delivery"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:224
-msgid "How would you rate this product?"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:230
-msgid "We would love it if you would share a bit about your experience."
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:274
-msgid "Linen Throw Blanket — Sage"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:285
-msgid "Poor"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:288
-msgid "Great"
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:293
-msgid "You received this email because you made a purchase from Aster & Oak."
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:299
-msgid "Unsubscribe from review emails"
-msgstr ""
+msgstr "安全なワンクリックで"
 
 #: assets/src/js/components/WelcomeScreen.jsx:35
 msgid "Turn on automatic review requests"
-msgstr ""
+msgstr "自動レビューリクエストをオンにする"
 
 #: assets/src/js/components/WelcomeScreen.jsx:36
 msgid "you set the timing and content"
-msgstr ""
+msgstr "タイミングと内容はあなたが設定します"
+
+#: assets/src/js/components/WelcomeScreen.jsx:53
+msgid "Already have an account?"
+msgstr "すでにアカウントをお持ちですか？"
+
+#: assets/src/js/components/WelcomeScreen.jsx:60
+msgid "Sign in"
+msgstr "サインイン"
+
+#: assets/src/js/components/WelcomeScreen.jsx:73
+msgid "Getting started"
+msgstr "はじめに"
 
 #: assets/src/js/components/WelcomeScreen.jsx:80
 msgid "Turn your orders into powerful social proof."
-msgstr ""
-
-#: assets/src/js/components/WelcomeScreen.jsx:149
-msgid "Send a bulk request to past customers"
-msgstr ""
+msgstr "注文を強力な社会的証明に変えましょう。"
 
 #: assets/src/js/components/WelcomeScreen.jsx:87
 msgid "You're three quick steps from your first five-star review!"
-msgstr ""
+msgstr "最初の5つ星レビューまであと3つの簡単なステップです！"
+
+#: assets/src/js/components/WelcomeScreen.jsx:114
+msgid "Create free account"
+msgstr "無料アカウントを作成する"
+
+#: assets/src/js/components/WelcomeScreen.jsx:124
+msgid "Free plan details"
+msgstr "無料プランの詳細"
+
+#: assets/src/js/components/WelcomeScreen.jsx:129
+msgid "Free plan"
+msgstr "無料プラン"
+
+#: assets/src/js/components/WelcomeScreen.jsx:131
+msgid "No credit card required"
+msgstr "クレジットカード不要"
+
+#: assets/src/js/components/WelcomeScreen.jsx:137
+msgid "25 review requests a month"
+msgstr "月に25件のレビューリクエスト"
+
+#: assets/src/js/components/WelcomeScreen.jsx:143
+msgid "Import your existing reviews"
+msgstr "既存のレビューをインポートする"
+
+#: assets/src/js/components/WelcomeScreen.jsx:149
+msgid "Send a bulk request to past customers"
+msgstr "過去の顧客に一括リクエストを送信する"
+
+#: assets/src/js/components/WelcomeScreen.jsx:165
+msgid "Built by the team behind CheckoutWC, trusted by <strong>8,000+ WooCommerce stores.</strong>"
+msgstr "CheckoutWCのチームによって作られ、<strong>8,000以上のWooCommerceストア</strong>に信頼されています。"
+
+#: assets/src/js/components/WelcomeScreen.jsx:178
+msgid "Example Reviewbird product review request email"
+msgstr "Example Reviewbird製品レビューリクエストメール"
+
+#: assets/src/js/components/WelcomeScreen.jsx:199
+msgid "for Aster & Oak"
+msgstr "Aster & Oak向け"
+
+#: assets/src/js/components/WelcomeScreen.jsx:206
+msgid "To: jamie@example.com"
+msgstr "宛先: jamie@example.com"
+
+#: assets/src/js/components/WelcomeScreen.jsx:214
+msgid "Sent 3 days after delivery"
+msgstr "配送後3日で送信"
+
+#: assets/src/js/components/WelcomeScreen.jsx:224
+msgid "How would you rate this product?"
+msgstr "この商品をどのように評価しますか？"
+
+#: assets/src/js/components/WelcomeScreen.jsx:230
+msgid "We would love it if you would share a bit about your experience."
+msgstr "ご経験について少し共有していただけると嬉しいです。"
+
+#: assets/src/js/components/WelcomeScreen.jsx:274
+msgid "Linen Throw Blanket — Sage"
+msgstr "リネン・スロー・ブランケット — セージ"
+
+#: assets/src/js/components/WelcomeScreen.jsx:285
+msgid "Poor"
+msgstr "悪い"
+
+#: assets/src/js/components/WelcomeScreen.jsx:288
+msgid "Great"
+msgstr "素晴らしい"
+
+#: assets/src/js/components/WelcomeScreen.jsx:293
+msgid "You received this email because you made a purchase from Aster & Oak."
+msgstr "このメールはAster & Oakで購入されたため送信されました。"
+
+#: assets/src/js/components/WelcomeScreen.jsx:299
+msgid "Unsubscribe from review emails"
+msgstr "レビューのメール配信を解除する"
