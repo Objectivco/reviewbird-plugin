@@ -162,10 +162,10 @@ The full source code is available at: https://github.com/Objectivco/reviewbird-p
 To build from source:
 
 1. Clone the repository
-2. Run `npm install`
-3. Run `npm run build`
+2. Run `pnpm install`
+3. Run `pnpm run build`
 
-For development: `npm run dev`
+For development: `pnpm run dev`
 
 == Changelog ==
 
