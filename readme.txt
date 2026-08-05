@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: reviews, woocommerce, product reviews, ratings, customer reviews
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 1.0.23
+Stable tag: 1.0.24
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -73,13 +73,13 @@ This plugin connects to the Reviewbird API to enable review collection, manageme
 
 **Data Transmitted:**
 - **Account Verification:** Connection status
-- **Registration Prefill:** Current administrator email address, site name, and public site URL
+- **Registration Prefill:** Name and email address of the current WordPress user, site name, and public site URL
 - **Order Data:** Order ID, customer email, customer name, line items, order date, status, locale
 - **Product Data:** Product ID, name, SKU, slug, GTIN, brand, price, attributes (for variations), image URL, permalink, stock status
 - **Customer Data:** Email address, name, review content and media
 
 **When Data is Sent:**
-- When an administrator clicks Create free account on the Reviewbird Get Started page
+- When a WordPress user with permission clicks Create free account on the Reviewbird Get Started page
 - During OAuth connection from Reviewbird to WooCommerce
 - During initial product sync after connection
 - During scheduled order sync
@@ -168,6 +168,10 @@ To build from source:
 For development: `npm run dev`
 
 == Changelog ==
+
+= 1.0.24 =
+New - Redesign the Get Started page for a clearer setup flow.
+New - Prefill Reviewbird registration with the name and email address of the current WordPress user, site name, and public site URL.
 
 = 1.0.23 =
 Fix - Do not copy Reviewbird rating and schema metadata when a WooCommerce product is duplicated.
