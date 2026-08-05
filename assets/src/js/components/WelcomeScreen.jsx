@@ -1,39 +1,14 @@
 import { __ } from '@wordpress/i18n';
-
-const SETUP_STEPS = [
-	{
-		number: '1',
-		title: __( 'Create your Reviewbird account', 'reviewbird' ),
-		description: __(
-			'Start with the free plan, then connect your WooCommerce store whenever you are ready.',
-			'reviewbird'
-		),
-	},
-	{
-		number: '2',
-		title: __( 'Authorize your WooCommerce store', 'reviewbird' ),
-		description: __(
-			'Connect Reviewbird so it can securely sync products, orders, and review activity.',
-			'reviewbird'
-		),
-	},
-	{
-		number: '3',
-		title: __( 'Turn on your review experience', 'reviewbird' ),
-		description: __(
-			'Enable the widget in WordPress and start collecting polished, conversion-friendly product reviews.',
-			'reviewbird'
-		),
-	},
-];
+import reviewbirdLogo from '../../images/logo-dark.svg';
 
 function ArrowRightIcon() {
 	return (
 		<svg
-			className="h-4 w-4"
+			className="reviewbird-arrow-icon"
 			fill="none"
 			viewBox="0 0 24 24"
 			stroke="currentColor"
+			aria-hidden="true"
 		>
 			<path
 				strokeLinecap="round"
@@ -45,189 +20,251 @@ function ArrowRightIcon() {
 	);
 }
 
-function StepRow( { number, title, description } ) {
+export default function WelcomeScreen( { registerUrl, dashboardUrl } ) {
+	const setupSteps = [
+		{
+			title: __( 'Create your free account', 'reviewbird' ),
+			description: __( 'takes about a minute', 'reviewbird' ),
+		},
+		{
+			title: __( 'Connect your WooCommerce site', 'reviewbird' ),
+			description: __( 'one secure click', 'reviewbird' ),
+		},
+		{
+			title: __( 'Turn on review requests', 'reviewbird' ),
+			description: __( 'choose when they go out', 'reviewbird' ),
+		},
+	];
+
 	return (
-		<li className="reviewbird-step-card">
-			<div className="reviewbird-step-chip">
-				<span className="reviewbird-step-chip-label">
-					{ __( 'Step', 'reviewbird' ) }
-				</span>
-				<span className="reviewbird-step-chip-number">{ number }</span>
-			</div>
-			<div>
-				<h3 className="text-lg font-semibold text-slate-900">
-					{ title }
-				</h3>
-				<p className="mt-2 text-sm leading-6 text-slate-600">
-					{ description }
+		<div className="reviewbird-admin-shell reviewbird-sans">
+			<header className="reviewbird-brand-bar">
+				<img
+					className="reviewbird-brand-logo"
+					src={ reviewbirdLogo }
+					alt="Reviewbird"
+					width="308"
+					height="39"
+				/>
+
+				<p className="reviewbird-header-account">
+					<span>
+						{ __( 'Already have an account?', 'reviewbird' ) }
+					</span>{ ' ' }
+					<a
+						href={ dashboardUrl }
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						{ __( 'Sign in', 'reviewbird' ) }
+					</a>
 				</p>
-			</div>
-		</li>
-	);
-}
+			</header>
 
-export default function WelcomeScreen( {
-	registerUrl,
-	dashboardUrl,
-	settingsUrl,
-	documentationUrl,
-	onboardingVideo,
-} ) {
-	return (
-		<div className="reviewbird-admin-shell reviewbird-sans relative overflow-hidden">
-			<div className="reviewbird-background-orb reviewbird-background-orb-left" />
-			<div className="reviewbird-background-orb reviewbird-background-orb-right" />
+			<div className="reviewbird-admin-main">
+				<section
+					className="reviewbird-signup-hero"
+					aria-labelledby="reviewbird-start-title"
+				>
+					<div className="reviewbird-signup-grid">
+						<div className="reviewbird-signup-copy">
+							<p className="reviewbird-start-kicker">
+								{ __( 'Getting started', 'reviewbird' ) }
+							</p>
 
-			<div className="relative z-10 mb-8 max-w-3xl">
-				<h1 className="reviewbird-display-title text-[clamp(2.1rem,4vw,3.3rem)] leading-[1.02] text-slate-950">
-					{ __(
-						'Welcome to Reviewbird for WooCommerce',
-						'reviewbird'
-					) }
-				</h1>
-			</div>
+							<h1
+								id="reviewbird-start-title"
+								className="reviewbird-display-title reviewbird-start-title"
+							>
+								{ __(
+									"You're three steps from your first five-star review.",
+									'reviewbird'
+								) }
+							</h1>
 
-			<div className="relative z-10 grid gap-10 xl:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] xl:items-start">
-				<div className="space-y-6">
-					<div className="space-y-4">
-						<h2 className="reviewbird-display-title max-w-3xl text-[clamp(2.6rem,5vw,4.5rem)] leading-[0.97] text-slate-950">
-							{ __(
-								'Collect more reviews with less friction.',
-								'reviewbird'
-							) }
-						</h2>
+							<p className="reviewbird-start-lede">
+								{ __(
+									'Reviewbird emails customers after delivery and turns their feedback into product reviews on your WooCommerce site—automatically.',
+									'reviewbird'
+								) }
+							</p>
 
-						<p className="max-w-xl text-lg leading-8 text-slate-600">
-							{ __(
-								'Reviewbird helps WooCommerce merchants collect, moderate, and showcase product reviews with a polished experience that feels native to their storefront.',
-								'reviewbird'
-							) }
-						</p>
-					</div>
+							<ol className="reviewbird-setup-steps">
+								{ setupSteps.map( ( step, index ) => (
+									<li key={ step.title }>
+										<span>{ index + 1 }</span>
+										<div>
+											<strong>{ step.title }</strong>
+											<small>{ step.description }</small>
+										</div>
+									</li>
+								) ) }
+							</ol>
 
-					<div className="flex flex-wrap items-center gap-4">
-						<a
-							className="reviewbird-button-primary"
-							href={ registerUrl }
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							<span>
-								{ __( 'Get Started Free', 'reviewbird' ) }
-							</span>
-							<ArrowRightIcon />
-						</a>
-					</div>
-
-					<p className="text-sm leading-6 text-slate-500">
-						{ __(
-							'Free plan available. Create your account first, then connect WooCommerce when you are ready.',
-							'reviewbird'
-						) }
-					</p>
-
-					<p className="text-sm leading-6 text-slate-500">
-						{ __( 'Already have an account?', 'reviewbird' ) }{ ' ' }
-						<a
-							className="font-semibold text-slate-900 underline decoration-[#ef8f35] underline-offset-4"
-							href={ dashboardUrl }
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							{ __( 'Connect your store', 'reviewbird' ) }
-						</a>
-						.
-					</p>
-
-					{ documentationUrl && (
-						<p className="text-sm leading-6 text-slate-500">
-							{ __( 'Need help getting set up?', 'reviewbird' ) }{ ' ' }
 							<a
-								className="font-semibold text-slate-900 underline decoration-[#ef8f35] underline-offset-4"
-								href={ documentationUrl }
+								className="reviewbird-button-primary"
+								href={ registerUrl }
 								target="_blank"
 								rel="noopener noreferrer"
 							>
-								{ __( 'Read the documentation', 'reviewbird' ) }
+								<span>
+									{ __(
+										'Create free account',
+										'reviewbird'
+									) }
+								</span>
+								<ArrowRightIcon />
 							</a>
-							.
-						</p>
-					) }
-				</div>
 
-				<div className="reviewbird-video-shell">
-					<div className="space-y-2">
-						<p className="reviewbird-eyebrow">
-							{ __( 'See It In Action', 'reviewbird' ) }
-						</p>
-						<h2 className="text-2xl font-semibold text-slate-950">
-							{ __(
-								'A quick look at the Reviewbird widget',
-								'reviewbird'
-							) }
-						</h2>
-						<p className="text-sm leading-6 text-slate-600">
-							{ __(
-									"Leaving a review shouldn't feel like applying for a loan. Our widget makes review submission easy and painless.",
-								'reviewbird'
-							) }
-						</p>
-					</div>
-
-					<div className="reviewbird-video-frame mt-5">
-						<div className="reviewbird-video-embed">
-							<iframe
-								src={ onboardingVideo }
-								title={ __(
-									'Reviewbird onboarding video',
+							<ul
+								className="reviewbird-risk-line"
+								aria-label={ __(
+									'Free plan details',
 									'reviewbird'
 								) }
-								className="reviewbird-video-iframe"
-								allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-								allowFullScreen
-								loading="lazy"
-							/>
-						</div>
-					</div>
-				</div>
-			</div>
+							>
+								<li>{ __( 'Free plan', 'reviewbird' ) }</li>
+								<li>
+									{ __(
+										'No credit card required',
+										'reviewbird'
+									) }
+								</li>
+								<li>
+									{ __(
+										'25 review requests a month',
+										'reviewbird'
+									) }
+								</li>
+								<li>
+									{ __(
+										'Import your existing reviews',
+										'reviewbird'
+									) }
+								</li>
+							</ul>
 
-			<div className="reviewbird-steps-shell relative z-10 mt-12">
-				<div className="max-w-2xl">
-					<p className="reviewbird-eyebrow">
-						{ __( 'Setup', 'reviewbird' ) }
-					</p>
-					<h2 className="mt-3 text-3xl font-semibold text-slate-950">
-						{ __( 'Go live in three quick steps.', 'reviewbird' ) }
-					</h2>
-					<p className="mt-3 max-w-xl text-sm leading-6 text-slate-600">
-						{ __(
-							'Create your account, connect WooCommerce, then',
-							'reviewbird'
-						) }{ ' ' }
-						<a
-							className="font-semibold text-slate-900 underline decoration-[#ef8f35] underline-offset-4"
-							href={ settingsUrl }
-						>
-							{ __(
-								'enable the widget in settings',
+							<p className="reviewbird-trust-line">
+								<span
+									className="reviewbird-trust-stars"
+									aria-hidden="true"
+								>
+									★★★★★
+								</span>
+								{ __(
+									'Built by the team behind CheckoutWC, trusted by more than 8,000 WooCommerce stores.',
+									'reviewbird'
+								) }
+							</p>
+						</div>
+
+						<div
+							className="reviewbird-email-visual"
+							role="img"
+							aria-label={ __(
+								'Example Reviewbird product review request email',
 								'reviewbird'
 							) }
-						</a>
-						.
-					</p>
-				</div>
+						>
+							<div
+								className="reviewbird-email-canvas"
+								aria-hidden="true"
+							>
+								<div className="reviewbird-email-merchant-logo">
+									<span className="reviewbird-email-merchant-mark">
+										✦
+									</span>
+									Aster &amp; Oak
+								</div>
 
-				<ol className="reviewbird-steps-grid mt-8">
-					{ SETUP_STEPS.map( ( step ) => (
-						<StepRow
-							key={ step.number }
-							number={ step.number }
-							title={ step.title }
-							description={ step.description }
-						/>
-					) ) }
-				</ol>
+								<div className="reviewbird-email-card">
+									<h2>
+										{ __(
+											'How would you rate this product?',
+											'reviewbird'
+										) }
+									</h2>
+									<p>
+										{ __(
+											'We would love it if you would share a bit about your experience.',
+											'reviewbird'
+										) }
+									</p>
+
+									<svg
+										className="reviewbird-email-product-art"
+										viewBox="0 0 180 130"
+										aria-hidden="true"
+									>
+										<rect
+											x="35"
+											y="29"
+											width="110"
+											height="76"
+											rx="14"
+											fill="#d5dfda"
+											transform="rotate(-6 90 67)"
+										/>
+										<rect
+											x="40"
+											y="25"
+											width="108"
+											height="76"
+											rx="14"
+											fill="#edf1ee"
+											transform="rotate(5 94 63)"
+										/>
+										<path
+											d="M51 47h85M50 61h86M49 75h87"
+											stroke="#b9cbc2"
+											strokeWidth="6"
+											strokeLinecap="round"
+										/>
+										<path
+											d="M48 92h91"
+											stroke="#0f766e"
+											strokeWidth="5"
+											strokeLinecap="round"
+										/>
+									</svg>
+
+									<strong>
+										{ __(
+											'Linen Throw Blanket — Sage',
+											'reviewbird'
+										) }
+									</strong>
+
+									<div className="reviewbird-email-stars">
+										☆☆☆☆☆
+									</div>
+									<div className="reviewbird-email-star-labels">
+										<span>
+											{ __( 'Poor', 'reviewbird' ) }
+										</span>
+										<span>
+											{ __( 'Great', 'reviewbird' ) }
+										</span>
+									</div>
+
+									<div className="reviewbird-email-footer">
+										{ __(
+											'You received this email because you made a purchase from Aster & Oak.',
+											'reviewbird'
+										) }
+										<br />
+										<u>
+											{ __(
+												'Unsubscribe from review emails',
+												'reviewbird'
+											) }
+										</u>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
 			</div>
 		</div>
 	);

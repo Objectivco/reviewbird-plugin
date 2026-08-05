@@ -2,22 +2,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reviewbird 1.0.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
+"POT-Creation-Date: 2026-08-05T15:17:35+00:00\n"
+"PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: gpt-po v1.2.3\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-02-02T22:39:13+00:00\n"
-"PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Language: nb_NO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
 
 #. Plugin Name of the plugin
 #. Author of the plugin
-#: reviewbird-plugin.php
-#: src/Admin/Settings.php:114
-#: src/Admin/Settings.php:115
+#: reviewbird-plugin.php src/Admin/Settings.php:114 src/Admin/Settings.php:115
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -28,8 +26,12 @@ msgstr "https://reviewbird.com"
 
 #. Description of the plugin
 #: reviewbird-plugin.php
-msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
-msgstr "Automatisert innsamling av anmeldelser for WooCommerce som blokkerer spam, fanger klager og viser frem dine beste tilbakemeldinger."
+msgid ""
+"Automated review collection for WooCommerce that blocks spam, catches "
+"complaints, and showcases your best feedback."
+msgstr ""
+"Automatisert innsamling av anmeldelser for WooCommerce som blokkerer spam, "
+"fanger klager og viser frem dine beste tilbakemeldinger."
 
 #: src/Admin/Settings.php:81
 msgid "Reviewbird Connection Error:"
@@ -39,18 +41,15 @@ msgstr "Reviewbird tilkoblingsfeil:"
 msgid "Successfully connected to Reviewbird!"
 msgstr "Vellykket tilkoblet til Reviewbird!"
 
-#: src/Admin/Settings.php:125
-#: src/Admin/Settings.php:126
+#: src/Admin/Settings.php:125 src/Admin/Settings.php:126
 msgid "Get Started"
 msgstr "Kom i gang"
 
-#: src/Admin/Settings.php:134
-#: assets/src/js/components/SettingsApp.jsx:94
+#: src/Admin/Settings.php:134 assets/src/js/components/SettingsApp.jsx:91
 msgid "Reviewbird Settings"
 msgstr "Reviewbird-innstillinger"
 
-#: src/Admin/Settings.php:135
-#: src/Core/Plugin.php:489
+#: src/Admin/Settings.php:135 src/Core/Plugin.php:509
 msgid "Settings"
 msgstr "Innstillinger"
 
@@ -80,8 +79,7 @@ msgstr "Helsesjekkbuffer tømt"
 msgid "Store ID %d has been saved successfully"
 msgstr "Butikk-ID %d er lagret"
 
-#: src/Api/CouponController.php:79
-#: src/Api/ProductsController.php:43
+#: src/Api/CouponController.php:79 src/Api/ProductsController.php:43
 msgid "WooCommerce is not active"
 msgstr "WooCommerce er ikke aktiv"
 
@@ -99,6 +97,10 @@ msgstr "Mal-kupong '%s' ikke funnet"
 msgid "discount_type and amount are required when not using template"
 msgstr "discount_type og amount er påkrevd når mal ikke brukes"
 
+#: src/Api/ProductsController.php:161 src/Api/RatingsController.php:53
+msgid "Product not found"
+msgstr "Produkt ikke funnet"
+
 #: src/Api/RatingsController.php:43
 msgid "Product ID is required"
 msgstr "Produkt-ID er påkrevd"
@@ -106,10 +108,6 @@ msgstr "Produkt-ID er påkrevd"
 #: src/Api/RatingsController.php:49
 msgid "Invalid product ID"
 msgstr "Ugyldig produkt-ID"
-
-#: src/Api/RatingsController.php:53
-msgid "Product not found"
-msgstr "Produkt ikke funnet"
 
 #: src/Api/RatingsController.php:93
 msgid "Average stars must be a number between 1 and 5"
@@ -131,12 +129,11 @@ msgstr "Kunde-e-post er påkrevd"
 msgid "Invalid email address"
 msgstr "Ugyldig e-postadresse"
 
-#: src/Core/Plugin.php:495
+#: src/Core/Plugin.php:515
 msgid "Documentation"
 msgstr "Dokumentasjon"
 
-#: src/functions.php:114
-#: src/functions.php:290
+#: src/functions.php:114 src/functions.php:290
 msgid "API request failed"
 msgstr "API-forespørsel mislyktes"
 
@@ -173,8 +170,12 @@ msgid "Connected to Reviewbird"
 msgstr "Tilkoblet til Reviewbird"
 
 #: assets/src/js/components/ConnectionHealth.jsx:11
-msgid "Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly."
-msgstr "Din WooCommerce-butikk er vellykket tilkoblet Reviewbird. Anmeldelsesdata synkroniseres riktig."
+msgid ""
+"Your WooCommerce store is successfully connected to Reviewbird. Review data "
+"is syncing properly."
+msgstr ""
+"Din WooCommerce-butikk er vellykket tilkoblet Reviewbird. Anmeldelsesdata "
+"synkroniseres riktig."
 
 #: assets/src/js/components/ConnectionHealth.jsx:12
 msgid "View Dashboard"
@@ -185,8 +186,12 @@ msgid "WooCommerce Not Connected"
 msgstr "WooCommerce ikke tilkoblet"
 
 #: assets/src/js/components/ConnectionHealth.jsx:19
-msgid "WooCommerce is not yet connected to Reviewbird. Connect your store to start syncing products and reviews."
-msgstr "WooCommerce er ennå ikke tilkoblet Reviewbird. Koble butikken for å begynne å synkronisere produkter og anmeldelser."
+msgid ""
+"WooCommerce is not yet connected to Reviewbird. Connect your store to start "
+"syncing products and reviews."
+msgstr ""
+"WooCommerce er ennå ikke tilkoblet Reviewbird. Koble butikken for å begynne "
+"å synkronisere produkter og anmeldelser."
 
 #: assets/src/js/components/ConnectionHealth.jsx:20
 msgid "Connect WooCommerce"
@@ -197,8 +202,14 @@ msgid "Initial Sync in Progress"
 msgstr "Initial synkronisering pågår"
 
 #: assets/src/js/components/ConnectionHealth.jsx:27
-msgid "Reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
-msgstr "Reviewbird synkroniserer produktene og anmeldelsene dine. Dette kan ta noen minutter avhengig av katalogstørrelsen. Widgeten vil være tilgjengelig når synkroniseringen er fullført."
+msgid ""
+"Reviewbird is syncing your products and reviews. This may take a few minutes "
+"depending on your catalog size. The widget will be available once sync "
+"completes."
+msgstr ""
+"Reviewbird synkroniserer produktene og anmeldelsene dine. Dette kan ta noen "
+"minutter avhengig av katalogstørrelsen. Widgeten vil være tilgjengelig når "
+"synkroniseringen er fullført."
 
 #: assets/src/js/components/ConnectionHealth.jsx:28
 msgid "View Sync Progress"
@@ -209,8 +220,12 @@ msgid "Subscription Required"
 msgstr "Abonnement kreves"
 
 #: assets/src/js/components/ConnectionHealth.jsx:35
-msgid "Your Reviewbird subscription is inactive. Please update your billing information to continue using the service."
-msgstr "Ditt Reviewbird-abonnement er inaktivt. Vennligst oppdater betalingsinformasjonen for å fortsette å bruke tjenesten."
+msgid ""
+"Your Reviewbird subscription is inactive. Please update your billing "
+"information to continue using the service."
+msgstr ""
+"Ditt Reviewbird-abonnement er inaktivt. Vennligst oppdater "
+"betalingsinformasjonen for å fortsette å bruke tjenesten."
 
 #: assets/src/js/components/ConnectionHealth.jsx:36
 msgid "Update Billing"
@@ -223,7 +238,9 @@ msgstr "Tilkoblingsproblem oppdaget"
 
 #: assets/src/js/components/ConnectionHealth.jsx:43
 msgid "Unable to connect to Reviewbird. Please check your connection settings."
-msgstr "Kan ikke koble til Reviewbird. Vennligst sjekk tilkoblingsinnstillingene dine."
+msgstr ""
+"Kan ikke koble til Reviewbird. Vennligst sjekk tilkoblingsinnstillingene "
+"dine."
 
 #: assets/src/js/components/ConnectionHealth.jsx:44
 msgid "Fix Connection"
@@ -269,67 +286,79 @@ msgstr "Laster..."
 msgid "Failed to update setting. Please try again."
 msgstr "Kunne ikke oppdatere innstilling. Vennligst prøv igjen."
 
-#: assets/src/js/components/SettingsApp.jsx:91
+#: assets/src/js/components/SettingsApp.jsx:88
 msgid "Connected Store Settings"
 msgstr "Innstillinger for tilkoblet butikk"
 
-#: assets/src/js/components/SettingsApp.jsx:97
+#: assets/src/js/components/SettingsApp.jsx:94
 msgid "Manage your Reviewbird integration with WooCommerce."
 msgstr "Administrer din Reviewbird-integrasjon med WooCommerce."
 
-#: assets/src/js/components/SettingsApp.jsx:114
+#: assets/src/js/components/SettingsApp.jsx:111
 msgid "Reviewbird Widget"
 msgstr "Reviewbird-widget"
 
-#: assets/src/js/components/SettingsApp.jsx:115
-msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
-msgstr "Vis Reviewbird-anmeldelseswidget på produktsidene. Widgeten viser kundeanmeldelser og lar kunder sende inn nye anmeldelser."
+#: assets/src/js/components/SettingsApp.jsx:112
+msgid ""
+"Display Reviewbird review widget on product pages. The widget shows customer "
+"reviews and allows customers to submit new reviews."
+msgstr ""
+"Vis Reviewbird-anmeldelseswidget på produktsidene. Widgeten viser "
+"kundeanmeldelser og lar kunder sende inn nye anmeldelser."
 
-#: assets/src/js/components/SettingsApp.jsx:121
+#: assets/src/js/components/SettingsApp.jsx:118
 msgid "Widget is enabled on all WooCommerce product pages."
 msgstr "Widgeten er aktivert på alle WooCommerce-produktsider."
 
-#: assets/src/js/components/SettingsApp.jsx:130
+#: assets/src/js/components/SettingsApp.jsx:127
 msgid "Forcefully enable reviews on all products"
 msgstr "Tving på anmeldelser på alle produkter"
 
-#: assets/src/js/components/SettingsApp.jsx:136
-msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
-msgstr "La denne være av hvis du foretrekker å kontrollere anmeldelser per produkt ved å bruke avkrysningsboksen \"Aktiver anmeldelser\"."
+#: assets/src/js/components/SettingsApp.jsx:133
+msgid ""
+"Leave this off if you prefer to control reviews per product using the "
+"\"Enable reviews\" checkbox."
+msgstr ""
+"La denne være av hvis du foretrekker å kontrollere anmeldelser per produkt "
+"ved å bruke avkrysningsboksen \"Aktiver anmeldelser\"."
 
-#: assets/src/js/components/SettingsApp.jsx:172
+#: assets/src/js/components/SettingsApp.jsx:169
 msgid "SEO Schema Markup"
 msgstr "SEO Schema Markup"
 
-#: assets/src/js/components/SettingsApp.jsx:173
-msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
-msgstr "Aktiver Google-kompatible strukturerte data (JSON-LD-skjema) på produktsider for rike utdrag i søkeresultater."
+#: assets/src/js/components/SettingsApp.jsx:170
+msgid ""
+"Enable Google-compliant structured data (JSON-LD schema) on product pages "
+"for rich snippets in search results."
+msgstr ""
+"Aktiver Google-kompatible strukturerte data (JSON-LD-skjema) på produktsider "
+"for rike utdrag i søkeresultater."
 
-#: assets/src/js/components/SettingsApp.jsx:179
+#: assets/src/js/components/SettingsApp.jsx:176
 msgid "Schema markup is active on all WooCommerce product pages."
 msgstr "Schema markup er aktiv på alle WooCommerce-produktsider."
 
-#: assets/src/js/components/SettingsApp.jsx:184
+#: assets/src/js/components/SettingsApp.jsx:181
 msgid "What is Schema Markup?"
 msgstr "Hva er Schema Markup?"
 
-#: assets/src/js/components/SettingsApp.jsx:186
+#: assets/src/js/components/SettingsApp.jsx:183
 msgid "Displays star ratings in Google search results"
 msgstr "Viser stjernedømminger i Google-søkeresultater"
 
-#: assets/src/js/components/SettingsApp.jsx:190
+#: assets/src/js/components/SettingsApp.jsx:187
 msgid "Shows review counts and product information"
 msgstr "Viser antall anmeldelser og produktinformasjon"
 
-#: assets/src/js/components/SettingsApp.jsx:194
+#: assets/src/js/components/SettingsApp.jsx:191
 msgid "Review schema is cached for 4 hours for optimal performance"
 msgstr "Anmeldelsesskjemaet er bufret i 4 timer for optimal ytelse"
 
-#: assets/src/js/components/SettingsApp.jsx:203
+#: assets/src/js/components/SettingsApp.jsx:200
 msgid "Test with Google Rich Results"
 msgstr "Test med Google Rich Results"
 
-#: assets/src/js/components/SettingsApp.jsx:210
+#: assets/src/js/components/SettingsApp.jsx:207
 msgid "Validate Schema"
 msgstr "Valider Schema"
 
@@ -341,98 +370,110 @@ msgstr "Aktivert"
 msgid "Disabled"
 msgstr "Deaktivert"
 
-#: assets/src/js/components/WelcomeScreen.jsx:6
-msgid "Create your Reviewbird account"
-msgstr "Opprett din Reviewbird-konto"
+#: assets/src/js/components/WelcomeScreen.jsx:26
+msgid "Create your free account"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:7
-msgid "Start with the free plan, then connect your WooCommerce store whenever you are ready."
-msgstr "Start med gratisplanen, og koble deretter til WooCommerce-butikken når du er klar."
+#: assets/src/js/components/WelcomeScreen.jsx:27
+msgid "takes about a minute"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:14
-msgid "Authorize your WooCommerce store"
-msgstr "Autoriser WooCommerce-butikken din"
+#: assets/src/js/components/WelcomeScreen.jsx:30
+msgid "Connect your WooCommerce site"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:15
-msgid "Connect Reviewbird so it can securely sync products, orders, and review activity."
-msgstr "Koble til Reviewbird slik at den sikkert kan synkronisere produkter, bestillinger og anmeldelsesaktivitet."
+#: assets/src/js/components/WelcomeScreen.jsx:31
+msgid "one secure click"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:22
-msgid "Turn on your review experience"
-msgstr "Slå på anmeldelsesopplevelsen din"
+#: assets/src/js/components/WelcomeScreen.jsx:34
+msgid "Turn on review requests"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:23
-msgid "Enable the widget in WordPress and start collecting polished, conversion-friendly product reviews."
-msgstr "Aktiver widgeten i WordPress og begynn å samle inn polerte, konverteringsvennlige produktanmeldelser."
+#: assets/src/js/components/WelcomeScreen.jsx:35
+msgid "choose when they go out"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:53
-msgid "Step"
-msgstr "Trinn"
-
-#: assets/src/js/components/WelcomeScreen.jsx:83
-msgid "Welcome to Reviewbird for WooCommerce"
-msgstr "Velkommen til Reviewbird for WooCommerce"
-
-#: assets/src/js/components/WelcomeScreen.jsx:94
-msgid "Collect more reviews with less friction."
-msgstr "Samle flere anmeldelser med mindre friksjon."
-
-#: assets/src/js/components/WelcomeScreen.jsx:101
-msgid "Reviewbird helps WooCommerce merchants collect, moderate, and showcase product reviews with a polished experience that feels native to their storefront."
-msgstr "Reviewbird hjelper WooCommerce-forhandlere med å samle inn, moderere og vise produktanmeldelser med en polert opplevelse som føles naturlig for deres butikk."
-
-#: assets/src/js/components/WelcomeScreen.jsx:116
-msgid "Get Started Free"
-msgstr "Kom i gang gratis"
-
-#: assets/src/js/components/WelcomeScreen.jsx:123
-msgid "Free plan available. Create your account first, then connect WooCommerce when you are ready."
-msgstr "Gratisplan tilgjengelig. Opprett kontoen din først, og koble deretter til WooCommerce når du er klar."
-
-#: assets/src/js/components/WelcomeScreen.jsx:130
+#: assets/src/js/components/WelcomeScreen.jsx:52
 msgid "Already have an account?"
-msgstr "Har du allerede en konto?"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:137
-msgid "Connect your store"
-msgstr "Koble til butikken din"
+#: assets/src/js/components/WelcomeScreen.jsx:59
+msgid "Sign in"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:144
-msgid "Need help getting set up?"
-msgstr "Trenger du hjelp med å komme i gang?"
+#: assets/src/js/components/WelcomeScreen.jsx:72
+msgid "Getting started"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:151
-msgid "Read the documentation"
-msgstr "Les dokumentasjonen"
+#: assets/src/js/components/WelcomeScreen.jsx:79
+msgid "You're three steps from your first five-star review."
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:161
-msgid "See It In Action"
-msgstr "Se det i aksjon"
+#: assets/src/js/components/WelcomeScreen.jsx:86
+msgid ""
+"Reviewbird emails customers after delivery and turns their feedback into "
+"product reviews on your WooCommerce site—automatically."
+msgstr ""
+
+#: assets/src/js/components/WelcomeScreen.jsx:111
+msgid "Create free account"
+msgstr ""
+
+#: assets/src/js/components/WelcomeScreen.jsx:121
+msgid "Free plan details"
+msgstr ""
+
+#: assets/src/js/components/WelcomeScreen.jsx:126
+msgid "Free plan"
+msgstr ""
+
+#: assets/src/js/components/WelcomeScreen.jsx:128
+msgid "No credit card required"
+msgstr ""
+
+#: assets/src/js/components/WelcomeScreen.jsx:134
+msgid "25 review requests a month"
+msgstr ""
+
+#: assets/src/js/components/WelcomeScreen.jsx:140
+msgid "Import your existing reviews"
+msgstr ""
+
+#: assets/src/js/components/WelcomeScreen.jsx:154
+msgid ""
+"Built by the team behind CheckoutWC, trusted by more than 8,000 WooCommerce "
+"stores."
+msgstr ""
 
 #: assets/src/js/components/WelcomeScreen.jsx:164
-msgid "A quick look at the Reviewbird widget"
-msgstr "Et raskt blikk på Reviewbird-widgeten"
+msgid "Example Reviewbird product review request email"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:170
-msgid "Leaving a review shouldn't feel like applying for a loan. Our widget makes review submission easy and painless."
-msgstr "Å legge igjen en anmeldelse skal ikke føles som å søke om lån. Vår widget gjør innsending av anmeldelser enkelt og smertefritt."
+#: assets/src/js/components/WelcomeScreen.jsx:182
+msgid "How would you rate this product?"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:181
-msgid "Reviewbird onboarding video"
-msgstr "Reviewbird introduksjonsvideo"
+#: assets/src/js/components/WelcomeScreen.jsx:188
+msgid "We would love it if you would share a bit about your experience."
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:198
-msgid "Setup"
-msgstr "Oppsett"
+#: assets/src/js/components/WelcomeScreen.jsx:232
+msgid "Linen Throw Blanket — Sage"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:201
-msgid "Go live in three quick steps."
-msgstr "Gå live i tre raske trinn."
+#: assets/src/js/components/WelcomeScreen.jsx:243
+msgid "Poor"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:204
-msgid "Create your account, connect WooCommerce, then"
-msgstr "Opprett kontoen din, koble til WooCommerce, deretter"
+#: assets/src/js/components/WelcomeScreen.jsx:246
+msgid "Great"
+msgstr ""
 
-#: assets/src/js/components/WelcomeScreen.jsx:212
-msgid "enable the widget in settings"
-msgstr "aktiver widgeten i innstillingene"
+#: assets/src/js/components/WelcomeScreen.jsx:251
+msgid "You received this email because you made a purchase from Aster & Oak."
+msgstr ""
+
+#: assets/src/js/components/WelcomeScreen.jsx:257
+msgid "Unsubscribe from review emails"
+msgstr ""
