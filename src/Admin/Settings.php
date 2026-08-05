@@ -399,7 +399,7 @@ class Settings {
 	}
 
 	/**
-	 * Create a registration intent and send the administrator to Reviewbird.
+	 * Create a registration intent and send the current user to Reviewbird.
 	 */
 	public function handle_registration_intent(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -408,12 +408,12 @@ class Settings {
 
 		check_admin_referer( self::REGISTRATION_INTENT_ACTION );
 
-		$user     = wp_get_current_user();
-		$response = reviewbird_api_request(
+		$current_user = wp_get_current_user();
+		$response     = reviewbird_api_request(
 			self::REGISTRATION_INTENT_ENDPOINT,
 			array(
-				'email'      => sanitize_email( $user->user_email ),
-				'name'       => sanitize_text_field( $user->display_name ),
+				'email'      => sanitize_email( $current_user->user_email ),
+				'name'       => sanitize_text_field( $current_user->display_name ),
 				'store_name' => sanitize_text_field( get_bloginfo( 'name' ) ),
 				'store_url'  => esc_url_raw( home_url( '/' ) ),
 				'source'     => 'woocommerce_plugin',
