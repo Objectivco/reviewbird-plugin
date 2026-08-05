@@ -32,8 +32,8 @@ export default function WelcomeScreen( { registerUrl, dashboardUrl } ) {
 			description: __( 'one secure click', 'reviewbird' ),
 		},
 		{
-			title: __( 'Turn on review requests', 'reviewbird' ),
-			description: __( 'choose when they go out', 'reviewbird' ),
+			title: __( 'Turn on automatic review requests', 'reviewbird' ),
+			description: __( 'you set the timing and content', 'reviewbird' ),
 		},
 	];
 
@@ -78,14 +78,14 @@ export default function WelcomeScreen( { registerUrl, dashboardUrl } ) {
 								className="reviewbird-display-title reviewbird-start-title"
 							>
 								{ __(
-									"You're three steps from your first five-star review.",
+									"Turn your orders into powerful social proof.",
 									'reviewbird'
 								) }
 							</h1>
 
 							<p className="reviewbird-start-lede">
 								{ __(
-									'Reviewbird emails customers after delivery and turns their feedback into product reviews on your WooCommerce site—automatically.',
+									'You\'re three quick steps away your first five-star review!',
 									'reviewbird'
 								) }
 							</p>
@@ -142,6 +142,12 @@ export default function WelcomeScreen( { registerUrl, dashboardUrl } ) {
 								<li>
 									{ __(
 										'Import your existing reviews',
+										'reviewbird'
+									) }
+								</li>
+								<li>
+									{ __(
+										'Send a bulk request to past customers',
 										'reviewbird'
 									) }
 								</li>
