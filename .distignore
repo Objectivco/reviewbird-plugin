@@ -34,7 +34,8 @@ phpcs.xml.dist
 composer.json
 composer.lock
 package.json
-package-lock.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
 postcss.config.js
 tailwind.config.js
 webpack.config.js
