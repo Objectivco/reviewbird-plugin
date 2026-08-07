@@ -11,13 +11,19 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Setup pnpm and Node.js
-        uses: pnpm/setup@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          runtime: node@20
-          cache: true
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install JavaScript dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
