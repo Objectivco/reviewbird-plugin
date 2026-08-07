@@ -48,6 +48,61 @@ class WooCommerce {
 
 		// Expose locale in REST response.
 		add_filter( 'woocommerce_rest_prepare_shop_order_object', array( $this, 'add_locale_to_order_response' ), 10, 2 );
+
+		// Link account order items to the product review form.
+		add_action( 'woocommerce_order_item_meta_end', array( $this, 'add_account_review_link' ), 10, 4 );
+		add_action( 'cfw_order_item_after_data', array( $this, 'add_checkoutwc_account_review_link' ), 10, 1 );
+	}
+
+	/**
+	 * Add a review link to a CheckoutWC account order item.
+	 *
+	 * @param object $item Order item.
+	 * @return void
+	 */
+	public function add_checkoutwc_account_review_link( $item ): void {
+		$this->add_account_review_link( $item->get_id(), $item, $item->get_order() );
+	}
+
+	/**
+	 * Add a review link after each product in account order details.
+	 *
+	 * @param int      $item_id    Order item ID.
+	 * @param object   $item       Order item.
+	 * @param WC_Order $order      Order.
+	 * @param bool     $plain_text Whether the output is plain text.
+	 * @return void
+	 */
+	public function add_account_review_link( $item_id, $item, $order, $plain_text = false ): void {
+		$is_account_order = is_wc_endpoint_url( 'view-order' )
+			|| ( is_order_received_page() && isset( $_GET['view'] ) && 'true' === $_GET['view'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		if ( $plain_text || ! $is_account_order || ! reviewbird_can_show_widget() ) {
+			return;
+		}
+
+		$product = $item->get_product();
+
+		if ( ! $product || ! $product->is_visible() ) {
+			return;
+		}
+
+		$review_product = wc_get_product( $item->get_product_id() );
+		$permalink      = apply_filters( 'woocommerce_order_item_permalink', $product->get_permalink( $item ), $item, $order );
+
+		if ( ! $review_product || ! $permalink || ! comments_open( $review_product->get_id() ) ) {
+			return;
+		}
+
+		if ( ! apply_filters( 'reviewbird_show_widget_for_product', true, $review_product ) ) {
+			return;
+		}
+
+		printf(
+			'<p><a class="reviewbird-leave-review woocommerce-button button" href="%1$s">%2$s</a></p>',
+			esc_url( $permalink . '#write_review' ),
+			esc_html__( 'Leave a review', 'reviewbird' )
+		);
 	}
 
 	/**

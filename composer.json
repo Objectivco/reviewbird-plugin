@@ -39,7 +39,7 @@
     "scripts": {
         "lint": "phpcs --standard=WordPress src/",
         "lint-fix": "phpcbf --standard=WordPress src/",
-        "test": "phpunit"
+        "test": "phpunit tests"
     },
     "config": {
         "allow-plugins": {
