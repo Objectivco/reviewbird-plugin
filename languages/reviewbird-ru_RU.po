@@ -171,6 +171,10 @@ msgstr "Оценка %s из 5"
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "Оценка %s из 5, нажмите для просмотра отзывов"
 
+#: src/Integration/WooCommerce.php:104
+msgid "Leave a review"
+msgstr "Оставить отзыв"
+
 #: assets/src/js/components/ConnectionHealth.jsx:10
 msgid "Connected to Reviewbird"
 msgstr "Подключено к Reviewbird"

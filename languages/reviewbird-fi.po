@@ -171,6 +171,10 @@ msgstr "Arvosteltu %s viidestä"
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "Arvosteltu %s viidestä, napsauta nähdäksesi arvostelut"
 
+#: src/Integration/WooCommerce.php:104
+msgid "Leave a review"
+msgstr "Jätä arvostelu"
+
 #: assets/src/js/components/ConnectionHealth.jsx:10
 msgid "Connected to Reviewbird"
 msgstr "Yhdistetty Reviewbirdiin"
