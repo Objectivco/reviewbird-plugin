@@ -39,10 +39,12 @@
 	"author": "Reviewbird",
 	"license": "GPL-2.0-or-later",
 	"devDependencies": {
+		"@svgr/webpack": "^8.1.0",
 		"@wordpress/scripts": "^30.26.0",
 		"autoprefixer": "^10.4.16",
 		"postcss": "^8.4.31",
 		"tailwindcss": "^3.4.0",
+		"url-loader": "^4.1.1",
 		"webpack-bundle-output": "^1.1.0"
 	},
 	"dependencies": {
