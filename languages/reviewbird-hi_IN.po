@@ -171,6 +171,10 @@ msgstr "5 में से %s रेट किया गया"
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "5 में से %s रेट किया गया, समीक्षाएँ देखने के लिए क्लिक करें"
 
+#: src/Integration/WooCommerce.php:104
+msgid "Leave a review"
+msgstr "समीक्षा छोड़ें"
+
 #: assets/src/js/components/ConnectionHealth.jsx:10
 msgid "Connected to Reviewbird"
 msgstr "Reviewbird से जुड़ा हुआ"

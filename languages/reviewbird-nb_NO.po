@@ -171,6 +171,10 @@ msgstr "Vurdert %s av 5"
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "Vurdert %s av 5, klikk for å se anmeldelser"
 
+#: src/Integration/WooCommerce.php:104
+msgid "Leave a review"
+msgstr "Legg igjen en anmeldelse"
+
 #: assets/src/js/components/ConnectionHealth.jsx:10
 msgid "Connected to Reviewbird"
 msgstr "Tilkoblet til Reviewbird"

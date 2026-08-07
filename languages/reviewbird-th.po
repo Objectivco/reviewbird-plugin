@@ -171,6 +171,10 @@ msgstr "ให้คะแนน %s จาก 5"
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "ให้คะแนน %s จาก 5, คลิกเพื่อดูรีวิว"
 
+#: src/Integration/WooCommerce.php:104
+msgid "Leave a review"
+msgstr "ฝากรีวิว"
+
 #: assets/src/js/components/ConnectionHealth.jsx:10
 msgid "Connected to Reviewbird"
 msgstr "เชื่อมต่อกับ Reviewbird แล้ว"

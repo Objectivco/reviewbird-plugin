@@ -171,6 +171,10 @@ msgstr "تم التقييم %s من 5"
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "تم التقييم %s من 5، انقر لعرض المراجعات"
 
+#: src/Integration/WooCommerce.php:104
+msgid "Leave a review"
+msgstr "اترك تقييماً"
+
 #: assets/src/js/components/ConnectionHealth.jsx:10
 msgid "Connected to Reviewbird"
 msgstr "متصل بريفيوبيرد"

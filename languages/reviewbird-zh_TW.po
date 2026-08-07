@@ -171,6 +171,10 @@ msgstr "評分 %s（滿分 5 分）"
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "評分 %s（滿分 5 分），點擊查看評論"
 
+#: src/Integration/WooCommerce.php:104
+msgid "Leave a review"
+msgstr "留下評論"
+
 #: assets/src/js/components/ConnectionHealth.jsx:10
 msgid "Connected to Reviewbird"
 msgstr "已連接到 Reviewbird"

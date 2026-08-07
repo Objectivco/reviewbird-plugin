@@ -171,6 +171,10 @@ msgstr "5점 만점에 %s점 평가됨"
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "5점 만점에 %s점 평가됨, 리뷰를 보려면 클릭하세요"
 
+#: src/Integration/WooCommerce.php:104
+msgid "Leave a review"
+msgstr "리뷰 남기기"
+
 #: assets/src/js/components/ConnectionHealth.jsx:10
 msgid "Connected to Reviewbird"
 msgstr "리뷰버드에 연결됨"
