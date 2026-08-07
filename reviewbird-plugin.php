@@ -3,7 +3,7 @@
  * Plugin Name: Reviewbird
  * Plugin URI: https://reviewbird.com
  * Description: Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback.
- * Version: 1.0.24
+ * Version: 1.1.0
  * Author: Reviewbird
  * Text Domain: reviewbird
  * Domain Path: /languages
@@ -32,7 +32,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Currently plugin version.
  */
-define( 'REVIEWBIRD_VERSION', '1.0.24' );
+define( 'REVIEWBIRD_VERSION', '1.1.0' );
 
 /**
  * Plugin directory path.
