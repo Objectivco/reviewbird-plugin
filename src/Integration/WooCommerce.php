@@ -77,7 +77,7 @@ class WooCommerce {
 		$is_account_order = is_wc_endpoint_url( 'view-order' )
 			|| ( is_order_received_page() && isset( $_GET['view'] ) && 'true' === $_GET['view'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-		if ( $plain_text || ! $is_account_order || ! reviewbird_can_show_widget() ) {
+		if ( $plain_text || ! $is_account_order || ! $order || ! $order->has_status( 'completed' ) || ! reviewbird_can_show_widget() ) {
 			return;
 		}
 

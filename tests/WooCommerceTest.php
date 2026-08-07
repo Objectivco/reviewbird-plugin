@@ -75,7 +75,13 @@ namespace reviewbird\Tests {
 
 			$review_product = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_id' ) )->getMock();
 			$review_product->method( 'get_id' )->willReturn( 21 );
-			$order = new \stdClass();
+			$order = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'has_status' ) )->getMock();
+			$order->method( 'has_status' )->willReturnCallback(
+				function ( $status ) {
+					return $GLOBALS['reviewbird_test_order_status'] === $status;
+				}
+			);
+			$GLOBALS['reviewbird_test_order_status'] = 'completed';
 
 			$item = $this->getMockBuilder( \stdClass::class )
 				->addMethods( array( 'get_id', 'get_order', 'get_product', 'get_product_id' ) )
@@ -114,6 +120,12 @@ namespace reviewbird\Tests {
 			self::assertSame( '', ob_get_clean() );
 
 			$_GET['view'] = 'true';
+			$GLOBALS['reviewbird_test_order_status'] = 'processing';
+			ob_start();
+			$integration->add_account_review_link( 7, $item, $order );
+			self::assertSame( '', ob_get_clean() );
+
+			$GLOBALS['reviewbird_test_order_status'] = 'completed';
 			ob_start();
 			$integration->add_account_review_link( 7, $item, $order, true );
 			self::assertSame( '', ob_get_clean() );
