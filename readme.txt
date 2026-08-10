@@ -1,6 +1,6 @@
-=== Reviewbird ===
+=== Reviewbird Product Reviews for WooCommerce ===
 Contributors: reviewbird, clifgriffin
-Tags: reviews, woocommerce, product reviews, ratings, customer reviews
+Tags: woocommerce, woocommerce product reviews, woocommerce reviews, judge.me, rich snippets, review snippets, SEO
 Requires at least: 5.0
 Tested up to: 7.0
 Stable tag: 1.1.0
