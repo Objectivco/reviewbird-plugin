@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: woocommerce, woocommerce product reviews, woocommerce reviews, judge.me, rich snippets, review snippets, SEO
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -226,6 +226,10 @@ To build from source:
 For development: `pnpm run dev`
 
 == Changelog ==
+
+= 1.1.1 =
+Fix - Use the current widget configuration endpoint to load the WooCommerce star color.
+Update - Improve the WordPress.org listing title, tags, description, and FAQs.
 
 = 1.1.0 =
 New - Add Leave a review buttons to products in completed customer account orders, including CheckoutWC support.
