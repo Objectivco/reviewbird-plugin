@@ -86,6 +86,7 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
 	$args = array(
 		'headers'   => array(
 			'Content-Type' => 'application/json',
+			'Origin'       => home_url(),
 			'User-Agent'   => 'reviewbird WordPress Plugin/' . REVIEWBIRD_VERSION,
 		),
 		'timeout'   => 30,

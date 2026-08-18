@@ -288,15 +288,14 @@ class StarRatingDisplay {
 			return null;
 		}
 
-		// Use a placeholder product key - the star color is store-wide.
-		$endpoint = sprintf( '/api/widget-config/%d/placeholder', $store_id );
+		$endpoint = sprintf( '/api/widget/%d/config', $store_id );
 		$response = reviewbird_api_request( $endpoint, null, 'GET' );
 
 		if ( is_wp_error( $response ) ) {
 			return null;
 		}
 
-		$star_color = $response['widgetSettings']['star_color'] ?? null;
+		$star_color = $response['widget_settings']['star_color'] ?? null;
 
 		if ( $star_color ) {
 			// Cache for 24 hours.

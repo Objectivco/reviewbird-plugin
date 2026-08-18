@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Reviewbird 1.1.0\n"
+"Project-Id-Version: Reviewbird 1.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-07T17:24:50+00:00\n"
+"POT-Creation-Date: 2026-08-18T15:10:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
@@ -139,24 +139,24 @@ msgstr ""
 msgid "Documentation"
 msgstr ""
 
-#: src/functions.php:114
-#: src/functions.php:290
+#: src/functions.php:115
+#: src/functions.php:291
 msgid "API request failed"
 msgstr ""
 
-#: src/functions.php:197
+#: src/functions.php:198
 msgid "Store is not connected to Reviewbird."
 msgstr ""
 
-#: src/functions.php:207
+#: src/functions.php:208
 msgid "Unable to generate API key for authentication."
 msgstr ""
 
-#: src/functions.php:221
+#: src/functions.php:222
 msgid "Maximum of 50 product IDs allowed per request."
 msgstr ""
 
-#: src/functions.php:326
+#: src/functions.php:327
 msgid "Failed to decode API response."
 msgstr ""
 

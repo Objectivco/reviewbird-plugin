@@ -3,16 +3,62 @@ Contributors: reviewbird, clifgriffin
 Tags: woocommerce, woocommerce product reviews, woocommerce reviews, judge.me, rich snippets, review snippets, SEO
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Powerfully simple product review collection, moderation, and management for WooCommerce.
+Reviewbird collects, manages and displays reviews for your shop, including photo reviews, in-email review, reminders, rich snippets, and much more.
 
 == Description ==
 
-Reviewbird upgrades your WooCommerce Product Reviews, increasing your social proof and growing your sales. Get started free with a Reviewbird account on our free plan. [Create an account](https://reviewbird.com) to get started.
+Reviewbird helps you collect and display star ratings and reviews about your products and WooCommerce store. Social proof from reviews and other user-generated content like photos and videos increases your conversion rate, organic traffic, and buyer engagement. [Create an account](https://reviewbird.com) to get started.
+
+## Collect reviews on autopilot
+
+* Unlimited review requests: schedule automatic requests after fulfillment or delivery, set the delay time for domestic and international orders.
+* Email templates: fully-customizable email templates (including in-email review forms)
+* Automatic reminders: send email reminders to customers who haven’t left a review yet.
+* Coupons: automatically send a static/dynamic coupon to all reviewers that meet your coupon conditions.
+* Advanced blacklisting: disable review requests for certain products or customers.
+* Manual requests: send unlimited review requests to orders fulfilled prior to the app installation.
+* Product groups and cross-shop reviews syndication: share reviews among similar products in the same product groups or shop groups.
+
+## Create High-Quality User Content
+
+* Photo and video reviews: ask reviewers for photos and videos on product pages and in the review request emails.
+* Default translations for emails and widgets: available in 24 languages.
+* Custom forms: ask custom questions in the review form to understand more about your customers and products.
+* AI review summaries, up-votes, and locations for reviews.
+
+
+## Build trust in your brand
+
+* Review Widget: collect and display your product reviews and star ratings on your product pages.
+* Preview Badge: display your star ratings and number of reviews as a badge below the product title on product or collection pages.
+* Reviews Showcase: feature selected reviews on your front page, or anywhere you want.
+* All Reviews page: Use a review wall showcase to show-off all your reviews.
+* Fully optimized for mobile and loading speed.
+
+## Adjust your review style (unique!)
+
+Your brand, not ours: we preserve your brand by using the fonts, styles, and colors as defined by your shop theme.
+
+You can choose among multiple layouts and styles:
+
+1. List view - a standard review list
+2. Masonry - a bricks style list of reviews
+
+## Boost your organic traffic
+
+* Automatic rich snippets: show your star ratings in Google Search
+* Automatic Google Shopping XML feed: show reviews in Google Shopping.
+
+## Simple migration & great support
+
+* Import directly from Judge.me, Yotpo, WiserReview, Shopify, Stamped.io, Loox, Ryviu, Rivyo, and more.
+* Use our review import tool to upload your CSV file or get in touch with our team for migration support.
+* Support that cares: When you have a question or an issue, we are on it.
 
 **🌟Key Features:**
 
@@ -128,6 +174,18 @@ After you have connected your store to Reviewbird, this is how you configure the
 
 Yes, you need a Reviewbird account to use this plugin. You can get started on the free plan at [reviewbird.com](https://reviewbird.com).
 
+= Is Reviewbird for WooCommerce free? =
+
+We have a free plan that lets you send 25 review requests a month, up to 500 orders. You can collect unlimited reviews. Advanced features require a paid plan.
+
+= Can I migrate my reviews from Judge.me? =
+
+Yes, we have a dedicated import tool to help you import reviews from Judge.me.
+
+= Can I send review request emails to old clients?  =
+
+You can send a bulk review request to all customers with orders within the last 90 days. Up to 5000 at a time.
+
 = Is WooCommerce required? =
 
 Yes, this plugin requires WooCommerce 5.0 or higher to function.
@@ -168,6 +226,10 @@ To build from source:
 For development: `pnpm run dev`
 
 == Changelog ==
+
+= 1.1.1 =
+Fix - Use the current widget configuration endpoint to load the WooCommerce star color.
+Update - Improve the WordPress.org listing title, tags, description, and FAQs.
 
 = 1.1.0 =
 New - Add Leave a review buttons to products in completed customer account orders, including CheckoutWC support.
