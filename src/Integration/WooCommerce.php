@@ -32,6 +32,10 @@ class WooCommerce {
 	 * Register WooCommerce hooks.
 	 */
 	private function register_hooks() {
+		// Suppress WooCommerce review output and queries when Reviewbird replaces them.
+		add_filter( 'pre_render_block', array( $this, 'suppress_product_reviews_block' ), 10, 2 );
+		add_filter( 'comments_pre_query', array( $this, 'suppress_structured_data_review_query' ), 10, 2 );
+
 		add_filter(
 			'woocommerce_rest_prepare_product_review',
 			array(
@@ -52,6 +56,66 @@ class WooCommerce {
 		// Link account order items to the product review form.
 		add_action( 'woocommerce_order_item_meta_end', array( $this, 'add_account_review_link' ), 10, 4 );
 		add_action( 'cfw_order_item_after_data', array( $this, 'add_checkoutwc_account_review_link' ), 10, 1 );
+	}
+
+	/**
+	 * Stop the WooCommerce product reviews block before its child queries run.
+	 *
+	 * @param string|null $pre_render   Pre-rendered block content.
+	 * @param array       $parsed_block Parsed block data.
+	 * @return string|null Pre-rendered block content.
+	 */
+	public function suppress_product_reviews_block( $pre_render, array $parsed_block ) {
+		if (
+			null === $pre_render
+			&& 'woocommerce/product-reviews' === ( $parsed_block['blockName'] ?? '' )
+			&& is_product()
+			&& reviewbird_can_show_widget()
+		) {
+			return '';
+		}
+
+		return $pre_render;
+	}
+
+	/**
+	 * Stop WooCommerce's native review query for product structured data.
+	 *
+	 * @param array|int|null    $comments Comment query result.
+	 * @param \WP_Comment_Query $query    Comment query.
+	 * @return array|int|null Comment query result.
+	 */
+	public function suppress_structured_data_review_query( $comments, $query ) {
+		if (
+			null !== $comments
+			|| ! doing_action( 'woocommerce_single_product_summary' )
+			|| ! is_product()
+			|| ! reviewbird_can_show_widget()
+		) {
+			return $comments;
+		}
+
+		$query_vars        = $query->query_vars;
+		$rating_meta_query = $query_vars['meta_query'][0] ?? array();
+
+		if (
+			5 !== (int) ( $query_vars['number'] ?? 0 )
+			|| get_queried_object_id() !== (int) ( $query_vars['post_id'] ?? 0 )
+			|| 'approve' !== ( $query_vars['status'] ?? '' )
+			|| 'publish' !== ( $query_vars['post_status'] ?? '' )
+			|| 'product' !== ( $query_vars['post_type'] ?? '' )
+			|| ! array_key_exists( 'parent', $query_vars )
+			|| 0 !== (int) $query_vars['parent']
+			|| ! empty( $query_vars['count'] )
+			|| 'rating' !== ( $rating_meta_query['key'] ?? '' )
+			|| 'NUMERIC' !== ( $rating_meta_query['type'] ?? '' )
+			|| '>' !== ( $rating_meta_query['compare'] ?? '' )
+			|| 0 !== (int) ( $rating_meta_query['value'] ?? -1 )
+		) {
+			return $comments;
+		}
+
+		return array();
 	}
 
 	/**
