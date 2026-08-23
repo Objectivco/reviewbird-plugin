@@ -33,16 +33,8 @@ namespace reviewbird\Integration {
 		return $GLOBALS['reviewbird_test_can_show_widget'];
 	}
 
-	function doing_action( $hook ) {
-		return $GLOBALS['reviewbird_test_current_action'] === $hook;
-	}
-
 	function is_product() {
 		return $GLOBALS['reviewbird_test_is_product'];
-	}
-
-	function get_queried_object_id() {
-		return $GLOBALS['reviewbird_test_queried_object_id'];
 	}
 
 	function wc_get_product() {
@@ -79,57 +71,31 @@ namespace reviewbird\Tests {
 		protected function setUp(): void {
 			parent::setUp();
 
-			$GLOBALS['reviewbird_test_can_show_widget']    = true;
-			$GLOBALS['reviewbird_test_current_action']     = 'woocommerce_single_product_summary';
-			$GLOBALS['reviewbird_test_is_product']         = true;
-			$GLOBALS['reviewbird_test_queried_object_id'] = 21;
+			$GLOBALS['reviewbird_test_can_show_widget'] = true;
+			$GLOBALS['reviewbird_test_is_product']      = true;
 		}
 
 		public function test_suppresses_default_woocommerce_review_output_and_query(): void {
 			$integration  = new WooCommerce();
 			$reviews_block = array( 'blockName' => 'woocommerce/product-reviews' );
 			$other_block   = array( 'blockName' => 'core/paragraph' );
-			$query         = (object) array(
-				'query_vars' => array(
-					'number'      => 5,
-					'post_id'     => 21,
-					'status'      => 'approve',
-					'post_status' => 'publish',
-					'post_type'   => 'product',
-					'parent'      => 0,
-					'meta_query'  => array(
-						array(
-							'key'     => 'rating',
-							'type'    => 'NUMERIC',
-							'compare' => '>',
-							'value'   => 0,
-						),
-					),
-				),
-			);
-
 			self::assertSame( array( $integration, 'suppress_product_reviews_block' ), $GLOBALS['reviewbird_test_filters']['pre_render_block'][0] );
 			self::assertSame( 2, $GLOBALS['reviewbird_test_filters']['pre_render_block'][2] );
-			self::assertSame( array( $integration, 'suppress_structured_data_review_query' ), $GLOBALS['reviewbird_test_filters']['comments_pre_query'][0] );
-			self::assertSame( 2, $GLOBALS['reviewbird_test_filters']['comments_pre_query'][2] );
+			self::assertSame( array( $integration, 'suppress_product_review_queries' ), $GLOBALS['reviewbird_test_filters']['comments_pre_query'][0] );
+			self::assertSame( 1, $GLOBALS['reviewbird_test_filters']['comments_pre_query'][2] );
 			self::assertSame( '', $integration->suppress_product_reviews_block( null, $reviews_block ) );
 			self::assertNull( $integration->suppress_product_reviews_block( null, $other_block ) );
-			self::assertSame( array(), $integration->suppress_structured_data_review_query( null, $query ) );
+			self::assertSame( array(), $integration->suppress_product_review_queries( null ) );
 
 			$GLOBALS['reviewbird_test_can_show_widget'] = false;
 
 			self::assertNull( $integration->suppress_product_reviews_block( null, $reviews_block ) );
-			self::assertNull( $integration->suppress_structured_data_review_query( null, $query ) );
+			self::assertNull( $integration->suppress_product_review_queries( null ) );
 
 			$GLOBALS['reviewbird_test_can_show_widget'] = true;
-			$query->query_vars['post_id']               = 22;
+			$GLOBALS['reviewbird_test_is_product']      = false;
 
-			self::assertNull( $integration->suppress_structured_data_review_query( null, $query ) );
-
-			$query->query_vars['post_id']              = 21;
-			$query->query_vars['meta_query'][0]['key'] = 'unrelated';
-
-			self::assertNull( $integration->suppress_structured_data_review_query( null, $query ) );
+			self::assertNull( $integration->suppress_product_review_queries( null ) );
 		}
 
 		public function test_adds_account_order_review_link(): void {
