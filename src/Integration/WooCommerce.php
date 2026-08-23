@@ -32,6 +32,10 @@ class WooCommerce {
 	 * Register WooCommerce hooks.
 	 */
 	private function register_hooks() {
+		// Suppress WooCommerce review output and queries when Reviewbird replaces them.
+		add_filter( 'pre_render_block', array( $this, 'suppress_product_reviews_block' ), 10, 2 );
+		add_filter( 'comments_pre_query', array( $this, 'suppress_product_review_queries' ) );
+
 		add_filter(
 			'woocommerce_rest_prepare_product_review',
 			array(
@@ -52,6 +56,36 @@ class WooCommerce {
 		// Link account order items to the product review form.
 		add_action( 'woocommerce_order_item_meta_end', array( $this, 'add_account_review_link' ), 10, 4 );
 		add_action( 'cfw_order_item_after_data', array( $this, 'add_checkoutwc_account_review_link' ), 10, 1 );
+	}
+
+	/**
+	 * Stop the WooCommerce product reviews block before its child queries run.
+	 *
+	 * @param string|null $pre_render   Pre-rendered block content.
+	 * @param array       $parsed_block Parsed block data.
+	 * @return string|null Pre-rendered block content.
+	 */
+	public function suppress_product_reviews_block( $pre_render, array $parsed_block ) {
+		if (
+			null === $pre_render
+			&& 'woocommerce/product-reviews' === ( $parsed_block['blockName'] ?? '' )
+			&& is_product()
+			&& reviewbird_can_show_widget()
+		) {
+			return '';
+		}
+
+		return $pre_render;
+	}
+
+	/**
+	 * Stop product review queries when Reviewbird replaces them.
+	 *
+	 * @param array|int|null $comments Comment query result.
+	 * @return array|int|null Comment query result.
+	 */
+	public function suppress_product_review_queries( $comments ) {
+		return is_product() && reviewbird_can_show_widget() ? array() : $comments;
 	}
 
 	/**

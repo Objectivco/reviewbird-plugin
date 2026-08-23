@@ -13,7 +13,9 @@ namespace reviewbird\Integration {
 		define( 'ABSPATH', __DIR__ );
 	}
 
-	function add_filter() {}
+	function add_filter( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
+		$GLOBALS['reviewbird_test_filters'][ $hook ] = array( $callback, $priority, $accepted_args );
+	}
 
 	function add_action( $hook, $callback, $priority, $accepted_args ) {
 		$GLOBALS['reviewbird_test_actions'][ $hook ] = array( $callback, $priority, $accepted_args );
@@ -28,7 +30,11 @@ namespace reviewbird\Integration {
 	}
 
 	function reviewbird_can_show_widget() {
-		return true;
+		return $GLOBALS['reviewbird_test_can_show_widget'];
+	}
+
+	function is_product() {
+		return $GLOBALS['reviewbird_test_is_product'];
 	}
 
 	function wc_get_product() {
@@ -61,6 +67,36 @@ namespace reviewbird\Tests {
 	use reviewbird\Integration\WooCommerce;
 
 	final class WooCommerceTest extends TestCase {
+
+		protected function setUp(): void {
+			parent::setUp();
+
+			$GLOBALS['reviewbird_test_can_show_widget'] = true;
+			$GLOBALS['reviewbird_test_is_product']      = true;
+		}
+
+		public function test_suppresses_default_woocommerce_review_output_and_query(): void {
+			$integration  = new WooCommerce();
+			$reviews_block = array( 'blockName' => 'woocommerce/product-reviews' );
+			$other_block   = array( 'blockName' => 'core/paragraph' );
+			self::assertSame( array( $integration, 'suppress_product_reviews_block' ), $GLOBALS['reviewbird_test_filters']['pre_render_block'][0] );
+			self::assertSame( 2, $GLOBALS['reviewbird_test_filters']['pre_render_block'][2] );
+			self::assertSame( array( $integration, 'suppress_product_review_queries' ), $GLOBALS['reviewbird_test_filters']['comments_pre_query'][0] );
+			self::assertSame( 1, $GLOBALS['reviewbird_test_filters']['comments_pre_query'][2] );
+			self::assertSame( '', $integration->suppress_product_reviews_block( null, $reviews_block ) );
+			self::assertNull( $integration->suppress_product_reviews_block( null, $other_block ) );
+			self::assertSame( array(), $integration->suppress_product_review_queries( null ) );
+
+			$GLOBALS['reviewbird_test_can_show_widget'] = false;
+
+			self::assertNull( $integration->suppress_product_reviews_block( null, $reviews_block ) );
+			self::assertNull( $integration->suppress_product_review_queries( null ) );
+
+			$GLOBALS['reviewbird_test_can_show_widget'] = true;
+			$GLOBALS['reviewbird_test_is_product']      = false;
+
+			self::assertNull( $integration->suppress_product_review_queries( null ) );
+		}
 
 		public function test_adds_account_order_review_link(): void {
 			$GLOBALS['reviewbird_test_is_view_order']     = false;
