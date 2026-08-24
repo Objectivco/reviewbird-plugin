@@ -548,7 +548,7 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 		return '';
 	}
 
-	return '<div class="reviewbird-ssr-reviews">' . $html . '</div>';
+	return '<div class="reviewbird-ssr-reviews" hidden style="display:none">' . $html . '</div>';
 }
 
 /**
