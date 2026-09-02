@@ -121,7 +121,7 @@ class Settings {
 		// phpcs:ignore Generic.Files.LineLength.TooLong -- Base64-encoded SVG icon.
 		$icon_svg = 'data:image/svg+xml;base64,' . base64_encode( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><path fill="black" fill-rule="evenodd" clip-rule="evenodd" d="M3 33.05c5.53-2.32 11.05-6.74 16.8-12.6 3.65-5.2 8.07-7.69 13.6-8.29 3.87.22 7.74 1.99 11.44 5.58 2.32.48 4.59 1.12 6.8 1.93-1.66 1.4-3.28 2.62-4.87 3.65-.94 2.16-1.77 4.37-2.21 6.36-.94 3.81-5.09 8.23-10.17 10.22-4.86 1.77-9.84 2.05-14.59 1.44C11.85 40.12 5.49 36.81 3 33.05Zm30.4-15.59 1.38 4.24h4.46l-3.61 2.62L37 28.56l-3.6-2.62-3.6 2.62 1.37-4.24-3.61-2.62h4.46l1.38-4.24Z"/></svg>' );
 
-		add_menu_page(
+		$get_started_hook = add_menu_page(
 			__( 'Reviewbird', 'reviewbird' ),
 			__( 'Reviewbird', 'reviewbird' ),
 			'manage_options',
@@ -130,6 +130,8 @@ class Settings {
 			$icon_svg,
 			58
 		);
+
+		add_action( 'load-' . $get_started_hook, array( $this, 'suppress_admin_notices' ) );
 
 		add_submenu_page(
 			self::GET_STARTED_SLUG,
@@ -148,6 +150,15 @@ class Settings {
 			self::SETTINGS_SLUG,
 			array( $this, 'render_settings_page' )
 		);
+	}
+
+	/**
+	 * Suppress unrelated notices on the Get Started page.
+	 */
+	public function suppress_admin_notices(): void {
+		remove_all_actions( 'admin_notices' );
+		remove_all_actions( 'all_admin_notices' );
+		add_action( 'admin_notices', array( $this, 'display_oauth_notices' ) );
 	}
 
 	/**
