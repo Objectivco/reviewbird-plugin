@@ -229,6 +229,7 @@ For development: `pnpm run dev`
 
 = 1.1.3 =
 Fix - Suppress unrelated WordPress notices on the Reviewbird Get Started page.
+New - Report the widget enabled state through the WooCommerce system status REST API.
 
 = 1.1.2 =
 Fix - Stop the default WooCommerce review output and related database queries when the Reviewbird widget is active.

@@ -32,6 +32,8 @@ class WooCommerce {
 	 * Register WooCommerce hooks.
 	 */
 	private function register_hooks() {
+		add_action( 'rest_api_init', array( $this, 'register_system_status_field' ), 10, 0 );
+
 		// Suppress WooCommerce review output and queries when Reviewbird replaces them.
 		add_filter( 'pre_render_block', array( $this, 'suppress_product_reviews_block' ), 10, 2 );
 		add_filter( 'comments_pre_query', array( $this, 'suppress_product_review_queries' ) );
@@ -56,6 +58,27 @@ class WooCommerce {
 		// Link account order items to the product review form.
 		add_action( 'woocommerce_order_item_meta_end', array( $this, 'add_account_review_link' ), 10, 4 );
 		add_action( 'cfw_order_item_after_data', array( $this, 'add_checkoutwc_account_review_link' ), 10, 1 );
+	}
+
+	/**
+	 * Add the Reviewbird widget setting to WooCommerce system status.
+	 */
+	public function register_system_status_field(): void {
+		register_rest_field(
+			'system_status',
+			'reviewbird_widget_enabled',
+			array(
+				'get_callback' => static function (): bool {
+					return reviewbird_is_widget_enabled();
+				},
+				'schema'       => array(
+					'description' => __( 'Whether the Reviewbird widget is enabled.', 'reviewbird' ),
+					'type'        => 'boolean',
+					'context'     => array( 'view' ),
+					'readonly'    => true,
+				),
+			)
+		);
 	}
 
 	/**
