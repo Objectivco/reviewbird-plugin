@@ -21,6 +21,10 @@ namespace reviewbird\Integration {
 		$GLOBALS['reviewbird_test_actions'][ $hook ] = array( $callback, $priority, $accepted_args );
 	}
 
+	function register_rest_field( $object_type, $attribute, $args ) {
+		$GLOBALS['reviewbird_test_rest_field'] = array( $object_type, $attribute, $args );
+	}
+
 	function is_wc_endpoint_url( $endpoint ) {
 		return 'view-order' === $endpoint && $GLOBALS['reviewbird_test_is_view_order'];
 	}
@@ -31,6 +35,14 @@ namespace reviewbird\Integration {
 
 	function reviewbird_can_show_widget() {
 		return $GLOBALS['reviewbird_test_can_show_widget'];
+	}
+
+	function reviewbird_is_widget_enabled() {
+		return $GLOBALS['reviewbird_test_widget_enabled'];
+	}
+
+	function __( $text ) {
+		return $text;
 	}
 
 	function is_product() {
@@ -73,6 +85,21 @@ namespace reviewbird\Tests {
 
 			$GLOBALS['reviewbird_test_can_show_widget'] = true;
 			$GLOBALS['reviewbird_test_is_product']      = true;
+		}
+
+		public function test_exposes_widget_setting_in_woocommerce_system_status(): void {
+			$integration = new WooCommerce();
+			$integration->register_system_status_field();
+			$field = $GLOBALS['reviewbird_test_rest_field'];
+
+			self::assertSame( 'system_status', $field[0] );
+			self::assertSame( 'reviewbird_widget_enabled', $field[1] );
+
+			$GLOBALS['reviewbird_test_widget_enabled'] = true;
+			self::assertTrue( $field[2]['get_callback']() );
+
+			$GLOBALS['reviewbird_test_widget_enabled'] = false;
+			self::assertFalse( $field[2]['get_callback']() );
 		}
 
 		public function test_suppresses_default_woocommerce_review_output_and_query(): void {
