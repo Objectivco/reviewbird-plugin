@@ -166,10 +166,10 @@ function reviewbird_get_store_id(): ?int {
 		return $store_id;
 	}
 
-	$status          = reviewbird_get_store_status();
-	$status_store_id = isset( $status['store_id'] ) ? absint( $status['store_id'] ) : 0;
+	$status   = reviewbird_get_store_status();
+	$store_id = absint( $status['store_id'] ?? 0 );
 
-	return $status_store_id ? $status_store_id : null;
+	return $store_id ?: null;
 }
 
 /**
@@ -473,7 +473,7 @@ function reviewbird_sync_product_rating( int $product_id ): void {
 
 	$synced[ $product_id ] = true;
 
-	if ( '' !== get_post_meta( $product_id, '_reviewbird_reviews_count', true ) ) {
+	if ( ! empty( get_post_meta( $product_id, '_reviewbird_reviews_count', true ) ) ) {
 		return;
 	}
 
@@ -531,15 +531,11 @@ function reviewbird_page_should_enqueue_widget(): bool {
 
 	global $post;
 
-	if ( ! $post ) {
+	if ( empty( $post ) ) {
 		return false;
 	}
 
-	if ( has_shortcode( $post->post_content, 'reviewbird_widget' ) ) {
-		return true;
-	}
-
-	if ( has_shortcode( $post->post_content, 'product_page' ) ) {
+	if ( has_shortcode( $post->post_content, 'reviewbird_widget' ) || has_shortcode( $post->post_content, 'product_page' ) ) {
 		return true;
 	}
 
@@ -574,19 +570,15 @@ function reviewbird_enqueue_widget_script(): void {
 		'widgetPrefix' => 'reviewbird-widget-container-',
 	);
 
-	if ( function_exists( 'WC' ) && is_user_logged_in() ) {
-		$customer = WC()->customer;
-		if ( $customer && $customer->get_billing_email() ) {
-			$first_name = $customer->get_billing_first_name();
-			$last_name  = $customer->get_billing_last_name();
-			$email      = $customer->get_billing_email();
+	$customer = function_exists( 'WC' ) && is_user_logged_in() ? WC()->customer : null;
+	$email    = $customer ? $customer->get_billing_email() : '';
 
-			$config['prefill'] = array(
-				'firstName' => $first_name ? $first_name : '',
-				'lastName'  => $last_name ? $last_name : '',
-				'email'     => $email ? $email : '',
-			);
-		}
+	if ( $email ) {
+		$config['prefill'] = array(
+			'firstName' => $customer->get_billing_first_name() ?: '',
+			'lastName'  => $customer->get_billing_last_name() ?: '',
+			'email'     => $email,
+		);
 	}
 
 	wp_localize_script(

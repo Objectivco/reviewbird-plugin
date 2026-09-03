@@ -157,7 +157,7 @@ class Plugin {
 	 * Enqueue public scripts and styles.
 	 */
 	public function enqueue_public_scripts() {
-		if ( ! reviewbird_can_show_widget() || ! reviewbird_page_should_enqueue_widget() ) {
+		if ( ! reviewbird_page_should_enqueue_widget() ) {
 			return;
 		}
 
@@ -168,12 +168,10 @@ class Plugin {
 	 * Enqueue star rating styles on WooCommerce pages.
 	 */
 	public function enqueue_star_styles() {
-		// Only load when store is connected.
 		if ( ! reviewbird_get_store_id() ) {
 			return;
 		}
 
-		// Load on WooCommerce pages and WordPress pages that embed a product.
 		if ( ! is_woocommerce() && ! reviewbird_page_should_enqueue_widget() ) {
 			return;
 		}

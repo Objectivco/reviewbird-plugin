@@ -103,10 +103,10 @@ class HealthScheduler {
 
 		update_option( 'reviewbird_store_status', $response, false );
 
-		$health_store_id = isset( $response['store_id'] ) ? absint( $response['store_id'] ) : 0;
+		$store_id = absint( $response['store_id'] ?? 0 );
 
-		if ( $health_store_id && ! get_option( 'reviewbird_store_id' ) ) {
-			update_option( 'reviewbird_store_id', $health_store_id );
+		if ( $store_id && ! get_option( 'reviewbird_store_id' ) ) {
+			update_option( 'reviewbird_store_id', $store_id );
 		}
 
 		$this->log_refresh_success( $response['status'] ?? 'unknown' );
