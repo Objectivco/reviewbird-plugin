@@ -68,6 +68,10 @@ class StarRatingDisplay {
 	 * filtered rating HTML. We remove it and add our own implementation.
 	 */
 	public function replace_single_product_rating(): void {
+		if ( ! has_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating' ) ) {
+			return;
+		}
+
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating', 10 );
 
 		/**

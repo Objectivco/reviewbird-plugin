@@ -231,6 +231,7 @@ For development: `pnpm run dev`
 Fix - Load the review widget on WordPress pages that embed a product with [product_page] or the WooCommerce Single Product block, including WPBakery layouts.
 Fix - Fall back to the store ID from the health status when the dedicated store ID option is missing.
 Fix - Fetch star ratings from the Reviewbird API when product rating meta is missing.
+Fix - Avoid duplicate star ratings when the theme already renders them.
 
 = 1.1.3 =
 Fix - Suppress unrelated WordPress notices on the Reviewbird Get Started page.
