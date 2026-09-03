@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: woocommerce, woocommerce product reviews, woocommerce reviews, judge.me, rich snippets, review snippets, SEO
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -226,6 +226,10 @@ To build from source:
 For development: `pnpm run dev`
 
 == Changelog ==
+
+= 1.1.4 =
+Fix - Load the review widget on WordPress pages that embed a product with [product_page] or the WooCommerce Single Product block, including WPBakery layouts.
+Fix - Fall back to the store ID from the health status when the dedicated store ID option is missing.
 
 = 1.1.3 =
 Fix - Suppress unrelated WordPress notices on the Reviewbird Get Started page.

@@ -160,9 +160,16 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
  * @return int|null Store ID or null if not available.
  */
 function reviewbird_get_store_id(): ?int {
-	$store_id = get_option( 'reviewbird_store_id' );
+	$store_id = absint( get_option( 'reviewbird_store_id' ) );
 
-	return $store_id ? absint( $store_id ) : null;
+	if ( $store_id ) {
+		return $store_id;
+	}
+
+	$status          = reviewbird_get_store_status();
+	$status_store_id = isset( $status['store_id'] ) ? absint( $status['store_id'] ) : 0;
+
+	return $status_store_id ? $status_store_id : null;
 }
 
 /**
@@ -452,6 +459,89 @@ function reviewbird_can_show_widget(): bool {
 }
 
 /**
+ * Whether the current request should enqueue the review widget script early.
+ *
+ * Covers native product pages plus WordPress pages that embed a product via
+ * the Reviewbird shortcode, WooCommerce [product_page] (WPBakery Product Page),
+ * or the WooCommerce Single Product block.
+ *
+ * @return bool True if the widget script should be enqueued.
+ */
+function reviewbird_page_should_enqueue_widget(): bool {
+	if ( is_product() ) {
+		return true;
+	}
+
+	global $post;
+
+	if ( ! $post ) {
+		return false;
+	}
+
+	if ( has_shortcode( $post->post_content, 'reviewbird_widget' ) ) {
+		return true;
+	}
+
+	if ( has_shortcode( $post->post_content, 'product_page' ) ) {
+		return true;
+	}
+
+	return function_exists( 'has_block' ) && has_block( 'woocommerce/single-product', $post );
+}
+
+/**
+ * Enqueue the review widget script and configuration.
+ *
+ * Safe to call while rendering content because the script prints in the footer.
+ *
+ * @return void
+ */
+function reviewbird_enqueue_widget_script(): void {
+	static $enqueued = false;
+
+	if ( $enqueued || ! reviewbird_can_show_widget() ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'reviewbird-widget',
+		reviewbird_get_api_url() . '/build/review-widget-v2.js',
+		array(),
+		null,
+		true
+	);
+
+	$config = array(
+		'apiUrl'       => reviewbird_get_api_url(),
+		'storeId'      => reviewbird_get_store_id(),
+		'widgetPrefix' => 'reviewbird-widget-container-',
+	);
+
+	if ( function_exists( 'WC' ) && is_user_logged_in() ) {
+		$customer = WC()->customer;
+		if ( $customer && $customer->get_billing_email() ) {
+			$first_name = $customer->get_billing_first_name();
+			$last_name  = $customer->get_billing_last_name();
+			$email      = $customer->get_billing_email();
+
+			$config['prefill'] = array(
+				'firstName' => $first_name ? $first_name : '',
+				'lastName'  => $last_name ? $last_name : '',
+				'email'     => $email ? $email : '',
+			);
+		}
+	}
+
+	wp_localize_script(
+		'reviewbird-widget',
+		'reviewbirdConfig',
+		$config
+	);
+
+	$enqueued = true;
+}
+
+/**
  * Get cached product reviews, using a transient to avoid repeated API calls.
  *
  * @param int $product_id WooCommerce product ID.
@@ -600,6 +690,10 @@ function reviewbird_render_widget( $product_id = null ): string {
 	// Build SSR review HTML for SEO.
 	$cached_reviews = reviewbird_get_cached_product_reviews( $actual_product_id );
 	$ssr_html       = reviewbird_render_ssr_reviews( $cached_reviews );
+
+	// Enqueue here so pages that embed a product (WPBakery, shortcode, block)
+	// still get the footer script even when is_product() is false.
+	reviewbird_enqueue_widget_script();
 
 	// Add the init call via wp_add_inline_script (once, even if multiple widgets render).
 	static $inline_script_added = false;

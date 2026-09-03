@@ -157,51 +157,11 @@ class Plugin {
 	 * Enqueue public scripts and styles.
 	 */
 	public function enqueue_public_scripts() {
-		// Check if widget is enabled AND store can show widget.
-		if ( ! reviewbird_can_show_widget() ) {
+		if ( ! reviewbird_can_show_widget() || ! reviewbird_page_should_enqueue_widget() ) {
 			return;
 		}
 
-		// Only load on product pages or pages with shortcode.
-		global $post;
-		if ( ! is_product() && ( ! $post || ! has_shortcode( $post->post_content, 'reviewbird_widget' ) ) ) {
-			return;
-		}
-
-		// Enqueue the new Svelte widget JS (CSS is inlined in the JS bundle).
-		wp_enqueue_script(
-			'reviewbird-widget',
-			reviewbird_get_api_url() . '/build/review-widget-v2.js',
-			array(),
-			null,
-			true
-		);
-
-		// Build widget configuration.
-		$config = array(
-			'apiUrl'       => reviewbird_get_api_url(),
-			'storeId'      => get_option( 'reviewbird_store_id' ),
-			'widgetPrefix' => 'reviewbird-widget-container-',
-		);
-
-		// Add prefill data for logged-in WooCommerce customers.
-		if ( function_exists( 'WC' ) && is_user_logged_in() ) {
-			$customer = WC()->customer;
-			if ( $customer && $customer->get_billing_email() ) {
-				$config['prefill'] = array(
-					'firstName' => $customer->get_billing_first_name() ?: '',
-					'lastName'  => $customer->get_billing_last_name() ?: '',
-					'email'     => $customer->get_billing_email() ?: '',
-				);
-			}
-		}
-
-		// Pass configuration to widget JavaScript.
-		wp_localize_script(
-			'reviewbird-widget',
-			'reviewbirdConfig',
-			$config
-		);
+		reviewbird_enqueue_widget_script();
 	}
 
 	/**
@@ -213,8 +173,8 @@ class Plugin {
 			return;
 		}
 
-		// Load on WooCommerce pages (products, shop, archives).
-		if ( ! is_woocommerce() ) {
+		// Load on WooCommerce pages and WordPress pages that embed a product.
+		if ( ! is_woocommerce() && ! reviewbird_page_should_enqueue_widget() ) {
 			return;
 		}
 
@@ -318,7 +278,7 @@ class Plugin {
 		);
 
 		$carousel_id = $atts['id'];
-		$store_id    = get_option( 'reviewbird_store_id' );
+		$store_id    = reviewbird_get_store_id();
 
 		if ( empty( $carousel_id ) ) {
 			return '<!-- Reviewbird Showcase: Missing showcase ID -->';

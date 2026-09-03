@@ -22,8 +22,12 @@ namespace {
 	define( 'REVIEWBIRD_VERSION', '1.0.0-test' );
 	define( 'DAY_IN_SECONDS', 86400 );
 
-	function get_option( $key ) {
-		return 'reviewbird_store_id' === $key ? 148 : null;
+	function get_option( $key, $default = false ) {
+		if ( array_key_exists( $key, $GLOBALS['reviewbird_test_options'] ?? array() ) ) {
+			return $GLOBALS['reviewbird_test_options'][ $key ];
+		}
+
+		return 'reviewbird_store_id' === $key ? 148 : $default;
 	}
 
 	function absint( $value ) {
