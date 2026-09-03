@@ -459,6 +459,63 @@ function reviewbird_can_show_widget(): bool {
 }
 
 /**
+ * Fill `_reviewbird_*` rating meta from the public API when it is missing.
+ *
+ * @param int $product_id WooCommerce product ID.
+ * @return void
+ */
+function reviewbird_sync_product_rating( int $product_id ): void {
+	static $synced = array();
+
+	if ( $product_id < 1 || isset( $synced[ $product_id ] ) ) {
+		return;
+	}
+
+	$synced[ $product_id ] = true;
+
+	if ( '' !== get_post_meta( $product_id, '_reviewbird_reviews_count', true ) ) {
+		return;
+	}
+
+	$store_id = reviewbird_get_store_id();
+	if ( ! $store_id ) {
+		return;
+	}
+
+	$response = wp_remote_get(
+		reviewbird_get_api_url() . '/api/public/' . $store_id . '/' . $product_id . '?context=widget&page=1',
+		array(
+			'timeout'   => 5,
+			'sslverify' => ! reviewbird_should_disable_ssl_verify(),
+			'headers'   => array(
+				'Accept' => 'application/json',
+				'Origin' => home_url(),
+			),
+		)
+	);
+
+	if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) >= 400 ) {
+		return;
+	}
+
+	$data  = json_decode( wp_remote_retrieve_body( $response ), true );
+	$stats = is_array( $data ) ? ( $data['statistics'] ?? array() ) : array();
+	$count   = absint( $stats['total_reviews'] ?? 0 );
+	$average = (float) ( $stats['average_rating'] ?? 0 );
+
+	if ( $count < 1 || $average <= 0 ) {
+		return;
+	}
+
+	update_post_meta( $product_id, '_reviewbird_avg_stars', $average );
+	update_post_meta( $product_id, '_reviewbird_reviews_count', $count );
+
+	if ( ! empty( $stats['rating_distribution'] ) ) {
+		update_post_meta( $product_id, '_reviewbird_rating_counts', $stats['rating_distribution'] );
+	}
+}
+
+/**
  * Whether the current request should enqueue the review widget script early.
  *
  * Covers native product pages plus WordPress pages that embed a product via

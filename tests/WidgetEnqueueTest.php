@@ -57,6 +57,48 @@ namespace {
 		}
 	}
 
+	if ( ! function_exists( 'get_post_meta' ) ) {
+		function get_post_meta( $post_id, $key, $single = false ) {
+			return $GLOBALS['reviewbird_test_post_meta'][ $post_id ][ $key ] ?? '';
+		}
+	}
+
+	if ( ! function_exists( 'update_post_meta' ) ) {
+		function update_post_meta( $post_id, $key, $value ) {
+			$GLOBALS['reviewbird_test_post_meta'][ $post_id ][ $key ] = $value;
+			return true;
+		}
+	}
+
+	if ( ! function_exists( 'is_wp_error' ) ) {
+		function is_wp_error( $thing ) {
+			return $thing instanceof \WP_Error;
+		}
+	}
+
+	if ( ! function_exists( 'wp_remote_retrieve_response_code' ) ) {
+		function wp_remote_retrieve_response_code( $response ) {
+			return $response['response']['code'] ?? 0;
+		}
+	}
+
+	if ( ! function_exists( 'wp_remote_retrieve_body' ) ) {
+		function wp_remote_retrieve_body( $response ) {
+			return $response['body'] ?? '';
+		}
+	}
+
+	if ( ! function_exists( 'wp_remote_get' ) ) {
+		function wp_remote_get( $url, $args = array() ) {
+			$GLOBALS['reviewbird_test_remote_get'] = array( $url, $args );
+
+			return array(
+				'response' => array( 'code' => 200 ),
+				'body'     => '{"statistics":{"total_reviews":259,"average_rating":4.8,"rating_distribution":{"5":228,"4":19,"3":6,"2":3,"1":3}}}',
+			);
+		}
+	}
+
 	require_once dirname( __DIR__ ) . '/src/functions.php';
 
 	final class WidgetEnqueueTest extends TestCase {
@@ -64,16 +106,19 @@ namespace {
 		protected function setUp(): void {
 			parent::setUp();
 
-			$GLOBALS['reviewbird_test_options']     = array();
-			$GLOBALS['reviewbird_test_is_product']  = false;
-			$GLOBALS['reviewbird_test_has_block']   = array();
-			$GLOBALS['post']                        = null;
+			$GLOBALS['reviewbird_test_options']    = array();
+			$GLOBALS['reviewbird_test_is_product'] = false;
+			$GLOBALS['reviewbird_test_has_block']  = array();
+			$GLOBALS['reviewbird_test_post_meta']  = array();
+			$GLOBALS['reviewbird_test_remote_get'] = null;
+			$GLOBALS['post']                       = null;
 		}
 
 		protected function tearDown(): void {
 			$GLOBALS['reviewbird_test_options']    = array();
 			$GLOBALS['reviewbird_test_is_product'] = false;
 			$GLOBALS['reviewbird_test_has_block']  = array();
+			$GLOBALS['reviewbird_test_post_meta']  = array();
 			$GLOBALS['post']                       = null;
 
 			parent::tearDown();
@@ -98,9 +143,9 @@ namespace {
 		}
 
 		public function test_enqueues_widget_on_product_page_shortcode_pages(): void {
-			$post                = new \stdClass();
-			$post->post_content  = '[vc_row][vc_column][product_page id="3932"][/vc_column][/vc_row]';
-			$GLOBALS['post']     = $post;
+			$post               = new \stdClass();
+			$post->post_content = '[vc_row][vc_column][product_page id="3932"][/vc_column][/vc_row]';
+			$GLOBALS['post']    = $post;
 
 			self::assertTrue( reviewbird_page_should_enqueue_widget() );
 		}
@@ -120,6 +165,27 @@ namespace {
 			$GLOBALS['post']    = $post;
 
 			self::assertFalse( reviewbird_page_should_enqueue_widget() );
+		}
+
+		public function test_sync_skips_api_when_rating_meta_exists(): void {
+			$GLOBALS['reviewbird_test_post_meta'][3932]['_reviewbird_reviews_count'] = 259;
+
+			reviewbird_sync_product_rating( 3932 );
+
+			self::assertNull( $GLOBALS['reviewbird_test_remote_get'] );
+		}
+
+		public function test_sync_writes_rating_meta_when_missing(): void {
+			$GLOBALS['reviewbird_test_options']['reviewbird_store_id'] = 37;
+
+			reviewbird_sync_product_rating( 4100 );
+
+			self::assertSame( 4.8, $GLOBALS['reviewbird_test_post_meta'][4100]['_reviewbird_avg_stars'] );
+			self::assertSame( 259, $GLOBALS['reviewbird_test_post_meta'][4100]['_reviewbird_reviews_count'] );
+			self::assertSame(
+				array( 5 => 228, 4 => 19, 3 => 6, 2 => 3, 1 => 3 ),
+				$GLOBALS['reviewbird_test_post_meta'][4100]['_reviewbird_rating_counts']
+			);
 		}
 	}
 }

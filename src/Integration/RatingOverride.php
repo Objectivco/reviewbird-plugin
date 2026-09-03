@@ -112,6 +112,14 @@ class RatingOverride {
 	 * @return mixed Meta value or empty string if not set.
 	 */
 	private function get_product_meta( $product, string $meta_key ) {
-		return get_post_meta( $product->get_id(), $meta_key, true );
+		$product_id = $product->get_id();
+		$value      = get_post_meta( $product_id, $meta_key, true );
+
+		if ( empty( $value ) ) {
+			reviewbird_sync_product_rating( $product_id );
+			$value = get_post_meta( $product_id, $meta_key, true );
+		}
+
+		return $value;
 	}
 }
