@@ -70,6 +70,23 @@ namespace {
 		}
 	}
 
+	if ( ! function_exists( 'get_transient' ) ) {
+		function get_transient( $key ) {
+			return $GLOBALS['reviewbird_test_transients'][ $key ] ?? false;
+		}
+	}
+
+	if ( ! function_exists( 'set_transient' ) ) {
+		function set_transient( $key, $value, $expiration = 0 ) {
+			$GLOBALS['reviewbird_test_transients'][ $key ] = $value;
+			return true;
+		}
+	}
+
+	if ( ! defined( 'HOUR_IN_SECONDS' ) ) {
+		define( 'HOUR_IN_SECONDS', 3600 );
+	}
+
 	if ( ! function_exists( 'is_wp_error' ) ) {
 		function is_wp_error( $thing ) {
 			return $thing instanceof \WP_Error;
@@ -109,9 +126,10 @@ namespace {
 			$GLOBALS['reviewbird_test_options']    = array();
 			$GLOBALS['reviewbird_test_is_product'] = false;
 			$GLOBALS['reviewbird_test_has_block']  = array();
-			$GLOBALS['reviewbird_test_post_meta']  = array();
-			$GLOBALS['reviewbird_test_remote_get'] = null;
-			$GLOBALS['post']                       = null;
+			$GLOBALS['reviewbird_test_post_meta']   = array();
+			$GLOBALS['reviewbird_test_remote_get']  = null;
+			$GLOBALS['reviewbird_test_transients']  = array();
+			$GLOBALS['post']                        = null;
 		}
 
 		protected function tearDown(): void {

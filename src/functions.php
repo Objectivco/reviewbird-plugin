@@ -477,6 +477,11 @@ function reviewbird_sync_product_rating( int $product_id ): void {
 		return;
 	}
 
+	$lock_key = 'reviewbird_rating_sync_' . $product_id;
+	if ( get_transient( $lock_key ) ) {
+		return;
+	}
+
 	$store_id = reviewbird_get_store_id();
 	if ( ! $store_id ) {
 		return;
@@ -494,12 +499,14 @@ function reviewbird_sync_product_rating( int $product_id ): void {
 		)
 	);
 
+	set_transient( $lock_key, 1, HOUR_IN_SECONDS );
+
 	if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) >= 400 ) {
 		return;
 	}
 
-	$data  = json_decode( wp_remote_retrieve_body( $response ), true );
-	$stats = is_array( $data ) ? ( $data['statistics'] ?? array() ) : array();
+	$data    = json_decode( wp_remote_retrieve_body( $response ), true );
+	$stats   = is_array( $data ) ? ( $data['statistics'] ?? array() ) : array();
 	$count   = absint( $stats['total_reviews'] ?? 0 );
 	$average = (float) ( $stats['average_rating'] ?? 0 );
 
