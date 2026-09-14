@@ -1,9 +1,9 @@
 === Reviewbird Product Reviews for WooCommerce ===
 Contributors: reviewbird, clifgriffin
 Tags: woocommerce, woocommerce product reviews, woocommerce reviews, judge.me, rich snippets, review snippets, SEO
-Requires at least: 5.0
-Tested up to: 7.0
-Stable tag: 1.1.3
+Requires at least: 5.9
+Tested up to: 7.1
+Stable tag: 1.1.4
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -125,7 +125,7 @@ This plugin connects to the Reviewbird API to enable review collection, manageme
 - **Customer Data:** Email address, name, review content and media
 
 **When Data is Sent:**
-- When a WordPress user with permission clicks Create free account on the Reviewbird Get Started page
+- When a WordPress user with permission clicks Get started free on the Reviewbird Get Started page
 - During OAuth connection from Reviewbird to WooCommerce
 - During initial product sync after connection
 - During scheduled order sync
@@ -138,7 +138,7 @@ By using this plugin, you agree to the Reviewbird Terms and Conditions and Priva
 
 * WooCommerce 5.0 or higher
 * PHP 7.4 or higher
-* A Reviewbird account on any plan, including the free plan (sign up at [reviewbird.com](https://reviewbird.com))
+* A Reviewbird account with an active trial or paid plan. Existing free stores keep their access. Sign up at [reviewbird.com](https://reviewbird.com).
 
 == Installation ==
 
@@ -159,12 +159,12 @@ By using this plugin, you agree to the Reviewbird Terms and Conditions and Priva
 
 **Configuration:**
 
-Connection to your store is initiated through Reviewbird. Once you have the plugin activated, go to https://app.reviewbird.com/dashboard and click on "Connect".
+After you activate the plugin, open **Reviewbird > Get Started**. Create an account or continue setup for an existing store. Reviewbird guides you through connection, branding, review imports, the widget, and email settings. Enter payment details at the end of setup to start your trial.
 
 After you have connected your store to Reviewbird, this is how you configure the plugin settings:
 
 1. Go to **Reviewbird** in your admin menu
-2. Click the toggle to enable the Reviewbird display widget
+2. Open **Settings** and use the toggle to enable the Reviewbird display widget
 3. You can also enable the Google Schema JSON-LD output.
 4. Settings are saved automatically.
 
@@ -172,11 +172,11 @@ After you have connected your store to Reviewbird, this is how you configure the
 
 = Do I need a Reviewbird account? =
 
-Yes, you need a Reviewbird account to use this plugin. You can get started on the free plan at [reviewbird.com](https://reviewbird.com).
+Yes. Create an account at [reviewbird.com](https://reviewbird.com), set up your store, and start your trial at checkout.
 
 = Is Reviewbird for WooCommerce free? =
 
-We have a free plan that lets you send 25 review requests a month, up to 500 orders. You can collect unlimited reviews. Advanced features require a paid plan.
+The plugin is free to install. New stores need an active Reviewbird trial or paid plan to use the service. Payment details are required to start a trial. Existing free stores keep their access.
 
 = Can I migrate my reviews from Judge.me? =
 
@@ -226,6 +226,16 @@ To build from source:
 For development: `pnpm run dev`
 
 == Changelog ==
+
+= 1.1.4 =
+New - Guide new and existing stores through setup from the Get Started page. Show connection health when setup is complete.
+New - Preview the review widget during store setup.
+Fix - Load the review widget on pages that embed a product with [product_page] or the WooCommerce Single Product block, including WPBakery layouts.
+Fix - Use the store ID from the connection status when the saved store ID is missing.
+Fix - Fetch missing star ratings from Reviewbird and cache the results to reduce API requests.
+Fix - Prevent duplicate star ratings when the theme already shows them, including Astra.
+Fix - Use the WordPress language for connection messages, times, and star ratings. Preserve regional languages in showcases.
+Update - Refresh translations in 24 languages and enable right-to-left styles in the plugin admin screens.
 
 = 1.1.3 =
 Fix - Suppress unrelated WordPress notices on the Reviewbird Get Started page.
@@ -286,3 +296,8 @@ Fix - Fix issue with min_rating parameter for API calls.
 
 = 1.0.12 =
 * Compatibility updates for WordPress.org submission
+
+== Upgrade Notice ==
+
+= 1.1.4 =
+Improves store setup, fixes widget and star rating display on embedded product pages, and updates translations.

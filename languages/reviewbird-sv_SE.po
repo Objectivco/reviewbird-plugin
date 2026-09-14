@@ -7,7 +7,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-05T15:43:04+00:00\n"
+"POT-Creation-Date: 2026-09-14T21:38:12+00:00\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Language: sv_SE\n"
 "X-Generator: WP-CLI 2.12.0\n"
@@ -18,7 +18,6 @@ msgstr ""
 #: reviewbird-plugin.php
 #: src/Admin/Settings.php:125
 #: src/Admin/Settings.php:126
-#: assets/src/js/components/WelcomeScreen.jsx:194
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -40,39 +39,39 @@ msgstr "Reviewbird anslutningsfel:"
 msgid "Successfully connected to Reviewbird!"
 msgstr "Ansluten till Reviewbird!"
 
-#: src/Admin/Settings.php:136
-#: src/Admin/Settings.php:137
+#: src/Admin/Settings.php:138
+#: src/Admin/Settings.php:139
 msgid "Get Started"
 msgstr "Kom igång"
 
-#: src/Admin/Settings.php:145
-#: assets/src/js/components/SettingsApp.jsx:91
+#: src/Admin/Settings.php:147
+#: assets/src/js/components/SettingsApp.jsx:92
 msgid "Reviewbird Settings"
 msgstr "Reviewbird-inställningar"
 
-#: src/Admin/Settings.php:146
-#: src/Core/Plugin.php:509
+#: src/Admin/Settings.php:148
+#: src/Core/Plugin.php:475
 msgid "Settings"
 msgstr "Inställningar"
 
-#: src/Admin/Settings.php:340
+#: src/Admin/Settings.php:355
 msgid "Invalid security token"
 msgstr "Ogiltig säkerhetstoken"
 
-#: src/Admin/Settings.php:344
-#: src/Admin/Settings.php:406
+#: src/Admin/Settings.php:359
+#: src/Admin/Settings.php:421
 msgid "Insufficient permissions"
 msgstr "Otillräckliga behörigheter"
 
-#: src/Admin/Settings.php:369
+#: src/Admin/Settings.php:384
 msgid "Invalid setting"
 msgstr "Ogiltig inställning"
 
-#: src/Admin/Settings.php:379
+#: src/Admin/Settings.php:394
 msgid "Setting updated successfully"
 msgstr "Inställning uppdaterad"
 
-#: src/Admin/Settings.php:396
+#: src/Admin/Settings.php:411
 msgid "Health check cache cleared"
 msgstr "Cache för hälsokontroll rensad"
 
@@ -134,44 +133,58 @@ msgstr "Kundens e-post krävs"
 msgid "Invalid email address"
 msgstr "Ogiltig e-postadress"
 
-#: src/Core/Plugin.php:515
+#: src/Core/Plugin.php:481
 msgid "Documentation"
 msgstr "Dokumentation"
 
-#: src/functions.php:114
-#: src/functions.php:290
+#: src/functions.php:115
+#: src/functions.php:298
 msgid "API request failed"
 msgstr "API-förfrågan misslyckades"
 
-#: src/functions.php:197
+#: src/functions.php:205
 msgid "Store is not connected to Reviewbird."
 msgstr "Butiken är inte ansluten till Reviewbird."
 
-#: src/functions.php:207
+#: src/functions.php:215
 msgid "Unable to generate API key for authentication."
 msgstr "Kan inte generera API-nyckel för autentisering."
 
-#: src/functions.php:221
+#: src/functions.php:229
 msgid "Maximum of 50 product IDs allowed per request."
 msgstr "Max 50 produkt-ID:n tillåts per förfrågan."
 
-#: src/functions.php:326
+#: src/functions.php:334
 msgid "Failed to decode API response."
 msgstr "Misslyckades med att avkoda API-svar."
 
+#: src/functions.php:688
+msgid "Anonymous"
+msgstr "Anonym"
+
+#. translators: %d: review rating, from 1 to 5.
+#: src/functions.php:709
+#, php-format
+msgid "Rated %d out of 5"
+msgstr "Betygsatt %d av 5"
+
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:167
+#: src/Integration/StarRatingDisplay.php:171
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "Betygsatt %s av 5"
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:170
+#: src/Integration/StarRatingDisplay.php:174
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "Betygsatt %s av 5, klicka för att se recensioner"
 
-#: src/Integration/WooCommerce.php:104
+#: src/Integration/WooCommerce.php:75
+msgid "Whether the Reviewbird widget is enabled."
+msgstr "Om Reviewbird-widgeten är aktiverad."
+
+#: src/Integration/WooCommerce.php:161
 msgid "Leave a review"
 msgstr "Lämna en recension"
 
@@ -256,17 +269,21 @@ msgstr "Verifierar anslutning till Reviewbird..."
 msgid "Open Reviewbird"
 msgstr "Öppna Reviewbird"
 
-#: assets/src/js/components/ConnectionHealth.jsx:191
-msgid "Connection Issue"
-msgstr "Anslutningsproblem"
+#. translators: %s: connection error code.
+#: assets/src/js/components/ConnectionHealth.jsx:200
+#, js-format
+msgid "Connection Issue (%s)"
+msgstr "Anslutningsproblem (%s)"
 
-#: assets/src/js/components/ConnectionHealth.jsx:260
+#: assets/src/js/components/ConnectionHealth.jsx:262
 msgid "Refresh"
 msgstr "Uppdatera"
 
-#: assets/src/js/components/ConnectionHealth.jsx:281
-msgid "Last checked:"
-msgstr "Senast kontrollerad:"
+#. translators: %s: time of the last connection check.
+#: assets/src/js/components/ConnectionHealth.jsx:285
+#, js-format
+msgid "Last checked: %s"
+msgstr "Senast kontrollerad: %s"
 
 #: assets/src/js/components/LoadingSpinner.jsx:8
 msgid "Loading..."
@@ -276,67 +293,67 @@ msgstr "Laddar..."
 msgid "Failed to update setting. Please try again."
 msgstr "Misslyckades med att uppdatera inställning. Försök igen."
 
-#: assets/src/js/components/SettingsApp.jsx:88
+#: assets/src/js/components/SettingsApp.jsx:89
 msgid "Connected Store Settings"
 msgstr "Anslutna butiksinställningar"
 
-#: assets/src/js/components/SettingsApp.jsx:94
+#: assets/src/js/components/SettingsApp.jsx:95
 msgid "Manage your Reviewbird integration with WooCommerce."
 msgstr "Hantera din Reviewbird-integration med WooCommerce."
 
-#: assets/src/js/components/SettingsApp.jsx:111
+#: assets/src/js/components/SettingsApp.jsx:112
 msgid "Reviewbird Widget"
 msgstr "Reviewbird-widget"
 
-#: assets/src/js/components/SettingsApp.jsx:112
+#: assets/src/js/components/SettingsApp.jsx:113
 msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
 msgstr "Visa Reviewbird-recensionswidget på produktsidor. Widgeten visar kundrecensioner och låter kunder lämna nya recensioner."
 
-#: assets/src/js/components/SettingsApp.jsx:118
+#: assets/src/js/components/SettingsApp.jsx:119
 msgid "Widget is enabled on all WooCommerce product pages."
 msgstr "Widgeten är aktiverad på alla WooCommerce-produktsidor."
 
-#: assets/src/js/components/SettingsApp.jsx:127
+#: assets/src/js/components/SettingsApp.jsx:128
 msgid "Forcefully enable reviews on all products"
 msgstr "Tvinga på recensioner på alla produkter"
 
-#: assets/src/js/components/SettingsApp.jsx:133
+#: assets/src/js/components/SettingsApp.jsx:134
 msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
 msgstr "Lämna detta avstängt om du föredrar att kontrollera recensioner per produkt med kryssrutan \"Aktivera recensioner\"."
 
-#: assets/src/js/components/SettingsApp.jsx:169
+#: assets/src/js/components/SettingsApp.jsx:170
 msgid "SEO Schema Markup"
 msgstr "SEO Schema Markup"
 
-#: assets/src/js/components/SettingsApp.jsx:170
+#: assets/src/js/components/SettingsApp.jsx:171
 msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
 msgstr "Aktivera Google-kompatibel strukturerad data (JSON-LD-schema) på produktsidor för rika utdrag i sökresultat."
 
-#: assets/src/js/components/SettingsApp.jsx:176
+#: assets/src/js/components/SettingsApp.jsx:177
 msgid "Schema markup is active on all WooCommerce product pages."
 msgstr "Schema markup är aktivt på alla WooCommerce-produktsidor."
 
-#: assets/src/js/components/SettingsApp.jsx:181
+#: assets/src/js/components/SettingsApp.jsx:182
 msgid "What is Schema Markup?"
 msgstr "Vad är Schema Markup?"
 
-#: assets/src/js/components/SettingsApp.jsx:183
+#: assets/src/js/components/SettingsApp.jsx:184
 msgid "Displays star ratings in Google search results"
 msgstr "Visar stjärnbetyg i Googles sökresultat"
 
-#: assets/src/js/components/SettingsApp.jsx:187
+#: assets/src/js/components/SettingsApp.jsx:188
 msgid "Shows review counts and product information"
 msgstr "Visar antal recensioner och produktinformation"
 
-#: assets/src/js/components/SettingsApp.jsx:191
+#: assets/src/js/components/SettingsApp.jsx:192
 msgid "Review schema is cached for 4 hours for optimal performance"
 msgstr "Recensionsschema cachas i 4 timmar för optimal prestanda"
 
-#: assets/src/js/components/SettingsApp.jsx:200
+#: assets/src/js/components/SettingsApp.jsx:201
 msgid "Test with Google Rich Results"
 msgstr "Testa med Google Rich Results"
 
-#: assets/src/js/components/SettingsApp.jsx:207
+#: assets/src/js/components/SettingsApp.jsx:208
 msgid "Validate Schema"
 msgstr "Validera Schema"
 
@@ -348,122 +365,136 @@ msgstr "Aktiverad"
 msgid "Disabled"
 msgstr "Inaktiverad"
 
-#: assets/src/js/components/WelcomeScreen.jsx:27
-msgid "Create your free account"
-msgstr "Skapa ditt kostnadsfria konto"
+#: assets/src/js/components/WelcomeScreen.jsx:105
+msgid "The plugin is installed!"
+msgstr "Tillägget är installerat!"
 
-#: assets/src/js/components/WelcomeScreen.jsx:28
-msgid "takes about a minute"
-msgstr "tar ungefär en minut"
+#: assets/src/js/components/WelcomeScreen.jsx:106
+msgid "Your store is connected to Reviewbird"
+msgstr "Din butik är ansluten till Reviewbird"
 
-#: assets/src/js/components/WelcomeScreen.jsx:31
-msgid "Connect your WooCommerce site"
-msgstr "Anslut din WooCommerce-webbplats"
+#: assets/src/js/components/WelcomeScreen.jsx:108
+msgid "Now let's connect Reviewbird to your WooCommerce store."
+msgstr "Låt oss nu ansluta Reviewbird till din WooCommerce-butik."
 
-#: assets/src/js/components/WelcomeScreen.jsx:32
-msgid "one secure click"
-msgstr "ett säkert klick"
+#: assets/src/js/components/WelcomeScreen.jsx:112
+msgid "Continue in Reviewbird to customize your widget and review request emails."
+msgstr "Fortsätt i Reviewbird för att anpassa din widget och e-post för recensioner."
 
-#: assets/src/js/components/WelcomeScreen.jsx:35
-msgid "Turn on automatic review requests"
-msgstr "Slå på automatiska granskningsförfrågningar"
+#: assets/src/js/components/WelcomeScreen.jsx:116
+msgid "Continue setup"
+msgstr "Fortsätt installationen"
 
-#: assets/src/js/components/WelcomeScreen.jsx:36
-msgid "you set the timing and content"
-msgstr "du bestämmer tidpunkt och innehåll"
+#: assets/src/js/components/WelcomeScreen.jsx:120
+msgid "Your store is connected"
+msgstr "Din butik är ansluten"
 
-#: assets/src/js/components/WelcomeScreen.jsx:53
-msgid "Already have an account?"
-msgstr "Har du redan ett konto?"
+#: assets/src/js/components/WelcomeScreen.jsx:121
+msgid "Manage your reviews, widgets, showcases and other settings in the dashboard."
+msgstr "Hantera dina recensioner, widgets, utställningar och andra inställningar i kontrollpanelen."
 
-#: assets/src/js/components/WelcomeScreen.jsx:60
+#: assets/src/js/components/WelcomeScreen.jsx:125
+msgid "Open dashboard"
+msgstr "Öppna kontrollpanelen"
+
+#: assets/src/js/components/WelcomeScreen.jsx:135
+msgid "Bring your reviews with you"
+msgstr "Ta med dina recensioner"
+
+#: assets/src/js/components/WelcomeScreen.jsx:136
+msgid "Import from WooCommerce, Judge.me, Yotpo, and many more."
+msgstr "Importera från WooCommerce, Judge.me, Yotpo och många fler."
+
+#: assets/src/js/components/WelcomeScreen.jsx:148
+msgid "Photo and video reviews"
+msgstr "Foto- och videorecensioner"
+
+#: assets/src/js/components/WelcomeScreen.jsx:149
+msgid "Allow customers to upload photos and videos of your product in real life."
+msgstr "Tillåt kunder att ladda upp foton och videor av din produkt i verkliga livet."
+
+#: assets/src/js/components/WelcomeScreen.jsx:164
+msgid "Match your branding"
+msgstr "Matcha din varumärkesprofil"
+
+#: assets/src/js/components/WelcomeScreen.jsx:165
+msgid "Customize your emails, widgets, and showcases to match your brand."
+msgstr "Anpassa dina e-postmeddelanden, widgets och utställningar för att matcha ditt varumärke."
+
+#: assets/src/js/components/WelcomeScreen.jsx:186
+msgid "Already use Reviewbird?"
+msgstr "Använder du redan Reviewbird?"
+
+#: assets/src/js/components/WelcomeScreen.jsx:193
 msgid "Sign in"
 msgstr "Logga in"
 
-#: assets/src/js/components/WelcomeScreen.jsx:73
-msgid "Getting started"
-msgstr "Kom igång"
+#: assets/src/js/components/WelcomeScreen.jsx:209
+msgid "Loading Reviewbird…"
+msgstr "Laddar Reviewbird…"
 
-#: assets/src/js/components/WelcomeScreen.jsx:80
-msgid "Turn your orders into powerful social proof."
-msgstr "Förvandla dina beställningar till kraftfull social bevisning."
+#: assets/src/js/components/WelcomeScreen.jsx:238
+#: assets/src/js/components/WelcomeScreen.jsx:325
+msgid "(opens in a new tab)"
+msgstr "(öppnas i en ny flik)"
 
-#: assets/src/js/components/WelcomeScreen.jsx:87
-msgid "You're three quick steps from your first five-star review!"
-msgstr "Du är tre snabba steg från din första femstjärniga recension!"
+#: assets/src/js/components/WelcomeScreen.jsx:251
+msgid "Plugin settings"
+msgstr "Tilläggsinställningar"
 
-#: assets/src/js/components/WelcomeScreen.jsx:114
-msgid "Create free account"
-msgstr "Skapa gratis konto"
+#: assets/src/js/components/WelcomeScreen.jsx:272
+msgid "Let's turn your WooCommerce product reviews up to 11."
+msgstr "Låt oss höja dina WooCommerce-produktrecensioner till 11."
 
-#: assets/src/js/components/WelcomeScreen.jsx:124
-msgid "Free plan details"
-msgstr "Detaljer om gratisplan"
+#: assets/src/js/components/WelcomeScreen.jsx:279
+msgid "Automated review requests help you collect reviews automatically after each order. No busywork, just reliable review collection on autopilot."
+msgstr "Automatiserade recensionsförfrågningar hjälper dig att samla in recensioner automatiskt efter varje beställning. Inget krångel, bara pålitlig insamling av recensioner på autopilot."
 
-#: assets/src/js/components/WelcomeScreen.jsx:129
-msgid "Free plan"
-msgstr "Gratisplan"
+#: assets/src/js/components/WelcomeScreen.jsx:320
+msgid "Get started free"
+msgstr "Kom igång gratis"
 
-#: assets/src/js/components/WelcomeScreen.jsx:131
-msgid "No credit card required"
-msgstr "Inget kreditkort krävs"
-
-#: assets/src/js/components/WelcomeScreen.jsx:137
-msgid "25 review requests a month"
-msgstr "25 granskningsförfrågningar per månad"
-
-#: assets/src/js/components/WelcomeScreen.jsx:143
-msgid "Import your existing reviews"
-msgstr "Importera dina befintliga recensioner"
-
-#: assets/src/js/components/WelcomeScreen.jsx:149
-msgid "Send a bulk request to past customers"
-msgstr "Skicka en bulkförfrågan till tidigare kunder"
-
-#: assets/src/js/components/WelcomeScreen.jsx:165
-msgid "Built by the team behind CheckoutWC, trusted by <strong>8,000+ WooCommerce stores.</strong>"
-msgstr "Byggt av teamet bakom CheckoutWC, betrott av <strong>8 000+ WooCommerce-butiker.</strong>"
-
-#: assets/src/js/components/WelcomeScreen.jsx:178
+#: assets/src/js/components/WelcomeScreen.jsx:338
 msgid "Example Reviewbird product review request email"
 msgstr "Exempel på Reviewbird-produktrecensionsförfrågan via e-post"
 
-#: assets/src/js/components/WelcomeScreen.jsx:199
-msgid "for Aster & Oak"
-msgstr "för Aster & Oak"
+#. translators: Keep the <store> tags around the example store name.
+#: assets/src/js/components/WelcomeScreen.jsx:356
+msgid "Reviewbird <store>for Aster & Oak</store>"
+msgstr "Reviewbird <store>för Aster & Oak</store>"
 
-#: assets/src/js/components/WelcomeScreen.jsx:206
+#: assets/src/js/components/WelcomeScreen.jsx:368
 msgid "To: jamie@example.com"
 msgstr "Till: jamie@example.com"
 
-#: assets/src/js/components/WelcomeScreen.jsx:214
-msgid "Sent 3 days after delivery"
-msgstr "Skickat 3 dagar efter leverans"
+#: assets/src/js/components/WelcomeScreen.jsx:376
+msgid "Review request"
+msgstr "Recensionsförfrågan"
 
-#: assets/src/js/components/WelcomeScreen.jsx:224
-msgid "How would you rate this product?"
-msgstr "Hur skulle du betygsätta denna produkt?"
+#: assets/src/js/components/WelcomeScreen.jsx:386
+msgid "How is your new blanket?"
+msgstr "Hur är din nya filt?"
 
-#: assets/src/js/components/WelcomeScreen.jsx:230
-msgid "We would love it if you would share a bit about your experience."
-msgstr "Vi skulle uppskatta om du ville dela lite om din upplevelse."
+#: assets/src/js/components/WelcomeScreen.jsx:392
+msgid "Share your experience to help other shoppers choose."
+msgstr "Dela din upplevelse för att hjälpa andra köpare att välja."
 
-#: assets/src/js/components/WelcomeScreen.jsx:274
-msgid "Linen Throw Blanket — Sage"
-msgstr "Linnepläd — Sage"
+#: assets/src/js/components/WelcomeScreen.jsx:436
+msgid "Linen Throw Blanket, Sage"
+msgstr "Linnepläd, Sage"
 
-#: assets/src/js/components/WelcomeScreen.jsx:285
+#: assets/src/js/components/WelcomeScreen.jsx:447
 msgid "Poor"
 msgstr "Dålig"
 
-#: assets/src/js/components/WelcomeScreen.jsx:288
+#: assets/src/js/components/WelcomeScreen.jsx:453
 msgid "Great"
 msgstr "Utmärkt"
 
-#: assets/src/js/components/WelcomeScreen.jsx:293
-msgid "You received this email because you made a purchase from Aster & Oak."
-msgstr "Du fick detta e-postmeddelande eftersom du gjorde ett köp från Aster & Oak."
+#: assets/src/js/components/WelcomeScreen.jsx:461
+msgid "You received this review request after your purchase from Aster & Oak."
+msgstr "Du fick denna recensionsförfrågan efter ditt köp från Aster & Oak."
 
-#: assets/src/js/components/WelcomeScreen.jsx:299
+#: assets/src/js/components/WelcomeScreen.jsx:467
 msgid "Unsubscribe from review emails"
 msgstr "Avsluta prenumeration på granskningsmail"

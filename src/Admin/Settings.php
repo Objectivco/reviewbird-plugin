@@ -197,6 +197,7 @@ class Settings {
 			array(),
 			$asset_data['version']
 		);
+		wp_style_add_data( 'reviewbird-admin', 'rtl', 'replace' );
 	}
 
 	/**
@@ -234,7 +235,10 @@ class Settings {
 				),
 				admin_url( 'admin-post.php' )
 			),
-			'dashboardUrl'     => 'https://app.reviewbird.com/dashboard',
+			'dashboardUrl'     => reviewbird_get_api_url() . '/dashboard',
+			'settingsUrl'      => admin_url( 'admin.php?page=' . self::SETTINGS_SLUG ),
+			'siteDomain'       => wp_parse_url( home_url(), PHP_URL_HOST ),
+			'locale'           => str_replace( '_', '-', implode( '_', array_slice( explode( '_', get_user_locale() ), 0, 2 ) ) ),
 			'enableSchema'     => reviewbird_is_schema_enabled(),
 			'enableWidget'     => reviewbird_is_widget_enabled(),
 			'forceReviewsOpen' => reviewbird_is_force_reviews_open(),

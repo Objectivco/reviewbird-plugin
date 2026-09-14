@@ -76,6 +76,7 @@ export default function SettingsApp() {
 				<WelcomeScreen
 					registerUrl={ window.reviewbirdAdmin.registerUrl }
 					dashboardUrl={ window.reviewbirdAdmin.dashboardUrl }
+					settingsUrl={ window.reviewbirdAdmin.settingsUrl }
 				/>
 			</div>
 		);

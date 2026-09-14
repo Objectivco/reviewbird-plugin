@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 const HEALTH_CHECK_INTERVAL = 300000; // 5 minutes
 
@@ -10,7 +10,7 @@ const STATUS_CONFIG = {
 		text: __('Connected to Reviewbird', 'reviewbird'),
 		message: __('Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly.', 'reviewbird'),
 		buttonText: __('View Dashboard', 'reviewbird'),
-		route: 'settings'
+		route: 'dashboard'
 	},
 	not_connected: {
 		color: 'border-l-4 border-l-blue-500',
@@ -150,17 +150,25 @@ async function clearHealthCache() {
 	}
 }
 
-async function fetchHealthStatus() {
+export async function fetchHealthStatus( signal ) {
 	const response = await fetch(
-		`${window.reviewbirdAdmin.apiUrl}/api/woocommerce/health?domain=${window.location.hostname}`,
+		`${window.reviewbirdAdmin.apiUrl}/api/woocommerce/health?domain=${encodeURIComponent(window.reviewbirdAdmin.siteDomain || window.location.hostname)}`,
 		{
 			method: 'GET',
+			signal,
+			cache: 'no-store',
 			headers: { 'Accept': 'application/json' }
 		}
 	);
 
 	const data = await response.json().catch(() => ({}));
-	const status = response.ok ? data.status : (data.status || 'unhealthy');
+	if ( !response.ok && !(response.status === 404 && data.status === 'not_connected') ) {
+		throw new Error('Unable to check the store connection');
+	}
+	if ( !data.status ) {
+		throw new Error('Invalid store status');
+	}
+	const status = data.status;
 
 	return { data, status };
 }
@@ -188,16 +196,10 @@ function getActionUrl(status, healthData) {
 
 function getStatusText(status, healthData) {
 	if (status === 'unhealthy' && healthData?.error_code) {
-		return `${__('Connection Issue', 'reviewbird')} (${healthData.error_code})`;
+		// translators: %s: connection error code.
+		return sprintf(__('Connection Issue (%s)', 'reviewbird'), healthData.error_code);
 	}
 	return STATUS_CONFIG[status]?.text || STATUS_CONFIG.checking.text;
-}
-
-function getStatusMessage(status, healthData) {
-	if (healthData?.message) {
-		return healthData.message;
-	}
-	return STATUS_CONFIG[status]?.message || STATUS_CONFIG.checking.message;
 }
 
 export default function ConnectionHealth() {
@@ -217,7 +219,7 @@ export default function ConnectionHealth() {
 		} catch (error) {
 			console.error('Health check failed:', error);
 			setHealthStatus('error');
-			setHealthData({ message: 'Unable to reach Reviewbird API' });
+			setHealthData(null);
 		}
 
 		setLastChecked(new Date());
@@ -263,7 +265,7 @@ export default function ConnectionHealth() {
 			</div>
 			{/* Row 2: Description, link, timestamp (indented to align with title) */}
 			<div className="mt-2 ml-8 text-sm text-gray-600">
-				<p>{getStatusMessage(healthStatus, healthData)}</p>
+				<p>{config.message}</p>
 				{!isChecking && (
 					<a
 						href={getActionUrl(healthStatus, healthData)}
@@ -278,7 +280,11 @@ export default function ConnectionHealth() {
 			</div>
 			{lastChecked && (
 				<p className="mt-2 ml-8 text-xs text-gray-500">
-					{__('Last checked:', 'reviewbird')} {lastChecked.toLocaleTimeString()}
+					{sprintf(
+						// translators: %s: time of the last connection check.
+						__('Last checked: %s', 'reviewbird'),
+						lastChecked.toLocaleTimeString(window.reviewbirdAdmin.locale)
+					)}
 				</p>
 			)}
 		</div>
