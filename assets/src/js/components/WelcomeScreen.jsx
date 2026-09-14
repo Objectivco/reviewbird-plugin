@@ -1,5 +1,5 @@
 import { useEffect, useState } from '@wordpress/element';
-import { fetchHealthStatus } from './ConnectionHealth.jsx';
+import ConnectionHealth, { fetchHealthStatus } from './ConnectionHealth.jsx';
 import { __ } from '@wordpress/i18n';
 import reviewbirdLogo from '../../images/logo-dark.svg';
 
@@ -23,7 +23,7 @@ function ArrowRightIcon() {
 }
 
 export function getWelcomeState( data, preview ) {
-	if ( [ 'new', 'setup', 'ready', 'billing' ].includes( preview ) ) {
+	if ( [ 'new', 'setup', 'ready' ].includes( preview ) ) {
 		return preview;
 	}
 	if ( ! data ) {
@@ -35,16 +35,7 @@ export function getWelcomeState( data, preview ) {
 	if ( ! data.onboarding_completed || data.status === 'not_connected' ) {
 		return 'setup';
 	}
-	if ( data.status === 'billing_required' ) {
-		return 'billing';
-	}
-	if (
-		data.has_active_subscription &&
-		[ 'healthy', 'syncing' ].includes( data.status )
-	) {
-		return 'ready';
-	}
-	return 'new';
+	return 'ready';
 }
 
 export default function WelcomeScreen( {
@@ -102,32 +93,32 @@ export default function WelcomeScreen( {
 	const onboardingUrl =
 		health?.onboarding_url ||
 		( storePath ? `${ storePath }/onboarding` : dashboardUrl );
+	const needsConnection =
+		preview === 'setup' || health?.status === 'not_connected';
 	const messages = {
 		setup: {
-			title: __( 'Get more reviews for your store', 'reviewbird' ),
-			description: __(
-				'Choose when to ask customers for feedback and how their reviews appear on your product pages.',
-				'reviewbird'
-			),
+			title: needsConnection
+				? __( 'The plugin is installed!', 'reviewbird' )
+				: __( 'Your store is connected to Reviewbird', 'reviewbird' ),
+			description: needsConnection
+				? __(
+						"Now let's connect Reviewbird to your WooCommerce store.",
+						'reviewbird'
+				  )
+				: __(
+						'Continue in Reviewbird to customize your widget and review request emails.',
+						'reviewbird'
+				  ),
 			label: __( 'Continue setup', 'reviewbird' ),
 			href: onboardingUrl,
 		},
 		ready: {
 			title: __( 'Your store is connected', 'reviewbird' ),
 			description: __(
-				'Read and reply to reviews, or adjust your review request emails.',
+				'Manage your reviews, widgets, showcases and other settings in the dashboard.',
 				'reviewbird'
 			),
 			label: __( 'Open dashboard', 'reviewbird' ),
-			href: storeDashboardUrl,
-		},
-		billing: {
-			title: __( 'Reviewbird is paused', 'reviewbird' ),
-			description: __(
-				'Update your billing to collect and display reviews again.',
-				'reviewbird'
-			),
-			label: __( 'Review billing', 'reviewbird' ),
 			href: storeDashboardUrl,
 		},
 	};
@@ -248,7 +239,7 @@ export default function WelcomeScreen( {
 										<ArrowRightIcon />
 									</a>
 								) }
-								{ [ 'ready', 'billing' ].includes( state ) && (
+								{ state === 'ready' && (
 									<a
 										className="reviewbird-button-secondary"
 										href={ settingsUrl }
@@ -260,6 +251,11 @@ export default function WelcomeScreen( {
 									</a>
 								) }
 							</div>
+							{ state === 'ready' && (
+								<div className="mt-8">
+									<ConnectionHealth />
+								</div>
+							) }
 						</div>
 					) }
 					{ state === 'new' && (

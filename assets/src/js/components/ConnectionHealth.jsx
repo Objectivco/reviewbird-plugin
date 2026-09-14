@@ -10,7 +10,7 @@ const STATUS_CONFIG = {
 		text: __('Connected to Reviewbird', 'reviewbird'),
 		message: __('Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly.', 'reviewbird'),
 		buttonText: __('View Dashboard', 'reviewbird'),
-		route: 'settings'
+		route: 'dashboard'
 	},
 	not_connected: {
 		color: 'border-l-4 border-l-blue-500',

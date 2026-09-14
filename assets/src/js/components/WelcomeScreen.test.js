@@ -56,7 +56,7 @@ test.each( [
 			store_id: 240,
 			onboarding_completed: true,
 		},
-		'billing',
+		'ready',
 	],
 	[
 		{ status: 'not_connected', store_id: 240, onboarding_completed: true },
@@ -69,7 +69,7 @@ test.each( [
 			onboarding_completed: true,
 			has_active_subscription: false,
 		},
-		'new',
+		'ready',
 	],
 	[ { status: 'error' }, 'new' ],
 	[ {}, 'new' ],
@@ -118,89 +118,131 @@ test.each( [
 	}
 );
 
-test( 'updates on return and falls back to Get Started when the check fails', async () => {
-	window.reviewbirdAdmin = {
-		apiUrl: 'https://app.example.com',
-		siteDomain: 'shop.example.com',
-	};
-	const storeUrl = 'https://app.example.com/my-org/stores/240';
-	const data = {
-		status: 'not_connected',
-		store_id: 240,
-		org_slug: 'my-org',
-		onboarding_completed: false,
-	};
-	global.fetch = jest.fn().mockImplementation( async () => ( {
-		ok: true,
-		json: async () => ( { ...data } ),
-	} ) );
-	global.IS_REACT_ACT_ENVIRONMENT = true;
-	const container = document.createElement( 'div' );
-	document.body.appendChild( container );
-	const root = createRoot( container );
-	const visible = jest
-		.spyOn( document, 'hidden', 'get' )
-		.mockReturnValue( false );
-	try {
-		await act( async () =>
-			root.render(
-				<WelcomeScreen
-					registerUrl="/register"
-					dashboardUrl="/dashboard"
-					settingsUrl="/wp-admin/admin.php?page=reviewbird-settings"
-				/>
-			)
-		);
-		expect(
-			container.querySelector( '.reviewbird-button-primary' ).href
-		).toBe( `${ storeUrl }/onboarding` );
-		expect( container.textContent ).toContain( 'Continue setup' );
-		expect( container.textContent ).not.toContain( 'Get started free' );
-		Object.assign( data, {
-			status: 'healthy',
-			onboarding_completed: true,
-			has_active_subscription: true,
-		} );
-		await act( async () => {
-			window.dispatchEvent( new Event( 'focus' ) );
-			document.dispatchEvent( new Event( 'visibilitychange' ) );
-		} );
-		expect( fetch ).toHaveBeenCalledTimes( 2 );
-		expect( container.textContent ).toContain( 'Your store is connected' );
-		expect(
-			container.querySelector( '.reviewbird-button-primary' ).href
-		).toBe( `${ storeUrl }/dashboard` );
-		expect(
-			container
-				.querySelector( '.reviewbird-button-secondary' )
-				.getAttribute( 'href' )
-		).toBe( '/wp-admin/admin.php?page=reviewbird-settings' );
-		global.fetch.mockRejectedValue( new Error( 'Network error' ) );
-		await act( async () => window.dispatchEvent( new Event( 'focus' ) ) );
-		expect( container.textContent ).toContain( 'Get started free' );
-		expect( container.textContent ).not.toContain(
-			'Your store is connected'
-		);
-		expect(
-			container
-				.querySelector( '.reviewbird-button-primary' )
-				.getAttribute( 'href' )
-		).toBe( '/register' );
-		await act( async () => window.dispatchEvent( new Event( 'focus' ) ) );
-		expect( container.textContent ).toContain( 'Get started free' );
-	} finally {
-		act( () => root.unmount() );
-		container.remove();
-		visible.mockRestore();
-		delete global.IS_REACT_ACT_ENVIRONMENT;
+test.each( [
+	[ 'healthy', 'Connected to Reviewbird', 'View Dashboard', 'dashboard' ],
+	[
+		'billing_required',
+		'Subscription Required',
+		'Update Billing',
+		'billing',
+	],
+] )(
+	'shows completed setup with %s health and falls back if the check fails',
+	async ( completedStatus, healthTitle, actionLabel, actionPath ) => {
+		window.reviewbirdAdmin = {
+			apiUrl: 'https://app.example.com',
+			siteDomain: 'shop.example.com',
+		};
+		const storeUrl = 'https://app.example.com/my-org/stores/240';
+		const data = {
+			status: 'not_connected',
+			store_id: 240,
+			org_slug: 'my-org',
+			onboarding_completed: false,
+		};
+		global.fetch = jest.fn().mockImplementation( async () => ( {
+			ok: true,
+			json: async () => ( { ...data } ),
+		} ) );
+		global.IS_REACT_ACT_ENVIRONMENT = true;
+		const container = document.createElement( 'div' );
+		document.body.appendChild( container );
+		const root = createRoot( container );
+		const visible = jest
+			.spyOn( document, 'hidden', 'get' )
+			.mockReturnValue( false );
+		try {
+			await act( async () =>
+				root.render(
+					<WelcomeScreen
+						registerUrl="/register"
+						dashboardUrl="/dashboard"
+						settingsUrl="/wp-admin/admin.php?page=reviewbird-settings"
+					/>
+				)
+			);
+			expect(
+				container.querySelector( '.reviewbird-button-primary' ).href
+			).toBe( `${ storeUrl }/onboarding` );
+			expect( container.textContent ).toContain(
+				'The plugin is installed!'
+			);
+			expect( container.textContent ).toContain( 'Continue setup' );
+			expect( container.textContent ).not.toContain( 'Get started free' );
+			data.status = 'healthy';
+			await act( async () =>
+				window.dispatchEvent( new Event( 'focus' ) )
+			);
+			expect( container.textContent ).toContain(
+				'Your store is connected to Reviewbird'
+			);
+			expect( container.textContent ).toContain( 'Continue setup' );
+			expect( container.textContent ).not.toContain(
+				'The plugin is installed!'
+			);
+			Object.assign( data, {
+				status: completedStatus,
+				onboarding_completed: true,
+				has_active_subscription: completedStatus === 'healthy',
+			} );
+			await act( async () => {
+				window.dispatchEvent( new Event( 'focus' ) );
+				document.dispatchEvent( new Event( 'visibilitychange' ) );
+			} );
+			expect( fetch ).toHaveBeenCalledTimes( 4 );
+			expect( container.textContent ).toContain(
+				'Your store is connected'
+			);
+			expect( container.textContent ).not.toContain(
+				'Reviewbird is paused'
+			);
+			expect( container.textContent ).toContain( healthTitle );
+			const healthLink = Array.from(
+				container.querySelectorAll( 'a' )
+			).find( ( link ) => link.textContent.includes( actionLabel ) );
+			expect( healthLink.href ).toBe( `${ storeUrl }/${ actionPath }` );
+			expect( container.textContent ).toContain( 'Last checked:' );
+			expect( container.querySelector( 'button' ).textContent ).toBe(
+				'Refresh'
+			);
+			expect(
+				container.querySelector( '.reviewbird-button-primary' ).href
+			).toBe( `${ storeUrl }/dashboard` );
+			expect(
+				container
+					.querySelector( '.reviewbird-button-secondary' )
+					.getAttribute( 'href' )
+			).toBe( '/wp-admin/admin.php?page=reviewbird-settings' );
+			global.fetch.mockRejectedValue( new Error( 'Network error' ) );
+			await act( async () =>
+				window.dispatchEvent( new Event( 'focus' ) )
+			);
+			expect( container.textContent ).toContain( 'Get started free' );
+			expect( container.textContent ).not.toContain(
+				'Your store is connected'
+			);
+			expect(
+				container
+					.querySelector( '.reviewbird-button-primary' )
+					.getAttribute( 'href' )
+			).toBe( '/register' );
+			await act( async () =>
+				window.dispatchEvent( new Event( 'focus' ) )
+			);
+			expect( container.textContent ).toContain( 'Get started free' );
+		} finally {
+			act( () => root.unmount() );
+			container.remove();
+			visible.mockRestore();
+			delete global.IS_REACT_ACT_ENVIRONMENT;
+		}
 	}
-} );
+);
 
 test.each( [
 	[ 'new', 'new' ],
 	[ 'setup', 'setup' ],
 	[ 'ready', 'ready' ],
-	[ 'billing', 'billing' ],
 ] )( 'previews %s without changing the store status', ( preview, expected ) => {
 	const health = Object.freeze( { status: 'not_connected' } );
 	expect( getWelcomeState( health, preview ) ).toBe( expected );
@@ -208,6 +250,7 @@ test.each( [
 } );
 
 test.each( [
+	'billing',
 	'invalid',
 	'__proto__',
 	'constructor',
