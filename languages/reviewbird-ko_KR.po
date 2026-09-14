@@ -7,7 +7,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-05T15:43:04+00:00\n"
+"POT-Creation-Date: 2026-09-14T21:38:12+00:00\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Language: ko_KR\n"
 "X-Generator: WP-CLI 2.12.0\n"
@@ -18,7 +18,6 @@ msgstr ""
 #: reviewbird-plugin.php
 #: src/Admin/Settings.php:125
 #: src/Admin/Settings.php:126
-#: assets/src/js/components/WelcomeScreen.jsx:194
 msgid "Reviewbird"
 msgstr "리뷰버드"
 
@@ -40,39 +39,39 @@ msgstr "리뷰버드 연결 오류:"
 msgid "Successfully connected to Reviewbird!"
 msgstr "리뷰버드에 성공적으로 연결되었습니다!"
 
-#: src/Admin/Settings.php:136
-#: src/Admin/Settings.php:137
+#: src/Admin/Settings.php:138
+#: src/Admin/Settings.php:139
 msgid "Get Started"
 msgstr "시작하기"
 
-#: src/Admin/Settings.php:145
-#: assets/src/js/components/SettingsApp.jsx:91
+#: src/Admin/Settings.php:147
+#: assets/src/js/components/SettingsApp.jsx:92
 msgid "Reviewbird Settings"
 msgstr "리뷰버드 설정"
 
-#: src/Admin/Settings.php:146
-#: src/Core/Plugin.php:509
+#: src/Admin/Settings.php:148
+#: src/Core/Plugin.php:475
 msgid "Settings"
 msgstr "설정"
 
-#: src/Admin/Settings.php:340
+#: src/Admin/Settings.php:355
 msgid "Invalid security token"
 msgstr "잘못된 보안 토큰"
 
-#: src/Admin/Settings.php:344
-#: src/Admin/Settings.php:406
+#: src/Admin/Settings.php:359
+#: src/Admin/Settings.php:421
 msgid "Insufficient permissions"
 msgstr "권한이 부족합니다"
 
-#: src/Admin/Settings.php:369
+#: src/Admin/Settings.php:384
 msgid "Invalid setting"
 msgstr "잘못된 설정"
 
-#: src/Admin/Settings.php:379
+#: src/Admin/Settings.php:394
 msgid "Setting updated successfully"
 msgstr "설정이 성공적으로 업데이트되었습니다"
 
-#: src/Admin/Settings.php:396
+#: src/Admin/Settings.php:411
 msgid "Health check cache cleared"
 msgstr "헬스 체크 캐시가 삭제되었습니다"
 
@@ -134,44 +133,58 @@ msgstr "고객 이메일이 필요합니다"
 msgid "Invalid email address"
 msgstr "잘못된 이메일 주소"
 
-#: src/Core/Plugin.php:515
+#: src/Core/Plugin.php:481
 msgid "Documentation"
 msgstr "문서"
 
-#: src/functions.php:114
-#: src/functions.php:290
+#: src/functions.php:115
+#: src/functions.php:298
 msgid "API request failed"
 msgstr "API 요청 실패"
 
-#: src/functions.php:197
+#: src/functions.php:205
 msgid "Store is not connected to Reviewbird."
 msgstr "스토어가 리뷰버드에 연결되어 있지 않습니다."
 
-#: src/functions.php:207
+#: src/functions.php:215
 msgid "Unable to generate API key for authentication."
 msgstr "인증용 API 키를 생성할 수 없습니다."
 
-#: src/functions.php:221
+#: src/functions.php:229
 msgid "Maximum of 50 product IDs allowed per request."
 msgstr "요청당 최대 50개의 상품 ID만 허용됩니다."
 
-#: src/functions.php:326
+#: src/functions.php:334
 msgid "Failed to decode API response."
 msgstr "API 응답을 디코딩하지 못했습니다."
 
+#: src/functions.php:688
+msgid "Anonymous"
+msgstr "익명"
+
+#. translators: %d: review rating, from 1 to 5.
+#: src/functions.php:709
+#, php-format
+msgid "Rated %d out of 5"
+msgstr "5점 만점에 %d점 평가됨"
+
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:167
+#: src/Integration/StarRatingDisplay.php:171
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "5점 만점에 %s점 평가됨"
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:170
+#: src/Integration/StarRatingDisplay.php:174
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "5점 만점에 %s점 평가됨, 리뷰를 보려면 클릭하세요"
 
-#: src/Integration/WooCommerce.php:104
+#: src/Integration/WooCommerce.php:75
+msgid "Whether the Reviewbird widget is enabled."
+msgstr "Reviewbird 위젯이 활성화되어 있는지 여부."
+
+#: src/Integration/WooCommerce.php:161
 msgid "Leave a review"
 msgstr "리뷰 남기기"
 
@@ -256,17 +269,21 @@ msgstr "리뷰버드 연결 확인 중..."
 msgid "Open Reviewbird"
 msgstr "리뷰버드 열기"
 
-#: assets/src/js/components/ConnectionHealth.jsx:191
-msgid "Connection Issue"
-msgstr "연결 문제"
+#. translators: %s: connection error code.
+#: assets/src/js/components/ConnectionHealth.jsx:200
+#, js-format
+msgid "Connection Issue (%s)"
+msgstr "연결 문제 (%s)"
 
-#: assets/src/js/components/ConnectionHealth.jsx:260
+#: assets/src/js/components/ConnectionHealth.jsx:262
 msgid "Refresh"
 msgstr "새로 고침"
 
-#: assets/src/js/components/ConnectionHealth.jsx:281
-msgid "Last checked:"
-msgstr "마지막 확인:"
+#. translators: %s: time of the last connection check.
+#: assets/src/js/components/ConnectionHealth.jsx:285
+#, js-format
+msgid "Last checked: %s"
+msgstr "마지막 확인: %s"
 
 #: assets/src/js/components/LoadingSpinner.jsx:8
 msgid "Loading..."
@@ -276,67 +293,67 @@ msgstr "로딩 중..."
 msgid "Failed to update setting. Please try again."
 msgstr "설정 업데이트 실패. 다시 시도하세요."
 
-#: assets/src/js/components/SettingsApp.jsx:88
+#: assets/src/js/components/SettingsApp.jsx:89
 msgid "Connected Store Settings"
 msgstr "연결된 스토어 설정"
 
-#: assets/src/js/components/SettingsApp.jsx:94
+#: assets/src/js/components/SettingsApp.jsx:95
 msgid "Manage your Reviewbird integration with WooCommerce."
 msgstr "WooCommerce와 함께 Reviewbird 통합을 관리하세요."
 
-#: assets/src/js/components/SettingsApp.jsx:111
+#: assets/src/js/components/SettingsApp.jsx:112
 msgid "Reviewbird Widget"
 msgstr "Reviewbird 위젯"
 
-#: assets/src/js/components/SettingsApp.jsx:112
+#: assets/src/js/components/SettingsApp.jsx:113
 msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
 msgstr "제품 페이지에 Reviewbird 리뷰 위젯을 표시합니다. 위젯은 고객 리뷰를 보여주고 고객이 새 리뷰를 제출할 수 있도록 합니다."
 
-#: assets/src/js/components/SettingsApp.jsx:118
+#: assets/src/js/components/SettingsApp.jsx:119
 msgid "Widget is enabled on all WooCommerce product pages."
 msgstr "모든 WooCommerce 제품 페이지에서 위젯이 활성화되어 있습니다."
 
-#: assets/src/js/components/SettingsApp.jsx:127
+#: assets/src/js/components/SettingsApp.jsx:128
 msgid "Forcefully enable reviews on all products"
 msgstr "모든 제품에 대해 리뷰를 강제로 활성화"
 
-#: assets/src/js/components/SettingsApp.jsx:133
+#: assets/src/js/components/SettingsApp.jsx:134
 msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
 msgstr "제품별로 \"리뷰 활성화\" 체크박스를 사용하여 리뷰를 제어하려면 이 옵션을 끄십시오."
 
-#: assets/src/js/components/SettingsApp.jsx:169
+#: assets/src/js/components/SettingsApp.jsx:170
 msgid "SEO Schema Markup"
 msgstr "SEO 스키마 마크업"
 
-#: assets/src/js/components/SettingsApp.jsx:170
+#: assets/src/js/components/SettingsApp.jsx:171
 msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
 msgstr "검색 결과의 리치 스니펫을 위해 제품 페이지에서 Google 호환 구조화 데이터(JSON-LD 스키마)를 활성화합니다."
 
-#: assets/src/js/components/SettingsApp.jsx:176
+#: assets/src/js/components/SettingsApp.jsx:177
 msgid "Schema markup is active on all WooCommerce product pages."
 msgstr "모든 WooCommerce 제품 페이지에서 스키마 마크업이 활성화되어 있습니다."
 
-#: assets/src/js/components/SettingsApp.jsx:181
+#: assets/src/js/components/SettingsApp.jsx:182
 msgid "What is Schema Markup?"
 msgstr "스키마 마크업이란?"
 
-#: assets/src/js/components/SettingsApp.jsx:183
+#: assets/src/js/components/SettingsApp.jsx:184
 msgid "Displays star ratings in Google search results"
 msgstr "Google 검색 결과에 별점 평가를 표시합니다"
 
-#: assets/src/js/components/SettingsApp.jsx:187
+#: assets/src/js/components/SettingsApp.jsx:188
 msgid "Shows review counts and product information"
 msgstr "리뷰 수와 제품 정보를 보여줍니다"
 
-#: assets/src/js/components/SettingsApp.jsx:191
+#: assets/src/js/components/SettingsApp.jsx:192
 msgid "Review schema is cached for 4 hours for optimal performance"
 msgstr "최적의 성능을 위해 리뷰 스키마는 4시간 동안 캐시됩니다"
 
-#: assets/src/js/components/SettingsApp.jsx:200
+#: assets/src/js/components/SettingsApp.jsx:201
 msgid "Test with Google Rich Results"
 msgstr "Google 리치 결과로 테스트"
 
-#: assets/src/js/components/SettingsApp.jsx:207
+#: assets/src/js/components/SettingsApp.jsx:208
 msgid "Validate Schema"
 msgstr "스키마 검증"
 
@@ -348,122 +365,136 @@ msgstr "활성화됨"
 msgid "Disabled"
 msgstr "비활성화됨"
 
-#: assets/src/js/components/WelcomeScreen.jsx:27
-msgid "Create your free account"
-msgstr "무료 계정을 만드세요"
+#: assets/src/js/components/WelcomeScreen.jsx:105
+msgid "The plugin is installed!"
+msgstr "플러그인이 설치되었습니다!"
 
-#: assets/src/js/components/WelcomeScreen.jsx:28
-msgid "takes about a minute"
-msgstr "약 1분 정도 걸립니다"
+#: assets/src/js/components/WelcomeScreen.jsx:106
+msgid "Your store is connected to Reviewbird"
+msgstr "귀하의 <store>스토어</store>가 Reviewbird에 연결되었습니다"
 
-#: assets/src/js/components/WelcomeScreen.jsx:31
-msgid "Connect your WooCommerce site"
-msgstr "WooCommerce 사이트를 연결하세요"
+#: assets/src/js/components/WelcomeScreen.jsx:108
+msgid "Now let's connect Reviewbird to your WooCommerce store."
+msgstr "이제 Reviewbird를 귀하의 WooCommerce 스토어에 연결해 보겠습니다."
 
-#: assets/src/js/components/WelcomeScreen.jsx:32
-msgid "one secure click"
-msgstr "한 번의 안전한 클릭으로"
+#: assets/src/js/components/WelcomeScreen.jsx:112
+msgid "Continue in Reviewbird to customize your widget and review request emails."
+msgstr "Reviewbird에서 계속 진행하여 위젯과 리뷰 요청 이메일을 맞춤 설정하세요."
 
-#: assets/src/js/components/WelcomeScreen.jsx:35
-msgid "Turn on automatic review requests"
-msgstr "자동 리뷰 요청을 켜세요"
+#: assets/src/js/components/WelcomeScreen.jsx:116
+msgid "Continue setup"
+msgstr "설정 계속하기"
 
-#: assets/src/js/components/WelcomeScreen.jsx:36
-msgid "you set the timing and content"
-msgstr "타이밍과 내용을 설정할 수 있습니다"
+#: assets/src/js/components/WelcomeScreen.jsx:120
+msgid "Your store is connected"
+msgstr "귀하의 스토어가 연결되었습니다"
 
-#: assets/src/js/components/WelcomeScreen.jsx:53
-msgid "Already have an account?"
-msgstr "이미 계정이 있으신가요?"
+#: assets/src/js/components/WelcomeScreen.jsx:121
+msgid "Manage your reviews, widgets, showcases and other settings in the dashboard."
+msgstr "대시보드에서 리뷰, 위젯, 쇼케이스 및 기타 설정을 관리하세요."
 
-#: assets/src/js/components/WelcomeScreen.jsx:60
+#: assets/src/js/components/WelcomeScreen.jsx:125
+msgid "Open dashboard"
+msgstr "대시보드 열기"
+
+#: assets/src/js/components/WelcomeScreen.jsx:135
+msgid "Bring your reviews with you"
+msgstr "리뷰를 함께 가져가세요"
+
+#: assets/src/js/components/WelcomeScreen.jsx:136
+msgid "Import from WooCommerce, Judge.me, Yotpo, and many more."
+msgstr "WooCommerce, Judge.me, Yotpo 등에서 가져오기."
+
+#: assets/src/js/components/WelcomeScreen.jsx:148
+msgid "Photo and video reviews"
+msgstr "사진 및 동영상 리뷰"
+
+#: assets/src/js/components/WelcomeScreen.jsx:149
+msgid "Allow customers to upload photos and videos of your product in real life."
+msgstr "고객이 실제 제품 사진과 동영상을 업로드할 수 있도록 허용하세요."
+
+#: assets/src/js/components/WelcomeScreen.jsx:164
+msgid "Match your branding"
+msgstr "브랜딩에 맞추기"
+
+#: assets/src/js/components/WelcomeScreen.jsx:165
+msgid "Customize your emails, widgets, and showcases to match your brand."
+msgstr "이메일, 위젯, 쇼케이스를 브랜드에 맞게 맞춤 설정하세요."
+
+#: assets/src/js/components/WelcomeScreen.jsx:186
+msgid "Already use Reviewbird?"
+msgstr "이미 Reviewbird를 사용 중이신가요?"
+
+#: assets/src/js/components/WelcomeScreen.jsx:193
 msgid "Sign in"
 msgstr "로그인"
 
-#: assets/src/js/components/WelcomeScreen.jsx:73
-msgid "Getting started"
-msgstr "시작하기"
+#: assets/src/js/components/WelcomeScreen.jsx:209
+msgid "Loading Reviewbird…"
+msgstr "Reviewbird 로딩 중…"
 
-#: assets/src/js/components/WelcomeScreen.jsx:80
-msgid "Turn your orders into powerful social proof."
-msgstr "주문을 강력한 사회적 증거로 바꾸세요."
+#: assets/src/js/components/WelcomeScreen.jsx:238
+#: assets/src/js/components/WelcomeScreen.jsx:325
+msgid "(opens in a new tab)"
+msgstr "(새 탭에서 열림)"
 
-#: assets/src/js/components/WelcomeScreen.jsx:87
-msgid "You're three quick steps from your first five-star review!"
-msgstr "첫 번째 별 다섯 개 리뷰까지 세 단계만 남았습니다!"
+#: assets/src/js/components/WelcomeScreen.jsx:251
+msgid "Plugin settings"
+msgstr "플러그인 설정"
 
-#: assets/src/js/components/WelcomeScreen.jsx:114
-msgid "Create free account"
-msgstr "무료 계정 만들기"
+#: assets/src/js/components/WelcomeScreen.jsx:272
+msgid "Let's turn your WooCommerce product reviews up to 11."
+msgstr "WooCommerce 제품 리뷰를 한 단계 끌어올려 보세요."
 
-#: assets/src/js/components/WelcomeScreen.jsx:124
-msgid "Free plan details"
-msgstr "무료 플랜 세부 정보"
+#: assets/src/js/components/WelcomeScreen.jsx:279
+msgid "Automated review requests help you collect reviews automatically after each order. No busywork, just reliable review collection on autopilot."
+msgstr "자동 리뷰 요청은 각 주문 후 자동으로 리뷰를 수집하는 데 도움을 줍니다. 번거로운 작업 없이 신뢰할 수 있는 리뷰 수집을 자동으로 진행하세요."
 
-#: assets/src/js/components/WelcomeScreen.jsx:129
-msgid "Free plan"
-msgstr "무료 플랜"
+#: assets/src/js/components/WelcomeScreen.jsx:320
+msgid "Get started free"
+msgstr "무료로 시작하기"
 
-#: assets/src/js/components/WelcomeScreen.jsx:131
-msgid "No credit card required"
-msgstr "신용카드 필요 없음"
-
-#: assets/src/js/components/WelcomeScreen.jsx:137
-msgid "25 review requests a month"
-msgstr "월 25건의 리뷰 요청"
-
-#: assets/src/js/components/WelcomeScreen.jsx:143
-msgid "Import your existing reviews"
-msgstr "기존 리뷰 가져오기"
-
-#: assets/src/js/components/WelcomeScreen.jsx:149
-msgid "Send a bulk request to past customers"
-msgstr "과거 고객에게 대량 요청 보내기"
-
-#: assets/src/js/components/WelcomeScreen.jsx:165
-msgid "Built by the team behind CheckoutWC, trusted by <strong>8,000+ WooCommerce stores.</strong>"
-msgstr "CheckoutWC 팀이 제작했으며, <strong>8,000개 이상의 WooCommerce 스토어</strong>에서 신뢰받고 있습니다."
-
-#: assets/src/js/components/WelcomeScreen.jsx:178
+#: assets/src/js/components/WelcomeScreen.jsx:338
 msgid "Example Reviewbird product review request email"
 msgstr "Example Reviewbird 제품 리뷰 요청 이메일"
 
-#: assets/src/js/components/WelcomeScreen.jsx:199
-msgid "for Aster & Oak"
-msgstr "Aster & Oak용"
+#. translators: Keep the <store> tags around the example store name.
+#: assets/src/js/components/WelcomeScreen.jsx:356
+msgid "Reviewbird <store>for Aster & Oak</store>"
+msgstr "Reviewbird <store>for Aster & Oak</store>"
 
-#: assets/src/js/components/WelcomeScreen.jsx:206
+#: assets/src/js/components/WelcomeScreen.jsx:368
 msgid "To: jamie@example.com"
 msgstr "받는 사람: jamie@example.com"
 
-#: assets/src/js/components/WelcomeScreen.jsx:214
-msgid "Sent 3 days after delivery"
-msgstr "배송 3일 후 발송"
+#: assets/src/js/components/WelcomeScreen.jsx:376
+msgid "Review request"
+msgstr "리뷰 요청"
 
-#: assets/src/js/components/WelcomeScreen.jsx:224
-msgid "How would you rate this product?"
-msgstr "이 제품을 어떻게 평가하시겠습니까?"
+#: assets/src/js/components/WelcomeScreen.jsx:386
+msgid "How is your new blanket?"
+msgstr "새 담요는 어떠신가요?"
 
-#: assets/src/js/components/WelcomeScreen.jsx:230
-msgid "We would love it if you would share a bit about your experience."
-msgstr "경험에 대해 조금 공유해 주시면 감사하겠습니다."
+#: assets/src/js/components/WelcomeScreen.jsx:392
+msgid "Share your experience to help other shoppers choose."
+msgstr "다른 쇼핑객들이 선택하는 데 도움이 되도록 경험을 공유하세요."
 
-#: assets/src/js/components/WelcomeScreen.jsx:274
-msgid "Linen Throw Blanket — Sage"
-msgstr "리넨 던 블랭킷 — 세이지"
+#: assets/src/js/components/WelcomeScreen.jsx:436
+msgid "Linen Throw Blanket, Sage"
+msgstr "린넨 던지기 담요, 세이지"
 
-#: assets/src/js/components/WelcomeScreen.jsx:285
+#: assets/src/js/components/WelcomeScreen.jsx:447
 msgid "Poor"
 msgstr "나쁨"
 
-#: assets/src/js/components/WelcomeScreen.jsx:288
+#: assets/src/js/components/WelcomeScreen.jsx:453
 msgid "Great"
 msgstr "훌륭함"
 
-#: assets/src/js/components/WelcomeScreen.jsx:293
-msgid "You received this email because you made a purchase from Aster & Oak."
-msgstr "이 이메일은 Aster & Oak에서 구매하셨기 때문에 받으셨습니다."
+#: assets/src/js/components/WelcomeScreen.jsx:461
+msgid "You received this review request after your purchase from Aster & Oak."
+msgstr "이 리뷰 요청은 Aster & Oak에서 구매하신 후에 받으셨습니다."
 
-#: assets/src/js/components/WelcomeScreen.jsx:299
+#: assets/src/js/components/WelcomeScreen.jsx:467
 msgid "Unsubscribe from review emails"
 msgstr "리뷰 이메일 수신 거부"

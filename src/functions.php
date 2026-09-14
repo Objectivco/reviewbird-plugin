@@ -160,9 +160,16 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
  * @return int|null Store ID or null if not available.
  */
 function reviewbird_get_store_id(): ?int {
-	$store_id = get_option( 'reviewbird_store_id' );
+	$store_id = absint( get_option( 'reviewbird_store_id' ) );
 
-	return $store_id ? absint( $store_id ) : null;
+	if ( $store_id ) {
+		return $store_id;
+	}
+
+	$status   = reviewbird_get_store_status();
+	$store_id = absint( $status['store_id'] ?? 0 );
+
+	return $store_id ?: null;
 }
 
 /**
@@ -400,6 +407,10 @@ function reviewbird_clear_status_cache(): void {
  * @return bool True if store is connected.
  */
 function reviewbird_is_store_connected(): bool {
+	if ( reviewbird_is_onboarding_preview() ) {
+		return true;
+	}
+
 	$status = reviewbird_get_store_status();
 
 	if ( ! $status ) {
@@ -411,6 +422,39 @@ function reviewbird_is_store_connected(): bool {
 	$has_active_subscription = $status['has_active_subscription'] ?? false;
 
 	return in_array( $current_status, $valid_statuses, true ) && $has_active_subscription;
+}
+
+/**
+ * Allow a short-lived setup preview without changing public subscription access.
+ *
+ * @return bool Whether Reviewbird authorized this request's preview token.
+ */
+function reviewbird_is_onboarding_preview(): bool {
+	// This token is verified by the API, not a WordPress form nonce.
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$token = $_GET['reviewbird_setup'] ?? '';
+	if ( ! is_string( $token ) || ! preg_match( '/\A[a-zA-Z0-9]{64}\z/', $token ) ) {
+		return false;
+	}
+
+	static $allowed = null;
+	if ( null !== $allowed ) {
+		return $allowed;
+	}
+
+	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+		define( 'DONOTCACHEPAGE', true );
+	}
+	nocache_headers();
+	if ( ! headers_sent() ) {
+		header( 'Referrer-Policy: no-referrer' );
+	}
+
+	$domain   = wp_parse_url( home_url(), PHP_URL_HOST ) ?? '';
+	$response = reviewbird_api_request( '/api/woocommerce/health?domain=' . rawurlencode( $domain ) . '&onboarding_preview=' . rawurlencode( $token ) );
+	$allowed  = ! is_wp_error( $response ) && true === ( $response['onboarding_preview_allowed'] ?? false );
+
+	return $allowed;
 }
 
 /**
@@ -452,12 +496,156 @@ function reviewbird_can_show_widget(): bool {
 }
 
 /**
+ * Fill `_reviewbird_*` rating meta from the public API when it is missing.
+ *
+ * @param int $product_id WooCommerce product ID.
+ * @return void
+ */
+function reviewbird_sync_product_rating( int $product_id ): void {
+	static $synced = array();
+
+	if ( $product_id < 1 || isset( $synced[ $product_id ] ) ) {
+		return;
+	}
+
+	$synced[ $product_id ] = true;
+
+	if ( ! empty( get_post_meta( $product_id, '_reviewbird_reviews_count', true ) ) ) {
+		return;
+	}
+
+	$lock_key = 'reviewbird_rating_sync_' . $product_id;
+	if ( get_transient( $lock_key ) ) {
+		return;
+	}
+
+	$store_id = reviewbird_get_store_id();
+	if ( ! $store_id ) {
+		return;
+	}
+
+	$response = wp_remote_get(
+		reviewbird_get_api_url() . '/api/public/' . $store_id . '/' . $product_id . '?context=widget&page=1',
+		array(
+			'timeout'   => 5,
+			'sslverify' => ! reviewbird_should_disable_ssl_verify(),
+			'headers'   => array(
+				'Accept' => 'application/json',
+				'Origin' => home_url(),
+			),
+		)
+	);
+
+	set_transient( $lock_key, 1, HOUR_IN_SECONDS );
+
+	if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) >= 400 ) {
+		return;
+	}
+
+	$data    = json_decode( wp_remote_retrieve_body( $response ), true );
+	$stats   = is_array( $data ) ? ( $data['statistics'] ?? array() ) : array();
+	$count   = absint( $stats['total_reviews'] ?? 0 );
+	$average = (float) ( $stats['average_rating'] ?? 0 );
+
+	if ( $count < 1 || $average <= 0 ) {
+		return;
+	}
+
+	update_post_meta( $product_id, '_reviewbird_avg_stars', $average );
+	update_post_meta( $product_id, '_reviewbird_reviews_count', $count );
+
+	if ( ! empty( $stats['rating_distribution'] ) ) {
+		update_post_meta( $product_id, '_reviewbird_rating_counts', $stats['rating_distribution'] );
+	}
+}
+
+/**
+ * Whether the current request should enqueue the review widget script early.
+ *
+ * Covers native product pages plus WordPress pages that embed a product via
+ * the Reviewbird shortcode, WooCommerce [product_page] (WPBakery Product Page),
+ * or the WooCommerce Single Product block.
+ *
+ * @return bool True if the widget script should be enqueued.
+ */
+function reviewbird_page_should_enqueue_widget(): bool {
+	if ( is_product() ) {
+		return true;
+	}
+
+	global $post;
+
+	if ( empty( $post ) ) {
+		return false;
+	}
+
+	if ( has_shortcode( $post->post_content, 'reviewbird_widget' ) || has_shortcode( $post->post_content, 'product_page' ) ) {
+		return true;
+	}
+
+	return function_exists( 'has_block' ) && has_block( 'woocommerce/single-product', $post );
+}
+
+/**
+ * Enqueue the review widget script and configuration.
+ *
+ * Safe to call while rendering content because the script prints in the footer.
+ *
+ * @return void
+ */
+function reviewbird_enqueue_widget_script(): void {
+	static $enqueued = false;
+
+	if ( $enqueued || ! reviewbird_can_show_widget() ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'reviewbird-widget',
+		reviewbird_get_api_url() . '/build/review-widget-v2.js',
+		array(),
+		null,
+		true
+	);
+
+	$config = array(
+		'apiUrl'       => reviewbird_get_api_url(),
+		'storeId'      => reviewbird_get_store_id(),
+		'widgetPrefix' => 'reviewbird-widget-container-',
+	);
+
+	$customer = function_exists( 'WC' ) && is_user_logged_in() ? WC()->customer : null;
+	$email    = $customer ? $customer->get_billing_email() : '';
+
+	if ( $email ) {
+		$config['prefill'] = array(
+			'firstName' => $customer->get_billing_first_name() ?: '',
+			'lastName'  => $customer->get_billing_last_name() ?: '',
+			'email'     => $email,
+		);
+	}
+
+	wp_localize_script(
+		'reviewbird-widget',
+		'reviewbirdConfig',
+		$config
+	);
+
+	$enqueued = true;
+}
+
+/**
  * Get cached product reviews, using a transient to avoid repeated API calls.
  *
  * @param int $product_id WooCommerce product ID.
  * @return array API response array (with 'reviews' key) or empty array on failure.
  */
 function reviewbird_get_cached_product_reviews( int $product_id ): array {
+	// Setup reads reviews in the browser with its temporary token.
+	if ( reviewbird_is_onboarding_preview() ) {
+		return array();
+	}
+
 	$transient_key = 'reviewbird_ssr_' . $product_id;
 	$cached        = get_transient( $transient_key );
 
@@ -497,7 +685,7 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 			continue;
 		}
 
-		$author_name = $review['author']['name'] ?? 'Anonymous';
+		$author_name = $review['author']['name'] ?? __( 'Anonymous', 'reviewbird' );
 		$title       = wp_strip_all_tags( $review['title'] ?? '' );
 		$body        = wp_strip_all_tags( $review['body'] ?? '' );
 
@@ -517,7 +705,8 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 		$html .= '<header>';
 		$html .= sprintf(
 			'<span class="reviewbird-ssr-rating" aria-label="%s">%d/5</span>',
-			esc_attr( sprintf( 'Rated %d out of 5', $rating ) ),
+			/* translators: %d: review rating, from 1 to 5. */
+			esc_attr( sprintf( __( 'Rated %d out of 5', 'reviewbird' ), $rating ) ),
 			$rating
 		);
 		$html .= sprintf( '<strong class="reviewbird-ssr-author">%s</strong>', esc_html( $author_name ) );
@@ -600,6 +789,10 @@ function reviewbird_render_widget( $product_id = null ): string {
 	// Build SSR review HTML for SEO.
 	$cached_reviews = reviewbird_get_cached_product_reviews( $actual_product_id );
 	$ssr_html       = reviewbird_render_ssr_reviews( $cached_reviews );
+
+	// Enqueue here so pages that embed a product (WPBakery, shortcode, block)
+	// still get the footer script even when is_product() is false.
+	reviewbird_enqueue_widget_script();
 
 	// Add the init call via wp_add_inline_script (once, even if multiple widgets render).
 	static $inline_script_added = false;

@@ -68,6 +68,10 @@ class StarRatingDisplay {
 	 * filtered rating HTML. We remove it and add our own implementation.
 	 */
 	public function replace_single_product_rating(): void {
+		if ( ! has_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating' ) ) {
+			return;
+		}
+
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating', 10 );
 
 		/**
@@ -164,17 +168,17 @@ class StarRatingDisplay {
 
 		if ( $is_static ) {
 			// translators: %s is the average rating.
-			$aria_label = sprintf( __( 'Rated %s out of 5', 'reviewbird' ), number_format( $rating, 2 ) );
+			$aria_label = sprintf( __( 'Rated %s out of 5', 'reviewbird' ), number_format_i18n( $rating, 2 ) );
 		} else {
 			// translators: %s is the average rating.
-			$aria_label = sprintf( __( 'Rated %s out of 5, click to view reviews', 'reviewbird' ), number_format( $rating, 2 ) );
+			$aria_label = sprintf( __( 'Rated %s out of 5, click to view reviews', 'reviewbird' ), number_format_i18n( $rating, 2 ) );
 		}
 
 		$output  = '<div class="' . esc_attr( $class ) . '"' . $interactive_attrs . ' aria-label="' . esc_attr( $aria_label ) . '">';
 		$output .= $stars_html;
 
 		if ( $count > 0 ) {
-			$output .= sprintf( '<span class="rb-wc-rating-count">(%s)</span>', esc_html( $count ) );
+			$output .= sprintf( '<span class="rb-wc-rating-count">(%s)</span>', esc_html( number_format_i18n( $count ) ) );
 		}
 
 		$output .= '</div>';
