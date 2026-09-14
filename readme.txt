@@ -1,8 +1,8 @@
 === Reviewbird Product Reviews for WooCommerce ===
 Contributors: reviewbird, clifgriffin
 Tags: woocommerce, woocommerce product reviews, woocommerce reviews, judge.me, rich snippets, review snippets, SEO
-Requires at least: 5.0
-Tested up to: 7.0
+Requires at least: 5.9
+Tested up to: 7.1
 Stable tag: 1.1.4
 Requires PHP: 7.4
 License: GPLv2 or later
@@ -228,10 +228,14 @@ For development: `pnpm run dev`
 == Changelog ==
 
 = 1.1.4 =
-Fix - Load the review widget on WordPress pages that embed a product with [product_page] or the WooCommerce Single Product block, including WPBakery layouts.
-Fix - Fall back to the store ID from the health status when the dedicated store ID option is missing.
-Fix - Fetch star ratings from the Reviewbird API when product rating meta is missing.
-Fix - Avoid duplicate star ratings when the theme already renders them.
+New - Guide new and existing stores through setup from the Get Started page. Show connection health when setup is complete.
+New - Preview the review widget during store setup.
+Fix - Load the review widget on pages that embed a product with [product_page] or the WooCommerce Single Product block, including WPBakery layouts.
+Fix - Use the store ID from the connection status when the saved store ID is missing.
+Fix - Fetch missing star ratings from Reviewbird and cache the results to reduce API requests.
+Fix - Prevent duplicate star ratings when the theme already shows them, including Astra.
+Fix - Use the WordPress language for connection messages, times, and star ratings. Preserve regional languages in showcases.
+Update - Refresh translations in 24 languages and enable right-to-left styles in the plugin admin screens.
 
 = 1.1.3 =
 Fix - Suppress unrelated WordPress notices on the Reviewbird Get Started page.
@@ -292,3 +296,8 @@ Fix - Fix issue with min_rating parameter for API calls.
 
 = 1.0.12 =
 * Compatibility updates for WordPress.org submission
+
+== Upgrade Notice ==
+
+= 1.1.4 =
+Improves store setup, fixes widget and star rating display on embedded product pages, and updates translations.
