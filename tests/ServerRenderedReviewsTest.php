@@ -13,6 +13,10 @@ namespace {
 		define( 'ABSPATH', __DIR__ );
 	}
 
+	function __( $text ) {
+		return $text;
+	}
+
 	function wp_strip_all_tags( $text ) {
 		return strip_tags( $text );
 	}
