@@ -407,6 +407,10 @@ function reviewbird_clear_status_cache(): void {
  * @return bool True if store is connected.
  */
 function reviewbird_is_store_connected(): bool {
+	if ( reviewbird_is_onboarding_preview() ) {
+		return true;
+	}
+
 	$status = reviewbird_get_store_status();
 
 	if ( ! $status ) {
@@ -418,6 +422,39 @@ function reviewbird_is_store_connected(): bool {
 	$has_active_subscription = $status['has_active_subscription'] ?? false;
 
 	return in_array( $current_status, $valid_statuses, true ) && $has_active_subscription;
+}
+
+/**
+ * Allow a short-lived setup preview without changing public subscription access.
+ *
+ * @return bool Whether Reviewbird authorized this request's preview token.
+ */
+function reviewbird_is_onboarding_preview(): bool {
+	// This token is verified by the API, not a WordPress form nonce.
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$token = $_GET['reviewbird_setup'] ?? '';
+	if ( ! is_string( $token ) || ! preg_match( '/\A[a-zA-Z0-9]{64}\z/', $token ) ) {
+		return false;
+	}
+
+	static $allowed = null;
+	if ( null !== $allowed ) {
+		return $allowed;
+	}
+
+	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+		define( 'DONOTCACHEPAGE', true );
+	}
+	nocache_headers();
+	if ( ! headers_sent() ) {
+		header( 'Referrer-Policy: no-referrer' );
+	}
+
+	$domain   = wp_parse_url( home_url(), PHP_URL_HOST ) ?? '';
+	$response = reviewbird_api_request( '/api/woocommerce/health?domain=' . rawurlencode( $domain ) . '&onboarding_preview=' . rawurlencode( $token ) );
+	$allowed  = ! is_wp_error( $response ) && true === ( $response['onboarding_preview_allowed'] ?? false );
+
+	return $allowed;
 }
 
 /**
@@ -604,6 +641,11 @@ function reviewbird_enqueue_widget_script(): void {
  * @return array API response array (with 'reviews' key) or empty array on failure.
  */
 function reviewbird_get_cached_product_reviews( int $product_id ): array {
+	// Setup reads reviews in the browser with its temporary token.
+	if ( reviewbird_is_onboarding_preview() ) {
+		return array();
+	}
+
 	$transient_key = 'reviewbird_ssr_' . $product_id;
 	$cached        = get_transient( $transient_key );
 

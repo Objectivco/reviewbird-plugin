@@ -94,6 +94,7 @@ class Plugin {
 		}
 
 		// Public hooks.
+		add_action( 'template_redirect', 'reviewbird_is_onboarding_preview', 0 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_star_styles' ) );
 		add_shortcode( 'reviewbird_widget', array( $this, 'widget_shortcode' ) );
