@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-14T21:38:12+00:00\n"
+"POT-Creation-Date: 2026-09-14T21:59:19+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
@@ -51,28 +51,28 @@ msgid "Reviewbird Settings"
 msgstr ""
 
 #: src/Admin/Settings.php:148
-#: src/Core/Plugin.php:472
+#: src/Core/Plugin.php:475
 msgid "Settings"
 msgstr ""
 
-#: src/Admin/Settings.php:354
+#: src/Admin/Settings.php:355
 msgid "Invalid security token"
 msgstr ""
 
-#: src/Admin/Settings.php:358
-#: src/Admin/Settings.php:420
+#: src/Admin/Settings.php:359
+#: src/Admin/Settings.php:421
 msgid "Insufficient permissions"
 msgstr ""
 
-#: src/Admin/Settings.php:383
+#: src/Admin/Settings.php:384
 msgid "Invalid setting"
 msgstr ""
 
-#: src/Admin/Settings.php:393
+#: src/Admin/Settings.php:394
 msgid "Setting updated successfully"
 msgstr ""
 
-#: src/Admin/Settings.php:410
+#: src/Admin/Settings.php:411
 msgid "Health check cache cleared"
 msgstr ""
 
@@ -134,7 +134,7 @@ msgstr ""
 msgid "Invalid email address"
 msgstr ""
 
-#: src/Core/Plugin.php:478
+#: src/Core/Plugin.php:481
 msgid "Documentation"
 msgstr ""
 

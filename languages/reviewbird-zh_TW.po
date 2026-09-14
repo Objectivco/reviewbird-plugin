@@ -2,20 +2,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reviewbird 1.0.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
-"POT-Creation-Date: 2026-09-14T21:38:12+00:00\n"
-"PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: gpt-po v1.2.3\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-14T21:38:12+00:00\n"
+"PO-Revision-Date: 2026-04-16 00:00+0000\n"
+"Language: zh_TW\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
 
 #. Plugin Name of the plugin
 #. Author of the plugin
-#: reviewbird-plugin.php src/Admin/Settings.php:125 src/Admin/Settings.php:126
+#: reviewbird-plugin.php
+#: src/Admin/Settings.php:125
+#: src/Admin/Settings.php:126
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -26,11 +28,8 @@ msgstr "https://reviewbird.com"
 
 #. Description of the plugin
 #: reviewbird-plugin.php
-msgid ""
-"Automated review collection for WooCommerce that blocks spam, catches "
-"complaints, and showcases your best feedback."
-msgstr ""
-"WooCommerce 的自動評論收集，能阻擋垃圾訊息、捕捉投訴，並展示您最佳的反饋。"
+msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
+msgstr "WooCommerce 的自動評論收集，能阻擋垃圾訊息、捕捉投訴，並展示您最佳的反饋。"
 
 #: src/Admin/Settings.php:92
 msgid "Reviewbird Connection Error:"
@@ -40,35 +39,39 @@ msgstr "Reviewbird 連線錯誤："
 msgid "Successfully connected to Reviewbird!"
 msgstr "成功連接到 Reviewbird！"
 
-#: src/Admin/Settings.php:138 src/Admin/Settings.php:139
+#: src/Admin/Settings.php:138
+#: src/Admin/Settings.php:139
 msgid "Get Started"
 msgstr "開始使用"
 
-#: src/Admin/Settings.php:147 assets/src/js/components/SettingsApp.jsx:92
+#: src/Admin/Settings.php:147
+#: assets/src/js/components/SettingsApp.jsx:92
 msgid "Reviewbird Settings"
 msgstr "Reviewbird 設定"
 
-#: src/Admin/Settings.php:148 src/Core/Plugin.php:472
+#: src/Admin/Settings.php:148
+#: src/Core/Plugin.php:475
 msgid "Settings"
 msgstr "設定"
 
-#: src/Admin/Settings.php:354
+#: src/Admin/Settings.php:355
 msgid "Invalid security token"
 msgstr "無效的安全令牌"
 
-#: src/Admin/Settings.php:358 src/Admin/Settings.php:420
+#: src/Admin/Settings.php:359
+#: src/Admin/Settings.php:421
 msgid "Insufficient permissions"
 msgstr "權限不足"
 
-#: src/Admin/Settings.php:383
+#: src/Admin/Settings.php:384
 msgid "Invalid setting"
 msgstr "無效的設定"
 
-#: src/Admin/Settings.php:393
+#: src/Admin/Settings.php:394
 msgid "Setting updated successfully"
 msgstr "設定更新成功"
 
-#: src/Admin/Settings.php:410
+#: src/Admin/Settings.php:411
 msgid "Health check cache cleared"
 msgstr "健康檢查快取已清除"
 
@@ -78,7 +81,8 @@ msgstr "健康檢查快取已清除"
 msgid "Store ID %d has been saved successfully"
 msgstr "商店 ID %d 已成功儲存"
 
-#: src/Api/CouponController.php:79 src/Api/ProductsController.php:43
+#: src/Api/CouponController.php:79
+#: src/Api/ProductsController.php:43
 msgid "WooCommerce is not active"
 msgstr "WooCommerce 未啟用"
 
@@ -96,7 +100,8 @@ msgstr "找不到範本優惠券 '%s'"
 msgid "discount_type and amount are required when not using template"
 msgstr "不使用範本時，discount_type 和 amount 為必填"
 
-#: src/Api/ProductsController.php:161 src/Api/RatingsController.php:53
+#: src/Api/ProductsController.php:161
+#: src/Api/RatingsController.php:53
 msgid "Product not found"
 msgstr "找不到產品"
 
@@ -128,11 +133,12 @@ msgstr "需要顧客電子郵件"
 msgid "Invalid email address"
 msgstr "無效的電子郵件地址"
 
-#: src/Core/Plugin.php:478
+#: src/Core/Plugin.php:481
 msgid "Documentation"
 msgstr "文件"
 
-#: src/functions.php:115 src/functions.php:298
+#: src/functions.php:115
+#: src/functions.php:298
 msgid "API request failed"
 msgstr "API 請求失敗"
 
@@ -154,13 +160,13 @@ msgstr "解碼 API 回應失敗。"
 
 #: src/functions.php:688
 msgid "Anonymous"
-msgstr ""
+msgstr "匿名"
 
 #. translators: %d: review rating, from 1 to 5.
 #: src/functions.php:709
 #, php-format
 msgid "Rated %d out of 5"
-msgstr ""
+msgstr "評分為 %d（滿分 5 分）"
 
 #. translators: %s is the average rating.
 #: src/Integration/StarRatingDisplay.php:171
@@ -176,7 +182,7 @@ msgstr "評分 %s（滿分 5 分），點擊查看評論"
 
 #: src/Integration/WooCommerce.php:75
 msgid "Whether the Reviewbird widget is enabled."
-msgstr ""
+msgstr "是否啟用 Reviewbird 小工具。"
 
 #: src/Integration/WooCommerce.php:161
 msgid "Leave a review"
@@ -187,9 +193,7 @@ msgid "Connected to Reviewbird"
 msgstr "已連接到 Reviewbird"
 
 #: assets/src/js/components/ConnectionHealth.jsx:11
-msgid ""
-"Your WooCommerce store is successfully connected to Reviewbird. Review data "
-"is syncing properly."
+msgid "Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly."
 msgstr "您的 WooCommerce 商店已成功連接到 Reviewbird。評論資料同步正常。"
 
 #: assets/src/js/components/ConnectionHealth.jsx:12
@@ -201,11 +205,8 @@ msgid "WooCommerce Not Connected"
 msgstr "WooCommerce 未連接"
 
 #: assets/src/js/components/ConnectionHealth.jsx:19
-msgid ""
-"WooCommerce is not yet connected to Reviewbird. Connect your store to start "
-"syncing products and reviews."
-msgstr ""
-"WooCommerce 尚未連接到 Reviewbird。請連接您的商店以開始同步產品和評論。"
+msgid "WooCommerce is not yet connected to Reviewbird. Connect your store to start syncing products and reviews."
+msgstr "WooCommerce 尚未連接到 Reviewbird。請連接您的商店以開始同步產品和評論。"
 
 #: assets/src/js/components/ConnectionHealth.jsx:20
 msgid "Connect WooCommerce"
@@ -216,13 +217,8 @@ msgid "Initial Sync in Progress"
 msgstr "初始同步進行中"
 
 #: assets/src/js/components/ConnectionHealth.jsx:27
-msgid ""
-"Reviewbird is syncing your products and reviews. This may take a few minutes "
-"depending on your catalog size. The widget will be available once sync "
-"completes."
-msgstr ""
-"Reviewbird 正在同步您的產品和評論。根據您的目錄大小，這可能需要幾分鐘。同步完"
-"成後，元件將可用。"
+msgid "Reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
+msgstr "Reviewbird 正在同步您的產品和評論。根據您的目錄大小，這可能需要幾分鐘。同步完成後，元件將可用。"
 
 #: assets/src/js/components/ConnectionHealth.jsx:28
 msgid "View Sync Progress"
@@ -233,9 +229,7 @@ msgid "Subscription Required"
 msgstr "需要訂閱"
 
 #: assets/src/js/components/ConnectionHealth.jsx:35
-msgid ""
-"Your Reviewbird subscription is inactive. Please update your billing "
-"information to continue using the service."
+msgid "Your Reviewbird subscription is inactive. Please update your billing information to continue using the service."
 msgstr "您的 Reviewbird 訂閱已停用。請更新您的帳單資訊以繼續使用服務。"
 
 #: assets/src/js/components/ConnectionHealth.jsx:36
@@ -277,8 +271,9 @@ msgstr "開啟 Reviewbird"
 
 #. translators: %s: connection error code.
 #: assets/src/js/components/ConnectionHealth.jsx:200
+#, js-format
 msgid "Connection Issue (%s)"
-msgstr ""
+msgstr "連線問題 (%s)"
 
 #: assets/src/js/components/ConnectionHealth.jsx:262
 msgid "Refresh"
@@ -286,8 +281,9 @@ msgstr "重新整理"
 
 #. translators: %s: time of the last connection check.
 #: assets/src/js/components/ConnectionHealth.jsx:285
+#, js-format
 msgid "Last checked: %s"
-msgstr ""
+msgstr "最後檢查時間：%s"
 
 #: assets/src/js/components/LoadingSpinner.jsx:8
 msgid "Loading..."
@@ -310,12 +306,8 @@ msgid "Reviewbird Widget"
 msgstr "Reviewbird 小工具"
 
 #: assets/src/js/components/SettingsApp.jsx:113
-msgid ""
-"Display Reviewbird review widget on product pages. The widget shows customer "
-"reviews and allows customers to submit new reviews."
-msgstr ""
-"在產品頁面顯示 Reviewbird 評論小工具。該小工具顯示客戶評論並允許客戶提交新評"
-"論。"
+msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
+msgstr "在產品頁面顯示 Reviewbird 評論小工具。該小工具顯示客戶評論並允許客戶提交新評論。"
 
 #: assets/src/js/components/SettingsApp.jsx:119
 msgid "Widget is enabled on all WooCommerce product pages."
@@ -326,23 +318,16 @@ msgid "Forcefully enable reviews on all products"
 msgstr "強制在所有產品上啟用評論"
 
 #: assets/src/js/components/SettingsApp.jsx:134
-msgid ""
-"Leave this off if you prefer to control reviews per product using the "
-"\"Enable reviews\" checkbox."
-msgstr ""
-"如果您希望透過「啟用評論」核取方塊來控制每個產品的評論，請保持關閉此選項。"
+msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
+msgstr "如果您希望透過「啟用評論」核取方塊來控制每個產品的評論，請保持關閉此選項。"
 
 #: assets/src/js/components/SettingsApp.jsx:170
 msgid "SEO Schema Markup"
 msgstr "SEO 結構化標記"
 
 #: assets/src/js/components/SettingsApp.jsx:171
-msgid ""
-"Enable Google-compliant structured data (JSON-LD schema) on product pages "
-"for rich snippets in search results."
-msgstr ""
-"在產品頁面啟用符合 Google 規範的結構化資料（JSON-LD schema），以便在搜尋結果"
-"中顯示豐富摘要。"
+msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
+msgstr "在產品頁面啟用符合 Google 規範的結構化資料（JSON-LD schema），以便在搜尋結果中顯示豐富摘要。"
 
 #: assets/src/js/components/SettingsApp.jsx:177
 msgid "Schema markup is active on all WooCommerce product pages."
@@ -382,66 +367,63 @@ msgstr "已停用"
 
 #: assets/src/js/components/WelcomeScreen.jsx:105
 msgid "The plugin is installed!"
-msgstr ""
+msgstr "外掛已安裝！"
 
 #: assets/src/js/components/WelcomeScreen.jsx:106
 msgid "Your store is connected to Reviewbird"
-msgstr ""
+msgstr "您的商店已連接至 Reviewbird"
 
 #: assets/src/js/components/WelcomeScreen.jsx:108
 msgid "Now let's connect Reviewbird to your WooCommerce store."
-msgstr ""
+msgstr "現在讓我們將 Reviewbird 連接到您的 WooCommerce 商店。"
 
 #: assets/src/js/components/WelcomeScreen.jsx:112
-msgid ""
-"Continue in Reviewbird to customize your widget and review request emails."
-msgstr ""
+msgid "Continue in Reviewbird to customize your widget and review request emails."
+msgstr "繼續在 Reviewbird 中自訂您的小工具和評論請求電子郵件。"
 
 #: assets/src/js/components/WelcomeScreen.jsx:116
 msgid "Continue setup"
-msgstr ""
+msgstr "繼續設定"
 
 #: assets/src/js/components/WelcomeScreen.jsx:120
 msgid "Your store is connected"
-msgstr ""
+msgstr "您的商店已連接"
 
 #: assets/src/js/components/WelcomeScreen.jsx:121
-msgid ""
-"Manage your reviews, widgets, showcases and other settings in the dashboard."
-msgstr ""
+msgid "Manage your reviews, widgets, showcases and other settings in the dashboard."
+msgstr "在儀表板中管理您的評論、小工具、展示和其他設定。"
 
 #: assets/src/js/components/WelcomeScreen.jsx:125
 msgid "Open dashboard"
-msgstr ""
+msgstr "開啟儀表板"
 
 #: assets/src/js/components/WelcomeScreen.jsx:135
 msgid "Bring your reviews with you"
-msgstr ""
+msgstr "隨身攜帶您的評論"
 
 #: assets/src/js/components/WelcomeScreen.jsx:136
 msgid "Import from WooCommerce, Judge.me, Yotpo, and many more."
-msgstr ""
+msgstr "從 WooCommerce、Judge.me、Yotpo 及更多平台匯入。"
 
 #: assets/src/js/components/WelcomeScreen.jsx:148
 msgid "Photo and video reviews"
-msgstr ""
+msgstr "照片和影片評論"
 
 #: assets/src/js/components/WelcomeScreen.jsx:149
-msgid ""
-"Allow customers to upload photos and videos of your product in real life."
-msgstr ""
+msgid "Allow customers to upload photos and videos of your product in real life."
+msgstr "允許顧客上傳產品的實際照片和影片。"
 
 #: assets/src/js/components/WelcomeScreen.jsx:164
 msgid "Match your branding"
-msgstr ""
+msgstr "符合您的品牌形象"
 
 #: assets/src/js/components/WelcomeScreen.jsx:165
 msgid "Customize your emails, widgets, and showcases to match your brand."
-msgstr ""
+msgstr "自訂您的電子郵件、小工具和展示以符合您的品牌。"
 
 #: assets/src/js/components/WelcomeScreen.jsx:186
 msgid "Already use Reviewbird?"
-msgstr ""
+msgstr "已經使用 Reviewbird？"
 
 #: assets/src/js/components/WelcomeScreen.jsx:193
 msgid "Sign in"
@@ -449,30 +431,28 @@ msgstr "登入"
 
 #: assets/src/js/components/WelcomeScreen.jsx:209
 msgid "Loading Reviewbird…"
-msgstr ""
+msgstr "正在載入 Reviewbird…"
 
 #: assets/src/js/components/WelcomeScreen.jsx:238
 #: assets/src/js/components/WelcomeScreen.jsx:325
 msgid "(opens in a new tab)"
-msgstr ""
+msgstr "(於新分頁開啟)"
 
 #: assets/src/js/components/WelcomeScreen.jsx:251
 msgid "Plugin settings"
-msgstr ""
+msgstr "外掛設定"
 
 #: assets/src/js/components/WelcomeScreen.jsx:272
 msgid "Let's turn your WooCommerce product reviews up to 11."
-msgstr ""
+msgstr "讓您的 WooCommerce 產品評論提升到最高等級。"
 
 #: assets/src/js/components/WelcomeScreen.jsx:279
-msgid ""
-"Automated review requests help you collect reviews automatically after each "
-"order. No busywork, just reliable review collection on autopilot."
-msgstr ""
+msgid "Automated review requests help you collect reviews automatically after each order. No busywork, just reliable review collection on autopilot."
+msgstr "自動評論請求可幫助您在每筆訂單後自動收集評論。無需繁瑣工作，只需可靠的自動評論收集。"
 
 #: assets/src/js/components/WelcomeScreen.jsx:320
 msgid "Get started free"
-msgstr ""
+msgstr "免費開始使用"
 
 #: assets/src/js/components/WelcomeScreen.jsx:338
 msgid "Example Reviewbird product review request email"
@@ -481,7 +461,7 @@ msgstr "Reviewbird 產品評論請求郵件範例"
 #. translators: Keep the <store> tags around the example store name.
 #: assets/src/js/components/WelcomeScreen.jsx:356
 msgid "Reviewbird <store>for Aster & Oak</store>"
-msgstr ""
+msgstr "Reviewbird <store>for Aster & Oak</store>"
 
 #: assets/src/js/components/WelcomeScreen.jsx:368
 msgid "To: jamie@example.com"
@@ -489,19 +469,19 @@ msgstr "收件人：jamie@example.com"
 
 #: assets/src/js/components/WelcomeScreen.jsx:376
 msgid "Review request"
-msgstr ""
+msgstr "評論請求"
 
 #: assets/src/js/components/WelcomeScreen.jsx:386
 msgid "How is your new blanket?"
-msgstr ""
+msgstr "您的新毯子感覺如何？"
 
 #: assets/src/js/components/WelcomeScreen.jsx:392
 msgid "Share your experience to help other shoppers choose."
-msgstr ""
+msgstr "分享您的體驗，幫助其他購物者做出選擇。"
 
 #: assets/src/js/components/WelcomeScreen.jsx:436
 msgid "Linen Throw Blanket, Sage"
-msgstr ""
+msgstr "亞麻毯，鼠尾草色"
 
 #: assets/src/js/components/WelcomeScreen.jsx:447
 msgid "Poor"
@@ -513,91 +493,8 @@ msgstr "好"
 
 #: assets/src/js/components/WelcomeScreen.jsx:461
 msgid "You received this review request after your purchase from Aster & Oak."
-msgstr ""
+msgstr "您在 Aster & Oak 購買後收到此評論請求。"
 
 #: assets/src/js/components/WelcomeScreen.jsx:467
 msgid "Unsubscribe from review emails"
 msgstr "取消訂閱評論郵件"
-
-#~ msgid "Connection Issue"
-#~ msgstr "連線問題"
-
-#~ msgid "Last checked:"
-#~ msgstr "最後檢查時間："
-
-#~ msgid "Create your free account"
-#~ msgstr "建立您的免費帳戶"
-
-#~ msgid "takes about a minute"
-#~ msgstr "大約需要一分鐘"
-
-#~ msgid "Connect your WooCommerce site"
-#~ msgstr "連接您的 WooCommerce 網站"
-
-#~ msgid "one secure click"
-#~ msgstr "一鍵安全連接"
-
-#~ msgid "Turn on automatic review requests"
-#~ msgstr "開啟自動評論請求"
-
-#~ msgid "you set the timing and content"
-#~ msgstr "您設定時間和內容"
-
-#~ msgid "Already have an account?"
-#~ msgstr "已經有帳戶了嗎？"
-
-#~ msgid "Getting started"
-#~ msgstr "開始使用"
-
-#~ msgid "Turn your orders into powerful social proof."
-#~ msgstr "將您的訂單轉化為強大的社會認證。"
-
-#~ msgid "You're three quick steps from your first five-star review!"
-#~ msgstr "只需三個快速步驟，即可獲得您的第一個五星好評！"
-
-#~ msgid "Create free account"
-#~ msgstr "建立免費帳戶"
-
-#~ msgid "Free plan details"
-#~ msgstr "免費方案詳情"
-
-#~ msgid "Free plan"
-#~ msgstr "免費方案"
-
-#~ msgid "No credit card required"
-#~ msgstr "無需信用卡"
-
-#~ msgid "25 review requests a month"
-#~ msgstr "每月 25 次評論請求"
-
-#~ msgid "Import your existing reviews"
-#~ msgstr "匯入您現有的評論"
-
-#~ msgid "Send a bulk request to past customers"
-#~ msgstr "向過去的顧客發送批量請求"
-
-#~ msgid ""
-#~ "Built by the team behind CheckoutWC, trusted by <strong>8,000+ "
-#~ "WooCommerce stores.</strong>"
-#~ msgstr ""
-#~ "由 CheckoutWC 團隊打造，獲得 <strong>8,000+ WooCommerce 商店</strong>的信"
-#~ "賴。"
-
-#~ msgid "for Aster & Oak"
-#~ msgstr "針對 Aster & Oak"
-
-#~ msgid "Sent 3 days after delivery"
-#~ msgstr "於交貨後 3 天發送"
-
-#~ msgid "How would you rate this product?"
-#~ msgstr "您會如何評價這個產品？"
-
-#~ msgid "We would love it if you would share a bit about your experience."
-#~ msgstr "我們很希望您能分享一些您的使用體驗。"
-
-#~ msgid "Linen Throw Blanket — Sage"
-#~ msgstr "亞麻毯 — 鼠尾草色"
-
-#~ msgid ""
-#~ "You received this email because you made a purchase from Aster & Oak."
-#~ msgstr "您收到此郵件是因為您曾在 Aster & Oak 購買商品。"
