@@ -192,15 +192,6 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	max-width: 620px;
 }
 
-.reviewbird-start-kicker {
-	margin: 0 0 1.25rem;
-	color: var(--reviewbird-teal-dark);
-	font-size: 0.75rem;
-	font-weight: 700;
-	letter-spacing: 0.12em;
-	text-transform: uppercase;
-}
-
 #reviewbird-settings-root .reviewbird-start-title {
 	max-width: 620px;
 	margin: 0 0 1.5rem;
@@ -219,61 +210,42 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	line-height: 1.6;
 }
 
-.reviewbird-setup-steps {
+.reviewbird-start-benefits {
 	display: grid;
-	gap: 0.85rem;
-	margin: 0 0 1.75rem;
+	gap: 1.25rem;
+	margin: 0 0 2rem;
 	padding: 0;
 	list-style: none;
 }
 
-.reviewbird-setup-steps li {
+.reviewbird-start-benefits li {
 	display: grid;
-	grid-template-columns: 32px minmax(0, 1fr);
-	align-items: center;
-	gap: 0.85rem;
-	color: var(--reviewbird-muted);
+	grid-template-columns: 40px minmax(0, 1fr);
+	align-items: start;
+	gap: 0.875rem;
 }
 
-.reviewbird-setup-steps li > span {
-	display: grid;
-	width: 32px;
-	height: 32px;
-	place-items: center;
-	border: 1px solid #b9c9c4;
-	border-radius: 50%;
-	color: var(--reviewbird-muted);
-	font-size: 0.8rem;
-	font-weight: 700;
+.reviewbird-benefit-icon {
+	width: 40px;
+	height: 40px;
+	border-radius: 10px;
+	padding: 9px;
+	background: rgba(13, 148, 136, 0.08);
+	color: var(--reviewbird-teal-dark);
 }
 
-.reviewbird-setup-steps li:first-child > span {
-	border-color: var(--reviewbird-teal-dark);
-	background: var(--reviewbird-teal-dark);
-	color: #fff;
-}
-
-.reviewbird-setup-step-title {
-	color: var(--reviewbird-muted);
-	font-size: 0.93rem;
-	font-weight: 500;
-}
-
-.reviewbird-setup-steps li:first-child .reviewbird-setup-step-title {
+.reviewbird-start-benefits strong {
 	color: var(--reviewbird-ink);
-	font-weight: 700;
+	font-size: 1rem;
+	font-weight: 600;
 }
 
-.reviewbird-setup-steps small {
-	margin-left: 0.35rem;
+.reviewbird-start-benefits small {
+	display: block;
+	margin-top: 0.25rem;
 	color: var(--reviewbird-muted);
-	font-size: 0.85rem;
-	font-weight: 450;
-}
-
-.reviewbird-setup-steps small::before {
-	margin-right: 0.35rem;
-	content: "—";
+	font-size: 0.875rem;
+	line-height: 1.6;
 }
 
 .reviewbird-button-primary {
@@ -312,49 +284,51 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	flex: 0 0 auto;
 }
 
-.reviewbird-risk-line {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 0.65rem 2rem;
-	margin: 1.25rem 0 0;
-	padding: 0;
-	color: var(--reviewbird-muted);
-	font-size: 0.82rem;
-	font-weight: 500;
-	list-style: none;
+.reviewbird-store-status {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: 860px;
+	border: 1px solid var(--reviewbird-border);
+	border-radius: 20px;
+	padding: clamp(1.5rem, 5vw, 4rem);
+	background: #fff;
+	box-shadow: 0 16px 40px rgba(24, 24, 27, 0.06);
 }
 
-.reviewbird-risk-line li::before {
-	margin-right: 0.35rem;
-	color: var(--reviewbird-teal-dark);
-	font-weight: 750;
-	content: "✓";
-}
-
-.reviewbird-trust-line {
+.reviewbird-status-actions {
 	display: flex;
-	max-width: 620px;
-	align-items: center;
+	flex-wrap: wrap;
 	gap: 1rem;
-	margin: 2rem 0 0;
-	border-top: 1px solid rgba(24, 24, 27, 0.1);
-	padding-top: 1.35rem;
-	color: var(--reviewbird-muted);
-	font-size: 0.82rem;
-	font-weight: 450;
-	line-height: 1.55;
 }
 
-.reviewbird-trust-stars {
-	flex: 0 0 auto;
-	color: #ed9b2d;
-	font-size: 1.05rem;
-	letter-spacing: 0.08em;
-}
-
-.reviewbird-trust-line strong {
+.reviewbird-button-secondary {
+	display: inline-flex;
+	min-height: 60px;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--reviewbird-border);
+	border-radius: 10px;
+	padding: 0.85rem 2rem;
+	background: #fff;
 	color: var(--reviewbird-ink);
-	font-weight: 700;
+	font: inherit;
+	font-size: 1rem;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.reviewbird-button-secondary:hover {
+	border-color: var(--reviewbird-teal-dark);
+	color: var(--reviewbird-teal-dark);
+}
+
+.reviewbird-button-primary:focus-visible,
+.reviewbird-button-secondary:focus-visible {
+	outline: 2px solid var(--reviewbird-teal-dark);
+	outline-offset: 4px;
 }
 
 .reviewbird-email-visual {
@@ -552,28 +526,9 @@ body.reviewbird_page_reviewbird-settings .wrap {
 		font-size: clamp(2.55rem, 11vw, 3.35rem);
 	}
 
-	.reviewbird-setup-steps small {
-		display: block;
-		margin: 0.15rem 0 0;
-	}
-
-	.reviewbird-setup-steps small::before {
-		display: none;
-	}
-
-	.reviewbird-button-primary {
+	.reviewbird-button-primary,
+	.reviewbird-button-secondary {
 		width: 100%;
-	}
-
-	.reviewbird-risk-line {
-		grid-template-columns: 1fr;
-		gap: 0.5rem;
-	}
-
-	.reviewbird-trust-line {
-		align-items: flex-start;
-		flex-direction: column;
-		gap: 0.6rem;
 	}
 }
 

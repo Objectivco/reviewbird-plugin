@@ -150,17 +150,25 @@ async function clearHealthCache() {
 	}
 }
 
-async function fetchHealthStatus() {
+export async function fetchHealthStatus( signal ) {
 	const response = await fetch(
-		`${window.reviewbirdAdmin.apiUrl}/api/woocommerce/health?domain=${window.location.hostname}`,
+		`${window.reviewbirdAdmin.apiUrl}/api/woocommerce/health?domain=${encodeURIComponent(window.reviewbirdAdmin.siteDomain || window.location.hostname)}`,
 		{
 			method: 'GET',
+			signal,
+			cache: 'no-store',
 			headers: { 'Accept': 'application/json' }
 		}
 	);
 
 	const data = await response.json().catch(() => ({}));
-	const status = response.ok ? data.status : (data.status || 'unhealthy');
+	if ( !response.ok && !(response.status === 404 && data.status === 'not_connected') ) {
+		throw new Error('Unable to check the store connection');
+	}
+	if ( !data.status ) {
+		throw new Error('Invalid store status');
+	}
+	const status = data.status;
 
 	return { data, status };
 }

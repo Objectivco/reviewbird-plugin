@@ -234,7 +234,9 @@ class Settings {
 				),
 				admin_url( 'admin-post.php' )
 			),
-			'dashboardUrl'     => 'https://app.reviewbird.com/dashboard',
+			'dashboardUrl'     => reviewbird_get_api_url() . '/dashboard',
+			'settingsUrl'      => admin_url( 'admin.php?page=' . self::SETTINGS_SLUG ),
+			'siteDomain'       => wp_parse_url( home_url(), PHP_URL_HOST ),
 			'enableSchema'     => reviewbird_is_schema_enabled(),
 			'enableWidget'     => reviewbird_is_widget_enabled(),
 			'forceReviewsOpen' => reviewbird_is_force_reviews_open(),
