@@ -685,7 +685,7 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 			continue;
 		}
 
-		$author_name = $review['author']['name'] ?? 'Anonymous';
+		$author_name = $review['author']['name'] ?? __( 'Anonymous', 'reviewbird' );
 		$title       = wp_strip_all_tags( $review['title'] ?? '' );
 		$body        = wp_strip_all_tags( $review['body'] ?? '' );
 
@@ -705,7 +705,8 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 		$html .= '<header>';
 		$html .= sprintf(
 			'<span class="reviewbird-ssr-rating" aria-label="%s">%d/5</span>',
-			esc_attr( sprintf( 'Rated %d out of 5', $rating ) ),
+			/* translators: %d: review rating, from 1 to 5. */
+			esc_attr( sprintf( __( 'Rated %d out of 5', 'reviewbird' ), $rating ) ),
 			$rating
 		);
 		$html .= sprintf( '<strong class="reviewbird-ssr-author">%s</strong>', esc_html( $author_name ) );

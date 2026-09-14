@@ -78,6 +78,13 @@ class Plugin {
 	 * Initialize plugin hooks.
 	 */
 	private function init_hooks() {
+		add_action(
+			'init',
+			function () {
+				load_plugin_textdomain( 'reviewbird', false, dirname( REVIEWBIRD_PLUGIN_BASENAME ) . '/languages' );
+			}
+		);
+
 		// REST API routes.
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 
@@ -327,12 +334,12 @@ class Plugin {
 	}
 
 	/**
-	 * Get the two-letter language code from the current locale.
+	 * Get the language tag from the current WordPress locale.
 	 *
-	 * @return string Two-letter language code (e.g., 'en' from 'en_US').
+	 * @return string Language tag (e.g., 'pt-BR' from 'pt_BR').
 	 */
 	private function get_language_code() {
-		return strtolower( substr( get_locale(), 0, 2 ) );
+		return str_replace( '_', '-', implode( '_', array_slice( explode( '_', get_locale() ), 0, 2 ) ) );
 	}
 
 	/**

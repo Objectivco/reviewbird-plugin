@@ -120,6 +120,19 @@ namespace {
 
 	final class WidgetEnqueueTest extends TestCase {
 
+		public function test_showcase_locale_keeps_regional_language_variants(): void {
+			require_once dirname( __DIR__ ) . '/src/Core/Plugin.php';
+			$plugin = ( new \ReflectionClass( \reviewbird\Core\Plugin::class ) )->newInstanceWithoutConstructor();
+			$method = new \ReflectionMethod( $plugin, 'get_language_code' );
+			$method->setAccessible( true );
+			foreach ( array( 'pt_BR' => 'pt-BR', 'pt_PT' => 'pt-PT', 'zh_TW' => 'zh-TW', 'de_DE_formal' => 'de-DE', 'pt_PT_ao90' => 'pt-PT', 'ja' => 'ja' ) as $locale => $expected ) {
+				$GLOBALS['reviewbird_test_showcase_locale'] = $locale;
+				self::assertSame( $expected, $method->invoke( $plugin ) );
+			}
+			unset( $GLOBALS['reviewbird_test_showcase_locale'] );
+		}
+
+
 		protected function setUp(): void {
 			parent::setUp();
 
@@ -205,5 +218,11 @@ namespace {
 				$GLOBALS['reviewbird_test_post_meta'][4100]['_reviewbird_rating_counts']
 			);
 		}
+	}
+}
+
+namespace reviewbird\Core {
+	function get_locale() {
+		return $GLOBALS['reviewbird_test_showcase_locale'] ?? 'en_US';
 	}
 }

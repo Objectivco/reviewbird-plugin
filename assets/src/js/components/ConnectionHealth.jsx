@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 const HEALTH_CHECK_INTERVAL = 300000; // 5 minutes
 
@@ -196,16 +196,10 @@ function getActionUrl(status, healthData) {
 
 function getStatusText(status, healthData) {
 	if (status === 'unhealthy' && healthData?.error_code) {
-		return `${__('Connection Issue', 'reviewbird')} (${healthData.error_code})`;
+		// translators: %s: connection error code.
+		return sprintf(__('Connection Issue (%s)', 'reviewbird'), healthData.error_code);
 	}
 	return STATUS_CONFIG[status]?.text || STATUS_CONFIG.checking.text;
-}
-
-function getStatusMessage(status, healthData) {
-	if (healthData?.message) {
-		return healthData.message;
-	}
-	return STATUS_CONFIG[status]?.message || STATUS_CONFIG.checking.message;
 }
 
 export default function ConnectionHealth() {
@@ -225,7 +219,7 @@ export default function ConnectionHealth() {
 		} catch (error) {
 			console.error('Health check failed:', error);
 			setHealthStatus('error');
-			setHealthData({ message: 'Unable to reach Reviewbird API' });
+			setHealthData(null);
 		}
 
 		setLastChecked(new Date());
@@ -271,7 +265,7 @@ export default function ConnectionHealth() {
 			</div>
 			{/* Row 2: Description, link, timestamp (indented to align with title) */}
 			<div className="mt-2 ml-8 text-sm text-gray-600">
-				<p>{getStatusMessage(healthStatus, healthData)}</p>
+				<p>{config.message}</p>
 				{!isChecking && (
 					<a
 						href={getActionUrl(healthStatus, healthData)}
@@ -286,7 +280,11 @@ export default function ConnectionHealth() {
 			</div>
 			{lastChecked && (
 				<p className="mt-2 ml-8 text-xs text-gray-500">
-					{__('Last checked:', 'reviewbird')} {lastChecked.toLocaleTimeString()}
+					{sprintf(
+						// translators: %s: time of the last connection check.
+						__('Last checked: %s', 'reviewbird'),
+						lastChecked.toLocaleTimeString(window.reviewbirdAdmin.locale)
+					)}
 				</p>
 			)}
 		</div>

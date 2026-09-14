@@ -1,4 +1,8 @@
-import { useEffect, useState } from '@wordpress/element';
+import {
+	useEffect,
+	useState,
+	createInterpolateElement,
+} from '@wordpress/element';
 import ConnectionHealth, { fetchHealthStatus } from './ConnectionHealth.jsx';
 import { __ } from '@wordpress/i18n';
 import reviewbirdLogo from '../../images/logo-dark.svg';
@@ -347,16 +351,18 @@ export default function WelcomeScreen( {
 											</span>
 											<span className="reviewbird-email-sender-copy">
 												<strong>
-													{ __(
-														'Reviewbird',
-														'reviewbird'
-													) }{ ' ' }
-													<span className="reviewbird-email-sender-store">
-														{ __(
-															'for Aster & Oak',
+													{ createInterpolateElement(
+														// translators: Keep the <store> tags around the example store name.
+														__(
+															'Reviewbird <store>for Aster & Oak</store>',
 															'reviewbird'
-														) }
-													</span>
+														),
+														{
+															store: (
+																<span className="reviewbird-email-sender-store" />
+															),
+														}
+													) }
 												</strong>
 												<small>
 													{ __(
