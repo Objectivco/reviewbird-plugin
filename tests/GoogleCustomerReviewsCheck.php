@@ -231,6 +231,8 @@ namespace {
 	check( false === strpos( $url, 'wc_order_key' ) && false === strpos( $url, 'buyer' ), 'Link exposes order key or email.' );
 	check( 64 === strlen( $token ), 'Unexpected signature.' );
 	check( 0 === $GLOBALS['gcr_saves'], 'URL GET caused a write.' );
+	check( ! isset( $GLOBALS['gcr_hooks']['woocommerce_admin_order_data_after_order_details'] ), 'GCR controls are registered on the order admin screen.' );
+	check( 'add_order_response' === $GLOBALS['gcr_hooks']['woocommerce_rest_prepare_shop_order_object'][0][1], 'GCR fields are not registered on the order API.' );
 	check( ! isset( $GLOBALS['gcr_hooks']['woocommerce_thankyou'] ), 'Widget still uses the late native thank-you hook.' );
 	check( 'render_prompt' === $GLOBALS['gcr_hooks']['woocommerce_before_thankyou'][0][1] && 5 === $GLOBALS['gcr_hooks']['woocommerce_before_thankyou'][1], 'Native widget is not at the start of the thank-you page.' );
 	check( 'render_checkoutwc_prompt' === $GLOBALS['gcr_hooks']['cfw_thank_you_content'][0][1] && 55 === $GLOBALS['gcr_hooks']['cfw_thank_you_content'][1] && 1 === $GLOBALS['gcr_hooks']['cfw_thank_you_content'][2], 'CheckoutWC widget is not below the order status section.' );

@@ -178,31 +178,6 @@ function start() {
 	document
 		.querySelectorAll( '[data-reviewbird-gcr]' )
 		.forEach( initGoogleCustomerReviews );
-	document.querySelectorAll( '[data-gcr-copy]' ).forEach( ( button ) => {
-		button.addEventListener( 'click', async () => {
-			const status = button.parentElement.querySelector(
-				'[data-gcr-copy-status]'
-			);
-			try {
-				await window.navigator.clipboard.writeText(
-					button.dataset.gcrUrl
-				);
-				if ( status ) {
-					status.textContent =
-						button.dataset.gcrCopied || 'Link copied.';
-				}
-			} catch {
-				button.parentElement
-					.querySelector( 'input[readonly]' )
-					?.select();
-				if ( status ) {
-					status.textContent =
-						button.dataset.gcrCopyError ||
-						'Select and copy the link.';
-				}
-			}
-		} );
-	} );
 }
 
 if ( document.readyState === 'loading' ) {

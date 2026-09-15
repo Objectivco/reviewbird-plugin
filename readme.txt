@@ -229,7 +229,7 @@ For development: `pnpm run dev`
 
 = 1.2.0 =
 New - Add a Google Customer Reviews prompt to WooCommerce and CheckoutWC order confirmation pages. Customers can open Google's survey opt-in after selecting Yes.
-New - Add signed Google opt-in links to the order admin screen and WooCommerce order API.
+New - Add signed Google opt-in links to the WooCommerce order API for review request emails.
 New - Add Google Customer Reviews controls, editable prompt text, and a preview to the plugin settings.
 New - Report the first Yes selection and whether a customer selected No through the order API. Repeated No selections count once per order.
 Update - Refresh the plugin settings layout and reduce the Google Customer Reviews widget shadow.

@@ -39,7 +39,6 @@ class GoogleCustomerReviews {
 		add_action( 'template_redirect', array( $this, 'render_link_page' ), 1, 0 );
 		add_action( 'rest_api_init', array( $this, 'register_routes' ), 10, 0 );
 		add_filter( 'woocommerce_rest_prepare_shop_order_object', array( $this, 'add_order_response' ), 10, 2 );
-		add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'render_admin_order' ), 10, 1 );
 	}
 
 	/**
@@ -389,7 +388,7 @@ class GoogleCustomerReviews {
 	}
 
 	/**
-	 * Enqueue the small shared prompt and copy-link bundle.
+	 * Enqueue assets for the prompt and signed-link page.
 	 */
 	private function enqueue_assets(): void {
 		$asset_file = REVIEWBIRD_PLUGIN_DIR . 'assets/build/google-customer-reviews.asset.php';
@@ -458,43 +457,5 @@ class GoogleCustomerReviews {
 			'no_click_count' => $no_clicks ? 1 : 0,
 		);
 		return $response;
-	}
-
-	/**
-	 * Show the prompt status and a copyable link on the order edit screen.
-	 *
-	 * @param WC_Order $order Order.
-	 */
-	public function render_admin_order( $order ): void {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			return;
-		}
-		$url       = self::opt_in_url( $order );
-		$timestamp = $order->get_meta( self::YES_META );
-		if ( ! $url && ! $timestamp ) {
-			return;
-		}
-		$this->enqueue_assets();
-		?>
-		<div class="reviewbird-gcr-order">
-			<h3><?php esc_html_e( 'Google Customer Reviews', 'reviewbird' ); ?></h3>
-			<p>
-				<?php
-				if ( $timestamp ) {
-					// translators: %s: Date when the customer selected Yes on the Reviewbird prompt.
-					echo esc_html( sprintf( __( 'Selected Yes on the Reviewbird prompt: %s', 'reviewbird' ), $timestamp ) );
-				} else {
-					esc_html_e( 'The customer has not selected Yes on the Reviewbird prompt.', 'reviewbird' );
-				}
-				?>
-			</p>
-			<?php if ( $url ) : ?>
-				<label for="reviewbird-gcr-link"><?php esc_html_e( 'Google opt-in link', 'reviewbird' ); ?></label>
-				<input id="reviewbird-gcr-link" type="text" value="<?php echo esc_attr( $url ); ?>" readonly class="widefat" />
-				<button type="button" class="button" data-gcr-copy data-gcr-url="<?php echo esc_attr( $url ); ?>" data-gcr-copied="<?php esc_attr_e( 'Link copied.', 'reviewbird' ); ?>" data-gcr-copy-error="<?php esc_attr_e( 'Select and copy the link.', 'reviewbird' ); ?>"><?php esc_html_e( 'Copy link', 'reviewbird' ); ?></button>
-				<span data-gcr-copy-status role="status"></span>
-			<?php endif; ?>
-		</div>
-		<?php
 	}
 }

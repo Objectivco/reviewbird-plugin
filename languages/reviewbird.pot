@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-15T21:50:16+00:00\n"
+"POT-Creation-Date: 2026-09-15T22:17:26+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
@@ -196,86 +196,59 @@ msgstr ""
 msgid "Rated %d out of 5"
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:114
+#: src/Integration/GoogleCustomerReviews.php:113
 msgid "Rate your purchase experience"
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:115
+#: src/Integration/GoogleCustomerReviews.php:114
 msgid "We use Google Customer Reviews to collect feedback about your purchase. Would you like to receive a short survey after your order arrives?"
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:116
+#: src/Integration/GoogleCustomerReviews.php:115
 msgid "Yes"
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:117
+#: src/Integration/GoogleCustomerReviews.php:116
 msgid "No"
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:293
-#: src/Integration/GoogleCustomerReviews.php:333
-#: src/Integration/GoogleCustomerReviews.php:382
+#: src/Integration/GoogleCustomerReviews.php:292
+#: src/Integration/GoogleCustomerReviews.php:332
+#: src/Integration/GoogleCustomerReviews.php:381
 msgid "This review request is not available."
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:355
-#: src/Integration/GoogleCustomerReviews.php:422
+#: src/Integration/GoogleCustomerReviews.php:354
+#: src/Integration/GoogleCustomerReviews.php:421
 msgid "Your choice could not be saved. Please try again."
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:382
+#: src/Integration/GoogleCustomerReviews.php:381
+#: src/Integration/GoogleCustomerReviews.php:428
 #: src/Integration/GoogleCustomerReviews.php:429
-#: src/Integration/GoogleCustomerReviews.php:430
-#: src/Integration/GoogleCustomerReviews.php:480
 #: templates/google-customer-reviews.php:19
 #: assets/src/js/components/GoogleCustomerReviews.jsx:153
 msgid "Google Customer Reviews"
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:421
+#: src/Integration/GoogleCustomerReviews.php:420
 msgid "Loading Google Customer Reviews…"
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:423
+#: src/Integration/GoogleCustomerReviews.php:422
 msgid "Google Customer Reviews could not load. Please try again."
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:424
+#: src/Integration/GoogleCustomerReviews.php:423
 msgid "Try again"
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:425
+#: src/Integration/GoogleCustomerReviews.php:424
 msgid "You can close this page when you finish."
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:440
+#: src/Integration/GoogleCustomerReviews.php:439
 msgid "Enable JavaScript to use Google Customer Reviews."
-msgstr ""
-
-#. translators: %s: Date when the customer selected Yes on the Reviewbird prompt.
-#: src/Integration/GoogleCustomerReviews.php:485
-#, php-format
-msgid "Selected Yes on the Reviewbird prompt: %s"
-msgstr ""
-
-#: src/Integration/GoogleCustomerReviews.php:487
-msgid "The customer has not selected Yes on the Reviewbird prompt."
-msgstr ""
-
-#: src/Integration/GoogleCustomerReviews.php:492
-msgid "Google opt-in link"
-msgstr ""
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Link copied."
-msgstr ""
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Select and copy the link."
-msgstr ""
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Copy link"
 msgstr ""
 
 #: src/Integration/HealthScheduler.php:171
