@@ -22,40 +22,6 @@ use WP_Error;
 class ProductsController {
 
 	/**
-	 * Create an error response.
-	 *
-	 * @param string $code    Error code.
-	 * @param string $message Error message.
-	 * @param int    $status  HTTP status code.
-	 * @return WP_Error The error response.
-	 */
-	private static function error( string $code, string $message, int $status = 400 ): WP_Error {
-		return new WP_Error( $code, $message, array( 'status' => $status ) );
-	}
-
-	/**
-	 * Check if WooCommerce is active.
-	 *
-	 * @return WP_Error|null Error if WooCommerce is not active, null otherwise.
-	 */
-	private static function require_woocommerce() {
-		if ( ! class_exists( 'WooCommerce' ) ) {
-			return self::error( 'woocommerce_not_active', __( 'WooCommerce is not active', 'reviewbird' ), 503 );
-		}
-		return null;
-	}
-
-	/**
-	 * Get image URLs from an array of attachment IDs.
-	 *
-	 * @param array $image_ids Array of attachment IDs.
-	 * @return array Array of image URLs.
-	 */
-	private static function get_image_urls( array $image_ids ): array {
-		return array_filter( array_map( 'wp_get_attachment_url', $image_ids ) );
-	}
-
-	/**
 	 * Register REST API routes.
 	 */
 	public function register_routes(): void {
@@ -111,9 +77,8 @@ class ProductsController {
 	 * @return WP_REST_Response|WP_Error Response or error.
 	 */
 	public function get_products( WP_REST_Request $request ) {
-		$wc_error = self::require_woocommerce();
-		if ( $wc_error ) {
-			return $wc_error;
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_Error( 'woocommerce_not_active', __( 'WooCommerce is not active', 'reviewbird' ), array( 'status' => 503 ) );
 		}
 
 		$args = array(
@@ -150,15 +115,14 @@ class ProductsController {
 	 * @return WP_REST_Response|WP_Error Response or error.
 	 */
 	public function get_product( WP_REST_Request $request ) {
-		$wc_error = self::require_woocommerce();
-		if ( $wc_error ) {
-			return $wc_error;
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_Error( 'woocommerce_not_active', __( 'WooCommerce is not active', 'reviewbird' ), array( 'status' => 503 ) );
 		}
 
 		$product = wc_get_product( absint( $request->get_param( 'id' ) ) );
 
 		if ( ! $product || ! $product->exists() ) {
-			return self::error( 'product_not_found', __( 'Product not found', 'reviewbird' ), 404 );
+			return new WP_Error( 'product_not_found', __( 'Product not found', 'reviewbird' ), array( 'status' => 404 ) );
 		}
 
 		if ( $product->is_type( 'variation' ) ) {
@@ -182,21 +146,6 @@ class ProductsController {
 	 * @return array Formatted product data with variations.
 	 */
 	private function format_product_with_variations( $product ): array {
-		$product_data               = $this->format_product( $product );
-		$product_data['variations'] = $product->is_type( 'variable' )
-			? $this->get_product_variations( $product )
-			: array();
-
-		return $product_data;
-	}
-
-	/**
-	 * Format product data.
-	 *
-	 * @param \WC_Product $product Product object.
-	 * @return array Formatted product data.
-	 */
-	private function format_product( $product ): array {
 		return array(
 			'id'               => $product->get_id(),
 			'name'             => $product->get_name(),
@@ -209,11 +158,12 @@ class ProductsController {
 			'brand'            => $this->get_product_brand( $product ),
 			'price'            => $product->get_price(),
 			'image'            => wp_get_attachment_url( $product->get_image_id() ),
-			'images'           => self::get_image_urls( $product->get_gallery_image_ids() ),
+			'images'           => array_filter( array_map( 'wp_get_attachment_url', $product->get_gallery_image_ids() ) ),
 			'stock_status'     => $product->get_stock_status(),
 			'in_stock'         => $product->is_in_stock(),
 			'tags'             => $this->get_product_tags( $product ),
 			'categories'       => $this->get_product_categories( $product ),
+			'variations'       => $product->is_type( 'variable' ) ? $this->get_product_variations( $product ) : array(),
 		);
 	}
 

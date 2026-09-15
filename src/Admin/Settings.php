@@ -175,7 +175,11 @@ class Settings {
 			return;
 		}
 
-		$asset_data = $this->get_asset_data();
+		$asset_file = REVIEWBIRD_PLUGIN_DIR . 'assets/build/admin.asset.php';
+		$asset_data = file_exists( $asset_file ) ? include $asset_file : array(
+			'dependencies' => array(),
+			'version'      => REVIEWBIRD_VERSION,
+		);
 
 		wp_enqueue_script(
 			'reviewbird-admin',
@@ -203,21 +207,6 @@ class Settings {
 		);
 		wp_style_add_data( 'reviewbird-admin', 'rtl', 'replace' );
 		wp_enqueue_style( 'reviewbird-gcr-preview', REVIEWBIRD_PLUGIN_URL . 'assets/build/google-customer-reviews.css', array( 'reviewbird-admin' ), $asset_data['version'] );
-	}
-
-	/**
-	 * Get asset data from the build manifest.
-	 *
-	 * @return array{dependencies: array<string>, version: string}
-	 */
-	private function get_asset_data(): array {
-		$asset_file    = REVIEWBIRD_PLUGIN_DIR . 'assets/build/admin.asset.php';
-		$default_asset = array(
-			'dependencies' => array(),
-			'version'      => REVIEWBIRD_VERSION,
-		);
-
-		return file_exists( $asset_file ) ? include $asset_file : $default_asset;
 	}
 
 	/**
@@ -340,7 +329,9 @@ class Settings {
 	 */
 	public function render_settings_page(): void {
 		// Refresh star color cache when admin visits settings page.
-		$this->maybe_refresh_star_color();
+		if ( false === get_transient( 'reviewbird_star_color' ) ) {
+			StarRatingDisplay::fetch_and_cache_star_color();
+		}
 
 		?>
 		<div class="wrap">
@@ -358,20 +349,6 @@ class Settings {
 	private function is_reviewbird_screen( string $hook_suffix ): bool {
 		return false !== strpos( $hook_suffix, self::GET_STARTED_SLUG )
 			|| false !== strpos( $hook_suffix, self::SETTINGS_SLUG );
-	}
-
-	/**
-	 * Refresh the star color cache if needed.
-	 *
-	 * Fetches from widget config API when transient is expired or missing.
-	 */
-	private function maybe_refresh_star_color(): void {
-		$cached_color = get_transient( 'reviewbird_star_color' );
-
-		// Only fetch if not cached.
-		if ( false === $cached_color ) {
-			StarRatingDisplay::fetch_and_cache_star_color();
-		}
 	}
 
 	/**

@@ -76,7 +76,7 @@ class CouponController {
 	 */
 	public function create_coupon( WP_REST_Request $request ) {
 		if ( ! class_exists( 'WooCommerce' ) ) {
-			return $this->error( 'woocommerce_not_active', __( 'WooCommerce is not active', 'reviewbird' ), 400 );
+			return new WP_Error( 'woocommerce_not_active', __( 'WooCommerce is not active', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
 		$code          = $request->get_param( 'code' );
@@ -86,7 +86,7 @@ class CouponController {
 		$amount        = $request->get_param( 'amount' );
 
 		if ( empty( $code ) ) {
-			return $this->error( 'missing_code', __( 'Coupon code is required', 'reviewbird' ), 400 );
+			return new WP_Error( 'missing_code', __( 'Coupon code is required', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
 		try {
@@ -106,7 +106,7 @@ class CouponController {
 				200
 			);
 		} catch ( \Exception $e ) {
-			return $this->error( 'coupon_creation_failed', $e->getMessage(), 500 );
+			return new WP_Error( 'coupon_creation_failed', $e->getMessage(), array( 'status' => 500 ) );
 		}
 	}
 
@@ -119,17 +119,22 @@ class CouponController {
 	 * @return int|WP_Error Coupon ID or error.
 	 */
 	private function clone_template_coupon( $template_code, $new_code, $expiry_date ) {
-		$template_coupon = $this->find_coupon_by_code( $template_code );
+		$template_id = wc_get_coupon_id_by_code( $template_code );
 
-		if ( ! $template_coupon ) {
+		if ( ! $template_id ) {
 			// translators: %s: Template coupon code.
-			return $this->error( 'template_not_found', sprintf( __( "Template coupon '%s' not found", 'reviewbird' ), $template_code ), 404 );
+			return new WP_Error( 'template_not_found', sprintf( __( "Template coupon '%s' not found", 'reviewbird' ), $template_code ), array( 'status' => 404 ) );
 		}
 
-		$coupon = new \WC_Coupon();
+		$template_coupon = new \WC_Coupon( $template_id );
+		$coupon          = new \WC_Coupon();
 		$coupon->set_code( strtoupper( $new_code ) );
 
-		$this->copy_coupon_properties( $template_coupon, $coupon );
+		foreach ( self::CLONEABLE_PROPERTIES as $property ) {
+			$getter = "get_{$property}";
+			$setter = "set_{$property}";
+			$coupon->$setter( $template_coupon->$getter() );
+		}
 
 		if ( ! empty( $expiry_date ) ) {
 			$coupon->set_date_expires( $expiry_date );
@@ -152,7 +157,7 @@ class CouponController {
 	 */
 	private function create_new_coupon( $code, $discount_type, $amount, $expiry_date ) {
 		if ( empty( $discount_type ) || empty( $amount ) ) {
-			return $this->error( 'missing_parameters', __( 'discount_type and amount are required when not using template', 'reviewbird' ), 400 );
+			return new WP_Error( 'missing_parameters', __( 'discount_type and amount are required when not using template', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
 		$coupon = new \WC_Coupon();
@@ -194,43 +199,6 @@ class CouponController {
 	}
 
 	/**
-	 * Find a coupon by its code.
-	 *
-	 * @param string $code Coupon code to find.
-	 * @return \WC_Coupon|null Coupon object or null if not found.
-	 */
-	private function find_coupon_by_code( $code ) {
-		$coupons = get_posts(
-			array(
-				'post_type'      => 'shop_coupon',
-				'post_status'    => 'publish',
-				'posts_per_page' => 1,
-				'title'          => $code,
-			)
-		);
-
-		if ( empty( $coupons ) ) {
-			return null;
-		}
-
-		return new \WC_Coupon( $coupons[0]->ID );
-	}
-
-	/**
-	 * Copy coupon properties from source to destination.
-	 *
-	 * @param \WC_Coupon $source      Source coupon to copy from.
-	 * @param \WC_Coupon $destination Destination coupon to copy to.
-	 */
-	private function copy_coupon_properties( $source, $destination ) {
-		foreach ( self::CLONEABLE_PROPERTIES as $property ) {
-			$getter = "get_{$property}";
-			$setter = "set_{$property}";
-			$destination->$setter( $source->$getter() );
-		}
-	}
-
-	/**
 	 * Add reviewbird metadata to a coupon.
 	 *
 	 * @param \WC_Coupon  $coupon        Coupon object.
@@ -242,17 +210,5 @@ class CouponController {
 		if ( $template_code ) {
 			$coupon->add_meta_data( '_reviewbird_template', $template_code );
 		}
-	}
-
-	/**
-	 * Create a WP_Error response.
-	 *
-	 * @param string $code    Error code.
-	 * @param string $message Error message.
-	 * @param int    $status  HTTP status code.
-	 * @return WP_Error Error object.
-	 */
-	private function error( $code, $message, $status ) {
-		return new WP_Error( $code, $message, array( 'status' => $status ) );
 	}
 }

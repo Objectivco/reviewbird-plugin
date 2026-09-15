@@ -41,15 +41,6 @@ class StarRatingDisplay {
 			return;
 		}
 
-		$this->register_hooks();
-	}
-
-	/**
-	 * Register WooCommerce rating display hooks.
-	 *
-	 * Filters the rating HTML output to work with both classic and block themes.
-	 */
-	private function register_hooks(): void {
 		// Filter rating HTML output - works for both classic and block themes.
 		add_filter( 'woocommerce_product_get_rating_html', array( $this, 'filter_rating_html' ), 999, 3 );
 
@@ -92,46 +83,6 @@ class StarRatingDisplay {
 	}
 
 	/**
-	 * Display rating in shop/archive loop.
-	 *
-	 * Ensures ratings appear on shop pages even if the theme doesn't
-	 * include rating display in its loop template.
-	 */
-	public function display_loop_rating(): void {
-		global $product;
-
-		if ( ! $product instanceof \WC_Product ) {
-			return;
-		}
-
-		// Check if reviews are enabled globally.
-		if ( ! wc_review_ratings_enabled() ) {
-			return;
-		}
-
-		// Don't show rating if reviews are disabled for this product.
-		if ( ! comments_open( $product->get_id() ) ) {
-			return;
-		}
-
-		$rating = $product->get_average_rating();
-		$count  = $product->get_rating_count();
-
-		// Only show if there are reviews.
-		if ( $count < 1 ) {
-			return;
-		}
-
-		// Make rating non-interactive for shop loop.
-		add_filter( 'reviewbird_rating_is_static', '__return_true' );
-
-		// Use wc_get_rating_html which triggers our filter_rating_html.
-		echo wp_kses( wc_get_rating_html( $rating, $count ), self::allowed_rating_tags() );
-
-		remove_filter( 'reviewbird_rating_is_static', '__return_true' );
-	}
-
-	/**
 	 * Filter the WooCommerce rating HTML output.
 	 *
 	 * Replaces the native rating HTML with reviewbird's custom star display.
@@ -156,8 +107,8 @@ class StarRatingDisplay {
 			return '';
 		}
 
-		$star_color = $this->get_star_color();
-		$stars_html = $this->generate_stars_html( $rating, $star_color );
+		$star_color = get_transient( self::STAR_COLOR_TRANSIENT );
+		$stars_html = $this->generate_stars_html( $rating, $star_color ? $star_color : self::DEFAULT_STAR_COLOR );
 
 		// Check if rating should be non-interactive (e.g., shop loop context).
 		$is_static = apply_filters( 'reviewbird_rating_is_static', false );
@@ -234,21 +185,6 @@ class StarRatingDisplay {
 		}
 
 		return $html;
-	}
-
-	/**
-	 * Get the star color from transient or fallback.
-	 *
-	 * @return string The star color hex code.
-	 */
-	private function get_star_color(): string {
-		$star_color = get_transient( self::STAR_COLOR_TRANSIENT );
-
-		if ( false !== $star_color && ! empty( $star_color ) ) {
-			return $star_color;
-		}
-
-		return self::DEFAULT_STAR_COLOR;
 	}
 
 	/**

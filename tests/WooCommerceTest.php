@@ -37,10 +37,6 @@ namespace reviewbird\Integration {
 		return $GLOBALS['reviewbird_test_can_show_widget'];
 	}
 
-	function reviewbird_is_widget_enabled() {
-		return $GLOBALS['reviewbird_test_widget_enabled'];
-	}
-
 	function __( $text ) {
 		return $text;
 	}
@@ -95,11 +91,8 @@ namespace reviewbird\Tests {
 			self::assertSame( 'system_status', $field[0] );
 			self::assertSame( 'reviewbird_widget_enabled', $field[1] );
 
-			$GLOBALS['reviewbird_test_widget_enabled'] = true;
-			self::assertTrue( $field[2]['get_callback']() );
-
-			$GLOBALS['reviewbird_test_widget_enabled'] = false;
-			self::assertFalse( $field[2]['get_callback']() );
+			self::assertSame( 'reviewbird_is_widget_enabled', $field[2]['get_callback'] );
+			self::assertSame( 'boolean', $field[2]['schema']['type'] );
 		}
 
 		public function test_suppresses_default_woocommerce_review_output_and_query(): void {

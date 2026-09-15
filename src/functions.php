@@ -594,9 +594,7 @@ function reviewbird_page_should_enqueue_widget(): bool {
  * @return void
  */
 function reviewbird_enqueue_widget_script(): void {
-	static $enqueued = false;
-
-	if ( $enqueued || ! reviewbird_can_show_widget() ) {
+	if ( wp_script_is( 'reviewbird-widget' ) || wp_script_is( 'reviewbird-widget', 'done' ) || ! reviewbird_can_show_widget() ) {
 		return;
 	}
 
@@ -630,8 +628,6 @@ function reviewbird_enqueue_widget_script(): void {
 		'reviewbirdConfig',
 		$config
 	);
-
-	$enqueued = true;
 }
 
 /**

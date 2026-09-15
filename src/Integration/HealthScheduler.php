@@ -119,7 +119,12 @@ class HealthScheduler {
 				return;
 			}
 		} catch ( \Exception $error ) {
-			$this->log_refresh_error( $error->getMessage() );
+			if ( function_exists( 'wc_get_logger' ) ) {
+				wc_get_logger()->warning(
+					sprintf( 'Health status refresh failed: %s', $error->getMessage() ),
+					array( 'source' => 'reviewbird' )
+				);
+			}
 		}
 		as_schedule_single_action( time() + 60, self::CLEANUP_HOOK, array(), 'reviewbird', false, 0 );
 	}
@@ -141,7 +146,12 @@ class HealthScheduler {
 			if ( 404 === ( $error_data['status'] ?? null ) && 'not_connected' === ( $error_data['response']['status'] ?? null ) ) {
 				$response = $error_data['response'];
 			} else {
-				$this->log_refresh_error( $response->get_error_message() );
+				if ( function_exists( 'wc_get_logger' ) ) {
+					wc_get_logger()->warning(
+						sprintf( 'Health status refresh failed: %s', $response->get_error_message() ),
+						array( 'source' => 'reviewbird' )
+					);
+				}
 				return $response;
 			}
 		}
@@ -161,35 +171,12 @@ class HealthScheduler {
 			update_option( 'reviewbird_store_id', $store_id );
 		}
 
-		$this->log_refresh_success( $response['status'] );
-		return $response;
-	}
-
-	/**
-	 * Log a successful refresh.
-	 *
-	 * @param string $status The health status.
-	 */
-	private function log_refresh_success( string $status ): void {
 		if ( function_exists( 'wc_get_logger' ) ) {
 			wc_get_logger()->debug(
-				sprintf( 'Health status refreshed: %s', $status ),
+				sprintf( 'Health status refreshed: %s', $response['status'] ),
 				array( 'source' => 'reviewbird' )
 			);
 		}
-	}
-
-	/**
-	 * Log a refresh error.
-	 *
-	 * @param string $error_message The error message.
-	 */
-	private function log_refresh_error( string $error_message ): void {
-		if ( function_exists( 'wc_get_logger' ) ) {
-			wc_get_logger()->warning(
-				sprintf( 'Health status refresh failed: %s', $error_message ),
-				array( 'source' => 'reviewbird' )
-			);
-		}
+		return $response;
 	}
 }

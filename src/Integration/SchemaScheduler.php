@@ -95,7 +95,12 @@ class SchemaScheduler {
 
 		update_post_meta( $product_id, self::META_KEY, $review_schemas );
 
-		$this->log_refresh_success( $product_id, count( $review_schemas ) );
+		if ( function_exists( 'wc_get_logger' ) ) {
+			wc_get_logger()->debug(
+				sprintf( 'Schema reviews refreshed for product %d: %d reviews', $product_id, count( $review_schemas ) ),
+				array( 'source' => 'reviewbird' )
+			);
+		}
 	}
 
 	/**
@@ -119,7 +124,12 @@ class SchemaScheduler {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			$this->log_fetch_error( $product_id, $response->get_error_message() );
+			if ( function_exists( 'wc_get_logger' ) ) {
+				wc_get_logger()->warning(
+					sprintf( 'Schema reviews fetch failed for product %d: %s', $product_id, $response->get_error_message() ),
+					array( 'source' => 'reviewbird' )
+				);
+			}
 			return $response;
 		}
 
@@ -128,7 +138,12 @@ class SchemaScheduler {
 
 		$code = wp_remote_retrieve_response_code( $response );
 		if ( $code < 200 || $code >= 300 || ! is_array( $data['reviews'] ?? null ) ) {
-			$this->log_fetch_error( $product_id, 'Invalid schema reviews response.' );
+			if ( function_exists( 'wc_get_logger' ) ) {
+				wc_get_logger()->warning(
+					sprintf( 'Schema reviews fetch failed for product %d: Invalid schema reviews response.', $product_id ),
+					array( 'source' => 'reviewbird' )
+				);
+			}
 			return new \WP_Error( 'reviewbird_invalid_schema_response', 'Invalid schema reviews response.' );
 		}
 
@@ -214,35 +229,5 @@ class SchemaScheduler {
 		$date = date_create( $date_string );
 
 		return $date ? $date->format( 'Y-m-d' ) : null;
-	}
-
-	/**
-	 * Log a successful refresh.
-	 *
-	 * @param int $product_id   Product ID.
-	 * @param int $review_count Number of reviews stored.
-	 */
-	private function log_refresh_success( int $product_id, int $review_count ): void {
-		if ( function_exists( 'wc_get_logger' ) ) {
-			wc_get_logger()->debug(
-				sprintf( 'Schema reviews refreshed for product %d: %d reviews', $product_id, $review_count ),
-				array( 'source' => 'reviewbird' )
-			);
-		}
-	}
-
-	/**
-	 * Log a fetch error.
-	 *
-	 * @param int    $product_id    Product ID.
-	 * @param string $error_message Error message.
-	 */
-	private function log_fetch_error( int $product_id, string $error_message ): void {
-		if ( function_exists( 'wc_get_logger' ) ) {
-			wc_get_logger()->warning(
-				sprintf( 'Schema reviews fetch failed for product %d: %s', $product_id, $error_message ),
-				array( 'source' => 'reviewbird' )
-			);
-		}
 	}
 }

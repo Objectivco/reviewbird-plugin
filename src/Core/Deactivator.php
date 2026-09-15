@@ -26,13 +26,6 @@ class Deactivator {
 			as_unschedule_all_actions( 'reviewbird_refresh_schema_reviews' );
 			as_unschedule_all_actions( \reviewbird\Integration\HealthScheduler::CLEANUP_HOOK );
 		}
-		self::clear_transients();
-	}
-
-	/**
-	 * Clear plugin transients.
-	 */
-	private static function clear_transients(): void {
 		delete_transient( 'reviewbird_oauth_error' );
 		delete_transient( 'reviewbird_oauth_success' );
 		delete_transient( 'reviewbird_star_color' );

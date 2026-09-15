@@ -21,18 +21,6 @@ use WP_Error;
 class RatingsController {
 
 	/**
-	 * Create a validation error response.
-	 *
-	 * @param string $code    Error code.
-	 * @param string $message Error message.
-	 * @param int    $status  HTTP status code.
-	 * @return WP_Error The error response.
-	 */
-	private static function validation_error( string $code, string $message, int $status = 400 ): WP_Error {
-		return new WP_Error( $code, $message, array( 'status' => $status ) );
-	}
-
-	/**
 	 * Validate and sanitize a product ID.
 	 *
 	 * @param mixed $product_id The product ID to validate.
@@ -40,35 +28,20 @@ class RatingsController {
 	 */
 	private static function validate_product_id( $product_id ) {
 		if ( empty( $product_id ) ) {
-			return self::validation_error( 'missing_product_id', __( 'Product ID is required', 'reviewbird' ) );
+			return new WP_Error( 'missing_product_id', __( 'Product ID is required', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
 		$product_id = absint( $product_id );
 
 		if ( ! $product_id ) {
-			return self::validation_error( 'invalid_product_id', __( 'Invalid product ID', 'reviewbird' ) );
+			return new WP_Error( 'invalid_product_id', __( 'Invalid product ID', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
 		if ( 'product' !== get_post_type( $product_id ) ) {
-			return self::validation_error( 'product_not_found', __( 'Product not found', 'reviewbird' ), 404 );
+			return new WP_Error( 'product_not_found', __( 'Product not found', 'reviewbird' ), array( 'status' => 404 ) );
 		}
 
 		return $product_id;
-	}
-
-	/**
-	 * Log a message using WooCommerce logger.
-	 *
-	 * @param string $message Log message.
-	 * @param string $level   Log level (debug, info, error).
-	 */
-	private static function log( string $message, string $level = 'info' ): void {
-		if ( ! function_exists( 'wc_get_logger' ) ) {
-			return;
-		}
-
-		$logger = wc_get_logger();
-		$logger->$level( $message, array( 'source' => 'reviewbird' ) );
 	}
 
 	/**
@@ -90,15 +63,15 @@ class RatingsController {
 		}
 
 		if ( ! is_numeric( $avg_stars ) || $avg_stars < 1 || $avg_stars > 5 ) {
-			return self::validation_error( 'invalid_rating', __( 'Average stars must be a number between 1 and 5', 'reviewbird' ) );
+			return new WP_Error( 'invalid_rating', __( 'Average stars must be a number between 1 and 5', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
 		if ( ! is_numeric( $review_count ) || $review_count < 0 ) {
-			return self::validation_error( 'invalid_count', __( 'Review count must be a non-negative number', 'reviewbird' ) );
+			return new WP_Error( 'invalid_count', __( 'Review count must be a non-negative number', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
 		if ( ! empty( $rating_counts ) && ! is_array( $rating_counts ) ) {
-			return self::validation_error( 'invalid_rating_counts', __( 'Rating counts must be an array', 'reviewbird' ) );
+			return new WP_Error( 'invalid_rating_counts', __( 'Rating counts must be an array', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
 		update_post_meta( $product_id, '_reviewbird_avg_stars', floatval( $avg_stars ) );
@@ -114,7 +87,12 @@ class RatingsController {
 
 		do_action( 'reviewbird_rating_updated', $product_id, $avg_stars, $review_count );
 
-		self::log( sprintf( 'Rating updated for product %d: %.2f stars (%d reviews)', $product_id, $avg_stars, $review_count ) );
+		if ( function_exists( 'wc_get_logger' ) ) {
+			wc_get_logger()->info(
+				sprintf( 'Rating updated for product %d: %.2f stars (%d reviews)', $product_id, $avg_stars, $review_count ),
+				array( 'source' => 'reviewbird' )
+			);
+		}
 
 		return new WP_REST_Response(
 			array(
@@ -171,28 +149,30 @@ class RatingsController {
 		}
 
 		if ( empty( $customer_email ) ) {
-			return self::validation_error( 'missing_email', __( 'Customer email is required', 'reviewbird' ) );
+			return new WP_Error( 'missing_email', __( 'Customer email is required', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
 		if ( ! is_email( $customer_email ) ) {
-			return self::validation_error( 'invalid_email', __( 'Invalid email address', 'reviewbird' ) );
+			return new WP_Error( 'invalid_email', __( 'Invalid email address', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
 		$verified_purchase    = wc_customer_bought_product( $customer_email, null, $product_id );
 		$purchased_attributes = $verified_purchase ? $this->get_purchased_attributes( $customer_email, $product_id ) : array();
 		$location             = $this->get_customer_location( $customer_email );
 
-		self::log(
-			sprintf(
-				'Verified purchase check for product %d, email %s: %s, location: %s, attributes: %s',
-				$product_id,
-				$customer_email,
-				$verified_purchase ? 'true' : 'false',
-				$location ? $location : 'none',
-				! empty( $purchased_attributes ) ? wp_json_encode( $purchased_attributes ) : 'none'
-			),
-			'debug'
-		);
+		if ( function_exists( 'wc_get_logger' ) ) {
+			wc_get_logger()->debug(
+				sprintf(
+					'Verified purchase check for product %d, email %s: %s, location: %s, attributes: %s',
+					$product_id,
+					$customer_email,
+					$verified_purchase ? 'true' : 'false',
+					$location ? $location : 'none',
+					! empty( $purchased_attributes ) ? wp_json_encode( $purchased_attributes ) : 'none'
+				),
+				array( 'source' => 'reviewbird' )
+			);
+		}
 
 		$response = array(
 			'product_id'        => $product_id,
