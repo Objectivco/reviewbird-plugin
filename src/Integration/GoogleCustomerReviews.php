@@ -326,10 +326,6 @@ class GoogleCustomerReviews {
 		if ( true !== $authorized ) {
 			return $authorized;
 		}
-		$click_id = $request->get_param( 'click_id' );
-		if ( 'no' === $choice && ( ! is_string( $click_id ) || ! preg_match( '/\A[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\z/', $click_id ) ) ) {
-			return new WP_Error( 'reviewbird_gcr_invalid_click', __( 'This review request is not valid.', 'reviewbird' ), array( 'status' => 400 ) );
-		}
 
 		try {
 			$order = self::authorized_order( $request->get_param( 'id' ), $request->get_param( 'token' ) );
@@ -339,17 +335,9 @@ class GoogleCustomerReviews {
 			$order->read_meta_data( true );
 			$key   = 'yes' === $choice ? self::YES_META : self::NO_META;
 			$value = $order->get_meta( $key );
-			if ( 'no' === $choice ) {
-				$value = is_array( $value ) ? $value : array();
-				$save  = ! in_array( $click_id, $value, true );
-				if ( $save ) {
-					$value[] = $click_id;
-				}
-			} else {
-				$save  = ! $value;
-				$value = $value ? $value : gmdate( 'c' );
-			}
+			$save  = ! $value;
 			if ( $save ) {
+				$value = 'yes' === $choice ? gmdate( 'c' ) : 1;
 				$order->update_meta_data( $key, $value );
 				// Metadata alone does not advance the legacy order storage sync date.
 				$order->set_date_modified( time() );
@@ -358,7 +346,8 @@ class GoogleCustomerReviews {
 				}
 				// WooCommerce can catch save errors internally and still return an ID.
 				$order->read_meta_data( true );
-				if ( $value !== $order->get_meta( $key ) ) {
+				$saved_value = $order->get_meta( $key );
+				if ( ! $saved_value || ( 'yes' === $choice && $value !== $saved_value ) ) {
 					throw new \RuntimeException( 'Order choice was not saved.' );
 				}
 			}
@@ -366,7 +355,7 @@ class GoogleCustomerReviews {
 			return new WP_Error( 'reviewbird_gcr_save_failed', __( 'Your choice could not be saved. Please try again.', 'reviewbird' ), array( 'status' => 500 ) );
 		}
 
-		return new WP_REST_Response( 'yes' === $choice ? array( 'prompt_yes_at' => $value ) : array( 'no_click_count' => count( $value ) ), 200 );
+		return new WP_REST_Response( 'yes' === $choice ? array( 'prompt_yes_at' => $value ) : array( 'no_click_count' => 1 ), 200 );
 	}
 
 	/**
@@ -466,7 +455,7 @@ class GoogleCustomerReviews {
 		$response->data['reviewbird_google_customer_reviews'] = array(
 			'opt_in_url'     => self::opt_in_url( $order ),
 			'prompt_yes_at'  => $timestamp ? $timestamp : null,
-			'no_click_count' => is_array( $no_clicks ) ? count( $no_clicks ) : 0,
+			'no_click_count' => $no_clicks ? 1 : 0,
 		);
 		return $response;
 	}

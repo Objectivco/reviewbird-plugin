@@ -49,6 +49,11 @@ namespace {
 		public function save() {
 			if ( $GLOBALS['gcr_save_fail'] ) { throw new \RuntimeException( 'Save failed.' ); }
 			if ( $GLOBALS['gcr_save_swallow'] ) { return $this->id; }
+			if ( isset( $GLOBALS['before_gcr_save'] ) ) {
+				$callback = $GLOBALS['before_gcr_save'];
+				unset( $GLOBALS['before_gcr_save'] );
+				$callback();
+			}
 			$GLOBALS['gcr_orders'][ $this->id ] = clone $this;
 			++$GLOBALS['gcr_saves'];
 			return $this->id;
@@ -345,15 +350,14 @@ namespace {
 	check( 1 === $GLOBALS['gcr_saves'], 'Order API GET wrote metadata.' );
 	check( 0 === $response->data['reviewbird_google_customer_reviews']['no_click_count'], 'Missing No metadata must return zero.' );
 
-	// No counts each widget visit once; a retry must not create another click.
+	// No counts each order once and does not hide the widget on future visits.
 	parse_str( parse_url( GoogleCustomerReviews::opt_in_url( $GLOBALS['gcr_orders'][8] ), PHP_URL_QUERY ), $no_query );
-	$no_params = array( 'id' => 8, 'token' => $no_query['token'], 'click_id' => '00000000-0000-4000-8000-000000000001' );
+	$no_params = array( 'id' => 8, 'token' => $no_query['token'] );
 	$no_request = new WP_REST_Request( $no_params );
 	$_SERVER['REQUEST_METHOD'] = 'GET';
 	check( 403 === $integration->record_prompt_no( $no_request )->data['status'], 'GET can record No.' );
 	$_SERVER['REQUEST_METHOD'] = 'POST';
 	check( 403 === $integration->record_prompt_no( new WP_REST_Request( array_merge( $no_params, array( 'token' => $token ) ) ) )->data['status'], 'Cross-order token can record No.' );
-	check( 400 === $integration->record_prompt_no( new WP_REST_Request( array_merge( $no_params, array( 'click_id' => array() ) ) ) )->data['status'], 'Invalid click ID was accepted.' );
 	$GLOBALS['gcr_save_fail'] = true;
 	check( 500 === $integration->record_prompt_no( $no_request )->data['status'] && empty( $GLOBALS['gcr_orders'][8]->meta ), 'Failed No save reports success.' );
 	$GLOBALS['gcr_save_fail'] = false;
@@ -372,14 +376,14 @@ namespace {
 	check( 'prompt' === $first_visit['mode'] && $first_visit['clickId'] !== $next_visit['clickId'], 'No hides future visits or reuses the click ID.' );
 	check( false !== strpos( $next_visit['noUrl'], '/8/prompt-no' ), 'No endpoint is missing from the card.' );
 	$second_no = new WP_REST_Request( array_merge( $no_params, array( 'click_id' => '00000000-0000-4000-8000-000000000002' ) ) );
-	check( 2 === $integration->record_prompt_no( $second_no )->data['no_click_count'], 'A separate No click was not counted.' );
+	check( 1 === $integration->record_prompt_no( $second_no )->data['no_click_count'] && 2 === $GLOBALS['gcr_saves'], 'A separate No click counted or saved the order twice.' );
 	$yes_eight = $integration->record_prompt_yes( new WP_REST_Request( $no_params ) );
 	$next_no = new WP_REST_Request( array_merge( $no_params, array( 'click_id' => $next_visit['clickId'] ) ) );
-	check( 3 === $integration->record_prompt_no( $next_no )->data['no_click_count'], 'No overwrites a previous click.' );
+	check( 1 === $integration->record_prompt_no( $next_no )->data['no_click_count'], 'No after Yes counted the order twice.' );
 	check( $yes_eight->data['prompt_yes_at'] === $GLOBALS['gcr_orders'][8]->get_meta( GoogleCustomerReviews::YES_META ), 'No overwrites Yes consent.' );
 	check( $yes_eight->data === $integration->record_prompt_yes( new WP_REST_Request( $no_params ) )->data, 'Yes overwrites first consent after No.' );
 	$no_api = $integration->add_order_response( new WP_REST_Response( array() ), $GLOBALS['gcr_orders'][8] );
-	check( 3 === $no_api->data['reviewbird_google_customer_reviews']['no_click_count'], 'Order sync does not expose all No clicks.' );
+	check( 1 === $no_api->data['reviewbird_google_customer_reviews']['no_click_count'], 'Order sync must report at most one No per order.' );
 	$GLOBALS['gcr_options']['reviewbird_store_status']['google_customer_reviews']['enabled'] = false;
 	check( 403 === $integration->record_prompt_no( $no_request )->data['status'], 'Disabled integration can record No.' );
 	$GLOBALS['gcr_options']['reviewbird_store_status'] = $initial_status;
@@ -388,6 +392,31 @@ namespace {
 	unset( $GLOBALS['gcr_options']['reviewbird_enable_gcr_prompt'] );
 	$_GET['key'] = 'wc_order_key_7';
 	$GLOBALS['gcr_endpoint_order'] = 7;
+
+	// Overlapping No requests save the same marker and both return success.
+	$GLOBALS['gcr_orders'][9] = new WC_Order( 9 );
+	parse_str( parse_url( GoogleCustomerReviews::opt_in_url( $GLOBALS['gcr_orders'][9] ), PHP_URL_QUERY ), $concurrent_query );
+	$concurrent_params = array( 'id' => 9, 'token' => $concurrent_query['token'] );
+	$first_request = new WP_REST_Request( array_merge( $concurrent_params, array( 'click_id' => '00000000-0000-4000-8000-000000000011' ) ) );
+	$second_request = new WP_REST_Request( array_merge( $concurrent_params, array( 'click_id' => '00000000-0000-4000-8000-000000000012' ) ) );
+	$GLOBALS['before_gcr_save'] = function () use ( $integration, $second_request ) {
+		$GLOBALS['concurrent_response'] = $integration->record_prompt_no( $second_request );
+	};
+	$first_response = $integration->record_prompt_no( $first_request );
+	check( 200 === $first_response->status && 200 === $GLOBALS['concurrent_response']->status, 'Concurrent No requests were not accepted.' );
+	check( array( 'no_click_count' => 1 ) === $first_response->data && $first_response->data === $GLOBALS['concurrent_response']->data, 'Concurrent No requests counted twice.' );
+	$concurrent_api = $integration->add_order_response( new WP_REST_Response( array() ), $GLOBALS['gcr_orders'][9] );
+	check( 1 === $concurrent_api->data['reviewbird_google_customer_reviews']['no_click_count'], 'Concurrent No requests must persist one No.' );
+
+	foreach ( array( array(), '', 0, '0', array( 'old-click-1', 'old-click-2' ), 3, '4' ) as $legacy_no ) {
+		$GLOBALS['gcr_orders'][9]->meta[ GoogleCustomerReviews::NO_META ] = $legacy_no;
+		$legacy_api = $integration->add_order_response( new WP_REST_Response( array() ), $GLOBALS['gcr_orders'][9] );
+		check( ( $legacy_no ? 1 : 0 ) === $legacy_api->data['reviewbird_google_customer_reviews']['no_click_count'], 'Legacy No data is not limited to one response per order.' );
+		if ( $legacy_no ) {
+			$saves_before_retry = $GLOBALS['gcr_saves'];
+			check( array( 'no_click_count' => 1 ) === $integration->record_prompt_no( $first_request )->data && $saves_before_retry === $GLOBALS['gcr_saves'], 'Legacy No was counted or saved again.' );
+		}
+	}
 
 	$GLOBALS['gcr_options']['reviewbird_google_customer_reviews_prompt'] = array( 'heading' => '<script>unsafe</script>', 'message' => "Line one\nLine two", 'yes_label' => '', 'no_label' => array() );
 	$prompt = GoogleCustomerReviews::prompt_settings();
