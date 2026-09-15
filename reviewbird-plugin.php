@@ -92,8 +92,12 @@ register_deactivation_hook( __FILE__, array( Deactivator::class, 'deactivate' ) 
  * Begins execution of the plugin.
  */
 function reviewbird_run() {
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return;
+	}
+
 	$plugin = new Plugin();
 	$plugin->run();
 }
 
-reviewbird_run();
+add_action( 'plugins_loaded', 'reviewbird_run' );

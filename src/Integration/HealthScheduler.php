@@ -48,11 +48,16 @@ class HealthScheduler {
 			return;
 		}
 		if ( ! get_option( self::CLEANUP_OPTION ) ) {
-			// Replace all old health schedules once, including duplicate recurring jobs.
-			as_unschedule_all_actions( self::ACTION_HOOK );
-			as_unschedule_all_actions( self::CLEANUP_HOOK );
 			wp_clear_scheduled_hook( self::CLEANUP_HOOK );
-			update_option( self::CLEANUP_OPTION, 'pending', false );
+			if ( as_get_scheduled_actions( array( 'hook' => self::ACTION_HOOK, 'per_page' => 1 ), 'ids' ) ) {
+				// Large queues must be canceled in the background, not on a page request.
+				if ( ! as_next_scheduled_action( self::CLEANUP_HOOK ) ) {
+					as_enqueue_async_action( self::CLEANUP_HOOK, array(), 'reviewbird', true, 0 );
+				}
+				return;
+			}
+			// A new store has no health actions to remove.
+			update_option( self::CLEANUP_OPTION, 'complete', false );
 		}
 		if ( ! as_next_scheduled_action( self::ACTION_HOOK, array( 'periodic' ), 'reviewbird-health' ) ) {
 			as_schedule_recurring_action( time(), self::REFRESH_INTERVAL, self::ACTION_HOOK, array( 'periodic' ), 'reviewbird-health', true, 5 );
@@ -89,6 +94,12 @@ class HealthScheduler {
 			return;
 		}
 		try {
+			if ( ! get_option( self::CLEANUP_OPTION ) ) {
+				as_unschedule_all_actions( self::ACTION_HOOK );
+				as_unschedule_all_actions( self::CLEANUP_HOOK );
+				update_option( self::CLEANUP_OPTION, 'pending', false );
+				$this->schedule_recurring_check();
+			}
 			$ids = as_get_scheduled_actions(
 				array(
 					'hook'     => self::ACTION_HOOK,

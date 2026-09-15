@@ -47,6 +47,14 @@ $runner = ActionScheduler_QueueRunner::instance();
 $health_hook = 'reviewbird_refresh_health_status';
 $schema_hook = 'reviewbird_refresh_schema_reviews';
 
+// A fresh store starts its normal check without upgrade work.
+$health->schedule_recurring_check();
+check( 1 === count( ids( $health_hook ) ), 'A fresh store did not get one health job.' );
+check( ! ids( HealthScheduler::CLEANUP_HOOK ), 'A fresh store scheduled upgrade cleanup.' );
+check( 'complete' === get_option( 'reviewbird_health_cleanup_status' ), 'A fresh store did not skip cleanup.' );
+$store->delete_action( ids( $health_hook )[0] );
+delete_option( 'reviewbird_health_cleanup_status' );
+
 // Upgrade a queue larger than one cleanup batch, with old single and recurring jobs.
 $legacy = array();
 for ( $i = 0; $i < 1005; ++$i ) {
@@ -59,10 +67,17 @@ $old_schema = as_enqueue_async_action( $schema_hook, array( 700 ), 'reviewbird-v
 $unrelated = as_enqueue_async_action( 'another_plugin_job', array(), 'reviewbird' );
 wp_schedule_single_event( time(), HealthScheduler::CLEANUP_HOOK );
 for ( $i = 0; $i < 100; ++$i ) { $health->schedule_recurring_check(); }
-check( 1 === count( ids( $health_hook ) ), 'An empty cache or repeated initialization duplicated health jobs.' );
+check( ! ids( $health_hook, array( 'periodic' ) ), 'An upgrade scheduled health before old jobs were canceled.' );
 check( 1 === count( ids( HealthScheduler::CLEANUP_HOOK ) ), 'Initialization duplicated cleanup jobs.' );
 check( ! wp_next_scheduled( HealthScheduler::CLEANUP_HOOK ), 'The old WP-Cron event remains.' );
-check( 'canceled' === $store->get_status( $legacy[0] ), 'The old recurring job was not canceled.' );
+check( 'pending' === $store->get_status( $legacy[0] ), 'A page request canceled the old queue.' );
+$before = count( ids( $health_hook, null, '' ) );
+$runner->process_action( ids( HealthScheduler::CLEANUP_HOOK )[0], 'Reviewbird upgrade test' );
+$removed = $before + 1 - count( ids( $health_hook, null, '' ) ); // The upgrade also creates the new health job.
+check( $removed > 0 && $removed <= 1000, 'Upgrade cleanup did not respect its batch size.' );
+check( 'pending' === get_option( 'reviewbird_health_cleanup_status' ), 'Upgrade cleanup stopped before the next batch.' );
+check( 1 === count( ids( HealthScheduler::CLEANUP_HOOK ) ), 'Upgrade cleanup lost or duplicated its next batch.' );
+check( 1 === count( ids( $health_hook ) ), 'The background upgrade did not leave exactly one health job.' );
 $periodic = $store->fetch_action( ids( $health_hook )[0] )->get_schedule();
 check( $periodic->is_recurring() && 300 === $periodic->get_recurrence(), 'Health must use AS recurrence every five minutes.' );
 
@@ -101,13 +116,7 @@ $response = array( 'response' => array( 'code' => 200 ), 'body' => '{"reviews":[
 $schema->refresh_schema_reviews( 700 );
 check( '' === get_post_meta( 700, SchemaScheduler::META_KEY, true ), 'A valid empty response did not clear obsolete schema.' );
 
-// Cleanup uses the AS store to remove actions and their logs, at most 1000 per batch.
-$before = count( ids( $health_hook, null, '' ) );
-$runner->process_action( ids( HealthScheduler::CLEANUP_HOOK )[0], 'Reviewbird test' );
-$removed = $before - count( ids( $health_hook, null, '' ) );
-check( $removed > 0 && $removed <= 1000, 'Cleanup did not respect its batch size.' );
-check( 'pending' === get_option( 'reviewbird_health_cleanup_status' ), 'Cleanup stopped before the next batch.' );
-check( 1 === count( ids( HealthScheduler::CLEANUP_HOOK ) ), 'The next cleanup batch is missing or duplicated.' );
+// Finish the next cleanup batch and verify action and log deletion.
 $runner->process_action( ids( HealthScheduler::CLEANUP_HOOK )[0], 'Reviewbird test' );
 check( 'complete' === get_option( 'reviewbird_health_cleanup_status' ), 'Cleanup did not finish.' );
 $legacy_ids = implode( ',', array_map( 'intval', $legacy ) );

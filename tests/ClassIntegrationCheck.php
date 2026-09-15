@@ -108,10 +108,12 @@ $product = new WC_Product_Variable();
 $product->set_name( 'Test variable product' );
 $product->set_status( 'publish' );
 $product->set_gallery_image_ids( $images );
+if ( method_exists( $product, 'set_global_unique_id' ) ) { $product->set_global_unique_id( '1234567890123' ); }
 $product->save();
 $variation = new WC_Product_Variation();
 $variation->set_parent_id( $product->get_id() );
 $variation->set_regular_price( 12 );
+if ( method_exists( $variation, 'set_global_unique_id' ) ) { $variation->set_global_unique_id( '1234567890130' ); }
 $variation->save();
 $attachment_url = function ( $url, $id ) use ( $images ) { return $images[1] === $id ? false : 'https://example.test/' . $id . '.jpg'; };
 add_filter( 'wp_get_attachment_url', $attachment_url, 10, 2 );
@@ -119,6 +121,8 @@ $products = new ProductsController();
 $result = $products->get_product( request( array( 'id' => $variation->get_id() ) ) );
 $data = $result->get_data();
 check( $product->get_id() === $data['id'] && $variation->get_id() === $data['variations'][0]['id'], 'Variation did not resolve to its parent.' );
+check( ( version_compare( WC_VERSION, '9.1', '>=' ) ? '1234567890123' : '' ) === $data['global_unique_id'], 'Product GTIN failed on this WooCommerce version.' );
+check( ( version_compare( WC_VERSION, '9.1', '>=' ) ? '1234567890130' : '' ) === $data['variations'][0]['global_unique_id'], 'Variation GTIN failed on this WooCommerce version.' );
 check( array( 0, 2 ) === array_keys( $data['images'] ), 'Gallery keys changed when an image URL was missing.' );
 check( array( 'id', 'name', 'slug', 'permalink', 'type', 'status', 'sku', 'global_unique_id', 'brand', 'price', 'image', 'images', 'stock_status', 'in_stock', 'tags', 'categories', 'variations' ) === array_keys( $data ), 'Product response fields changed.' );
 check( REVIEWBIRD_VERSION === $result->get_headers()['X-Reviewbird-Version'], 'Version header changed.' );
@@ -161,6 +165,35 @@ foreach ( array( 'yes' => true, 'no' => false ) as $value => $expected ) {
 	update_option( 'reviewbird_enable_widget', $value );
 	check( $expected === call_user_func( $field['get_callback'], array(), 'reviewbird_widget_enabled', new WP_REST_Request() ), 'System status callback changed.' );
 }
+
+// Exercise guest consent through WordPress REST and real WooCommerce order storage.
+update_option( 'reviewbird_store_status', array(
+	'store_id' => 7, 'status' => 'healthy', 'has_active_subscription' => true,
+	'google_customer_reviews' => array( 'enabled' => true, 'expires_at' => time() + 600, 'merchant_id' => '12345', 'estimated_delivery_days' => 3 ),
+) );
+update_option( 'reviewbird_enable_gcr_prompt', 'yes' );
+$order->set_billing_email( 'buyer@example.test' );
+$order->set_billing_country( 'US' );
+$order->set_status( 'processing' );
+$order->save();
+$url = reviewbird\Integration\GoogleCustomerReviews::opt_in_url( $order );
+check( is_string( $url ), 'A valid order did not get an opt-in link.' );
+parse_str( wp_parse_url( $url, PHP_URL_QUERY ), $link );
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+$_SERVER['REQUEST_METHOD'] = 'POST';
+$request = new WP_REST_Request( 'POST', '/reviewbird/v1/google-customer-reviews/' . $order->get_id() . '/prompt-yes' );
+$request->set_param( 'token', str_repeat( '0', 64 ) );
+check( 403 === rest_do_request( $request )->get_status(), 'REST accepted an invalid guest token.' );
+$request->set_param( 'token', $link['token'] );
+$yes = rest_do_request( $request );
+check( 200 === $yes->get_status() && ! empty( $yes->get_data()['prompt_yes_at'] ), 'REST did not save the Yes choice.' );
+check( $yes->get_data() === rest_do_request( $request )->get_data(), 'A repeat Yes changed the saved timestamp.' );
+$request = new WP_REST_Request( 'POST', '/reviewbird/v1/google-customer-reviews/' . $order->get_id() . '/prompt-no' );
+$request->set_param( 'token', $link['token'] );
+$request->set_param( 'click_id', wp_generate_uuid4() );
+check( array( 'no_click_count' => 1 ) === rest_do_request( $request )->get_data(), 'REST did not save the No click.' );
+check( array( 'no_click_count' => 1 ) === rest_do_request( $request )->get_data(), 'A retry duplicated the No click.' );
+$_SERVER['REQUEST_METHOD'] = $method;
 
 $stars = new StarRatingDisplay();
 foreach ( array( '' => '#ffa500', '#123456' => '#123456' ) as $value => $expected ) {

@@ -154,7 +154,7 @@ class ProductsController {
 			'type'             => $product->get_type(),
 			'status'           => $product->get_status(),
 			'sku'              => $product->get_sku(),
-			'global_unique_id' => $product->get_global_unique_id(),
+			'global_unique_id' => method_exists( $product, 'get_global_unique_id' ) ? $product->get_global_unique_id() : '',
 			'brand'            => $this->get_product_brand( $product ),
 			'price'            => $product->get_price(),
 			'image'            => wp_get_attachment_url( $product->get_image_id() ),
@@ -290,7 +290,7 @@ class ProductsController {
 		return array(
 			'id'               => $variation->get_id(),
 			'sku'              => $variation->get_sku(),
-			'global_unique_id' => $variation->get_global_unique_id(),
+			'global_unique_id' => method_exists( $variation, 'get_global_unique_id' ) ? $variation->get_global_unique_id() : '',
 			'brand'            => $this->get_product_brand( $variation ),
 			'price'            => $variation->get_price(),
 			'image'            => wp_get_attachment_url( $variation->get_image_id() ),

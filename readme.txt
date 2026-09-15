@@ -228,6 +228,10 @@ For development: `pnpm run dev`
 == Changelog ==
 
 = Unreleased =
+Fix - Load the settings page on WordPress 5.9 without a newer React runtime.
+Fix - Prevent product sync errors on WooCommerce versions before 9.1.
+Fix - Keep pages working when WooCommerce is inactive on older WordPress versions.
+Fix - Run legacy health job cancellation in the background during upgrades. Skip cleanup on new stores.
 Fix - Check for existing health, product schema, and cleanup jobs before scheduling work. Use Action Scheduler's recurring API to check health every five minutes, including when the status cache is empty.
 Fix - Replace old health schedules and remove their action history and logs in background batches after an upgrade.
 Fix - Cancel scheduled jobs during deactivation. Resume health checks after reactivation.
