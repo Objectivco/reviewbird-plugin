@@ -557,47 +557,390 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	}
 }
 
-.reviewbird-gcr-toolbar .button {
-	display: inline-flex;
-	min-height: 36px;
-	align-items: center;
-	justify-content: center;
-	border-color: #e0e7ff;
-	border-radius: 6px;
-	padding: 5px 12px;
-	background: #eef2ff;
-	color: #4f46e5;
-	font-weight: 500;
+/* stylelint-disable no-descending-specificity -- Separate UI regions. */
+#reviewbird-settings-root .reviewbird-gcr-settings {
+	overflow: hidden;
+	border: 1px solid #e2e5e9;
+	border-radius: 12px;
+	background: #fff;
+	box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04);
+	color: #18181b;
+
+	h2,
+	h3,
+	p,
+	fieldset,
+	legend {
+		margin: 0;
+		padding: 0;
+	}
+
+	h2 {
+		font-size: 18px;
+		font-weight: 650;
+		line-height: 1.4;
+	}
+
+	button,
+	a {
+		transition: background-color 0.15s, color 0.15s;
+	}
+
+	button {
+		font: inherit;
+		cursor: pointer;
+	}
+
+	button:disabled {
+		opacity: 0.45;
+		cursor: default;
+	}
+
+	button:focus-visible,
+	a:focus-visible {
+		outline: 2px solid #0f766e;
+		outline-offset: 3px;
+	}
+
+	.reviewbird-gcr-settings__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 20px;
+		padding: 22px 24px;
+	}
+
+	.reviewbird-gcr-settings__status {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		color: #52525b;
+		font-size: 12px;
+
+		> span {
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: #a1a1aa;
+		}
+
+		&[data-state="enabled"] {
+			color: #0f766e;
+		}
+
+		&[data-state="enabled"] > span {
+			background: #0d9488;
+		}
+
+		&[data-state="unknown"] > span {
+			background: #b45309;
+		}
+	}
+
+	.reviewbird-gcr-toolbar {
+		display: flex;
+		flex-shrink: 0;
+		align-items: center;
+		gap: 16px;
+
+		a,
+		button {
+			display: inline-flex;
+			min-height: 36px;
+			align-items: center;
+			justify-content: center;
+			gap: 6px;
+			font-size: 13px;
+			font-weight: 500;
+		}
+
+		a {
+			color: #0f766e;
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+
+		a svg {
+			margin: 0;
+		}
+
+		button {
+			border: 1px solid #e2e5e9;
+			border-radius: 6px;
+			padding: 0 10px;
+			background: #fff;
+			color: #52525b;
+		}
+
+		button:hover:not(:disabled) {
+			background: #f4f4f5;
+			color: #18181b;
+		}
+	}
+
+	.reviewbird-gcr-settings__visibility {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		border-top: 1px solid #eceef0;
+		border-bottom: 1px solid #eceef0;
+		padding: 16px 24px;
+		background: #fafbfc;
+	}
+
+	.reviewbird-gcr-settings__choice input:disabled + div label {
+		color: #71717a;
+		cursor: default;
+	}
+
+	.reviewbird-gcr-settings__choice {
+		display: flex;
+		align-items: flex-start;
+		gap: 10px;
+
+		input {
+			width: 17px;
+			height: 17px;
+			margin: 2px 0 0;
+		}
+
+		label {
+			font-size: 13px;
+			font-weight: 600;
+			cursor: pointer;
+		}
+
+		p {
+			margin-top: 4px;
+			color: #64646f;
+			font-size: 12px;
+			line-height: 1.5;
+		}
+	}
+
+
+	.reviewbird-gcr-settings__notice {
+		padding: 12px 24px 0;
+		color: #0f766e;
+		font-size: 12px;
+	}
+
+	.reviewbird-gcr-settings__notice[role="alert"],
+	.reviewbird-gcr-settings__error {
+		color: #b91c1c;
+	}
+
+	.reviewbird-gcr-settings__editor {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		align-items: start;
+		gap: 28px;
+		padding: 24px;
+	}
+
+	fieldset {
+		min-width: 0;
+		border: 0;
+	}
+
+	legend,
+	.reviewbird-gcr-settings__preview h3 {
+		margin-bottom: 18px;
+		font-size: 14px;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	.reviewbird-gcr-settings__fields {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 16px 12px;
+
+		label {
+			display: block;
+			margin-bottom: 6px;
+			color: #52525b;
+			font-size: 12px;
+			font-weight: 500;
+		}
+
+		input,
+		textarea {
+			display: block;
+			width: 100%;
+			min-height: 38px;
+			margin: 0;
+			border: 1px solid #d9dce1;
+			border-radius: 6px;
+			padding: 8px 10px;
+			background: #fff;
+			color: #27272a;
+			font: inherit;
+			font-size: 13px;
+			line-height: 1.5;
+			box-shadow: 0 1px 2px rgba(24, 24, 27, 0.02);
+		}
+
+		textarea {
+			min-height: 116px;
+			resize: vertical;
+		}
+
+		input:focus,
+		textarea:focus {
+			border-color: #0f766e;
+			outline: none;
+			box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.13);
+		}
+	}
+
+	.reviewbird-gcr-settings__wide-field {
+		grid-column: 1 / -1;
+	}
+
+	.reviewbird-gcr-settings__preview-heading {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 12px;
+	}
+
+
+	.reviewbird-gcr-settings__preview-surface {
+		border: 1px solid #e9ebee;
+		border-radius: 10px;
+		padding: 20px;
+		background: #f5f6f8;
+	}
+
+	.reviewbird-gcr-settings__preview-surface .reviewbird-gcr {
+		max-width: 440px;
+		margin: 0 auto;
+		border-color: #e5e7eb;
+		box-shadow: 0 2px 4px rgba(24, 24, 27, 0.04);
+	}
+
+	.reviewbird-gcr-settings__preview-surface .reviewbird-gcr__heading {
+		margin-bottom: 8px;
+		font-size: 18px;
+	}
+
+	.reviewbird-gcr-settings__preview-surface .reviewbird-gcr__message {
+		margin-bottom: 16px;
+	}
+
+	.reviewbird-gcr-settings__preview-surface button {
+		font-size: 14px;
+		cursor: default;
+	}
+
+
+	.reviewbird-gcr-settings__footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		border-top: 1px solid #eceef0;
+		padding: 14px 24px;
+
+		> p {
+			font-size: 12px;
+			color: #71717a;
+		}
+
+		> p[role="alert"] {
+			color: #b91c1c;
+		}
+
+		> div {
+			display: flex;
+			flex-shrink: 0;
+			align-items: center;
+			gap: 16px;
+			margin-left: auto;
+		}
+
+		button {
+			min-height: 36px;
+			border: 0;
+			border-radius: 6px;
+			font-size: 13px;
+			font-weight: 500;
+		}
+	}
+
+	.reviewbird-gcr-settings__reset {
+		padding: 0;
+		background: transparent;
+		color: #71717a;
+	}
+
+	.reviewbird-gcr-settings__reset:hover:not(:disabled) {
+		color: #27272a;
+		text-decoration: underline;
+	}
+
+	.reviewbird-gcr-settings__save {
+		padding: 0 16px;
+		background: #0f766e;
+		color: #fff;
+	}
+
+	.reviewbird-gcr-settings__save:hover:not(:disabled) {
+		background: #115e59;
+	}
+
+	@media (max-width: 1100px) {
+
+		.reviewbird-gcr-settings__visibility {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 12px;
+		}
+
+
+		.reviewbird-gcr-settings__header {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		.reviewbird-gcr-settings__editor {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	@media (max-width: 480px) {
+
+		.reviewbird-gcr-settings__header,
+		.reviewbird-gcr-settings__editor {
+			padding: 18px;
+		}
+
+		.reviewbird-gcr-settings__visibility {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 8px;
+			padding: 14px 18px;
+		}
+
+
+		.reviewbird-gcr-settings__preview-surface {
+			padding: 12px;
+		}
+
+		.reviewbird-gcr-settings__footer {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 10px;
+			padding: 14px 18px;
+		}
+
+	}
 }
 
-.reviewbird-gcr-toolbar .button:hover {
-	border-color: #c7d2fe;
-	background: #e0e7ff;
-	color: #4338ca;
-}
-
-.reviewbird-gcr-toggle {
-	display: inline-flex;
-	width: 44px;
-	height: 24px;
-	flex-shrink: 0;
-	border: 2px solid transparent;
-	border-radius: 999px;
-	padding: 0;
-	cursor: pointer;
-}
-
-.reviewbird-gcr-toggle span {
-	width: 20px;
-	height: 20px;
-}
-
-.reviewbird-gcr-toggle:focus-visible {
-	outline: 2px solid #4f46e5;
-	outline-offset: 3px;
-}
-
-.reviewbird-gcr-toggle:disabled {
-	opacity: 0.5;
-	cursor: wait;
-}
+/* stylelint-enable no-descending-specificity */
