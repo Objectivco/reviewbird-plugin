@@ -68,8 +68,13 @@ export function initGoogleCustomerReviews( root ) {
 	const retry = root.querySelector( '[data-gcr-retry]' );
 	let busy = false;
 	let saved = config.mode === 'direct';
+	let choice = 'yes';
+	let dismissed = false;
 
-	async function open() {
+	async function submitChoice() {
+		if ( dismissed ) {
+			return;
+		}
 		if ( state.rendered ) {
 			root.hidden = true;
 			return;
@@ -85,22 +90,35 @@ export function initGoogleCustomerReviews( root ) {
 			}
 		} );
 		retry.hidden = true;
-		status.textContent = config.text.loading;
+		status.textContent = choice === 'no' ? '' : config.text.loading;
 		try {
 			if ( ! saved ) {
 				const controller = new window.AbortController();
 				const timeout = setTimeout( () => controller.abort(), 15000 );
-				const response = await fetch( config.choiceUrl, {
-					method: 'POST',
-					credentials: 'same-origin',
-					signal: controller.signal,
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify( { token: config.token } ),
-				} ).finally( () => clearTimeout( timeout ) );
+				const response = await fetch(
+					choice === 'no' ? config.noUrl : config.choiceUrl,
+					{
+						method: 'POST',
+						credentials: 'same-origin',
+						signal: controller.signal,
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify( {
+							token: config.token,
+							...( choice === 'no'
+								? { click_id: config.clickId }
+								: {} ),
+						} ),
+					}
+				).finally( () => clearTimeout( timeout ) );
 				if ( ! response.ok ) {
 					throw new Error( 'The choice could not be saved.' );
 				}
 				saved = true;
+			}
+			if ( choice === 'no' ) {
+				dismissed = true;
+				root.hidden = true;
+				return;
 			}
 			const google = await loadGoogle();
 			if ( ! state.rendered ) {
@@ -113,7 +131,8 @@ export function initGoogleCustomerReviews( root ) {
 			root.hidden = config.mode !== 'direct';
 			status.textContent = config.text.opened;
 		} catch {
-			status.textContent = config.text.error;
+			status.textContent =
+				choice === 'no' ? config.text.saveError : config.text.error;
 			retry.hidden = false;
 		} finally {
 			busy = false;
@@ -136,13 +155,21 @@ export function initGoogleCustomerReviews( root ) {
 			}
 		}
 	}
-	yes?.addEventListener( 'click', open );
-	no?.addEventListener( 'click', () => {
-		root.hidden = true;
+	yes?.addEventListener( 'click', () => {
+		if ( ! busy ) {
+			choice = 'yes';
+			submitChoice();
+		}
 	} );
-	retry.addEventListener( 'click', open );
+	no?.addEventListener( 'click', () => {
+		if ( ! busy && ! saved ) {
+			choice = 'no';
+			submitChoice();
+		}
+	} );
+	retry.addEventListener( 'click', submitChoice );
 	if ( config.mode === 'direct' ) {
-		open();
+		submitChoice();
 	}
 }
 

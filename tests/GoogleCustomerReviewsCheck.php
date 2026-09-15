@@ -13,6 +13,20 @@ namespace {
 	define( 'REVIEWBIRD_PLUGIN_URL', 'https://store.test/wp-content/plugins/reviewbird/' );
 	define( 'REVIEWBIRD_VERSION', 'test' );
 
+	class GcrDatabase {
+		public $prefix = 'wp_';
+		public $locked = false;
+		public $busy = false;
+		public $on_lock;
+		public function prepare( $query, $value ) { return str_replace( '%s', "'" . $value . "'", $query ); }
+		public function get_var( $query ) {
+			if ( false !== strpos( $query, 'RELEASE_LOCK' ) ) { $this->locked = false; return '1'; }
+			if ( $this->busy || $this->locked ) { return '0'; }
+			$this->locked = true;
+			if ( $this->on_lock ) { call_user_func( $this->on_lock ); $this->on_lock = null; }
+			return '1';
+		}
+	}
 	class WC_Order {
 		public $id;
 		public $key;
@@ -100,6 +114,7 @@ namespace reviewbird\Integration {
 		$GLOBALS['gcr_options'][ $name ] = $value;
 		return true;
 	}
+	function wp_generate_uuid4() { static $id = 0; return sprintf( '00000000-0000-4000-8000-%012d', ++$id ); }
 	function wp_salt() { return $GLOBALS['gcr_salt']; }
 	function home_url() { return 'https://store.test/'; }
 	function add_query_arg( $args, $url ) { return $url . '?' . http_build_query( $args ); }
@@ -168,6 +183,7 @@ namespace {
 		return json_decode( html_entity_decode( $match[1], ENT_QUOTES, 'UTF-8' ), true );
 	}
 
+	$GLOBALS['wpdb'] = new GcrDatabase();
 	$GLOBALS['gcr_saves'] = 0;
 	$GLOBALS['gcr_save_fail'] = false;
 	$GLOBALS['gcr_save_swallow'] = false;
@@ -342,6 +358,59 @@ namespace {
 	check( $response->data['reviewbird_google_customer_reviews']['prompt_yes_at'] === $result->data['prompt_yes_at'], 'Order API timestamp is wrong.' );
 	check( $response->data['reviewbird_google_customer_reviews']['opt_in_url'] === $url, 'Order API link is wrong.' );
 	check( 1 === $GLOBALS['gcr_saves'], 'Order API GET wrote metadata.' );
+	check( 0 === $response->data['reviewbird_google_customer_reviews']['no_click_count'], 'Missing No metadata must return zero.' );
+	check( ! $GLOBALS['wpdb']->locked, 'Yes leaves the order locked.' );
+
+	// No counts each widget visit once; a retry must not create another click.
+	parse_str( parse_url( GoogleCustomerReviews::opt_in_url( $GLOBALS['gcr_orders'][8] ), PHP_URL_QUERY ), $no_query );
+	$no_params = array( 'id' => 8, 'token' => $no_query['token'], 'click_id' => '00000000-0000-4000-8000-000000000001' );
+	$no_request = new WP_REST_Request( $no_params );
+	$_SERVER['REQUEST_METHOD'] = 'GET';
+	check( 403 === $integration->record_prompt_no( $no_request )->data['status'], 'GET can record No.' );
+	$_SERVER['REQUEST_METHOD'] = 'POST';
+	check( 403 === $integration->record_prompt_no( new WP_REST_Request( array_merge( $no_params, array( 'token' => $token ) ) ) )->data['status'], 'Cross-order token can record No.' );
+	check( 400 === $integration->record_prompt_no( new WP_REST_Request( array_merge( $no_params, array( 'click_id' => array() ) ) ) )->data['status'], 'Invalid click ID was accepted.' );
+	$GLOBALS['wpdb']->busy = true;
+	check( 503 === $integration->record_prompt_no( $no_request )->data['status'] && empty( $GLOBALS['gcr_orders'][8]->meta ), 'Busy order accepts a concurrent write.' );
+	$GLOBALS['wpdb']->busy = false;
+	$GLOBALS['gcr_save_fail'] = true;
+	check( 500 === $integration->record_prompt_no( $no_request )->data['status'] && ! $GLOBALS['wpdb']->locked, 'Failed No save leaves the order locked.' );
+	$GLOBALS['gcr_save_fail'] = false;
+	$GLOBALS['gcr_save_swallow'] = true;
+	check( 500 === $integration->record_prompt_no( $no_request )->data['status'] && empty( $GLOBALS['gcr_orders'][8]->meta ), 'Swallowed No save reports success.' );
+	$GLOBALS['gcr_save_swallow'] = false;
+	$no_result = $integration->record_prompt_no( $no_request );
+	check( 1 === $no_result->data['no_click_count'] && 2 === $GLOBALS['gcr_saves'], 'First No was not saved.' );
+	check( '' === $GLOBALS['gcr_orders'][8]->get_meta( GoogleCustomerReviews::YES_META ), 'No was saved as consent.' );
+	check( 1800000000 === $GLOBALS['gcr_orders'][8]->modified, 'No does not advance the order sync date.' );
+	check( $no_result->data === $integration->record_prompt_no( $no_request )->data && 2 === $GLOBALS['gcr_saves'], 'Repeat No request counts twice.' );
+	$_GET['key'] = 'wc_order_key_8';
+	$GLOBALS['gcr_endpoint_order'] = 8;
+	ob_start(); ( new GoogleCustomerReviews() )->render_prompt( 8 ); $first_visit = card_config( ob_get_clean() );
+	ob_start(); ( new GoogleCustomerReviews() )->render_prompt( 8 ); $next_visit = card_config( ob_get_clean() );
+	check( 'prompt' === $first_visit['mode'] && $first_visit['clickId'] !== $next_visit['clickId'], 'No hides future visits or reuses the click ID.' );
+	check( false !== strpos( $next_visit['noUrl'], '/8/prompt-no' ), 'No endpoint is missing from the card.' );
+	// Another request can finish while this request waits for the order lock.
+	$GLOBALS['wpdb']->on_lock = function () {
+		$GLOBALS['gcr_orders'][8]->meta[ GoogleCustomerReviews::NO_META ][] = '00000000-0000-4000-8000-000000000002';
+		$GLOBALS['gcr_orders'][8]->meta[ GoogleCustomerReviews::YES_META ] = '2026-09-15T12:00:00+00:00';
+	};
+	$next_no = new WP_REST_Request( array_merge( $no_params, array( 'click_id' => $next_visit['clickId'] ) ) );
+	check( 3 === $integration->record_prompt_no( $next_no )->data['no_click_count'], 'No overwrites a click saved while the request waits for the lock.' );
+	check( '2026-09-15T12:00:00+00:00' === $GLOBALS['gcr_orders'][8]->get_meta( GoogleCustomerReviews::YES_META ), 'No overwrites concurrent Yes consent.' );
+	$yes_eight = $integration->record_prompt_yes( new WP_REST_Request( $no_params ) );
+	check( '2026-09-15T12:00:00+00:00' === $yes_eight->data['prompt_yes_at'], 'Yes overwrites first consent after No.' );
+	$no_api = $integration->add_order_response( new WP_REST_Response( array() ), $GLOBALS['gcr_orders'][8] );
+	check( 3 === $no_api->data['reviewbird_google_customer_reviews']['no_click_count'], 'Order sync does not expose all No clicks.' );
+	$GLOBALS['gcr_options']['reviewbird_store_status']['google_customer_reviews']['enabled'] = false;
+	check( 403 === $integration->record_prompt_no( $no_request )->data['status'], 'Disabled integration can record No.' );
+	$GLOBALS['gcr_options']['reviewbird_store_status'] = $initial_status;
+	$GLOBALS['gcr_options']['reviewbird_enable_gcr_prompt'] = 'no';
+	check( 403 === $integration->record_prompt_no( $no_request )->data['status'], 'Disabled prompt can record No.' );
+	unset( $GLOBALS['gcr_options']['reviewbird_enable_gcr_prompt'] );
+	check( ! $GLOBALS['wpdb']->locked, 'No leaves the order locked.' );
+	$_GET['key'] = 'wc_order_key_7';
+	$GLOBALS['gcr_endpoint_order'] = 7;
 
 	$GLOBALS['gcr_options']['reviewbird_google_customer_reviews_prompt'] = array( 'heading' => '<script>unsafe</script>', 'message' => "Line one\nLine two", 'yes_label' => '', 'no_label' => array() );
 	$prompt = GoogleCustomerReviews::prompt_settings();

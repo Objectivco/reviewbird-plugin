@@ -3,6 +3,7 @@ let render;
 const text = {
 	loading: 'Loading…',
 	error: 'Please try again.',
+	saveError: 'Your choice could not be saved. Please try again.',
 	retry: 'Retry',
 	opened: 'You can close this page when you finish.',
 };
@@ -12,6 +13,8 @@ function card( mode = 'prompt' ) {
 	root.dataset.reviewbirdGcr = JSON.stringify( {
 		mode,
 		choiceUrl: '/reviewbird/v1/google-customer-reviews/7/prompt-yes',
+		noUrl: '/reviewbird/v1/google-customer-reviews/7/prompt-no',
+		clickId: '00000000-0000-4000-8000-000000000001',
 		token: 'order-token',
 		google: {
 			merchant_id: '1234',
@@ -74,16 +77,52 @@ test( 'the native order confirmation block places the widget below its title', (
 	expect( fetch ).not.toHaveBeenCalled();
 } );
 
-test( 'No hides only this card without a request or Google script', () => {
+test( 'No saves one click and hides this visit without loading Google', async () => {
 	const root = card();
 	init( root );
-	root.querySelector( '[data-gcr-no]' ).click();
+	const no = root.querySelector( '[data-gcr-no]' );
+	no.click();
+	no.click();
+	await settle();
 	expect( root.hidden ).toBe( true );
-	expect( fetch ).not.toHaveBeenCalled();
+	expect( fetch ).toHaveBeenCalledTimes( 1 );
+	expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatch( /prompt-no$/ );
+	expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toEqual( {
+		token: 'order-token',
+		click_id: '00000000-0000-4000-8000-000000000001',
+	} );
 	expect( document.querySelector( 'script' ) ).toBeNull();
+	no.click();
+	root.querySelector( '[data-gcr-yes]' ).click();
+	expect( fetch ).toHaveBeenCalledTimes( 1 );
 	const revisit = card();
 	init( revisit );
 	expect( revisit.hidden ).toBe( false );
+} );
+
+test( 'a failed No save retries the same click without loading Google', async () => {
+	readyGoogle();
+	fetch.mockRejectedValueOnce( new Error( 'Offline' ) );
+	const root = card();
+	init( root );
+	root.querySelector( '[data-gcr-no]' ).click();
+	await settle();
+	expect( root.hidden ).toBe( false );
+	expect( root.querySelector( '[data-gcr-status]' ).textContent ).toBe(
+		text.saveError
+	);
+	const retry = root.querySelector( '[data-gcr-retry]' );
+	expect( retry.hidden ).toBe( false );
+	retry.click();
+	await settle();
+	expect( fetch ).toHaveBeenCalledTimes( 2 );
+	expect( fetch.mock.calls[ 1 ][ 0 ] ).toBe( fetch.mock.calls[ 0 ][ 0 ] );
+	expect( fetch.mock.calls[ 1 ][ 1 ].body ).toBe(
+		fetch.mock.calls[ 0 ][ 1 ].body
+	);
+	expect( root.hidden ).toBe( true );
+	expect( window.gapi.load ).not.toHaveBeenCalled();
+	expect( render ).not.toHaveBeenCalled();
 } );
 
 test( 'Yes saves once before Google loads and renders only once', async () => {

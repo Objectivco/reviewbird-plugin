@@ -21,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class GoogleCustomerReviews {
 	const YES_META = '_reviewbird_gcr_prompt_yes_at';
+	const NO_META  = '_reviewbird_gcr_prompt_no_click_ids';
 
 	/**
 	 * Whether this request already contains a prompt.
@@ -267,19 +268,21 @@ class GoogleCustomerReviews {
 	 * Register the guest POST route. The scoped token is the credential.
 	 */
 	public function register_routes(): void {
-		register_rest_route(
-			'reviewbird/v1',
-			'/google-customer-reviews/(?P<id>\d+)/prompt-yes',
-			array(
-				'methods'             => 'POST',
-				'permission_callback' => array( $this, 'authorize_prompt_request' ),
-				'callback'            => array( $this, 'record_prompt_yes' ),
-			)
-		);
+		foreach ( array( 'yes', 'no' ) as $choice ) {
+			register_rest_route(
+				'reviewbird/v1',
+				'/google-customer-reviews/(?P<id>\d+)/prompt-' . $choice,
+				array(
+					'methods'             => 'POST',
+					'permission_callback' => array( $this, 'authorize_prompt_request' ),
+					'callback'            => array( $this, 'record_prompt_' . $choice ),
+				)
+			);
+		}
 	}
 
 	/**
-	 * Check the token for every Yes request, including repeat requests.
+	 * Check the token for every choice request, including repeat requests.
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return true|WP_Error Access result.
@@ -295,19 +298,67 @@ class GoogleCustomerReviews {
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return WP_REST_Response|WP_Error Result.
-	 * @throws \RuntimeException On save failure; caught below and returned as WP_Error.
 	 */
 	public function record_prompt_yes( WP_REST_Request $request ) {
-		$order = self::authorized_order( $request->get_param( 'id' ), $request->get_param( 'token' ) );
-		if ( ! self::is_prompt_enabled() || 'POST' !== sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' ) ) || ! $order ) {
-			return new WP_Error( 'reviewbird_gcr_unavailable', __( 'This review request is not available.', 'reviewbird' ), array( 'status' => 403 ) );
+		return $this->record_prompt_choice( $request, 'yes' );
+	}
+
+	/**
+	 * Record No once per widget visit without recording consent.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error Result.
+	 */
+	public function record_prompt_no( WP_REST_Request $request ) {
+		return $this->record_prompt_choice( $request, 'no' );
+	}
+
+	/**
+	 * Save a choice and advance the date used by order sync.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @param string          $choice Yes or no.
+	 * @return WP_REST_Response|WP_Error Result.
+	 * @throws \RuntimeException On save failure; caught below and returned as WP_Error.
+	 */
+	private function record_prompt_choice( WP_REST_Request $request, string $choice ) {
+		$authorized = $this->authorize_prompt_request( $request );
+		if ( true !== $authorized ) {
+			return $authorized;
+		}
+		$click_id = $request->get_param( 'click_id' );
+		if ( 'no' === $choice && ( ! is_string( $click_id ) || ! preg_match( '/\A[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\z/', $click_id ) ) ) {
+			return new WP_Error( 'reviewbird_gcr_invalid_click', __( 'This review request is not valid.', 'reviewbird' ), array( 'status' => 400 ) );
+		}
+
+		global $wpdb;
+		$lock = 'reviewbird_gcr_' . md5( $wpdb->prefix . ':' . $request->get_param( 'id' ) );
+		// A database lock works with both WooCommerce order storage modes.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Serialize writes to one order.
+		if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 3)', $lock ) ) ) {
+			return new WP_Error( 'reviewbird_gcr_busy', __( 'Your choice could not be saved. Please try again.', 'reviewbird' ), array( 'status' => 503 ) );
 		}
 
 		try {
-			$timestamp = $order->get_meta( self::YES_META );
-			if ( ! $timestamp ) {
-				$timestamp = gmdate( 'c' );
-				$order->update_meta_data( self::YES_META, $timestamp );
+			$order = self::authorized_order( $request->get_param( 'id' ), $request->get_param( 'token' ) );
+			if ( ! $order || ! self::is_prompt_enabled() ) {
+				return new WP_Error( 'reviewbird_gcr_unavailable', __( 'This review request is not available.', 'reviewbird' ), array( 'status' => 403 ) );
+			}
+			$order->read_meta_data( true );
+			$key   = 'yes' === $choice ? self::YES_META : self::NO_META;
+			$value = $order->get_meta( $key );
+			if ( 'no' === $choice ) {
+				$value = is_array( $value ) ? $value : array();
+				$save  = ! in_array( $click_id, $value, true );
+				if ( $save ) {
+					$value[] = $click_id;
+				}
+			} else {
+				$save  = ! $value;
+				$value = $value ? $value : gmdate( 'c' );
+			}
+			if ( $save ) {
+				$order->update_meta_data( $key, $value );
 				// Metadata alone does not advance the legacy order storage sync date.
 				$order->set_date_modified( time() );
 				if ( ! $order->save() ) {
@@ -315,15 +366,18 @@ class GoogleCustomerReviews {
 				}
 				// WooCommerce can catch save errors internally and still return an ID.
 				$order->read_meta_data( true );
-				if ( $timestamp !== $order->get_meta( self::YES_META ) ) {
+				if ( $value !== $order->get_meta( $key ) ) {
 					throw new \RuntimeException( 'Order choice was not saved.' );
 				}
 			}
 		} catch ( \Exception $exception ) {
 			return new WP_Error( 'reviewbird_gcr_save_failed', __( 'Your choice could not be saved. Please try again.', 'reviewbird' ), array( 'status' => 500 ) );
+		} finally {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Release the order lock on every outcome.
+			$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $lock ) );
 		}
 
-		return new WP_REST_Response( array( 'prompt_yes_at' => $timestamp ), 200 );
+		return new WP_REST_Response( 'yes' === $choice ? array( 'prompt_yes_at' => $value ) : array( 'no_click_count' => count( $value ) ), 200 );
 	}
 
 	/**
@@ -380,14 +434,17 @@ class GoogleCustomerReviews {
 		$config = array(
 			'mode'      => $mode,
 			'choiceUrl' => rest_url( 'reviewbird/v1/google-customer-reviews/' . $order->get_id() . '/prompt-yes' ),
+			'noUrl'     => rest_url( 'reviewbird/v1/google-customer-reviews/' . $order->get_id() . '/prompt-no' ),
+			'clickId'   => wp_generate_uuid4(),
 			'token'     => self::token( $order ),
 			'orderId'   => $order->get_id(),
 			'google'    => self::order_data( $order ),
 			'text'      => array(
-				'loading' => __( 'Loading Google Customer Reviews…', 'reviewbird' ),
-				'error'   => __( 'Google Customer Reviews could not load. Please try again.', 'reviewbird' ),
-				'retry'   => __( 'Try again', 'reviewbird' ),
-				'opened'  => __( 'You can close this page when you finish.', 'reviewbird' ),
+				'loading'   => __( 'Loading Google Customer Reviews…', 'reviewbird' ),
+				'saveError' => __( 'Your choice could not be saved. Please try again.', 'reviewbird' ),
+				'error'     => __( 'Google Customer Reviews could not load. Please try again.', 'reviewbird' ),
+				'retry'     => __( 'Try again', 'reviewbird' ),
+				'opened'    => __( 'You can close this page when you finish.', 'reviewbird' ),
 			),
 		);
 		?>
@@ -416,9 +473,11 @@ class GoogleCustomerReviews {
 	 */
 	public function add_order_response( $response, $order ) {
 		$timestamp = $order->get_meta( self::YES_META );
+		$no_clicks = $order->get_meta( self::NO_META );
 		$response->data['reviewbird_google_customer_reviews'] = array(
-			'opt_in_url'    => self::opt_in_url( $order ),
-			'prompt_yes_at' => $timestamp ? $timestamp : null,
+			'opt_in_url'     => self::opt_in_url( $order ),
+			'prompt_yes_at'  => $timestamp ? $timestamp : null,
+			'no_click_count' => is_array( $no_clicks ) ? count( $no_clicks ) : 0,
 		);
 		return $response;
 	}
