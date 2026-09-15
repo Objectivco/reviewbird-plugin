@@ -1,3 +1,5 @@
+/* eslint-disable @wordpress/i18n-no-variables -- Test cases use source strings from the translation catalog. */
+
 import { createRoot } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import ConnectionHealth from './ConnectionHealth.jsx';
@@ -161,7 +163,9 @@ test.each( [
 			expect( container.querySelector( 'h2' ).textContent ).toBe(
 				__( heading, 'reviewbird' )
 			);
-			expect( container.textContent ).toContain( __( message, 'reviewbird' ) );
+			expect( container.textContent ).toContain(
+				__( message, 'reviewbird' )
+			);
 			expect( container.textContent ).not.toContain(
 				'internal_diagnostic'
 			);

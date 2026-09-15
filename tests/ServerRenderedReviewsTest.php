@@ -21,8 +21,10 @@ namespace {
 		return strip_tags( $text );
 	}
 
-	function esc_attr( $text ) {
-		return htmlspecialchars( $text, ENT_QUOTES, 'UTF-8' );
+	if ( ! function_exists( 'esc_attr' ) ) {
+		function esc_attr( $text ) {
+			return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+		}
 	}
 
 	function esc_html( $text ) {

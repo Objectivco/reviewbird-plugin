@@ -67,8 +67,10 @@ namespace {
 		return array_merge( $defaults, array_intersect_key( $atts, $defaults ) );
 	}
 
-	function esc_attr( $value ) {
-		return htmlspecialchars( (string) $value, ENT_QUOTES );
+	if ( ! function_exists( 'esc_attr' ) ) {
+		function esc_attr( $value ) {
+			return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' );
+		}
 	}
 
 	if ( ! function_exists( 'get_post_meta' ) ) {
