@@ -6,6 +6,7 @@ module.exports = {
     ...defaultConfig,
     entry: {
         admin: path.resolve(process.cwd(), 'assets/src/js', 'admin.js'),
+        'google-customer-reviews': path.resolve(process.cwd(), 'assets/src/js', 'google-customer-reviews.js'),
         'admin-style': path.resolve(process.cwd(), 'assets/src/scss', 'admin.scss'),
     },
     output: {

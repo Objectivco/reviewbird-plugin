@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 import ConnectionHealth from './ConnectionHealth.jsx';
 import TogglePanel from './TogglePanel.jsx';
 import WelcomeScreen from './WelcomeScreen.jsx';
+import GoogleCustomerReviews from './GoogleCustomerReviews.jsx';
 
 function getAdminSetting( key, defaultValue = false ) {
 	const value = window.reviewbirdAdmin?.[ key ];
@@ -107,6 +108,8 @@ export default function SettingsApp() {
 				) }
 
 				<ConnectionHealth />
+
+				<GoogleCustomerReviews />
 
 				<TogglePanel
 					title={ __( 'Reviewbird Widget', 'reviewbird' ) }

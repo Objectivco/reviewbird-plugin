@@ -16,6 +16,7 @@ use reviewbird\Api\ConnectionController;
 use reviewbird\Api\CouponController;
 use reviewbird\Api\ProductsController;
 use reviewbird\Api\RatingsController;
+use reviewbird\Integration\GoogleCustomerReviews;
 use reviewbird\Integration\HealthScheduler;
 use reviewbird\Integration\RatingOverride;
 use reviewbird\Integration\SchemaMarkup;
@@ -113,6 +114,9 @@ class Plugin {
 
 		// Star rating display override.
 		new StarRatingDisplay();
+
+		// Google Customer Reviews opt-in.
+		new GoogleCustomerReviews();
 
 		// WooCommerce integration (adds CusRev media to reviews REST API).
 		new WooCommerce();
