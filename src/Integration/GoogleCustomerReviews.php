@@ -331,14 +331,6 @@ class GoogleCustomerReviews {
 			return new WP_Error( 'reviewbird_gcr_invalid_click', __( 'This review request is not valid.', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
-		global $wpdb;
-		$lock = 'reviewbird_gcr_' . md5( $wpdb->prefix . ':' . $request->get_param( 'id' ) );
-		// A database lock works with both WooCommerce order storage modes.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Serialize writes to one order.
-		if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 3)', $lock ) ) ) {
-			return new WP_Error( 'reviewbird_gcr_busy', __( 'Your choice could not be saved. Please try again.', 'reviewbird' ), array( 'status' => 503 ) );
-		}
-
 		try {
 			$order = self::authorized_order( $request->get_param( 'id' ), $request->get_param( 'token' ) );
 			if ( ! $order || ! self::is_prompt_enabled() ) {
@@ -372,9 +364,6 @@ class GoogleCustomerReviews {
 			}
 		} catch ( \Exception $exception ) {
 			return new WP_Error( 'reviewbird_gcr_save_failed', __( 'Your choice could not be saved. Please try again.', 'reviewbird' ), array( 'status' => 500 ) );
-		} finally {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Release the order lock on every outcome.
-			$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $lock ) );
 		}
 
 		return new WP_REST_Response( 'yes' === $choice ? array( 'prompt_yes_at' => $value ) : array( 'no_click_count' => count( $value ) ), 200 );

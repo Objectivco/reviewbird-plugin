@@ -22,7 +22,9 @@ class HealthScheduler {
 	/**
 	 * Action hook name for health status refresh.
 	 */
-	private const ACTION_HOOK = 'reviewbird_refresh_health_status';
+	private const ACTION_HOOK    = 'reviewbird_refresh_health_status';
+	public const CLEANUP_HOOK    = 'reviewbird_cleanup_health_actions';
+	private const CLEANUP_OPTION = 'reviewbird_health_cleanup_status';
 
 	/**
 	 * Interval between health checks in seconds (5 minutes).
@@ -34,6 +36,7 @@ class HealthScheduler {
 	 */
 	public function init(): void {
 		add_action( self::ACTION_HOOK, array( $this, 'run_scheduled_check' ) );
+		add_action( self::CLEANUP_HOOK, array( $this, 'cleanup_legacy_actions' ) );
 		add_action( 'init', array( $this, 'schedule_recurring_check' ) );
 	}
 
@@ -41,28 +44,84 @@ class HealthScheduler {
 	 * Schedule recurring health check if not already scheduled.
 	 */
 	public function schedule_recurring_check(): void {
-		Scheduler::schedule( self::ACTION_HOOK, array( 'periodic' ), time(), 5 );
+		if ( ! class_exists( '\ActionScheduler' ) || ! \ActionScheduler::is_initialized() ) {
+			return;
+		}
+		if ( ! get_option( self::CLEANUP_OPTION ) ) {
+			// Replace all old health schedules once, including duplicate recurring jobs.
+			as_unschedule_all_actions( self::ACTION_HOOK );
+			as_unschedule_all_actions( self::CLEANUP_HOOK );
+			wp_clear_scheduled_hook( self::CLEANUP_HOOK );
+			update_option( self::CLEANUP_OPTION, 'pending', false );
+		}
+		if ( ! as_next_scheduled_action( self::ACTION_HOOK, array( 'periodic' ), 'reviewbird-health' ) ) {
+			as_schedule_recurring_action( time(), self::REFRESH_INTERVAL, self::ACTION_HOOK, array( 'periodic' ), 'reviewbird-health', true, 5 );
+		}
+		if ( 'complete' !== get_option( self::CLEANUP_OPTION ) && ! as_next_scheduled_action( self::CLEANUP_HOOK ) ) {
+			as_schedule_single_action( time() + 60, self::CLEANUP_HOOK, array(), 'reviewbird', true, 0 );
+		}
 	}
 
 	/** Schedule one immediate check after a connection notification. */
 	public function schedule_immediate_refresh(): void {
-		Scheduler::schedule( self::ACTION_HOOK, array( 'immediate' ), time(), 5 );
+		if ( ! class_exists( '\ActionScheduler' ) || ! \ActionScheduler::is_initialized() ) {
+			return;
+		}
+		if ( ! as_next_scheduled_action( self::ACTION_HOOK, array( 'immediate' ), 'reviewbird-health-immediate' ) ) {
+			as_enqueue_async_action( self::ACTION_HOOK, array( 'immediate' ), 'reviewbird-health-immediate', true, 5 );
+		}
 	}
 
 	/**
-	 * Schedule the next check before making the API request.
+	 * Run current checks. Old jobs without a recognized type do no API work.
 	 *
 	 * @param string $type Check type. Old jobs have no recognized type and do no API work.
 	 */
 	public function run_scheduled_check( $type = '' ): void {
-		if ( ! in_array( $type, array( 'periodic', 'immediate' ), true ) || ! Scheduler::enabled() ) {
+		if ( in_array( $type, array( 'periodic', 'immediate' ), true ) ) {
+			$this->refresh_health_status();
+		}
+	}
+
+	/** Remove old health actions and their logs in small batches after an upgrade. */
+	public function cleanup_legacy_actions(): void {
+		if ( 'complete' === get_option( self::CLEANUP_OPTION ) ) {
 			return;
 		}
-		if ( 'periodic' === $type ) {
-			// Single jobs avoid AS's separate, non-unique recurring replacement path.
-			Scheduler::schedule( self::ACTION_HOOK, array( 'periodic' ), time() + self::REFRESH_INTERVAL, 5, false );
+		try {
+			$ids = as_get_scheduled_actions(
+				array(
+					'hook'     => self::ACTION_HOOK,
+					'per_page' => 1000,
+					'orderby'  => 'date',
+					'order'    => 'ASC',
+				),
+				'ids'
+			);
+			$store     = \ActionScheduler::store();
+			$deadline  = microtime( true ) + 10;
+			$remaining = count( $ids ) === 1000;
+			foreach ( $ids as $id ) {
+				$status = $store->get_status( $id );
+				if ( 'in-progress' === $status ) {
+					$remaining = true;
+				} elseif ( 'pending' !== $status ) {
+					// AS also deletes the logs. Keep the new pending health checks.
+					$store->delete_action( $id );
+				}
+				if ( microtime( true ) >= $deadline ) {
+					$remaining = true;
+					break;
+				}
+			}
+			if ( ! $remaining ) {
+				update_option( self::CLEANUP_OPTION, 'complete', false );
+				return;
+			}
+		} catch ( \Exception $error ) {
+			$this->log_refresh_error( $error->getMessage() );
 		}
-		$this->refresh_health_status();
+		as_schedule_single_action( time() + 60, self::CLEANUP_HOOK, array(), 'reviewbird', false, 0 );
 	}
 
 	/**

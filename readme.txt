@@ -228,9 +228,9 @@ For development: `pnpm run dev`
 == Changelog ==
 
 = Unreleased =
-Fix - Prevent duplicate health, product schema, and cleanup jobs during concurrent requests. Check health every five minutes, including when the status cache is empty.
-Fix - Remove old health and schema actions and their logs in background batches after an upgrade. Stop old recurring health jobs and preserve pending product updates.
-Fix - Stop new jobs during deactivation. Resume health checks after reactivation.
+Fix - Check for existing health, product schema, and cleanup jobs before scheduling work. Use Action Scheduler's recurring API to check health every five minutes, including when the status cache is empty.
+Fix - Replace old health schedules and remove their action history and logs in background batches after an upgrade.
+Fix - Cancel scheduled jobs during deactivation. Resume health checks after reactivation.
 Fix - Preserve cached review schema when an API request fails.
 
 = 1.1.4 =

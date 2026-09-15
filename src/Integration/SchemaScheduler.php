@@ -50,7 +50,7 @@ class SchemaScheduler {
 	 * @param int $product_id   WooCommerce product ID.
 	 */
 	public function schedule_schema_refresh( $product_id ): void {
-		if ( ! is_numeric( $product_id ) ) {
+		if ( ! is_numeric( $product_id ) || ! class_exists( '\ActionScheduler' ) || ! \ActionScheduler::is_initialized() ) {
 			return;
 		}
 		$product_id = absint( $product_id );
@@ -58,8 +58,10 @@ class SchemaScheduler {
 			return;
 		}
 
-		// One pending refresh per product. Updates during a running fetch need a later refresh.
-		Scheduler::schedule( self::ACTION_HOOK, array( $product_id ), time(), 10, false );
+		if ( ! as_next_scheduled_action( self::ACTION_HOOK, array( $product_id ) ) ) {
+			// Check args explicitly: older AS versions apply $unique to the whole hook and group.
+			as_enqueue_async_action( self::ACTION_HOOK, array( $product_id ), 'reviewbird' );
+		}
 	}
 
 	/**
@@ -70,7 +72,7 @@ class SchemaScheduler {
 	 * @param int $product_id WooCommerce product ID.
 	 */
 	public function refresh_schema_reviews( int $product_id ): void {
-		if ( ! Scheduler::enabled() || ! reviewbird_is_schema_enabled() ) {
+		if ( ! reviewbird_is_schema_enabled() ) {
 			return;
 		}
 		$store_id = reviewbird_get_store_id();
