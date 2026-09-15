@@ -12,6 +12,7 @@
 		"assets/build/**",
 		"assets/css/**",
 		"languages/**",
+		"licenses/**",
 		"templates/**",
 		"src/**",
 		"vendor/autoload.php",

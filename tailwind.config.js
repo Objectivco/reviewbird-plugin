@@ -1,4 +1,5 @@
 module.exports = {
+	important: '#reviewbird-settings-root',
 	content: [
 		'./assets/src/**/*.{js,jsx,ts,tsx}',
 		'./src/**/*.php',
@@ -14,5 +15,6 @@ module.exports = {
 	plugins: [],
 	corePlugins: {
 		preflight: false,
+		container: false,
 	},
 };

@@ -3,10 +3,10 @@ import { __ } from '@wordpress/i18n';
 import { ExternalLinkIcon } from './ConnectionHealth.jsx';
 
 const fields = [
-	[ 'heading', __( 'Heading', 'reviewbird' ), 160 ],
-	[ 'message', __( 'Message', 'reviewbird' ), 2000 ],
-	[ 'yes_label', __( 'Yes button', 'reviewbird' ), 80 ],
-	[ 'no_label', __( 'No button', 'reviewbird' ), 80 ],
+	[ 'heading', __( 'Widget title', 'reviewbird' ), 160 ],
+	[ 'message', __( 'Customer message', 'reviewbird' ), 2000 ],
+	[ 'yes_label', __( 'Yes button text', 'reviewbird' ), 80 ],
+	[ 'no_label', __( 'No button text', 'reviewbird' ), 80 ],
 ];
 
 async function request( action, values = {} ) {
@@ -47,12 +47,13 @@ export default function GoogleCustomerReviews() {
 	)
 		? settings.status
 		: 'unknown';
-	const integrationLabel = {
-		enabled: __( 'Integration enabled', 'reviewbird' ),
-		disabled: __( 'Integration disabled', 'reviewbird' ),
-		unknown: __( 'Status unknown', 'reviewbird' ),
-	}[ integrationState ];
+
 	const integrationEnabled = integrationState === 'enabled';
+	const integrationDescription = {
+		enabled: __( 'Integration is currently enabled.', 'reviewbird' ),
+		disabled: __( 'Integration is currently disabled.', 'reviewbird' ),
+		unknown: __( 'Integration status is unknown.', 'reviewbird' ),
+	}[ integrationState ];
 
 	async function updateControl( action ) {
 		if (
@@ -127,13 +128,13 @@ export default function GoogleCustomerReviews() {
 			);
 			setPrompt( data.prompt );
 			setSavedPrompt( data.prompt );
-			setStatus( __( 'Text saved.', 'reviewbird' ) );
+			setStatus( __( 'Changes saved.', 'reviewbird' ) );
 		} catch ( error ) {
 			setSaveError( true );
 			setStatus(
 				error.message ||
 					__(
-						'The prompt could not be saved. Please try again.',
+						'Your changes could not be saved. Please try again.',
 						'reviewbird'
 					)
 			);
@@ -144,36 +145,25 @@ export default function GoogleCustomerReviews() {
 
 	return (
 		<section
-			className="reviewbird-gcr-settings"
+			className="reviewbird-settings-card reviewbird-gcr-settings"
 			aria-labelledby="reviewbird-gcr-settings-title"
 		>
 			<header className="reviewbird-gcr-settings__header">
 				<h2 id="reviewbird-gcr-settings-title">
 					{ __( 'Google Customer Reviews', 'reviewbird' ) }
 				</h2>
-				<span
-					id="reviewbird-gcr-integration-status"
-					className="reviewbird-gcr-settings__status"
-					data-state={ integrationState }
-				>
-					<span aria-hidden="true" />
-					{ integrationLabel }
-				</span>
 			</header>
 
 			<div className="reviewbird-gcr-settings__visibility">
-				<div className="reviewbird-gcr-settings__choice">
+				<div className="reviewbird-settings-choice">
 					<input
 						id="reviewbird-gcr-prompt-toggle"
+						className="reviewbird-settings-checkbox"
 						type="checkbox"
 						checked={
 							integrationEnabled && !! settings.promptEnabled
 						}
-						aria-describedby={
-							integrationEnabled
-								? undefined
-								: 'reviewbird-gcr-visibility-description'
-						}
+						aria-describedby="reviewbird-gcr-visibility-description reviewbird-gcr-integration-help"
 						aria-busy={ pending === 'toggle' }
 						disabled={
 							! integrationEnabled || !! pending || saving
@@ -187,58 +177,71 @@ export default function GoogleCustomerReviews() {
 								'reviewbird'
 							) }
 						</label>
-						{ ! integrationEnabled && (
-							<p id="reviewbird-gcr-visibility-description">
-								{ integrationState === 'disabled'
-									? __(
-											'Enable Google Customer Reviews in Reviewbird, then refresh.',
-											'reviewbird'
-									  )
-									: __(
-											'Refresh to check your connection.',
-											'reviewbird'
-									  ) }
-							</p>
-						) }
+						<p id="reviewbird-gcr-visibility-description">
+							{ __(
+								'Ask customers to consent to Google Customer Reviews.',
+								'reviewbird'
+							) }
+						</p>
 					</div>
 				</div>
-				<div className="reviewbird-gcr-toolbar">
-					<a
-						href={ settings.integrationsUrl }
-						target="_blank"
-						rel="noopener noreferrer"
+				<div className="reviewbird-gcr-settings__integration">
+					<div
+						id="reviewbird-gcr-integration-help"
+						className="reviewbird-gcr-settings__integration-help"
 					>
-						{ __( 'Configure integration', 'reviewbird' ) }
-						<ExternalLinkIcon />
-					</a>
-					<button
-						type="button"
-						disabled={ !! pending || saving }
-						onClick={ () => updateControl( 'refresh' ) }
-						aria-label={ __(
-							'Refresh integration status',
-							'reviewbird'
-						) }
-					>
-						<svg
-							width="16"
-							height="16"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="1.75"
-							aria-hidden="true"
+						<p>
+							{ __(
+								'Requires the Google Customer Reviews integration to be enabled. If you just enabled it, use Refresh to update the status.',
+								'reviewbird'
+							) }
+						</p>
+						<p>
+							<strong id="reviewbird-gcr-integration-status">
+								{ integrationDescription }
+							</strong>
+						</p>
+					</div>
+					<div className="reviewbird-gcr-toolbar">
+						<a
+							className="reviewbird-settings-link"
+							href={ settings.integrationsUrl }
+							target="_blank"
+							rel="noopener noreferrer"
 						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								d="M20 7v5h-5M4 17v-5h5M6.1 7a7 7 0 0 1 11.55-1.4L20 8M4 16l2.35 2.4A7 7 0 0 0 17.9 17"
-							/>
-						</svg>
-						{ pending === 'refresh'
-							? __( 'Refreshing…', 'reviewbird' )
-							: __( 'Refresh', 'reviewbird' ) }
-					</button>
+							{ __( 'Configure integration', 'reviewbird' ) }
+							<ExternalLinkIcon />
+						</a>
+						<button
+							type="button"
+							className="reviewbird-settings-button"
+							disabled={ !! pending || saving }
+							onClick={ () => updateControl( 'refresh' ) }
+							aria-label={ __(
+								'Refresh integration status',
+								'reviewbird'
+							) }
+						>
+							<svg
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="1.75"
+								aria-hidden="true"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M20 7v5h-5M4 17v-5h5M6.1 7a7 7 0 0 1 11.55-1.4L20 8M4 16l2.35 2.4A7 7 0 0 0 17.9 17"
+								/>
+							</svg>
+							{ pending === 'refresh'
+								? __( 'Refreshing…', 'reviewbird' )
+								: __( 'Refresh', 'reviewbird' ) }
+						</button>
+					</div>
 				</div>
 			</div>
 			{ controlError && (
@@ -259,8 +262,13 @@ export default function GoogleCustomerReviews() {
 				} }
 			>
 				<div className="reviewbird-gcr-settings__editor">
-					<fieldset disabled={ saving }>
-						<legend>{ __( 'Prompt text', 'reviewbird' ) }</legend>
+					<fieldset
+						disabled={ saving }
+						aria-label={ __(
+							'Customize your widget',
+							'reviewbird'
+						) }
+					>
 						<div className="reviewbird-gcr-settings__fields">
 							{ fields.map( ( [ key, label, maxLength ] ) => {
 								const props = {
@@ -303,16 +311,16 @@ export default function GoogleCustomerReviews() {
 					</fieldset>
 					<aside
 						className="reviewbird-gcr-settings__preview"
-						aria-label={ __( 'Customer preview', 'reviewbird' ) }
+						aria-label={ __( 'Widget preview', 'reviewbird' ) }
 					>
 						<div className="reviewbird-gcr-settings__preview-heading">
-							<h3>{ __( 'Customer preview', 'reviewbird' ) }</h3>
+							<h3>{ __( 'Widget preview', 'reviewbird' ) }</h3>
 						</div>
 						<div className="reviewbird-gcr-settings__preview-surface">
 							<div
 								className="reviewbird-gcr"
 								aria-label={ __(
-									'Prompt preview',
+									'Customer message preview',
 									'reviewbird'
 								) }
 							>
@@ -354,7 +362,7 @@ export default function GoogleCustomerReviews() {
 					<div>
 						<button
 							type="button"
-							className="reviewbird-gcr-settings__reset"
+							className="reviewbird-settings-button reviewbird-settings-button--ghost"
 							disabled={
 								saving ||
 								! fields.some(
@@ -373,12 +381,12 @@ export default function GoogleCustomerReviews() {
 						</button>
 						<button
 							type="submit"
-							className="reviewbird-gcr-settings__save"
+							className="reviewbird-settings-button reviewbird-settings-button--primary"
 							disabled={ ! dirty || saving || !! pending }
 						>
 							{ saving
 								? __( 'Saving…', 'reviewbird' )
-								: __( 'Save text', 'reviewbird' ) }
+								: __( 'Save changes', 'reviewbird' ) }
 						</button>
 					</div>
 				</footer>

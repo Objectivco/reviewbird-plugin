@@ -28,8 +28,32 @@ const mount = () => act( async () => root.render( <GoogleCustomerReviews /> ) );
 const saveButton = () => container.querySelector( 'button[type="submit"]' );
 const checkbox = () =>
 	container.querySelector( '#reviewbird-gcr-prompt-toggle' );
-const badge = () =>
-	container.querySelector( '#reviewbird-gcr-integration-status' ).textContent;
+function expectIntegrationStatus( status ) {
+	const descriptionIds = [
+		'reviewbird-gcr-visibility-description',
+		'reviewbird-gcr-integration-help',
+	];
+	expect(
+		checkbox().getAttribute( 'aria-describedby' ).split( /\s+/ )
+	).toEqual( descriptionIds );
+	descriptionIds.forEach( ( id ) =>
+		expect( container.querySelectorAll( `#${ id }` ) ).toHaveLength( 1 )
+	);
+	expect(
+		container.querySelector( `#${ descriptionIds[ 0 ] }` ).textContent
+	).toBe( 'Ask customers to consent to Google Customer Reviews.' );
+	const help = container.querySelector( `#${ descriptionIds[ 1 ] }` );
+	const state = help.querySelector( '#reviewbird-gcr-integration-status' );
+	expect( state.tagName ).toBe( 'STRONG' );
+	expect( state.textContent ).toBe(
+		status === 'unknown'
+			? 'Integration status is unknown.'
+			: `Integration is currently ${ status }.`
+	);
+	expect( help.textContent ).toMatch( /integration.*enabled/i );
+	expect( help.textContent ).toMatch( /refresh/i );
+}
+
 const changeField = ( field, value ) =>
 	act( async () =>
 		Simulate.change( container.querySelector( `[name="${ field }"]` ), {
@@ -68,8 +92,8 @@ afterEach( () => {
 
 test( 'cached status and a safe preview need no request; only changed text can be saved', async () => {
 	await mount();
-	expect( badge() ).toBe( 'Integration enabled' );
-	expect( saveButton().textContent ).toBe( 'Save text' );
+	expectIntegrationStatus( 'enabled' );
+	expect( saveButton().textContent ).toBe( 'Save changes' );
 	expect( saveButton().disabled ).toBe( true );
 	const link = container.querySelector( '.reviewbird-gcr-toolbar a' );
 	expect( link.target ).toBe( '_blank' );
@@ -89,7 +113,7 @@ test( 'cached status and a safe preview need no request; only changed text can b
 	expect( fetch ).not.toHaveBeenCalled();
 } );
 
-test( 'Reset changes the draft; Save text commits it and sets the new saved baseline', async () => {
+test( 'Reset changes the draft; Save changes commits it and sets the new saved baseline', async () => {
 	window.reviewbirdAdmin.googleCustomerReviews.prompt = {
 		...defaults,
 		heading: 'Saved custom heading',
@@ -147,39 +171,27 @@ test( 'a failed text save keeps the draft and the previous saved baseline', asyn
 	expect( saveButton().disabled ).toBe( true );
 } );
 
-test.each( [
-	[
-		'disabled',
-		'Integration disabled',
-		'Enable Google Customer Reviews in Reviewbird, then refresh.',
-	],
-	[ 'unknown', 'Status unknown', 'Refresh to check your connection.' ],
-] )(
-	'a %s integration locks the unchecked checkbox and shows one hint',
-	async ( status, label, hint ) => {
+test.each( [ 'enabled', 'disabled', 'unknown' ] )(
+	'a %s integration explains its purpose and dependency, and gates the checkbox',
+	async ( status ) => {
+		const enabled = status === 'enabled';
 		Object.assign( window.reviewbirdAdmin.googleCustomerReviews, {
-			enabled: false,
+			enabled,
 			status,
 			promptEnabled: true,
 		} );
 		await mount();
-		expect( badge() ).toBe( label );
+		expectIntegrationStatus( status );
 		expect( checkbox().type ).toBe( 'checkbox' );
 		expect( checkbox().getAttribute( 'role' ) ).not.toBe( 'switch' );
 		expect( checkbox().labels[ 0 ].textContent.trim() ).toBe(
 			'Enable widget on the thank you page'
 		);
-		expect( checkbox().disabled ).toBe( true );
-		expect( checkbox().checked ).toBe( false );
-		const description = checkbox().getAttribute( 'aria-describedby' );
-		expect( description ).toBeTruthy();
-		expect(
-			container.querySelectorAll( `#${ description }` )
-		).toHaveLength( 1 );
-		expect(
-			container.querySelector( `#${ description }` ).textContent
-		).toBe( hint );
-		await act( async () => checkbox().click() );
+		expect( checkbox().disabled ).toBe( ! enabled );
+		expect( checkbox().checked ).toBe( enabled );
+		if ( ! enabled ) {
+			await act( async () => checkbox().click() );
+		}
 		expect( fetch ).not.toHaveBeenCalled();
 	}
 );
@@ -191,7 +203,7 @@ test( 'Refresh gates the checkbox from current integration status, keeps drafts,
 		promptEnabled: true,
 	} );
 	await mount();
-	expect( badge() ).toBe( 'Integration disabled' );
+	expectIntegrationStatus( 'disabled' );
 	expect( checkbox().checked ).toBe( false );
 	await changeField( 'heading', 'Unsaved heading' );
 	let resolve;
@@ -220,12 +232,9 @@ test( 'Refresh gates the checkbox from current integration status, keeps drafts,
 	await act( async () =>
 		resolve( response( { googleCustomerReviews: updated } ) )
 	);
-	expect( badge() ).toBe( 'Integration enabled' );
+	expectIntegrationStatus( 'enabled' );
 	expect( checkbox().checked ).toBe( true );
 	expect( checkbox().disabled ).toBe( false );
-	expect(
-		container.querySelector( '#reviewbird-gcr-visibility-description' )
-	).toBeNull();
 	expect( container.querySelector( '[name="heading"]' ).value ).toBe(
 		'Unsaved heading'
 	);
@@ -240,18 +249,15 @@ test( 'Refresh gates the checkbox from current integration status, keeps drafts,
 		} )
 	);
 	await act( async () => refresh.click() );
-	expect( badge() ).toBe( 'Integration disabled' );
+	expectIntegrationStatus( 'disabled' );
 	expect( checkbox().checked ).toBe( false );
 	expect( checkbox().disabled ).toBe( true );
-	expect(
-		container.querySelector( '#reviewbird-gcr-visibility-description' )
-	).not.toBeNull();
 	fetch.mockRejectedValueOnce( new Error() );
 	await act( async () => refresh.click() );
 	expect( container.querySelector( '[role="alert"]' ).textContent ).toContain(
 		'could not be refreshed'
 	);
-	expect( badge() ).toBe( 'Integration disabled' );
+	expectIntegrationStatus( 'disabled' );
 	expect( refresh.disabled ).toBe( false );
 	expect( checkbox().checked ).toBe( false );
 	expect( checkbox().disabled ).toBe( true );

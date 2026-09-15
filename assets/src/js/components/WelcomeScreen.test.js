@@ -119,11 +119,11 @@ test.each( [
 );
 
 test.each( [
-	[ 'healthy', 'Connected to Reviewbird', 'View Dashboard', 'dashboard' ],
+	[ 'healthy', 'Connected to Reviewbird', 'View dashboard', 'dashboard' ],
 	[
 		'billing_required',
-		'Subscription Required',
-		'Update Billing',
+		'Reviewbird is disabled',
+		'Update billing',
 		'billing',
 	],
 ] )(
