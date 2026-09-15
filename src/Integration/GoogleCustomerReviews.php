@@ -74,6 +74,35 @@ class GoogleCustomerReviews {
 	}
 
 	/**
+	 * Get the current feature state from the cached health response.
+	 *
+	 * @return string Enabled, disabled, or unknown.
+	 */
+	public static function status(): string {
+		$status = reviewbird_get_store_status();
+		if ( 'not_connected' === ( $status['status'] ?? null ) ) {
+			return 'disabled';
+		}
+		$config = $status['google_customer_reviews'] ?? null;
+		if ( ! is_array( $config ) || ! is_bool( $config['enabled'] ?? null )
+			|| ! is_int( $config['expires_at'] ?? null ) || $config['expires_at'] <= time()
+		) {
+			return 'unknown';
+		}
+
+		return null !== self::configuration() ? 'enabled' : 'disabled';
+	}
+
+	/**
+	 * Check the local thank-you prompt switch.
+	 *
+	 * @return bool Whether the custom prompt is enabled.
+	 */
+	public static function is_prompt_enabled(): bool {
+		return 'yes' === get_option( 'reviewbird_enable_gcr_prompt', 'yes' );
+	}
+
+	/**
 	 * Default text for the prompt and settings preview.
 	 *
 	 * @return array Text by field name.
@@ -205,7 +234,7 @@ class GoogleCustomerReviews {
 		// Also verify the URL and owner before adding any customer data.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce order key authorizes this read.
 		$key = isset( $_GET['key'] ) && is_string( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : '';
-		if ( $this->rendered || ! $order instanceof WC_Order || ! is_order_received_page()
+		if ( ! self::is_prompt_enabled() || $this->rendered || ! $order instanceof WC_Order || ! is_order_received_page()
 			|| (int) get_query_var( 'order-received' ) !== $order->get_id()
 			|| ! hash_equals( $order->get_order_key(), $key )
 			|| ( $order->get_customer_id() && $order->get_customer_id() !== get_current_user_id() && ! current_user_can( 'manage_woocommerce' ) )
@@ -241,7 +270,7 @@ class GoogleCustomerReviews {
 	 * @return true|WP_Error Access result.
 	 */
 	public function authorize_prompt_request( WP_REST_Request $request ) {
-		return 'POST' === sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' ) ) && self::authorized_order( $request->get_param( 'id' ), $request->get_param( 'token' ) )
+		return self::is_prompt_enabled() && 'POST' === sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' ) ) && self::authorized_order( $request->get_param( 'id' ), $request->get_param( 'token' ) )
 			? true
 			: new WP_Error( 'reviewbird_gcr_unavailable', __( 'This review request is not available.', 'reviewbird' ), array( 'status' => 403 ) );
 	}
@@ -255,7 +284,7 @@ class GoogleCustomerReviews {
 	 */
 	public function record_prompt_yes( WP_REST_Request $request ) {
 		$order = self::authorized_order( $request->get_param( 'id' ), $request->get_param( 'token' ) );
-		if ( 'POST' !== sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' ) ) || ! $order ) {
+		if ( ! self::is_prompt_enabled() || 'POST' !== sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' ) ) || ! $order ) {
 			return new WP_Error( 'reviewbird_gcr_unavailable', __( 'This review request is not available.', 'reviewbird' ), array( 'status' => 403 ) );
 		}
 

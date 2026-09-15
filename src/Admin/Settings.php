@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use reviewbird\Integration\StarRatingDisplay;
 use reviewbird\Integration\GoogleCustomerReviews;
+use reviewbird\Integration\HealthScheduler;
 
 /**
  * Admin settings page.
@@ -53,6 +54,7 @@ class Settings {
 		'enable_schema',
 		'enable_widget',
 		'force_reviews_open',
+		'enable_gcr_prompt',
 	);
 
 	/**
@@ -225,11 +227,6 @@ class Settings {
 	 * @return array<string, mixed>
 	 */
 	private function get_script_localization_data( string $hook ): array {
-		$status           = reviewbird_get_store_status() ?? array();
-		$store_id         = reviewbird_get_store_id();
-		$org_path         = empty( $status['org_slug'] ) ? '' : '/' . rawurlencode( $status['org_slug'] );
-		$integrations_url = reviewbird_get_api_url() . $org_path . '/stores' . ( $store_id ? '/' . $store_id . '/integrations' : '' );
-
 		return array(
 			'restUrl'               => rest_url( 'reviewbird/v1' ),
 			'nonce'                 => wp_create_nonce( 'reviewbird_admin_nonce' ),
@@ -250,12 +247,30 @@ class Settings {
 			'enableSchema'          => reviewbird_is_schema_enabled(),
 			'enableWidget'          => reviewbird_is_widget_enabled(),
 			'forceReviewsOpen'      => reviewbird_is_force_reviews_open(),
-			'googleCustomerReviews' => array(
-				'enabled'         => null !== GoogleCustomerReviews::configuration(),
-				'integrationsUrl' => $integrations_url,
-				'prompt'          => GoogleCustomerReviews::prompt_settings(),
-				'defaults'        => GoogleCustomerReviews::prompt_defaults(),
-			),
+			'googleCustomerReviews' => $this->get_gcr_settings_data(),
+		);
+	}
+
+	/**
+	 * Get the same GCR settings snapshot for page loads and manual refreshes.
+	 *
+	 * @return array GCR state and prompt settings.
+	 */
+	private function get_gcr_settings_data(): array {
+		$status           = reviewbird_get_store_status() ?? array();
+		$store_id         = reviewbird_get_store_id();
+		$org_path         = empty( $status['org_slug'] ) ? '' : '/' . rawurlencode( $status['org_slug'] );
+		$integrations_url = reviewbird_get_api_url() . $org_path . '/stores' . ( $store_id ? '/' . $store_id . '/integrations' : '' );
+
+		$feature_status = GoogleCustomerReviews::status();
+
+		return array(
+			'enabled'         => 'enabled' === $feature_status,
+			'status'          => $feature_status,
+			'promptEnabled'   => GoogleCustomerReviews::is_prompt_enabled(),
+			'integrationsUrl' => $integrations_url,
+			'prompt'          => GoogleCustomerReviews::prompt_settings(),
+			'defaults'        => GoogleCustomerReviews::prompt_defaults(),
 		);
 	}
 
@@ -375,31 +390,30 @@ class Settings {
 	}
 
 	/**
-	 * Check if a POST parameter is set to '1'.
-	 *
-	 * @param string $key The POST parameter key.
-	 * @return bool True if the parameter equals '1'.
-	 */
-	private function is_post_param_enabled( string $key ): bool {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_request().
-		return isset( $_POST[ $key ] ) && '1' === sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
-	}
-
-	/**
 	 * Handle AJAX request to update a setting.
 	 */
 	public function handle_setting_update(): void {
 		$this->verify_ajax_request();
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_request() above.
-		$setting = isset( $_POST['setting'] ) ? sanitize_key( $_POST['setting'] ) : '';
+		$setting = isset( $_POST['setting'] ) && is_string( $_POST['setting'] ) ? sanitize_key( wp_unslash( $_POST['setting'] ) ) : '';
 
 		if ( ! in_array( $setting, self::ALLOWED_SETTINGS, true ) ) {
 			wp_send_json_error( __( 'Invalid setting', 'reviewbird' ), 400 );
 		}
 
-		$enabled = $this->is_post_param_enabled( 'value' );
-		update_option( 'reviewbird_' . $setting, $enabled ? 'yes' : 'no' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above.
+		$value = isset( $_POST['value'] ) && is_string( $_POST['value'] ) ? sanitize_text_field( wp_unslash( $_POST['value'] ) ) : null;
+		if ( ! in_array( $value, array( '0', '1' ), true ) ) {
+			wp_send_json_error( __( 'Invalid setting value', 'reviewbird' ), 400 );
+		}
+
+		$enabled = '1' === $value;
+		$stored  = $enabled ? 'yes' : 'no';
+		$saved   = update_option( 'reviewbird_' . $setting, $stored );
+		if ( ! $saved && get_option( 'reviewbird_' . $setting ) !== $stored ) {
+			wp_send_json_error( __( 'The setting could not be saved. Please try again.', 'reviewbird' ), 500 );
+		}
 
 		wp_send_json_success(
 			array(
@@ -445,18 +459,21 @@ class Settings {
 	}
 
 	/**
-	 * Handle AJAX request to clear health check cache.
+	 * Refresh the saved connection status without discarding the last good value.
 	 */
 	public function handle_clear_health_cache(): void {
 		$this->verify_ajax_request();
 
-		reviewbird_clear_status_cache();
-		$status = reviewbird_get_store_status( true );
+		$status = ( new HealthScheduler() )->refresh_health_status();
+		if ( is_wp_error( $status ) ) {
+			wp_send_json_error( __( 'The connection status could not be refreshed. Please try again.', 'reviewbird' ), 502 );
+		}
 
 		wp_send_json_success(
 			array(
-				'status'  => $status,
-				'message' => __( 'Health check cache cleared', 'reviewbird' ),
+				'status'                => $status,
+				'googleCustomerReviews' => $this->get_gcr_settings_data(),
+				'message'               => __( 'Connection status refreshed', 'reviewbird' ),
 			)
 		);
 	}

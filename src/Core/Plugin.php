@@ -480,7 +480,7 @@ class Plugin {
 		);
 
 		$docs_link = sprintf(
-			'<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
+			'<a href="%s" target="_blank" rel="noopener noreferrer">%s <span class="dashicons dashicons-external" aria-hidden="true" style="font-size:14px;width:14px;height:14px;vertical-align:text-bottom;"></span></a>',
 			esc_url( 'https://reviewbird.com/documentation/' ),
 			__( 'Documentation', 'reviewbird' )
 		);

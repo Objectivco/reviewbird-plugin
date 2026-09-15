@@ -60,7 +60,11 @@ namespace {
 	}
 	class WP_Error {
 		public $code;
-		public function __construct( $code ) { $this->code = $code; }
+		public $message;
+		public $data;
+		public function __construct( $code, $message = '', $data = null ) { $this->code = $code; $this->message = $message; $this->data = $data; }
+		public function get_error_message() { return $this->message; }
+		public function get_error_data() { return $this->data; }
 	}
 }
 
@@ -80,6 +84,15 @@ namespace reviewbird\Integration {
 	function wp_json_encode( $data ) { return json_encode( $data ); }
 	function get_option( $name, $default = false ) { return $GLOBALS['gcr_options'][ $name ] ?? $default; }
 	function reviewbird_get_store_status() { return get_option( 'reviewbird_store_status' ); }
+	function is_wp_error( $value ) { return $value instanceof \WP_Error; }
+	function wp_parse_url( $url, $component ) { return parse_url( $url, $component ); }
+	function absint( $value ) { return abs( (int) $value ); }
+	function reviewbird_api_request( $endpoint ) { ++$GLOBALS['gcr_api_calls']; return $GLOBALS['gcr_api_response']; }
+	function update_option( $name, $value, $autoload = null ) {
+		if ( $GLOBALS['gcr_option_write_fail'] || get_option( $name ) === $value ) { return false; }
+		$GLOBALS['gcr_options'][ $name ] = $value;
+		return true;
+	}
 	function wp_salt() { return $GLOBALS['gcr_salt']; }
 	function home_url() { return 'https://store.test/'; }
 	function add_query_arg( $args, $url ) { return $url . '?' . http_build_query( $args ); }
@@ -104,6 +117,25 @@ namespace reviewbird\Integration {
 	}
 }
 
+namespace reviewbird\Admin {
+	class GcrAdminResponse extends \RuntimeException {
+		public $data;
+		public function __construct( $data, $code ) { parent::__construct( '', $code ); $this->data = $data; }
+	}
+	function add_action( $hook, $callback ) {}
+	function __( $text ) { return $text; }
+	function wp_unslash( $value ) { return $value; }
+	function sanitize_text_field( $value ) { return $value; }
+	function wp_verify_nonce( $value ) { return 'valid-nonce' === $value; }
+	function current_user_can() { return $GLOBALS['gcr_admin']; }
+	function is_wp_error( $value ) { return $value instanceof \WP_Error; }
+	function reviewbird_get_store_status() { return \reviewbird\Integration\reviewbird_get_store_status(); }
+	function reviewbird_get_store_id() { return \reviewbird\Integration\get_option( 'reviewbird_store_id' ); }
+	function reviewbird_get_api_url() { return 'https://app.reviewbird.test'; }
+	function wp_send_json_error( $data, $code ) { throw new GcrAdminResponse( $data, $code ); }
+	function wp_send_json_success( $data ) { throw new GcrAdminResponse( $data, 200 ); }
+}
+
 namespace {
 	// Included templates have their own namespace.
 	function language_attributes() { echo 'lang="en"'; }
@@ -115,6 +147,8 @@ namespace {
 	function wp_footer() {}
 
 	require_once dirname( __DIR__ ) . '/src/Integration/GoogleCustomerReviews.php';
+	require_once dirname( __DIR__ ) . '/src/Integration/HealthScheduler.php';
+	require_once dirname( __DIR__ ) . '/src/Admin/Settings.php';
 	use reviewbird\Integration\GoogleCustomerReviews;
 
 	$checks = 0;
@@ -129,6 +163,8 @@ namespace {
 
 	$GLOBALS['gcr_saves'] = 0;
 	$GLOBALS['gcr_save_fail'] = false;
+	$GLOBALS['gcr_api_calls'] = 0;
+	$GLOBALS['gcr_option_write_fail'] = false;
 	$GLOBALS['gcr_salt'] = 'test-site-secret';
 	$GLOBALS['gcr_received'] = true;
 	$GLOBALS['gcr_endpoint_order'] = 7;
@@ -154,6 +190,7 @@ namespace {
 
 	if ( '--page' === ( $argv[1] ?? null ) ) {
 		$_GET = $query;
+		$GLOBALS['gcr_options']['reviewbird_enable_gcr_prompt'] = 'no';
 		$GLOBALS['gcr_orders'][7]->meta[ GoogleCustomerReviews::YES_META ] = '2026-09-15T12:00:00+00:00';
 		register_shutdown_function( function () {
 			check( 0 === $GLOBALS['gcr_saves'], 'Direct GET wrote order metadata.' );
@@ -163,6 +200,19 @@ namespace {
 	}
 
 	check( is_array( GoogleCustomerReviews::configuration() ), 'Valid configuration rejected.' );
+	check( 'enabled' === GoogleCustomerReviews::status(), 'Enabled feature status is wrong.' );
+	check( GoogleCustomerReviews::is_prompt_enabled(), 'Local prompt is not enabled by default.' );
+	$GLOBALS['gcr_options']['reviewbird_enable_gcr_prompt'] = 'no';
+	check( ! GoogleCustomerReviews::is_prompt_enabled(), 'Local prompt switch is ignored.' );
+	ob_start(); ( new GoogleCustomerReviews() )->render_prompt( 7 ); check( '' === ob_get_clean(), 'Disabled local prompt is rendered.' );
+	check( $url === GoogleCustomerReviews::opt_in_url( $GLOBALS['gcr_orders'][7] ), 'Local prompt switch disables signed links.' );
+	check( 'enabled' === GoogleCustomerReviews::status(), 'Local prompt switch changes account feature status.' );
+	$_SERVER['REQUEST_METHOD'] = 'POST';
+	$disabled_request = new WP_REST_Request( array( 'id' => 7, 'token' => $token ) );
+	check( $integration->authorize_prompt_request( $disabled_request ) instanceof WP_Error, 'Stale prompt can bypass local switch.' );
+	check( $integration->record_prompt_yes( $disabled_request ) instanceof WP_Error && 0 === $GLOBALS['gcr_saves'], 'Disabled prompt records Yes.' );
+	$_SERVER['REQUEST_METHOD'] = 'GET';
+	unset( $GLOBALS['gcr_options']['reviewbird_enable_gcr_prompt'] );
 	check( false === strpos( $url, 'wc_order_key' ) && false === strpos( $url, 'buyer' ), 'Link exposes order key or email.' );
 	check( 64 === strlen( $token ), 'Unexpected signature.' );
 	check( 0 === $GLOBALS['gcr_saves'], 'URL GET caused a write.' );
@@ -273,6 +323,61 @@ namespace {
 	check( 0 === $exit_code && false !== strpos( $page, 'GCR_GET_NO_WRITES' ), 'Direct page failed or changed metadata.' );
 	check( 'direct' === card_config( $page )['mode'] && false === strpos( $page, 'data-gcr-yes' ), 'Direct page has a custom prompt.' );
 	check( false !== strpos( $page, 'noindex, nofollow' ), 'Direct page can be indexed.' );
+
+	// Manual refresh uses the scheduler and returns the same saved GCR state as the page.
+	$settings = new \reviewbird\Admin\Settings();
+	$_POST = array( 'nonce' => 'valid-nonce' );
+	$GLOBALS['gcr_admin'] = true;
+	$fresh = $initial_status;
+	$fresh['google_customer_reviews']['enabled'] = false;
+	$GLOBALS['gcr_api_response'] = $fresh;
+	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		check( 200 === $response->getCode() && $response->data['status'] === $fresh, 'Refresh did not return the fresh response.' );
+		check( 'disabled' === $response->data['googleCustomerReviews']['status'] && false === $response->data['googleCustomerReviews']['enabled'], 'Fresh disabled feature state is wrong.' );
+		check( true === $response->data['googleCustomerReviews']['promptEnabled'], 'Refresh lost local prompt default.' );
+	}
+	check( $GLOBALS['gcr_options']['reviewbird_store_status'] === $fresh, 'Refresh did not update the saved cache.' );
+	$before_calls = $GLOBALS['gcr_api_calls'];
+	$_POST['nonce'] = 'wrong';
+	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		check( 403 === $response->getCode() && $before_calls === $GLOBALS['gcr_api_calls'], 'Invalid nonce refreshed the cache.' );
+	}
+	$_POST['nonce'] = 'valid-nonce';
+	$GLOBALS['gcr_admin'] = false;
+	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		check( 403 === $response->getCode() && $before_calls === $GLOBALS['gcr_api_calls'], 'Unprivileged user refreshed the cache.' );
+	}
+	$GLOBALS['gcr_admin'] = true;
+	foreach ( array( new WP_Error( 'network', 'Offline' ), new WP_Error( 'http', 'Server error', array( 'status' => 500, 'response' => array( 'status' => 'not_connected' ) ) ), null, array(), array( 'status' => array() ) ) as $bad_response ) {
+		$GLOBALS['gcr_api_response'] = $bad_response;
+		try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+			check( 502 === $response->getCode(), 'Failed refresh returned success.' );
+			check( $GLOBALS['gcr_options']['reviewbird_store_status'] === $fresh, 'Failed refresh deleted the last good cache.' );
+		}
+	}
+	$GLOBALS['gcr_api_response'] = $initial_status;
+	$GLOBALS['gcr_option_write_fail'] = true;
+	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		check( 502 === $response->getCode() && $GLOBALS['gcr_options']['reviewbird_store_status'] === $fresh, 'Cache write failure returned success.' );
+	}
+	$GLOBALS['gcr_option_write_fail'] = false;
+	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		check( 'enabled' === $response->data['googleCustomerReviews']['status'] && true === $response->data['googleCustomerReviews']['enabled'], 'Refresh did not restore enabled feature state.' );
+	}
+	check( $initial_status === ( new \reviewbird\Integration\HealthScheduler() )->refresh_health_status(), 'Unchanged valid cache is treated as a write failure.' );
+	$disconnected = array( 'status' => 'not_connected', 'message' => 'No store is connected.' );
+	$GLOBALS['gcr_api_response'] = new WP_Error( 'http', 'Not connected', array( 'status' => 404, 'response' => $disconnected ) );
+	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		check( 200 === $response->getCode() && 'disabled' === $response->data['googleCustomerReviews']['status'], 'Known 404 disconnect was not applied.' );
+	}
+	check( $disconnected === $GLOBALS['gcr_options']['reviewbird_store_status'] && null === GoogleCustomerReviews::configuration(), 'Disconnect left stale enabled config.' );
+	$GLOBALS['gcr_options']['reviewbird_store_status'] = $initial_status;
+	$GLOBALS['gcr_options']['reviewbird_store_status']['google_customer_reviews']['expires_at'] = 1800000000;
+	check( 'unknown' === GoogleCustomerReviews::status(), 'Expired feature state is not unknown.' );
+	unset( $GLOBALS['gcr_options']['reviewbird_store_status']['google_customer_reviews'] );
+	check( 'unknown' === GoogleCustomerReviews::status(), 'Missing feature state is not unknown.' );
+	$GLOBALS['gcr_options']['reviewbird_store_status'] = $initial_status;
+	$_POST = array();
 
 	echo 'Google Customer Reviews: ' . $checks . " checks passed.\n";
 }

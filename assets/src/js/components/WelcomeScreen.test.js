@@ -263,3 +263,50 @@ test.each( [
 		getWelcomeState( { status: 'not_connected', store_id: 240 }, preview )
 	).toBe( 'setup' );
 } );
+
+test.each( [ 'new', 'setup', 'ready' ] )(
+	'external links show an icon and open a new tab in the %s view',
+	async ( preview ) => {
+		window.history.replaceState(
+			{},
+			'',
+			`/?reviewbird_preview=${ preview }`
+		);
+		window.reviewbirdAdmin = {
+			apiUrl: 'https://app.example.com',
+			siteDomain: 'shop.example.com',
+		};
+		global.fetch = jest.fn().mockResolvedValue( {
+			ok: true,
+			json: async () => ( { status: 'healthy', store_id: 7 } ),
+		} );
+		global.IS_REACT_ACT_ENVIRONMENT = true;
+		const container = document.createElement( 'div' );
+		const root = createRoot( container );
+		try {
+			await act( async () =>
+				root.render(
+					<WelcomeScreen
+						registerUrl="https://app.example.com/register"
+						dashboardUrl="https://app.example.com/dashboard"
+						settingsUrl="/wp-admin/admin.php?page=reviewbird-settings"
+					/>
+				)
+			);
+			const external = Array.from(
+				container.querySelectorAll( 'a' )
+			).filter( ( link ) =>
+				link.href.startsWith( 'https://app.example.com' )
+			);
+			expect( external.length ).toBeGreaterThan( 0 );
+			external.forEach( ( link ) => {
+				expect( link.target ).toBe( '_blank' );
+				expect( link.rel ).toContain( 'noopener' );
+				expect( link.querySelector( 'svg' ) ).not.toBeNull();
+			} );
+		} finally {
+			act( () => root.unmount() );
+			delete global.IS_REACT_ACT_ENVIRONMENT;
+		}
+	}
+);

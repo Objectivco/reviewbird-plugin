@@ -89,19 +89,33 @@ class HealthScheduler {
 	/**
 	 * Refresh health status from the API and store in option.
 	 *
-	 * This runs in the background via Action Scheduler.
+	 * Used by Action Scheduler and the admin Refresh button.
+	 *
+	 * @return array|\WP_Error Fresh status, or an error with the last good cache preserved.
 	 */
-	public function refresh_health_status(): void {
+	public function refresh_health_status() {
 		$domain   = wp_parse_url( home_url(), PHP_URL_HOST ) ?? '';
 		$endpoint = '/api/woocommerce/health?domain=' . rawurlencode( $domain );
 		$response = reviewbird_api_request( $endpoint );
 
 		if ( is_wp_error( $response ) ) {
-			$this->log_refresh_error( $response->get_error_message() );
-			return;
+			$error_data = $response->get_error_data();
+			if ( 404 === ( $error_data['status'] ?? null ) && 'not_connected' === ( $error_data['response']['status'] ?? null ) ) {
+				$response = $error_data['response'];
+			} else {
+				$this->log_refresh_error( $response->get_error_message() );
+				return $response;
+			}
 		}
 
-		update_option( 'reviewbird_store_status', $response, false );
+		if ( ! is_array( $response ) || ! is_string( $response['status'] ?? null ) || '' === $response['status'] ) {
+			return new \WP_Error( 'reviewbird_invalid_health_status', __( 'The connection response is invalid. Please try again.', 'reviewbird' ) );
+		}
+
+		$saved = update_option( 'reviewbird_store_status', $response, false );
+		if ( ! $saved && get_option( 'reviewbird_store_status' ) !== $response ) {
+			return new \WP_Error( 'reviewbird_health_cache_failed', __( 'The connection status could not be saved. Please try again.', 'reviewbird' ) );
+		}
 
 		$store_id = absint( $response['store_id'] ?? 0 );
 
@@ -109,7 +123,8 @@ class HealthScheduler {
 			update_option( 'reviewbird_store_id', $store_id );
 		}
 
-		$this->log_refresh_success( $response['status'] ?? 'unknown' );
+		$this->log_refresh_success( $response['status'] );
+		return $response;
 	}
 
 	/**

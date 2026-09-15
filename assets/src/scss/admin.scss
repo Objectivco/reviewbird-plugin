@@ -144,6 +144,8 @@ body.reviewbird_page_reviewbird-settings .wrap {
 }
 
 .reviewbird-header-account a {
+	display: inline-flex;
+	align-items: center;
 	color: var(--reviewbird-ink);
 	font-weight: 600;
 	text-decoration-color: var(--reviewbird-teal);
@@ -553,4 +555,49 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	body.reviewbird_page_reviewbird-settings .wrap {
 		padding: 16px 12px 28px;
 	}
+}
+
+.reviewbird-gcr-toolbar .button {
+	display: inline-flex;
+	min-height: 36px;
+	align-items: center;
+	justify-content: center;
+	border-color: #e0e7ff;
+	border-radius: 6px;
+	padding: 5px 12px;
+	background: #eef2ff;
+	color: #4f46e5;
+	font-weight: 500;
+}
+
+.reviewbird-gcr-toolbar .button:hover {
+	border-color: #c7d2fe;
+	background: #e0e7ff;
+	color: #4338ca;
+}
+
+.reviewbird-gcr-toggle {
+	display: inline-flex;
+	width: 44px;
+	height: 24px;
+	flex-shrink: 0;
+	border: 2px solid transparent;
+	border-radius: 999px;
+	padding: 0;
+	cursor: pointer;
+}
+
+.reviewbird-gcr-toggle span {
+	width: 20px;
+	height: 20px;
+}
+
+.reviewbird-gcr-toggle:focus-visible {
+	outline: 2px solid #4f46e5;
+	outline-offset: 3px;
+}
+
+.reviewbird-gcr-toggle:disabled {
+	opacity: 0.5;
+	cursor: wait;
 }
