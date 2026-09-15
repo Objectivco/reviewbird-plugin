@@ -58,6 +58,10 @@ export function initGoogleCustomerReviews( root ) {
 	}
 	const config = JSON.parse( root.dataset.reviewbirdGcr );
 	root.dataset.gcrReady = 'true';
+	// WooCommerce's status block runs the thank-you hook before its title.
+	root.parentElement
+		?.querySelector( ':scope.wc-block-order-confirmation-status > h1' )
+		?.after( root );
 	const yes = root.querySelector( '[data-gcr-yes]' );
 	const no = root.querySelector( '[data-gcr-no]' );
 	const status = root.querySelector( '[data-gcr-status]' );

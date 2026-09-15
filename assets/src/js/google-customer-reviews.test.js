@@ -62,6 +62,18 @@ afterEach( () => {
 	delete window.reviewbirdGcrState;
 } );
 
+test( 'the native order confirmation block places the widget below its title', () => {
+	const root = card();
+	const block = document.createElement( 'div' );
+	block.className = 'wc-block-order-confirmation-status';
+	block.innerHTML = '<h1>Order received</h1><p>Thank you.</p>';
+	document.body.appendChild( block );
+	block.prepend( root );
+	init( root );
+	expect( block.querySelector( 'h1' ).nextElementSibling ).toBe( root );
+	expect( fetch ).not.toHaveBeenCalled();
+} );
+
 test( 'No hides only this card without a request or Google script', () => {
 	const root = card();
 	init( root );

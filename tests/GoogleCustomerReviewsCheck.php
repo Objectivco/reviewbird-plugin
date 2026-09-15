@@ -24,6 +24,7 @@ namespace {
 		public $type = 'shop_order';
 		public $meta = array();
 		public $created;
+		public $modified = 1700000000;
 
 		public function __construct( $id ) {
 			$this->id = $id;
@@ -41,8 +42,13 @@ namespace {
 		public function has_status( $status ) { return in_array( $this->status, (array) $status, true ); }
 		public function get_meta( $key ) { return $this->meta[ $key ] ?? ''; }
 		public function update_meta_data( $key, $value ) { $this->meta[ $key ] = $value; }
+		public function set_date_modified( $timestamp ) { $this->modified = $timestamp; }
+		public function read_meta_data( $force = false ) {
+			if ( $force ) { $this->meta = $GLOBALS['gcr_orders'][ $this->id ]->meta; }
+		}
 		public function save() {
 			if ( $GLOBALS['gcr_save_fail'] ) { throw new \RuntimeException( 'Save failed.' ); }
+			if ( $GLOBALS['gcr_save_swallow'] ) { return $this->id; }
 			$GLOBALS['gcr_orders'][ $this->id ] = clone $this;
 			++$GLOBALS['gcr_saves'];
 			return $this->id;
@@ -71,6 +77,7 @@ namespace {
 namespace reviewbird\Integration {
 	function add_action( $hook, $callback, $priority, $args ) { $GLOBALS['gcr_hooks'][ $hook ] = array( $callback, $priority, $args ); }
 	function add_filter( $hook, $callback, $priority, $args ) { add_action( $hook, $callback, $priority, $args ); }
+	function doing_action( $hook ) { return $hook === $GLOBALS['gcr_current_action']; }
 	function register_rest_route( $namespace, $route, $args ) { $GLOBALS['gcr_route'] = array( $namespace, $route, $args ); }
 	function __( $text ) { return $text; }
 	function esc_html__( $text ) { return esc_html( $text ); }
@@ -163,6 +170,8 @@ namespace {
 
 	$GLOBALS['gcr_saves'] = 0;
 	$GLOBALS['gcr_save_fail'] = false;
+	$GLOBALS['gcr_save_swallow'] = false;
+	$GLOBALS['gcr_current_action'] = '';
 	$GLOBALS['gcr_api_calls'] = 0;
 	$GLOBALS['gcr_option_write_fail'] = false;
 	$GLOBALS['gcr_salt'] = 'test-site-secret';
@@ -216,7 +225,9 @@ namespace {
 	check( false === strpos( $url, 'wc_order_key' ) && false === strpos( $url, 'buyer' ), 'Link exposes order key or email.' );
 	check( 64 === strlen( $token ), 'Unexpected signature.' );
 	check( 0 === $GLOBALS['gcr_saves'], 'URL GET caused a write.' );
-	check( 5 === $GLOBALS['gcr_hooks']['woocommerce_thankyou'][1], 'Wrong common hook priority.' );
+	check( ! isset( $GLOBALS['gcr_hooks']['woocommerce_thankyou'] ), 'Widget still uses the late native thank-you hook.' );
+	check( 'render_prompt' === $GLOBALS['gcr_hooks']['woocommerce_before_thankyou'][0][1] && 5 === $GLOBALS['gcr_hooks']['woocommerce_before_thankyou'][1], 'Native widget is not at the start of the thank-you page.' );
+	check( 'render_checkoutwc_prompt' === $GLOBALS['gcr_hooks']['cfw_thank_you_content'][0][1] && 55 === $GLOBALS['gcr_hooks']['cfw_thank_you_content'][1] && 1 === $GLOBALS['gcr_hooks']['cfw_thank_you_content'][2], 'CheckoutWC widget is not below the order status section.' );
 	$integration->register_routes();
 	check( 'POST' === $GLOBALS['gcr_route'][2]['methods'], 'Yes route must be POST.' );
 
@@ -244,6 +255,20 @@ namespace {
 	check( null === GoogleCustomerReviews::configuration(), 'Setup preview allows GCR.' );
 	unset( $_GET['reviewbird_setup'] );
 
+	$checkoutwc = new GoogleCustomerReviews();
+	$GLOBALS['gcr_current_action'] = 'cfw_thank_you_main_container_start';
+	ob_start(); call_user_func( $GLOBALS['gcr_hooks']['woocommerce_before_thankyou'][0], 7 );
+	check( '' === ob_get_clean(), 'CheckoutWC replay puts the widget above its page layout.' );
+	$GLOBALS['gcr_current_action'] = 'cfw_thank_you_content';
+	ob_start(); call_user_func( $GLOBALS['gcr_hooks']['cfw_thank_you_content'][0], $GLOBALS['gcr_orders'][7] );
+	check( 'prompt' === card_config( ob_get_clean() )['mode'], 'CheckoutWC callback does not render the order widget.' );
+	$GLOBALS['gcr_current_action'] = '';
+	ob_start(); $checkoutwc->render_prompt( 7 );
+	check( '' === ob_get_clean(), 'CheckoutWC widget rendered twice.' );
+
+	new GoogleCustomerReviews();
+	ob_start(); call_user_func( $GLOBALS['gcr_hooks']['woocommerce_before_thankyou'][0], 7 );
+	check( 'prompt' === card_config( ob_get_clean() )['mode'], 'Native thank-you hook does not render the widget.' );
 	ob_start(); $integration->render_prompt( 7 ); $html = ob_get_clean();
 	$config = card_config( $html );
 	check( 'prompt' === $config['mode'] && $config['token'] === $token, 'Wrong frontend contract.' );
@@ -297,8 +322,14 @@ namespace {
 	$GLOBALS['gcr_save_fail'] = true;
 	check( 'reviewbird_gcr_save_failed' === $integration->record_prompt_yes( $request )->code && 0 === $GLOBALS['gcr_saves'], 'Save failure not returned.' );
 	$GLOBALS['gcr_save_fail'] = false;
+	$GLOBALS['gcr_save_swallow'] = true;
+	$failed_result = $integration->record_prompt_yes( $request );
+	check( $failed_result instanceof WP_Error && 'reviewbird_gcr_save_failed' === $failed_result->code, 'A swallowed order save failure returned consent success.' );
+	check( empty( $GLOBALS['gcr_orders'][7]->meta ) && 0 === $GLOBALS['gcr_saves'], 'Failed save persisted Yes.' );
+	$GLOBALS['gcr_save_swallow'] = false;
 	$result = $integration->record_prompt_yes( $request );
 	check( $result instanceof WP_REST_Response && 200 === $result->status && 1 === $GLOBALS['gcr_saves'], 'Yes was not saved.' );
+	check( 1800000000 === $GLOBALS['gcr_orders'][7]->modified, 'Yes did not advance the order modified date for the next sync.' );
 	$again = $integration->record_prompt_yes( $request );
 	check( $again->data === $result->data && 1 === $GLOBALS['gcr_saves'], 'Repeat Yes changed first timestamp.' );
 	check( empty( $GLOBALS['gcr_orders'][8]->meta ), 'Yes affected another order.' );

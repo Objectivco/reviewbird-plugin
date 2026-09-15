@@ -1146,28 +1146,26 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	}
 
 	.reviewbird-gcr-settings__preview-surface .reviewbird-gcr {
-		max-width: 480px;
-		margin: 0 auto;
-		box-shadow: 0 2px 4px rgba(24, 24, 27, 0.04);
+		margin: 0;
 		color: #18181b;
 	}
 
 	.reviewbird-gcr-settings__preview-surface .reviewbird-gcr__heading {
 		margin: 0 0 8px;
-		font-size: 18px;
+		font-size: 20px;
 		font-weight: 700;
 		line-height: 1.4;
 	}
 
 	.reviewbird-gcr-settings__preview-surface .reviewbird-gcr__message {
-		margin: 0 0 16px;
-		font-size: 15px;
+		margin: 0 0 20px;
+		font-size: 16px;
 		line-height: 1.5;
 	}
 
 	.reviewbird-gcr-settings__preview-surface button {
 		font-family: inherit;
-		font-size: 15px;
+		font-size: 16px;
 		cursor: default;
 	}
 

@@ -33,7 +33,8 @@ class GoogleCustomerReviews {
 	 * Register the common WooCommerce hook and the order link handlers.
 	 */
 	public function __construct() {
-		add_action( 'woocommerce_thankyou', array( $this, 'render_prompt' ), 5, 1 );
+		add_action( 'woocommerce_before_thankyou', array( $this, 'render_prompt' ), 5, 1 );
+		add_action( 'cfw_thank_you_content', array( $this, 'render_checkoutwc_prompt' ), 55, 1 );
 		add_action( 'template_redirect', array( $this, 'render_link_page' ), 1, 0 );
 		add_action( 'rest_api_init', array( $this, 'register_routes' ), 10, 0 );
 		add_filter( 'woocommerce_rest_prepare_shop_order_object', array( $this, 'add_order_response' ), 10, 2 );
@@ -229,6 +230,11 @@ class GoogleCustomerReviews {
 	 * @param int $order_id Order ID.
 	 */
 	public function render_prompt( $order_id ): void {
+		// CheckoutWC also runs the native hook before its main layout.
+		if ( doing_action( 'cfw_thank_you_main_container_start' ) ) {
+			return;
+		}
+
 		$order = wc_get_order( $order_id );
 		// The core thank-you hook runs after WooCommerce's order access checks.
 		// Also verify the URL and owner before adding any customer data.
@@ -246,6 +252,15 @@ class GoogleCustomerReviews {
 		$this->rendered = true;
 		$this->enqueue_assets();
 		$this->render_card( $order, 'prompt' );
+	}
+
+	/**
+	 * Show the widget after CheckoutWC's order status section.
+	 *
+	 * @param WC_Order $order Order.
+	 */
+	public function render_checkoutwc_prompt( WC_Order $order ): void {
+		$this->render_prompt( $order->get_id() );
 	}
 
 	/**
@@ -293,8 +308,15 @@ class GoogleCustomerReviews {
 			if ( ! $timestamp ) {
 				$timestamp = gmdate( 'c' );
 				$order->update_meta_data( self::YES_META, $timestamp );
+				// Metadata alone does not advance the legacy order storage sync date.
+				$order->set_date_modified( time() );
 				if ( ! $order->save() ) {
 					throw new \RuntimeException( 'Order save failed.' );
+				}
+				// WooCommerce can catch save errors internally and still return an ID.
+				$order->read_meta_data( true );
+				if ( $timestamp !== $order->get_meta( self::YES_META ) ) {
+					throw new \RuntimeException( 'Order choice was not saved.' );
 				}
 			}
 		} catch ( \Exception $exception ) {
