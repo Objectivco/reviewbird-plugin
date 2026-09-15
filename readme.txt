@@ -227,6 +227,10 @@ For development: `pnpm run dev`
 
 == Changelog ==
 
+= Unreleased =
+Fix - Prevent duplicate health checks when the status cache is empty. Keep one recurring check every five minutes.
+Fix - Remove old health check actions and their logs in background batches after an upgrade.
+
 = 1.1.4 =
 New - Guide new and existing stores through setup from the Get Started page. Show connection health when setup is complete.
 New - Preview the review widget during store setup.

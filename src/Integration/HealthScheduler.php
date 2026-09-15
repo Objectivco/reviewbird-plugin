@@ -25,6 +25,17 @@ class HealthScheduler {
 	private const ACTION_HOOK = 'reviewbird_refresh_health_status';
 
 	/**
+	 * Keep new checks separate from the old queue during upgrade cleanup.
+	 */
+	private const ACTION_GROUP = 'reviewbird-health';
+
+	/**
+	 * WordPress cron hook and completion option for the one-time cleanup.
+	 */
+	public const CLEANUP_HOOK    = 'reviewbird_cleanup_health_actions';
+	private const CLEANUP_OPTION = 'reviewbird_health_actions_cleaned';
+
+	/**
 	 * Interval between health checks in seconds (5 minutes).
 	 */
 	private const REFRESH_INTERVAL = 300;
@@ -33,7 +44,8 @@ class HealthScheduler {
 	 * Initialize the scheduler.
 	 */
 	public function init(): void {
-		add_action( self::ACTION_HOOK, array( $this, 'refresh_health_status' ) );
+		add_action( self::ACTION_HOOK, array( $this, 'run_scheduled_check' ) );
+		add_action( self::CLEANUP_HOOK, array( $this, 'cleanup_legacy_actions' ) );
 		add_action( 'init', array( $this, 'schedule_recurring_check' ) );
 	}
 
@@ -45,27 +57,21 @@ class HealthScheduler {
 			return;
 		}
 
-		// Schedule recurring check if not already scheduled.
-		if ( ! as_has_scheduled_action( self::ACTION_HOOK ) ) {
+		if ( ! get_option( self::CLEANUP_OPTION ) && ! wp_next_scheduled( self::CLEANUP_HOOK ) ) {
+			wp_schedule_single_event( time() + 60, self::CLEANUP_HOOK );
+		}
+
+		if ( ! as_has_scheduled_action( self::ACTION_HOOK, array( true ), self::ACTION_GROUP ) ) {
 			as_schedule_recurring_action(
 				time(),
 				self::REFRESH_INTERVAL,
 				self::ACTION_HOOK,
-				array(),
-				'reviewbird'
+				array( true ),
+				self::ACTION_GROUP,
+				true,
+				5
 			);
 		}
-
-		// If store is connected but status option is empty, schedule immediate refresh.
-		// This handles plugin updates, option clears, or first-time activation.
-		$store_id = get_option( 'reviewbird_store_id' );
-		$status   = get_option( 'reviewbird_store_status' );
-
-		if ( empty( $store_id ) || ! empty( $status ) ) {
-			return;
-		}
-
-		$this->schedule_immediate_refresh();
 	}
 
 	/**
@@ -81,9 +87,81 @@ class HealthScheduler {
 		as_schedule_single_action(
 			time(),
 			self::ACTION_HOOK,
-			array(),
-			'reviewbird'
+			array( true ),
+			self::ACTION_GROUP . '-immediate',
+			true,
+			5
 		);
+	}
+
+	/**
+	 * Run new checks. Old queued checks have no argument and do no API work.
+	 *
+	 * @param bool $current_schedule Whether this check uses the new schedule.
+	 */
+	public function run_scheduled_check( bool $current_schedule = false ): void {
+		if ( $current_schedule ) {
+			$this->refresh_health_status();
+		}
+	}
+
+	/**
+	 * Delete old health actions and their logs in bounded background batches.
+	 */
+	public function cleanup_legacy_actions(): void {
+		global $wpdb;
+
+		if ( ! function_exists( 'as_get_scheduled_actions' ) || get_option( self::CLEANUP_OPTION ) ) {
+			return;
+		}
+
+		// Schedule the retry first so a timeout does not stop cleanup.
+		if ( ! wp_next_scheduled( self::CLEANUP_HOOK ) ) {
+			wp_schedule_single_event( time() + 60, self::CLEANUP_HOOK );
+		}
+
+		$query = array(
+			'hook'             => self::ACTION_HOOK,
+			'group'            => 'reviewbird',
+			'per_page'         => 1000,
+			'orderby'          => 'action_id',
+			'order'            => 'ASC',
+			'status'           => array( 'pending', 'complete', 'failed', 'canceled' ),
+			// Let recently completed jobs finish their logs and rescheduling.
+			'modified'         => time() - self::REFRESH_INTERVAL,
+			'modified_compare' => '<=',
+		);
+
+		try {
+			$store    = \ActionScheduler::store();
+			$deadline = microtime( true ) + 10;
+			$ids      = as_get_scheduled_actions( $query, 'ids' );
+			if ( ! is_array( $ids ) || ! empty( $wpdb->last_error ) ) {
+				$this->log_refresh_error( 'Could not read old health actions for cleanup.' );
+				return;
+			}
+			foreach ( $ids as $action_id ) {
+				// A queue runner can claim an action after the query above.
+				$status = $store->get_status( $action_id );
+				if ( 'in-progress' !== $status && ( 'pending' !== $status || ! $store->get_claim_id( $action_id ) ) ) {
+					// The store also removes the action's logs through its deletion hook.
+					$store->delete_action( $action_id );
+				}
+				if ( microtime( true ) >= $deadline ) {
+					break;
+				}
+			}
+
+			// Wait for running or claimed actions before marking cleanup complete.
+			unset( $query['modified'], $query['modified_compare'], $query['status'] );
+			$query['per_page'] = 1;
+			if ( array() === as_get_scheduled_actions( $query, 'ids' ) && empty( $wpdb->last_error ) ) {
+				update_option( self::CLEANUP_OPTION, true, false );
+				wp_clear_scheduled_hook( self::CLEANUP_HOOK );
+			}
+		} catch ( \Exception $error ) {
+			$this->log_refresh_error( 'Health action cleanup failed: ' . $error->getMessage() );
+		}
 	}
 
 	/**

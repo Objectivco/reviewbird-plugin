@@ -20,6 +20,7 @@ class Deactivator {
 	 * Run deactivation cleanup.
 	 */
 	public static function deactivate(): void {
+		wp_clear_scheduled_hook( \reviewbird\Integration\HealthScheduler::CLEANUP_HOOK );
 		self::unschedule_actions();
 		self::clear_transients();
 	}
@@ -33,6 +34,8 @@ class Deactivator {
 		}
 
 		as_unschedule_all_actions( 'reviewbird_refresh_health_status', array(), 'reviewbird' );
+		as_unschedule_all_actions( 'reviewbird_refresh_health_status', array( true ), 'reviewbird-health' );
+		as_unschedule_all_actions( 'reviewbird_refresh_health_status', array( true ), 'reviewbird-health-immediate' );
 		as_unschedule_all_actions( 'reviewbird_refresh_schema_reviews', null, 'reviewbird' );
 	}
 
