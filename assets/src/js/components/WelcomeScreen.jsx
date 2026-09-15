@@ -3,28 +3,12 @@ import {
 	useState,
 	createInterpolateElement,
 } from '@wordpress/element';
-import ConnectionHealth, { fetchHealthStatus } from './ConnectionHealth.jsx';
+import ConnectionHealth, {
+	fetchHealthStatus,
+	ExternalLinkIcon,
+} from './ConnectionHealth.jsx';
 import { __ } from '@wordpress/i18n';
 import reviewbirdLogo from '../../images/logo-dark.svg';
-
-function ArrowRightIcon() {
-	return (
-		<svg
-			className="reviewbird-arrow-icon"
-			fill="none"
-			viewBox="0 0 24 24"
-			stroke="currentColor"
-			aria-hidden="true"
-		>
-			<path
-				strokeLinecap="round"
-				strokeLinejoin="round"
-				strokeWidth="1.8"
-				d="M5 12h14m-5-5 5 5-5 5"
-			/>
-		</svg>
-	);
-}
 
 export function getWelcomeState( data, preview ) {
 	if ( [ 'new', 'setup', 'ready' ].includes( preview ) ) {
@@ -191,6 +175,7 @@ export default function WelcomeScreen( {
 							rel="noopener noreferrer"
 						>
 							{ __( 'Sign in', 'reviewbird' ) }
+							<ExternalLinkIcon />
 						</a>
 					</p>
 				) }
@@ -240,7 +225,7 @@ export default function WelcomeScreen( {
 												'reviewbird'
 											) }
 										</span>
-										<ArrowRightIcon />
+										<ExternalLinkIcon />
 									</a>
 								) }
 								{ state === 'ready' && (
@@ -328,7 +313,7 @@ export default function WelcomeScreen( {
 											) }
 										</span>
 									</span>
-									<ArrowRightIcon />
+									<ExternalLinkIcon />
 								</a>
 							</div>
 

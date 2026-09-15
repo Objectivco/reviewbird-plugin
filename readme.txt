@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: woocommerce, woocommerce product reviews, woocommerce reviews, judge.me, rich snippets, review snippets, SEO
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 1.1.4
+Stable tag: 1.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -227,6 +227,24 @@ For development: `pnpm run dev`
 
 == Changelog ==
 
+= 1.2.0 =
+New - Add a Google Customer Reviews prompt to WooCommerce and CheckoutWC order confirmation pages. Customers can open Google's survey opt-in after selecting Yes.
+New - Add signed Google opt-in links to the order admin screen and WooCommerce order API.
+New - Add Google Customer Reviews controls, editable prompt text, and a preview to the plugin settings.
+New - Report the first Yes selection and whether a customer selected No through the order API. Repeated No selections count once per order.
+Update - Refresh the plugin settings layout and reduce the Google Customer Reviews widget shadow.
+Update - Refresh translations in 24 languages for the new settings and Google Customer Reviews features.
+Fix - Show the correct error when a Google Customer Reviews choice cannot be saved. Allow failed saves and Google loads to be retried.
+Fix - Load the settings page on WordPress 5.9 without a newer React runtime.
+Fix - Prevent product sync errors on WooCommerce versions before 9.1.
+Fix - Keep pages working when WooCommerce is inactive on older WordPress versions.
+Fix - Run legacy health job cancellation in the background during upgrades. Skip cleanup on new stores.
+Fix - Check for existing health, product schema, and cleanup jobs before scheduling work. Use Action Scheduler's recurring API to check health every five minutes, including when the status cache is empty.
+Fix - Replace old health schedules and remove their action history and logs in background batches after an upgrade.
+Fix - Cancel scheduled jobs during deactivation. Resume health checks after reactivation.
+Fix - Preserve cached review schema when an API request fails.
+Fix - Keep server-rendered review fallback content hidden from shoppers.
+
 = 1.1.4 =
 New - Guide new and existing stores through setup from the Get Started page. Show connection health when setup is complete.
 New - Preview the review widget during store setup.
@@ -298,6 +316,9 @@ Fix - Fix issue with min_rating parameter for API calls.
 * Compatibility updates for WordPress.org submission
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+Adds Google Customer Reviews prompts and fixes duplicate health jobs. Existing health queues and their logs are cleaned up in the background after upgrade.
 
 = 1.1.4 =
 Improves store setup, fixes widget and star rating display on embedded product pages, and updates translations.

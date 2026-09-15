@@ -12,6 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use reviewbird\Integration\StarRatingDisplay;
+use reviewbird\Integration\GoogleCustomerReviews;
+use reviewbird\Integration\HealthScheduler;
 
 /**
  * Admin settings page.
@@ -52,6 +54,7 @@ class Settings {
 		'enable_schema',
 		'enable_widget',
 		'force_reviews_open',
+		'enable_gcr_prompt',
 	);
 
 	/**
@@ -59,6 +62,7 @@ class Settings {
 	 */
 	public function __construct() {
 		add_action( 'wp_ajax_reviewbird_update_setting', array( $this, 'handle_setting_update' ) );
+		add_action( 'wp_ajax_reviewbird_update_gcr_prompt', array( $this, 'handle_gcr_prompt_update' ) );
 		add_action( 'wp_ajax_reviewbird_clear_health_cache', array( $this, 'handle_clear_health_cache' ) );
 		add_action( 'admin_post_' . self::REGISTRATION_INTENT_ACTION, array( $this, 'handle_registration_intent' ) );
 		add_action( 'admin_notices', array( $this, 'display_oauth_notices' ) );
@@ -171,7 +175,11 @@ class Settings {
 			return;
 		}
 
-		$asset_data = $this->get_asset_data();
+		$asset_file = REVIEWBIRD_PLUGIN_DIR . 'assets/build/admin.asset.php';
+		$asset_data = file_exists( $asset_file ) ? include $asset_file : array(
+			'dependencies' => array(),
+			'version'      => REVIEWBIRD_VERSION,
+		);
 
 		wp_enqueue_script(
 			'reviewbird-admin',
@@ -198,21 +206,7 @@ class Settings {
 			$asset_data['version']
 		);
 		wp_style_add_data( 'reviewbird-admin', 'rtl', 'replace' );
-	}
-
-	/**
-	 * Get asset data from the build manifest.
-	 *
-	 * @return array{dependencies: array<string>, version: string}
-	 */
-	private function get_asset_data(): array {
-		$asset_file    = REVIEWBIRD_PLUGIN_DIR . 'assets/build/admin.asset.php';
-		$default_asset = array(
-			'dependencies' => array(),
-			'version'      => REVIEWBIRD_VERSION,
-		);
-
-		return file_exists( $asset_file ) ? include $asset_file : $default_asset;
+		wp_enqueue_style( 'reviewbird-gcr-preview', REVIEWBIRD_PLUGIN_URL . 'assets/build/google-customer-reviews.css', array( 'reviewbird-admin' ), $asset_data['version'] );
 	}
 
 	/**
@@ -223,25 +217,49 @@ class Settings {
 	 */
 	private function get_script_localization_data( string $hook ): array {
 		return array(
-			'restUrl'          => rest_url( 'reviewbird/v1' ),
-			'nonce'            => wp_create_nonce( 'reviewbird_admin_nonce' ),
-			'apiUrl'           => reviewbird_get_api_url(),
-			'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
-			'pageType'         => false !== strpos( $hook, self::SETTINGS_SLUG ) ? 'settings' : 'get_started',
-			'registerUrl'      => add_query_arg(
+			'restUrl'               => rest_url( 'reviewbird/v1' ),
+			'nonce'                 => wp_create_nonce( 'reviewbird_admin_nonce' ),
+			'apiUrl'                => reviewbird_get_api_url(),
+			'ajaxUrl'               => admin_url( 'admin-ajax.php' ),
+			'pageType'              => false !== strpos( $hook, self::SETTINGS_SLUG ) ? 'settings' : 'get_started',
+			'registerUrl'           => add_query_arg(
 				array(
 					'action'   => self::REGISTRATION_INTENT_ACTION,
 					'_wpnonce' => wp_create_nonce( self::REGISTRATION_INTENT_ACTION ),
 				),
 				admin_url( 'admin-post.php' )
 			),
-			'dashboardUrl'     => reviewbird_get_api_url() . '/dashboard',
-			'settingsUrl'      => admin_url( 'admin.php?page=' . self::SETTINGS_SLUG ),
-			'siteDomain'       => wp_parse_url( home_url(), PHP_URL_HOST ),
-			'locale'           => str_replace( '_', '-', implode( '_', array_slice( explode( '_', get_user_locale() ), 0, 2 ) ) ),
-			'enableSchema'     => reviewbird_is_schema_enabled(),
-			'enableWidget'     => reviewbird_is_widget_enabled(),
-			'forceReviewsOpen' => reviewbird_is_force_reviews_open(),
+			'dashboardUrl'          => reviewbird_get_api_url() . '/dashboard',
+			'settingsUrl'           => admin_url( 'admin.php?page=' . self::SETTINGS_SLUG ),
+			'siteDomain'            => wp_parse_url( home_url(), PHP_URL_HOST ),
+			'locale'                => str_replace( '_', '-', implode( '_', array_slice( explode( '_', get_user_locale() ), 0, 2 ) ) ),
+			'enableSchema'          => reviewbird_is_schema_enabled(),
+			'enableWidget'          => reviewbird_is_widget_enabled(),
+			'forceReviewsOpen'      => reviewbird_is_force_reviews_open(),
+			'googleCustomerReviews' => $this->get_gcr_settings_data(),
+		);
+	}
+
+	/**
+	 * Get the same GCR settings snapshot for page loads and manual refreshes.
+	 *
+	 * @return array GCR state and prompt settings.
+	 */
+	private function get_gcr_settings_data(): array {
+		$status           = reviewbird_get_store_status() ?? array();
+		$store_id         = reviewbird_get_store_id();
+		$org_path         = empty( $status['org_slug'] ) ? '' : '/' . rawurlencode( $status['org_slug'] );
+		$integrations_url = reviewbird_get_api_url() . $org_path . '/stores' . ( $store_id ? '/' . $store_id . '/integrations' : '' );
+
+		$feature_status = GoogleCustomerReviews::status();
+
+		return array(
+			'enabled'         => 'enabled' === $feature_status,
+			'status'          => $feature_status,
+			'promptEnabled'   => GoogleCustomerReviews::is_prompt_enabled(),
+			'integrationsUrl' => $integrations_url,
+			'prompt'          => GoogleCustomerReviews::prompt_settings(),
+			'defaults'        => GoogleCustomerReviews::prompt_defaults(),
 		);
 	}
 
@@ -311,7 +329,9 @@ class Settings {
 	 */
 	public function render_settings_page(): void {
 		// Refresh star color cache when admin visits settings page.
-		$this->maybe_refresh_star_color();
+		if ( false === get_transient( 'reviewbird_star_color' ) ) {
+			StarRatingDisplay::fetch_and_cache_star_color();
+		}
 
 		?>
 		<div class="wrap">
@@ -332,26 +352,12 @@ class Settings {
 	}
 
 	/**
-	 * Refresh the star color cache if needed.
-	 *
-	 * Fetches from widget config API when transient is expired or missing.
-	 */
-	private function maybe_refresh_star_color(): void {
-		$cached_color = get_transient( 'reviewbird_star_color' );
-
-		// Only fetch if not cached.
-		if ( false === $cached_color ) {
-			StarRatingDisplay::fetch_and_cache_star_color();
-		}
-	}
-
-	/**
 	 * Verify AJAX request has valid nonce and user permissions.
 	 *
 	 * Sends JSON error response and terminates if validation fails.
 	 */
 	private function verify_ajax_request(): void {
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'reviewbird_admin_nonce' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! is_string( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'reviewbird_admin_nonce' ) ) {
 			wp_send_json_error( __( 'Invalid security token', 'reviewbird' ), 403 );
 		}
 
@@ -361,31 +367,30 @@ class Settings {
 	}
 
 	/**
-	 * Check if a POST parameter is set to '1'.
-	 *
-	 * @param string $key The POST parameter key.
-	 * @return bool True if the parameter equals '1'.
-	 */
-	private function is_post_param_enabled( string $key ): bool {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_request().
-		return isset( $_POST[ $key ] ) && '1' === sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
-	}
-
-	/**
 	 * Handle AJAX request to update a setting.
 	 */
 	public function handle_setting_update(): void {
 		$this->verify_ajax_request();
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_request() above.
-		$setting = isset( $_POST['setting'] ) ? sanitize_key( $_POST['setting'] ) : '';
+		$setting = isset( $_POST['setting'] ) && is_string( $_POST['setting'] ) ? sanitize_key( wp_unslash( $_POST['setting'] ) ) : '';
 
 		if ( ! in_array( $setting, self::ALLOWED_SETTINGS, true ) ) {
 			wp_send_json_error( __( 'Invalid setting', 'reviewbird' ), 400 );
 		}
 
-		$enabled = $this->is_post_param_enabled( 'value' );
-		update_option( 'reviewbird_' . $setting, $enabled ? 'yes' : 'no' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above.
+		$value = isset( $_POST['value'] ) && is_string( $_POST['value'] ) ? sanitize_text_field( wp_unslash( $_POST['value'] ) ) : null;
+		if ( ! in_array( $value, array( '0', '1' ), true ) ) {
+			wp_send_json_error( __( 'Invalid setting value', 'reviewbird' ), 400 );
+		}
+
+		$enabled = '1' === $value;
+		$stored  = $enabled ? 'yes' : 'no';
+		$saved   = update_option( 'reviewbird_' . $setting, $stored );
+		if ( ! $saved && get_option( 'reviewbird_' . $setting ) !== $stored ) {
+			wp_send_json_error( __( 'The setting could not be saved. Please try again.', 'reviewbird' ), 500 );
+		}
 
 		wp_send_json_success(
 			array(
@@ -397,18 +402,55 @@ class Settings {
 	}
 
 	/**
-	 * Handle AJAX request to clear health check cache.
+	 * Save the plain text used in the Google Customer Reviews prompt.
+	 */
+	public function handle_gcr_prompt_update(): void {
+		$this->verify_ajax_request();
+
+		$limits = array(
+			'heading'   => 160,
+			'message'   => 2000,
+			'yes_label' => 80,
+			'no_label'  => 80,
+		);
+		$prompt = array();
+		foreach ( $limits as $field => $limit ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified above; type checked and text sanitized below.
+			$value = isset( $_POST[ $field ] ) ? wp_unslash( $_POST[ $field ] ) : null;
+			if ( ! is_string( $value ) ) {
+				wp_send_json_error( __( 'Enter text in each prompt field.', 'reviewbird' ), 400 );
+			}
+			$value  = trim( 'message' === $field ? sanitize_textarea_field( $value ) : sanitize_text_field( $value ) );
+			$length = function_exists( 'mb_strlen' ) ? mb_strlen( $value ) : strlen( $value );
+			if ( '' === $value || $length > $limit ) {
+				wp_send_json_error( __( 'Prompt text is empty or too long.', 'reviewbird' ), 400 );
+			}
+			$prompt[ $field ] = $value;
+		}
+
+		$saved = update_option( 'reviewbird_google_customer_reviews_prompt', $prompt );
+		if ( ! $saved && get_option( 'reviewbird_google_customer_reviews_prompt' ) !== $prompt ) {
+			wp_send_json_error( __( 'The prompt could not be saved. Please try again.', 'reviewbird' ), 500 );
+		}
+		wp_send_json_success( array( 'prompt' => $prompt ) );
+	}
+
+	/**
+	 * Refresh the saved connection status without discarding the last good value.
 	 */
 	public function handle_clear_health_cache(): void {
 		$this->verify_ajax_request();
 
-		reviewbird_clear_status_cache();
-		$status = reviewbird_get_store_status( true );
+		$status = ( new HealthScheduler() )->refresh_health_status();
+		if ( is_wp_error( $status ) ) {
+			wp_send_json_error( __( 'The connection status could not be refreshed. Please try again.', 'reviewbird' ), 502 );
+		}
 
 		wp_send_json_success(
 			array(
-				'status'  => $status,
-				'message' => __( 'Health check cache cleared', 'reviewbird' ),
+				'status'                => $status,
+				'googleCustomerReviews' => $this->get_gcr_settings_data(),
+				'message'               => __( 'Connection status refreshed', 'reviewbird' ),
 			)
 		);
 	}

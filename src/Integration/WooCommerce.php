@@ -25,13 +25,6 @@ class WooCommerce {
 	 * Initialize WooCommerce integration.
 	 */
 	public function __construct() {
-		$this->register_hooks();
-	}
-
-	/**
-	 * Register WooCommerce hooks.
-	 */
-	private function register_hooks() {
 		add_action( 'rest_api_init', array( $this, 'register_system_status_field' ), 10, 0 );
 
 		// Suppress WooCommerce review output and queries when Reviewbird replaces them.
@@ -68,9 +61,7 @@ class WooCommerce {
 			'system_status',
 			'reviewbird_widget_enabled',
 			array(
-				'get_callback' => static function (): bool {
-					return reviewbird_is_widget_enabled();
-				},
+				'get_callback' => 'reviewbird_is_widget_enabled',
 				'schema'       => array(
 					'description' => __( 'Whether the Reviewbird widget is enabled.', 'reviewbird' ),
 					'type'        => 'boolean',
@@ -219,7 +210,11 @@ class WooCommerce {
 	 * @param WC_Order|null $order Order object (optional, depends on hook).
 	 */
 	public function save_order_locale( $order_id, $order = null ) {
-		$order = $this->resolve_order( $order_id, $order );
+		if ( $order_id instanceof WC_Order ) {
+			$order = $order_id;
+		} elseif ( ! $order ) {
+			$order = wc_get_order( $order_id );
+		}
 
 		if ( ! $order ) {
 			return;
@@ -227,26 +222,6 @@ class WooCommerce {
 
 		$order->update_meta_data( '_reviewbird_locale', get_locale() );
 		$order->save();
-	}
-
-	/**
-	 * Resolve order object from various hook signatures.
-	 *
-	 * @param int|WC_Order  $order_id Order ID or order object.
-	 * @param WC_Order|null $order    Order object (optional).
-	 *
-	 * @return WC_Order|false Order object or false if not found.
-	 */
-	private function resolve_order( $order_id, $order ) {
-		if ( $order_id instanceof WC_Order ) {
-			return $order_id;
-		}
-
-		if ( $order ) {
-			return $order;
-		}
-
-		return wc_get_order( $order_id );
 	}
 
 	/**

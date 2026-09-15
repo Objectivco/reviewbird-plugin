@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:125
-#: src/Admin/Settings.php:126
+#: src/Admin/Settings.php:129
+#: src/Admin/Settings.php:130
 msgid "Reviewbird"
 msgstr "리뷰버드"
 
@@ -31,49 +31,75 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "스팸을 차단하고 불만을 포착하며 최고의 피드백을 보여주는 WooCommerce용 자동 리뷰 수집기입니다."
 
-#: src/Admin/Settings.php:92
+#: src/Admin/Settings.php:96
 msgid "Reviewbird Connection Error:"
 msgstr "리뷰버드 연결 오류:"
 
-#: src/Admin/Settings.php:111
+#: src/Admin/Settings.php:115
 msgid "Successfully connected to Reviewbird!"
 msgstr "리뷰버드에 성공적으로 연결되었습니다!"
 
-#: src/Admin/Settings.php:138
-#: src/Admin/Settings.php:139
+#: src/Admin/Settings.php:142
+#: src/Admin/Settings.php:143
 msgid "Get Started"
 msgstr "시작하기"
 
-#: src/Admin/Settings.php:147
-#: assets/src/js/components/SettingsApp.jsx:92
+#: src/Admin/Settings.php:151
+#: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "리뷰버드 설정"
 
-#: src/Admin/Settings.php:148
-#: src/Core/Plugin.php:475
+#: src/Admin/Settings.php:152
+#: src/Core/Plugin.php:442
 msgid "Settings"
 msgstr "설정"
 
-#: src/Admin/Settings.php:355
+#: src/Admin/Settings.php:361
 msgid "Invalid security token"
 msgstr "잘못된 보안 토큰"
 
-#: src/Admin/Settings.php:359
-#: src/Admin/Settings.php:421
+#: src/Admin/Settings.php:365
+#: src/Admin/Settings.php:463
 msgid "Insufficient permissions"
 msgstr "권한이 부족합니다"
 
-#: src/Admin/Settings.php:384
+#: src/Admin/Settings.php:379
 msgid "Invalid setting"
 msgstr "잘못된 설정"
 
-#: src/Admin/Settings.php:394
+#: src/Admin/Settings.php:385
+msgid "Invalid setting value"
+msgstr "잘못된 설정 값"
+
+#: src/Admin/Settings.php:392
+#: assets/src/js/components/GoogleCustomerReviews.jsx:107
+#: assets/src/js/components/SettingsApp.jsx:49
+msgid "The setting could not be saved. Please try again."
+msgstr "설정을 저장할 수 없습니다. 다시 시도해 주세요."
+
+#: src/Admin/Settings.php:399
 msgid "Setting updated successfully"
 msgstr "설정이 성공적으로 업데이트되었습니다"
 
-#: src/Admin/Settings.php:411
-msgid "Health check cache cleared"
-msgstr "헬스 체크 캐시가 삭제되었습니다"
+#: src/Admin/Settings.php:421
+msgid "Enter text in each prompt field."
+msgstr "각 프롬프트 필드에 텍스트를 입력하세요."
+
+#: src/Admin/Settings.php:426
+msgid "Prompt text is empty or too long."
+msgstr "프롬프트 텍스트가 비어 있거나 너무 깁니다."
+
+#: src/Admin/Settings.php:433
+msgid "The prompt could not be saved. Please try again."
+msgstr "프롬프트를 저장할 수 없습니다. 다시 시도해 주세요."
+
+#: src/Admin/Settings.php:446
+msgid "The connection status could not be refreshed. Please try again."
+msgstr "연결 상태를 새로 고칠 수 없습니다. 다시 시도해 주세요."
+
+#: src/Admin/Settings.php:453
+msgid "Connection status refreshed"
+msgstr "연결 상태가 새로 고쳐졌습니다"
 
 #. translators: %d: Store ID number.
 #: src/Api/ConnectionController.php:74
@@ -82,7 +108,8 @@ msgid "Store ID %d has been saved successfully"
 msgstr "스토어 ID %d가 성공적으로 저장되었습니다"
 
 #: src/Api/CouponController.php:79
-#: src/Api/ProductsController.php:43
+#: src/Api/ProductsController.php:81
+#: src/Api/ProductsController.php:119
 msgid "WooCommerce is not active"
 msgstr "WooCommerce가 활성화되어 있지 않습니다"
 
@@ -96,44 +123,44 @@ msgstr "쿠폰 코드가 필요합니다"
 msgid "Template coupon '%s' not found"
 msgstr "템플릿 쿠폰 '%s'을(를) 찾을 수 없습니다"
 
-#: src/Api/CouponController.php:155
+#: src/Api/CouponController.php:160
 msgid "discount_type and amount are required when not using template"
 msgstr "템플릿을 사용하지 않을 때는 discount_type과 금액이 필요합니다"
 
-#: src/Api/ProductsController.php:161
-#: src/Api/RatingsController.php:53
+#: src/Api/ProductsController.php:125
+#: src/Api/RatingsController.php:41
 msgid "Product not found"
 msgstr "상품을 찾을 수 없습니다"
 
-#: src/Api/RatingsController.php:43
+#: src/Api/RatingsController.php:31
 msgid "Product ID is required"
 msgstr "상품 ID가 필요합니다"
 
-#: src/Api/RatingsController.php:49
+#: src/Api/RatingsController.php:37
 msgid "Invalid product ID"
 msgstr "잘못된 상품 ID"
 
-#: src/Api/RatingsController.php:93
+#: src/Api/RatingsController.php:66
 msgid "Average stars must be a number between 1 and 5"
 msgstr "평균 별점은 1에서 5 사이의 숫자여야 합니다"
 
-#: src/Api/RatingsController.php:97
+#: src/Api/RatingsController.php:70
 msgid "Review count must be a non-negative number"
 msgstr "리뷰 수는 0 이상의 숫자여야 합니다"
 
-#: src/Api/RatingsController.php:101
+#: src/Api/RatingsController.php:74
 msgid "Rating counts must be an array"
 msgstr "평점 수는 배열이어야 합니다"
 
-#: src/Api/RatingsController.php:174
+#: src/Api/RatingsController.php:152
 msgid "Customer email is required"
 msgstr "고객 이메일이 필요합니다"
 
-#: src/Api/RatingsController.php:178
+#: src/Api/RatingsController.php:156
 msgid "Invalid email address"
 msgstr "잘못된 이메일 주소"
 
-#: src/Core/Plugin.php:481
+#: src/Core/Plugin.php:448
 msgid "Documentation"
 msgstr "문서"
 
@@ -158,343 +185,483 @@ msgstr "요청당 최대 50개의 상품 ID만 허용됩니다."
 msgid "Failed to decode API response."
 msgstr "API 응답을 디코딩하지 못했습니다."
 
-#: src/functions.php:688
+#: src/functions.php:684
 msgid "Anonymous"
 msgstr "익명"
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:709
+#: src/functions.php:705
 #, php-format
 msgid "Rated %d out of 5"
 msgstr "5점 만점에 %d점 평가됨"
 
+#: src/Integration/GoogleCustomerReviews.php:114
+msgid "Rate your purchase experience"
+msgstr "구매 경험을 평가해 주세요"
+
+#: src/Integration/GoogleCustomerReviews.php:115
+msgid "We use Google Customer Reviews to collect feedback about your purchase. Would you like to receive a short survey after your order arrives?"
+msgstr "구매에 대한 피드백을 수집하기 위해 Google 고객 리뷰를 사용합니다. 주문이 도착한 후 짧은 설문조사를 받으시겠습니까?"
+
+#: src/Integration/GoogleCustomerReviews.php:116
+msgid "Yes"
+msgstr "예"
+
+#: src/Integration/GoogleCustomerReviews.php:117
+msgid "No"
+msgstr "아니요"
+
+#: src/Integration/GoogleCustomerReviews.php:293
+#: src/Integration/GoogleCustomerReviews.php:333
+#: src/Integration/GoogleCustomerReviews.php:382
+msgid "This review request is not available."
+msgstr "이 리뷰 요청은 사용할 수 없습니다."
+
+#: src/Integration/GoogleCustomerReviews.php:355
+#: src/Integration/GoogleCustomerReviews.php:422
+msgid "Your choice could not be saved. Please try again."
+msgstr "선택 사항을 저장할 수 없습니다. 다시 시도해 주세요."
+
+#: src/Integration/GoogleCustomerReviews.php:382
+#: src/Integration/GoogleCustomerReviews.php:429
+#: src/Integration/GoogleCustomerReviews.php:430
+#: src/Integration/GoogleCustomerReviews.php:480
+#: templates/google-customer-reviews.php:19
+#: assets/src/js/components/GoogleCustomerReviews.jsx:153
+msgid "Google Customer Reviews"
+msgstr "Google 고객 리뷰"
+
+#: src/Integration/GoogleCustomerReviews.php:421
+msgid "Loading Google Customer Reviews…"
+msgstr "Google 고객 리뷰를 불러오는 중…"
+
+#: src/Integration/GoogleCustomerReviews.php:423
+msgid "Google Customer Reviews could not load. Please try again."
+msgstr "Google 고객 리뷰를 불러올 수 없습니다. 다시 시도해 주세요."
+
+#: src/Integration/GoogleCustomerReviews.php:424
+msgid "Try again"
+msgstr "다시 시도"
+
+#: src/Integration/GoogleCustomerReviews.php:425
+msgid "You can close this page when you finish."
+msgstr "완료되면 이 페이지를 닫을 수 있습니다."
+
+#: src/Integration/GoogleCustomerReviews.php:440
+msgid "Enable JavaScript to use Google Customer Reviews."
+msgstr "Google 고객 리뷰를 사용하려면 JavaScript를 활성화하세요."
+
+#. translators: %s: Date when the customer selected Yes on the Reviewbird prompt.
+#: src/Integration/GoogleCustomerReviews.php:485
+#, php-format
+msgid "Selected Yes on the Reviewbird prompt: %s"
+msgstr "Reviewbird 프롬프트에서 예를 선택한 날짜: %s"
+
+#: src/Integration/GoogleCustomerReviews.php:487
+msgid "The customer has not selected Yes on the Reviewbird prompt."
+msgstr "고객이 Reviewbird 프롬프트에서 예를 선택하지 않았습니다."
+
+#: src/Integration/GoogleCustomerReviews.php:492
+msgid "Google opt-in link"
+msgstr "Google 옵트인 링크"
+
+#: src/Integration/GoogleCustomerReviews.php:494
+msgid "Link copied."
+msgstr "링크가 복사되었습니다."
+
+#: src/Integration/GoogleCustomerReviews.php:494
+msgid "Select and copy the link."
+msgstr "링크를 선택하고 복사하세요."
+
+#: src/Integration/GoogleCustomerReviews.php:494
+msgid "Copy link"
+msgstr "링크 복사"
+
+#: src/Integration/HealthScheduler.php:171
+msgid "The connection response is invalid. Please try again."
+msgstr "연결 응답이 잘못되었습니다. 다시 시도해 주세요."
+
+#: src/Integration/HealthScheduler.php:176
+msgid "The connection status could not be saved. Please try again."
+msgstr "연결 상태를 저장할 수 없습니다. 다시 시도해 주세요."
+
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:171
+#: src/Integration/StarRatingDisplay.php:122
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "5점 만점에 %s점 평가됨"
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:174
+#: src/Integration/StarRatingDisplay.php:125
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "5점 만점에 %s점 평가됨, 리뷰를 보려면 클릭하세요"
 
-#: src/Integration/WooCommerce.php:75
+#: src/Integration/WooCommerce.php:66
 msgid "Whether the Reviewbird widget is enabled."
 msgstr "Reviewbird 위젯이 활성화되어 있는지 여부."
 
-#: src/Integration/WooCommerce.php:161
+#: src/Integration/WooCommerce.php:152
 msgid "Leave a review"
 msgstr "리뷰 남기기"
 
-#: assets/src/js/components/ConnectionHealth.jsx:10
+#: assets/src/js/components/ConnectionHealth.jsx:8
 msgid "Connected to Reviewbird"
 msgstr "리뷰버드에 연결됨"
 
-#: assets/src/js/components/ConnectionHealth.jsx:11
-msgid "Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly."
-msgstr "귀하의 WooCommerce 스토어가 리뷰버드에 성공적으로 연결되었습니다. 리뷰 데이터가 정상적으로 동기화되고 있습니다."
-
-#: assets/src/js/components/ConnectionHealth.jsx:12
-msgid "View Dashboard"
+#: assets/src/js/components/ConnectionHealth.jsx:10
+msgid "View dashboard"
 msgstr "대시보드 보기"
 
-#: assets/src/js/components/ConnectionHealth.jsx:18
-msgid "WooCommerce Not Connected"
-msgstr "WooCommerce 미연결"
+#: assets/src/js/components/ConnectionHealth.jsx:14
+msgid "Your store is not connected"
+msgstr "스토어가 연결되어 있지 않습니다"
+
+#: assets/src/js/components/ConnectionHealth.jsx:15
+msgid "Reviewbird is disabled until you connect your WooCommerce store."
+msgstr "WooCommerce 스토어를 연결할 때까지 Reviewbird가 비활성화됩니다."
 
 #: assets/src/js/components/ConnectionHealth.jsx:19
-msgid "WooCommerce is not yet connected to Reviewbird. Connect your store to start syncing products and reviews."
-msgstr "WooCommerce가 아직 리뷰버드에 연결되어 있지 않습니다. 스토어를 연결하여 상품과 리뷰 동기화를 시작하세요."
+msgid "Connect store"
+msgstr "스토어 연결"
 
-#: assets/src/js/components/ConnectionHealth.jsx:20
-msgid "Connect WooCommerce"
-msgstr "WooCommerce 연결"
+#: assets/src/js/components/ConnectionHealth.jsx:23
+msgid "Your store is syncing"
+msgstr "스토어가 동기화 중입니다"
 
-#: assets/src/js/components/ConnectionHealth.jsx:26
-msgid "Initial Sync in Progress"
-msgstr "초기 동기화 진행 중"
+#: assets/src/js/components/ConnectionHealth.jsx:24
+msgid "Your products and reviews are syncing."
+msgstr "제품과 리뷰가 동기화되고 있습니다."
 
-#: assets/src/js/components/ConnectionHealth.jsx:27
-msgid "Reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
-msgstr "리뷰버드가 귀하의 상품과 리뷰를 동기화하고 있습니다. 카탈로그 크기에 따라 몇 분 정도 소요될 수 있습니다. 동기화가 완료되면 위젯을 사용할 수 있습니다."
+#: assets/src/js/components/ConnectionHealth.jsx:25
+msgid "View progress"
+msgstr "진행 상황 보기"
 
-#: assets/src/js/components/ConnectionHealth.jsx:28
-msgid "View Sync Progress"
-msgstr "동기화 진행 상황 보기"
+#: assets/src/js/components/ConnectionHealth.jsx:29
+msgid "Reviewbird is disabled"
+msgstr "Reviewbird가 비활성화되었습니다"
+
+#: assets/src/js/components/ConnectionHealth.jsx:30
+msgid "Your Reviewbird subscription is not active. Update your billing details to turn Reviewbird back on."
+msgstr "Reviewbird 구독이 활성 상태가 아닙니다. Reviewbird를 다시 켜려면 결제 정보를 업데이트하세요."
 
 #: assets/src/js/components/ConnectionHealth.jsx:34
-msgid "Subscription Required"
-msgstr "구독 필요"
-
-#: assets/src/js/components/ConnectionHealth.jsx:35
-msgid "Your Reviewbird subscription is inactive. Please update your billing information to continue using the service."
-msgstr "귀하의 리뷰버드 구독이 비활성 상태입니다. 서비스를 계속 사용하려면 결제 정보를 업데이트하세요."
-
-#: assets/src/js/components/ConnectionHealth.jsx:36
-msgid "Update Billing"
+msgid "Update billing"
 msgstr "결제 정보 업데이트"
 
-#: assets/src/js/components/ConnectionHealth.jsx:42
-#: assets/src/js/components/ConnectionHealth.jsx:50
-msgid "Connection Issue Detected"
-msgstr "연결 문제 감지됨"
+#: assets/src/js/components/ConnectionHealth.jsx:38
+msgid "Reviewbird cannot connect to your store"
+msgstr "Reviewbird가 스토어에 연결할 수 없습니다"
+
+#: assets/src/js/components/ConnectionHealth.jsx:39
+msgid "Open the connection settings in Reviewbird to reconnect your store."
+msgstr "스토어를 다시 연결하려면 Reviewbird에서 연결 설정을 여세요."
 
 #: assets/src/js/components/ConnectionHealth.jsx:43
-msgid "Unable to connect to Reviewbird. Please check your connection settings."
-msgstr "리뷰버드에 연결할 수 없습니다. 연결 설정을 확인하세요."
+msgid "Check connection"
+msgstr "연결 확인"
 
-#: assets/src/js/components/ConnectionHealth.jsx:44
-msgid "Fix Connection"
-msgstr "연결 수정"
+#: assets/src/js/components/ConnectionHealth.jsx:47
+msgid "We could not check your connection"
+msgstr "연결을 확인할 수 없습니다"
 
-#: assets/src/js/components/ConnectionHealth.jsx:51
-msgid "Unable to reach Reviewbird API. Please check your internet connection."
-msgstr "리뷰버드 API에 접근할 수 없습니다. 인터넷 연결을 확인하세요."
+#: assets/src/js/components/ConnectionHealth.jsx:48
+msgid "Refresh to try again, or contact support if the problem continues."
+msgstr "다시 시도하려면 새로 고침하거나 문제가 계속되면 지원팀에 문의하세요."
 
 #: assets/src/js/components/ConnectionHealth.jsx:52
-msgid "Get Help"
-msgstr "도움 받기"
+msgid "Contact support"
+msgstr "지원팀에 문의"
+
+#: assets/src/js/components/ConnectionHealth.jsx:56
+msgid "Checking connection…"
+msgstr "연결 확인 중…"
 
 #: assets/src/js/components/ConnectionHealth.jsx:58
-msgid "Checking connection..."
-msgstr "연결 확인 중..."
-
-#: assets/src/js/components/ConnectionHealth.jsx:59
-msgid "Verifying connection to Reviewbird..."
-msgstr "리뷰버드 연결 확인 중..."
-
-#: assets/src/js/components/ConnectionHealth.jsx:60
 msgid "Open Reviewbird"
 msgstr "리뷰버드 열기"
 
-#. translators: %s: connection error code.
-#: assets/src/js/components/ConnectionHealth.jsx:200
-#, js-format
-msgid "Connection Issue (%s)"
-msgstr "연결 문제 (%s)"
-
-#: assets/src/js/components/ConnectionHealth.jsx:262
-msgid "Refresh"
-msgstr "새로 고침"
+#: assets/src/js/components/ConnectionHealth.jsx:305
+#: assets/src/js/components/GoogleCustomerReviews.jsx:103
+msgid "The connection could not be refreshed. Please try again."
+msgstr "연결을 새로 고칠 수 없습니다. 다시 시도해 주세요."
 
 #. translators: %s: time of the last connection check.
-#: assets/src/js/components/ConnectionHealth.jsx:285
+#: assets/src/js/components/ConnectionHealth.jsx:343
 #, js-format
 msgid "Last checked: %s"
 msgstr "마지막 확인: %s"
+
+#: assets/src/js/components/ConnectionHealth.jsx:368
+msgid "Refresh connection status"
+msgstr "연결 상태 새로 고침"
+
+#: assets/src/js/components/ConnectionHealth.jsx:374
+#: assets/src/js/components/GoogleCustomerReviews.jsx:241
+msgid "Refreshing…"
+msgstr "새로 고치는 중…"
+
+#: assets/src/js/components/ConnectionHealth.jsx:375
+#: assets/src/js/components/GoogleCustomerReviews.jsx:242
+msgid "Refresh"
+msgstr "새로 고침"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:6
+msgid "Widget title"
+msgstr "위젯 제목"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:7
+msgid "Customer message"
+msgstr "고객 메시지"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:8
+msgid "Yes button text"
+msgstr "예 버튼 텍스트"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:9
+msgid "No button text"
+msgstr "아니요 버튼 텍스트"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:53
+msgid "Integration is currently enabled."
+msgstr "통합이 현재 활성화되어 있습니다."
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:54
+msgid "Integration is currently disabled."
+msgstr "통합이 현재 비활성화되어 있습니다."
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:55
+msgid "Integration status is unknown."
+msgstr "통합 상태를 알 수 없습니다."
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:85
+msgid "Status updated."
+msgstr "상태가 업데이트되었습니다."
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:96
+msgid "Display setting saved."
+msgstr "표시 설정이 저장되었습니다."
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:131
+msgid "Changes saved."
+msgstr "변경 사항이 저장되었습니다."
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:136
+msgid "Your changes could not be saved. Please try again."
+msgstr "변경 사항을 저장할 수 없습니다. 다시 시도해 주세요."
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:175
+msgid "Enable widget on the thank you page"
+msgstr "감사 페이지에서 위젯 활성화"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:181
+msgid "Ask customers to consent to Google Customer Reviews."
+msgstr "고객에게 Google 고객 리뷰 동의를 요청하세요."
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:194
+msgid "Requires the Google Customer Reviews integration to be enabled. If you just enabled it, use Refresh to update the status."
+msgstr "Google 고객 리뷰 통합이 활성화되어 있어야 합니다. 방금 활성화한 경우, 상태를 업데이트하려면 새로 고침을 사용하세요."
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:212
+msgid "Configure integration"
+msgstr "통합 구성"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:220
+msgid "Refresh integration status"
+msgstr "통합 상태 새로 고침"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:267
+msgid "Customize your widget"
+msgstr "위젯 사용자 지정"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:314
+#: assets/src/js/components/GoogleCustomerReviews.jsx:317
+msgid "Widget preview"
+msgstr "위젯 미리보기"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:322
+msgid "Customer message preview"
+msgstr "고객 메시지 미리보기"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:380
+msgid "Reset to defaults"
+msgstr "기본값으로 재설정"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:388
+#: assets/src/js/components/TogglePanel.jsx:52
+msgid "Saving…"
+msgstr "저장 중…"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:389
+msgid "Save changes"
+msgstr "변경 사항 저장"
 
 #: assets/src/js/components/LoadingSpinner.jsx:8
 msgid "Loading..."
 msgstr "로딩 중..."
 
-#: assets/src/js/components/SettingsApp.jsx:44
-msgid "Failed to update setting. Please try again."
-msgstr "설정 업데이트 실패. 다시 시도하세요."
-
-#: assets/src/js/components/SettingsApp.jsx:89
-msgid "Connected Store Settings"
-msgstr "연결된 스토어 설정"
-
-#: assets/src/js/components/SettingsApp.jsx:95
-msgid "Manage your Reviewbird integration with WooCommerce."
-msgstr "WooCommerce와 함께 Reviewbird 통합을 관리하세요."
-
-#: assets/src/js/components/SettingsApp.jsx:112
+#: assets/src/js/components/SettingsApp.jsx:102
 msgid "Reviewbird Widget"
 msgstr "Reviewbird 위젯"
 
-#: assets/src/js/components/SettingsApp.jsx:113
-msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
-msgstr "제품 페이지에 Reviewbird 리뷰 위젯을 표시합니다. 위젯은 고객 리뷰를 보여주고 고객이 새 리뷰를 제출할 수 있도록 합니다."
-
-#: assets/src/js/components/SettingsApp.jsx:119
-msgid "Widget is enabled on all WooCommerce product pages."
-msgstr "모든 WooCommerce 제품 페이지에서 위젯이 활성화되어 있습니다."
+#: assets/src/js/components/SettingsApp.jsx:103
+msgid "Show customer reviews on product pages."
+msgstr "제품 페이지에 고객 리뷰 표시."
 
 #: assets/src/js/components/SettingsApp.jsx:128
-msgid "Forcefully enable reviews on all products"
-msgstr "모든 제품에 대해 리뷰를 강제로 활성화"
+msgid "Enable reviews for all products"
+msgstr "모든 제품에 대한 리뷰 활성화"
 
 #: assets/src/js/components/SettingsApp.jsx:134
-msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
-msgstr "제품별로 \"리뷰 활성화\" 체크박스를 사용하여 리뷰를 제어하려면 이 옵션을 끄십시오."
+msgid "Also show reviews on products with reviews turned off."
+msgstr "리뷰가 꺼진 제품에도 리뷰 표시."
 
-#: assets/src/js/components/SettingsApp.jsx:170
-msgid "SEO Schema Markup"
-msgstr "SEO 스키마 마크업"
+#: assets/src/js/components/SettingsApp.jsx:153
+msgid "Search results"
+msgstr "검색 결과"
 
-#: assets/src/js/components/SettingsApp.jsx:171
-msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
-msgstr "검색 결과의 리치 스니펫을 위해 제품 페이지에서 Google 호환 구조화 데이터(JSON-LD 스키마)를 활성화합니다."
+#: assets/src/js/components/SettingsApp.jsx:154
+msgid "Add review data that search engines can use for star ratings."
+msgstr "검색 엔진이 별점에 사용할 수 있는 리뷰 데이터 추가."
 
-#: assets/src/js/components/SettingsApp.jsx:177
-msgid "Schema markup is active on all WooCommerce product pages."
-msgstr "모든 WooCommerce 제품 페이지에서 스키마 마크업이 활성화되어 있습니다."
+#: assets/src/js/components/SettingsApp.jsx:165
+msgid "Test rich results"
+msgstr "리치 결과 테스트"
 
-#: assets/src/js/components/SettingsApp.jsx:182
-msgid "What is Schema Markup?"
-msgstr "스키마 마크업이란?"
-
-#: assets/src/js/components/SettingsApp.jsx:184
-msgid "Displays star ratings in Google search results"
-msgstr "Google 검색 결과에 별점 평가를 표시합니다"
-
-#: assets/src/js/components/SettingsApp.jsx:188
-msgid "Shows review counts and product information"
-msgstr "리뷰 수와 제품 정보를 보여줍니다"
-
-#: assets/src/js/components/SettingsApp.jsx:192
-msgid "Review schema is cached for 4 hours for optimal performance"
-msgstr "최적의 성능을 위해 리뷰 스키마는 4시간 동안 캐시됩니다"
-
-#: assets/src/js/components/SettingsApp.jsx:201
-msgid "Test with Google Rich Results"
-msgstr "Google 리치 결과로 테스트"
-
-#: assets/src/js/components/SettingsApp.jsx:208
-msgid "Validate Schema"
+#: assets/src/js/components/SettingsApp.jsx:169
+msgid "Validate schema"
 msgstr "스키마 검증"
 
-#: assets/src/js/components/TogglePanel.jsx:114
-msgid "Enabled"
-msgstr "활성화됨"
-
-#: assets/src/js/components/TogglePanel.jsx:115
-msgid "Disabled"
-msgstr "비활성화됨"
-
-#: assets/src/js/components/WelcomeScreen.jsx:105
+#: assets/src/js/components/WelcomeScreen.jsx:89
 msgid "The plugin is installed!"
 msgstr "플러그인이 설치되었습니다!"
 
-#: assets/src/js/components/WelcomeScreen.jsx:106
+#: assets/src/js/components/WelcomeScreen.jsx:90
 msgid "Your store is connected to Reviewbird"
 msgstr "귀하의 <store>스토어</store>가 Reviewbird에 연결되었습니다"
 
-#: assets/src/js/components/WelcomeScreen.jsx:108
+#: assets/src/js/components/WelcomeScreen.jsx:92
 msgid "Now let's connect Reviewbird to your WooCommerce store."
 msgstr "이제 Reviewbird를 귀하의 WooCommerce 스토어에 연결해 보겠습니다."
 
-#: assets/src/js/components/WelcomeScreen.jsx:112
+#: assets/src/js/components/WelcomeScreen.jsx:96
 msgid "Continue in Reviewbird to customize your widget and review request emails."
 msgstr "Reviewbird에서 계속 진행하여 위젯과 리뷰 요청 이메일을 맞춤 설정하세요."
 
-#: assets/src/js/components/WelcomeScreen.jsx:116
+#: assets/src/js/components/WelcomeScreen.jsx:100
 msgid "Continue setup"
 msgstr "설정 계속하기"
 
-#: assets/src/js/components/WelcomeScreen.jsx:120
+#: assets/src/js/components/WelcomeScreen.jsx:104
 msgid "Your store is connected"
 msgstr "귀하의 스토어가 연결되었습니다"
 
-#: assets/src/js/components/WelcomeScreen.jsx:121
+#: assets/src/js/components/WelcomeScreen.jsx:105
 msgid "Manage your reviews, widgets, showcases and other settings in the dashboard."
 msgstr "대시보드에서 리뷰, 위젯, 쇼케이스 및 기타 설정을 관리하세요."
 
-#: assets/src/js/components/WelcomeScreen.jsx:125
+#: assets/src/js/components/WelcomeScreen.jsx:109
 msgid "Open dashboard"
 msgstr "대시보드 열기"
 
-#: assets/src/js/components/WelcomeScreen.jsx:135
+#: assets/src/js/components/WelcomeScreen.jsx:119
 msgid "Bring your reviews with you"
 msgstr "리뷰를 함께 가져가세요"
 
-#: assets/src/js/components/WelcomeScreen.jsx:136
+#: assets/src/js/components/WelcomeScreen.jsx:120
 msgid "Import from WooCommerce, Judge.me, Yotpo, and many more."
 msgstr "WooCommerce, Judge.me, Yotpo 등에서 가져오기."
 
-#: assets/src/js/components/WelcomeScreen.jsx:148
+#: assets/src/js/components/WelcomeScreen.jsx:132
 msgid "Photo and video reviews"
 msgstr "사진 및 동영상 리뷰"
 
-#: assets/src/js/components/WelcomeScreen.jsx:149
+#: assets/src/js/components/WelcomeScreen.jsx:133
 msgid "Allow customers to upload photos and videos of your product in real life."
 msgstr "고객이 실제 제품 사진과 동영상을 업로드할 수 있도록 허용하세요."
 
-#: assets/src/js/components/WelcomeScreen.jsx:164
+#: assets/src/js/components/WelcomeScreen.jsx:148
 msgid "Match your branding"
 msgstr "브랜딩에 맞추기"
 
-#: assets/src/js/components/WelcomeScreen.jsx:165
+#: assets/src/js/components/WelcomeScreen.jsx:149
 msgid "Customize your emails, widgets, and showcases to match your brand."
 msgstr "이메일, 위젯, 쇼케이스를 브랜드에 맞게 맞춤 설정하세요."
 
-#: assets/src/js/components/WelcomeScreen.jsx:186
+#: assets/src/js/components/WelcomeScreen.jsx:170
 msgid "Already use Reviewbird?"
 msgstr "이미 Reviewbird를 사용 중이신가요?"
 
-#: assets/src/js/components/WelcomeScreen.jsx:193
+#: assets/src/js/components/WelcomeScreen.jsx:177
 msgid "Sign in"
 msgstr "로그인"
 
-#: assets/src/js/components/WelcomeScreen.jsx:209
+#: assets/src/js/components/WelcomeScreen.jsx:194
 msgid "Loading Reviewbird…"
 msgstr "Reviewbird 로딩 중…"
 
-#: assets/src/js/components/WelcomeScreen.jsx:238
-#: assets/src/js/components/WelcomeScreen.jsx:325
+#: assets/src/js/components/WelcomeScreen.jsx:223
+#: assets/src/js/components/WelcomeScreen.jsx:310
 msgid "(opens in a new tab)"
 msgstr "(새 탭에서 열림)"
 
-#: assets/src/js/components/WelcomeScreen.jsx:251
+#: assets/src/js/components/WelcomeScreen.jsx:236
 msgid "Plugin settings"
 msgstr "플러그인 설정"
 
-#: assets/src/js/components/WelcomeScreen.jsx:272
+#: assets/src/js/components/WelcomeScreen.jsx:257
 msgid "Let's turn your WooCommerce product reviews up to 11."
 msgstr "WooCommerce 제품 리뷰를 한 단계 끌어올려 보세요."
 
-#: assets/src/js/components/WelcomeScreen.jsx:279
+#: assets/src/js/components/WelcomeScreen.jsx:264
 msgid "Automated review requests help you collect reviews automatically after each order. No busywork, just reliable review collection on autopilot."
 msgstr "자동 리뷰 요청은 각 주문 후 자동으로 리뷰를 수집하는 데 도움을 줍니다. 번거로운 작업 없이 신뢰할 수 있는 리뷰 수집을 자동으로 진행하세요."
 
-#: assets/src/js/components/WelcomeScreen.jsx:320
+#: assets/src/js/components/WelcomeScreen.jsx:305
 msgid "Get started free"
 msgstr "무료로 시작하기"
 
-#: assets/src/js/components/WelcomeScreen.jsx:338
+#: assets/src/js/components/WelcomeScreen.jsx:323
 msgid "Example Reviewbird product review request email"
 msgstr "Example Reviewbird 제품 리뷰 요청 이메일"
 
 #. translators: Keep the <store> tags around the example store name.
-#: assets/src/js/components/WelcomeScreen.jsx:356
+#: assets/src/js/components/WelcomeScreen.jsx:341
 msgid "Reviewbird <store>for Aster & Oak</store>"
 msgstr "Reviewbird <store>for Aster & Oak</store>"
 
-#: assets/src/js/components/WelcomeScreen.jsx:368
+#: assets/src/js/components/WelcomeScreen.jsx:353
 msgid "To: jamie@example.com"
 msgstr "받는 사람: jamie@example.com"
 
-#: assets/src/js/components/WelcomeScreen.jsx:376
+#: assets/src/js/components/WelcomeScreen.jsx:361
 msgid "Review request"
 msgstr "리뷰 요청"
 
-#: assets/src/js/components/WelcomeScreen.jsx:386
+#: assets/src/js/components/WelcomeScreen.jsx:371
 msgid "How is your new blanket?"
 msgstr "새 담요는 어떠신가요?"
 
-#: assets/src/js/components/WelcomeScreen.jsx:392
+#: assets/src/js/components/WelcomeScreen.jsx:377
 msgid "Share your experience to help other shoppers choose."
 msgstr "다른 쇼핑객들이 선택하는 데 도움이 되도록 경험을 공유하세요."
 
-#: assets/src/js/components/WelcomeScreen.jsx:436
+#: assets/src/js/components/WelcomeScreen.jsx:421
 msgid "Linen Throw Blanket, Sage"
 msgstr "린넨 던지기 담요, 세이지"
 
-#: assets/src/js/components/WelcomeScreen.jsx:447
+#: assets/src/js/components/WelcomeScreen.jsx:432
 msgid "Poor"
 msgstr "나쁨"
 
-#: assets/src/js/components/WelcomeScreen.jsx:453
+#: assets/src/js/components/WelcomeScreen.jsx:438
 msgid "Great"
 msgstr "훌륭함"
 
-#: assets/src/js/components/WelcomeScreen.jsx:461
+#: assets/src/js/components/WelcomeScreen.jsx:446
 msgid "You received this review request after your purchase from Aster & Oak."
 msgstr "이 리뷰 요청은 Aster & Oak에서 구매하신 후에 받으셨습니다."
 
-#: assets/src/js/components/WelcomeScreen.jsx:467
+#: assets/src/js/components/WelcomeScreen.jsx:452
 msgid "Unsubscribe from review emails"
 msgstr "리뷰 이메일 수신 거부"

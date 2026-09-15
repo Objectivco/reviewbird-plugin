@@ -57,6 +57,20 @@ namespace {
 		}
 	}
 
+	function wp_script_is( $handle, $status = 'enqueued' ) {
+		return 'done' === $status
+			? ! empty( $GLOBALS['reviewbird_test_printed_scripts'][ $handle ] )
+			: isset( $GLOBALS['reviewbird_test_enqueued_scripts'][ $handle ] );
+	}
+
+	function shortcode_atts( $defaults, $atts ) {
+		return array_merge( $defaults, array_intersect_key( $atts, $defaults ) );
+	}
+
+	function esc_attr( $value ) {
+		return htmlspecialchars( (string) $value, ENT_QUOTES );
+	}
+
 	if ( ! function_exists( 'get_post_meta' ) ) {
 		function get_post_meta( $post_id, $key, $single = false ) {
 			return $GLOBALS['reviewbird_test_post_meta'][ $post_id ][ $key ] ?? '';
@@ -123,11 +137,9 @@ namespace {
 		public function test_showcase_locale_keeps_regional_language_variants(): void {
 			require_once dirname( __DIR__ ) . '/src/Core/Plugin.php';
 			$plugin = ( new \ReflectionClass( \reviewbird\Core\Plugin::class ) )->newInstanceWithoutConstructor();
-			$method = new \ReflectionMethod( $plugin, 'get_language_code' );
-			$method->setAccessible( true );
 			foreach ( array( 'pt_BR' => 'pt-BR', 'pt_PT' => 'pt-PT', 'zh_TW' => 'zh-TW', 'de_DE_formal' => 'de-DE', 'pt_PT_ao90' => 'pt-PT', 'ja' => 'ja' ) as $locale => $expected ) {
 				$GLOBALS['reviewbird_test_showcase_locale'] = $locale;
-				self::assertSame( $expected, $method->invoke( $plugin ) );
+				self::assertStringContainsString( 'data-locale="' . $expected . '"', $plugin->carousel_shortcode( array( 'id' => 'showcase' ) ) );
 			}
 			unset( $GLOBALS['reviewbird_test_showcase_locale'] );
 		}
@@ -142,6 +154,8 @@ namespace {
 			$GLOBALS['reviewbird_test_post_meta']   = array();
 			$GLOBALS['reviewbird_test_remote_get']  = null;
 			$GLOBALS['reviewbird_test_transients']  = array();
+			$GLOBALS['reviewbird_test_enqueued_scripts'] = array();
+			$GLOBALS['reviewbird_test_printed_scripts'] = array();
 			$GLOBALS['post']                        = null;
 		}
 

@@ -3,6 +3,8 @@ import { __ } from '@wordpress/i18n';
 import ConnectionHealth from './ConnectionHealth.jsx';
 import TogglePanel from './TogglePanel.jsx';
 import WelcomeScreen from './WelcomeScreen.jsx';
+import GoogleCustomerReviews from './GoogleCustomerReviews.jsx';
+import reviewbirdLogo from '../../images/logo-dark.svg';
 
 function getAdminSetting( key, defaultValue = false ) {
 	const value = window.reviewbirdAdmin?.[ key ];
@@ -20,56 +22,52 @@ async function updateSetting( settingName, value ) {
 		method: 'POST',
 		body: formData,
 	} );
-
 	const result = await response.json();
-
-	if ( ! result.success ) {
-		throw new Error( result.data || 'Failed to update setting' );
+	if ( ! response.ok || ! result.success ) {
+		throw new Error();
 	}
 }
 
-function useToggleSetting( settingKey, apiSettingName, onError ) {
+function useToggleSetting( settingKey, apiSettingName ) {
 	const [ enabled, setEnabled ] = useState( () =>
-		getAdminSetting( settingKey )
+		[ true, 1, '1' ].includes( getAdminSetting( settingKey ) )
 	);
+	const [ pending, setPending ] = useState( false );
+	const [ error, setError ] = useState( '' );
 
-	async function handleToggle() {
-		const newValue = ! enabled;
+	async function toggle() {
+		if ( pending ) {
+			return;
+		}
+		setPending( true );
+		setError( '' );
 		try {
-			await updateSetting( apiSettingName, newValue );
-			setEnabled( newValue );
-			onError( '' );
+			await updateSetting( apiSettingName, ! enabled );
+			setEnabled( ! enabled );
 		} catch {
-			onError(
+			setError(
 				__(
-					'Failed to update setting. Please try again.',
+					'The setting could not be saved. Please try again.',
 					'reviewbird'
 				)
 			);
+		} finally {
+			setPending( false );
 		}
 	}
 
-	return [ enabled, handleToggle ];
+	return { enabled, pending, error, toggle };
 }
 
 export default function SettingsApp() {
 	const pageType = getAdminSetting( 'pageType', 'settings' );
-	const [ errorMessage, setErrorMessage ] = useState( '' );
-	const [ enableWidget, handleWidgetToggle ] = useToggleSetting(
-		'enableWidget',
-		'enable_widget',
-		setErrorMessage
-	);
-	const [ enableSchema, handleSchemaToggle ] = useToggleSetting(
-		'enableSchema',
-		'enable_schema',
-		setErrorMessage
-	);
-	const [ forceReviewsOpen, handleForceReviewsToggle ] = useToggleSetting(
+	const widget = useToggleSetting( 'enableWidget', 'enable_widget' );
+	const schema = useToggleSetting( 'enableSchema', 'enable_schema' );
+	const forceReviews = useToggleSetting(
 		'forceReviewsOpen',
-		'force_reviews_open',
-		setErrorMessage
+		'force_reviews_open'
 	);
+
 	if ( 'get_started' === pageType ) {
 		return (
 			<div className="reviewbird-get-started-page">
@@ -83,132 +81,97 @@ export default function SettingsApp() {
 	}
 
 	return (
-		<div className="mx-auto max-w-5xl py-8">
-			<header className="mb-8">
-				<p className="reviewbird-eyebrow mb-3">
-					{ __( 'Connected Store Settings', 'reviewbird' ) }
-				</p>
-				<h1 className="reviewbird-display-title text-3xl text-gray-900 md:text-4xl">
-					{ __( 'Reviewbird Settings', 'reviewbird' ) }
-				</h1>
-				<p className="mt-3 max-w-2xl text-base leading-7 text-gray-600">
-					{ __(
-						'Manage your Reviewbird integration with WooCommerce.',
-						'reviewbird'
-					) }
-				</p>
-			</header>
-
-			<div className="space-y-6">
-				{ errorMessage && (
-					<div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-sm">
-						{ errorMessage }
-					</div>
-				) }
-
-				<ConnectionHealth />
-
-				<TogglePanel
-					title={ __( 'Reviewbird Widget', 'reviewbird' ) }
-					description={ __(
-						'Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews.',
-						'reviewbird'
-					) }
-					enabled={ enableWidget }
-					onToggle={ handleWidgetToggle }
-					enabledText={ __(
-						'Widget is enabled on all WooCommerce product pages.',
-						'reviewbird'
-					) }
-				>
-					<div className="mt-4 pt-4 border-t border-gray-200">
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-sm font-medium text-gray-900">
-									{ __(
-										'Forcefully enable reviews on all products',
-										'reviewbird'
-									) }
-								</p>
-								<p className="text-xs text-gray-500 mt-1">
-									{ __(
-										'Leave this off if you prefer to control reviews per product using the "Enable reviews" checkbox.',
-										'reviewbird'
-									) }
-								</p>
-							</div>
-							<button
-								type="button"
-								onClick={ handleForceReviewsToggle }
-								className={ `relative inline-flex flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 ${
-									forceReviewsOpen
-										? 'bg-indigo-600'
-										: 'bg-gray-200'
-								}` }
-								style={ {
-									height: '24px',
-									width: '44px',
-									padding: 0,
-								} }
-								role="switch"
-								aria-checked={ forceReviewsOpen }
-							>
-								<span
-									className={ `pointer-events-none inline-block transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-										forceReviewsOpen
-											? 'translate-x-5'
-											: 'translate-x-0'
-									}` }
-									style={ { height: '20px', width: '20px' } }
-								/>
-							</button>
-						</div>
-					</div>
-				</TogglePanel>
-
-				<TogglePanel
-					title={ __( 'SEO Schema Markup', 'reviewbird' ) }
-					description={ __(
-						'Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results.',
-						'reviewbird'
-					) }
-					enabled={ enableSchema }
-					onToggle={ handleSchemaToggle }
-					enabledText={ __(
-						'Schema markup is active on all WooCommerce product pages.',
-						'reviewbird'
-					) }
-					infoBox={ {
-						title: __( 'What is Schema Markup?', 'reviewbird' ),
-						items: [
-							__(
-								'Displays star ratings in Google search results',
-								'reviewbird'
-							),
-							__(
-								'Shows review counts and product information',
-								'reviewbird'
-							),
-							__(
-								'Review schema is cached for 4 hours for optimal performance',
-								'reviewbird'
-							),
-						],
-					} }
-					links={ [
-						{
-							href: 'https://search.google.com/test/rich-results',
-							text: __(
-								'Test with Google Rich Results',
-								'reviewbird'
-							),
-						},
-						{
-							href: 'https://validator.schema.org/',
-							text: __( 'Validate Schema', 'reviewbird' ),
-						},
-					] }
+		<div className="reviewbird-settings-shell">
+			<header className="reviewbird-brand-bar">
+				<img
+					className="reviewbird-brand-logo"
+					src={ reviewbirdLogo }
+					alt="Reviewbird"
+					width="308"
+					height="39"
 				/>
+			</header>
+			<div className="reviewbird-settings-page">
+				<header className="reviewbird-settings-page__header">
+					<h1>{ __( 'Reviewbird Settings', 'reviewbird' ) }</h1>
+				</header>
+				<ConnectionHealth />
+				<div className="reviewbird-settings-card reviewbird-settings-page__features">
+					<TogglePanel
+						id="reviewbird-widget-title"
+						title={ __( 'Reviewbird Widget', 'reviewbird' ) }
+						description={ __(
+							'Show customer reviews on product pages.',
+							'reviewbird'
+						) }
+						enabled={ widget.enabled }
+						onToggle={ widget.toggle }
+						isSaving={ widget.pending || forceReviews.pending }
+						error={ widget.error }
+					>
+						<div className="reviewbird-toggle-panel__option">
+							<div className="reviewbird-settings-choice">
+								<input
+									id="reviewbird-force-reviews"
+									className="reviewbird-settings-checkbox"
+									type="checkbox"
+									checked={ forceReviews.enabled }
+									disabled={
+										forceReviews.pending || widget.pending
+									}
+									aria-busy={ forceReviews.pending }
+									aria-describedby="reviewbird-force-reviews-help"
+									onChange={ forceReviews.toggle }
+								/>
+								<div>
+									<label htmlFor="reviewbird-force-reviews">
+										{ __(
+											'Enable reviews for all products',
+											'reviewbird'
+										) }
+									</label>
+									<p id="reviewbird-force-reviews-help">
+										{ __(
+											'Also show reviews on products with reviews turned off.',
+											'reviewbird'
+										) }
+									</p>
+								</div>
+							</div>
+							{ forceReviews.error && (
+								<p
+									className="reviewbird-settings-error"
+									role="alert"
+								>
+									{ forceReviews.error }
+								</p>
+							) }
+						</div>
+					</TogglePanel>
+					<TogglePanel
+						id="reviewbird-schema-title"
+						title={ __( 'Search results', 'reviewbird' ) }
+						description={ __(
+							'Add review data that search engines can use for star ratings.',
+							'reviewbird'
+						) }
+						enabled={ schema.enabled }
+						onToggle={ schema.toggle }
+						isSaving={ schema.pending }
+						error={ schema.error }
+						links={ [
+							{
+								href: 'https://search.google.com/test/rich-results',
+								text: __( 'Test rich results', 'reviewbird' ),
+							},
+							{
+								href: 'https://validator.schema.org/',
+								text: __( 'Validate schema', 'reviewbird' ),
+							},
+						] }
+					/>
+				</div>
+				<GoogleCustomerReviews />
 			</div>
 		</div>
 	);

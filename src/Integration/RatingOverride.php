@@ -28,13 +28,6 @@ class RatingOverride {
 			return;
 		}
 
-		$this->register_hooks();
-	}
-
-	/**
-	 * Register WooCommerce rating override filters.
-	 */
-	private function register_hooks(): void {
 		$filters = array(
 			'average_rating' => 'override_average_rating',
 			'rating_count'   => 'override_rating_count',

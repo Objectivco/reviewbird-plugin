@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:125
-#: src/Admin/Settings.php:126
+#: src/Admin/Settings.php:129
+#: src/Admin/Settings.php:130
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -31,49 +31,75 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "WooCommerce 的自动评论收集，阻止垃圾信息，捕捉投诉，并展示您的最佳反馈。"
 
-#: src/Admin/Settings.php:92
+#: src/Admin/Settings.php:96
 msgid "Reviewbird Connection Error:"
 msgstr "Reviewbird 连接错误："
 
-#: src/Admin/Settings.php:111
+#: src/Admin/Settings.php:115
 msgid "Successfully connected to Reviewbird!"
 msgstr "成功连接到 Reviewbird！"
 
-#: src/Admin/Settings.php:138
-#: src/Admin/Settings.php:139
+#: src/Admin/Settings.php:142
+#: src/Admin/Settings.php:143
 msgid "Get Started"
 msgstr "开始使用"
 
-#: src/Admin/Settings.php:147
-#: assets/src/js/components/SettingsApp.jsx:92
+#: src/Admin/Settings.php:151
+#: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "Reviewbird 设置"
 
-#: src/Admin/Settings.php:148
-#: src/Core/Plugin.php:475
+#: src/Admin/Settings.php:152
+#: src/Core/Plugin.php:442
 msgid "Settings"
 msgstr "设置"
 
-#: src/Admin/Settings.php:355
+#: src/Admin/Settings.php:361
 msgid "Invalid security token"
 msgstr "无效的安全令牌"
 
-#: src/Admin/Settings.php:359
-#: src/Admin/Settings.php:421
+#: src/Admin/Settings.php:365
+#: src/Admin/Settings.php:463
 msgid "Insufficient permissions"
 msgstr "权限不足"
 
-#: src/Admin/Settings.php:384
+#: src/Admin/Settings.php:379
 msgid "Invalid setting"
 msgstr "无效的设置"
 
-#: src/Admin/Settings.php:394
+#: src/Admin/Settings.php:385
+msgid "Invalid setting value"
+msgstr "无效的设置值"
+
+#: src/Admin/Settings.php:392
+#: assets/src/js/components/GoogleCustomerReviews.jsx:107
+#: assets/src/js/components/SettingsApp.jsx:49
+msgid "The setting could not be saved. Please try again."
+msgstr "设置无法保存。请再试一次。"
+
+#: src/Admin/Settings.php:399
 msgid "Setting updated successfully"
 msgstr "设置更新成功"
 
-#: src/Admin/Settings.php:411
-msgid "Health check cache cleared"
-msgstr "健康检查缓存已清除"
+#: src/Admin/Settings.php:421
+msgid "Enter text in each prompt field."
+msgstr "请在每个提示字段中输入文本。"
+
+#: src/Admin/Settings.php:426
+msgid "Prompt text is empty or too long."
+msgstr "提示文本为空或过长。"
+
+#: src/Admin/Settings.php:433
+msgid "The prompt could not be saved. Please try again."
+msgstr "提示无法保存。请再试一次。"
+
+#: src/Admin/Settings.php:446
+msgid "The connection status could not be refreshed. Please try again."
+msgstr "无法刷新连接状态。请再试一次。"
+
+#: src/Admin/Settings.php:453
+msgid "Connection status refreshed"
+msgstr "连接状态已刷新"
 
 #. translators: %d: Store ID number.
 #: src/Api/ConnectionController.php:74
@@ -82,7 +108,8 @@ msgid "Store ID %d has been saved successfully"
 msgstr "商店 ID %d 已成功保存"
 
 #: src/Api/CouponController.php:79
-#: src/Api/ProductsController.php:43
+#: src/Api/ProductsController.php:81
+#: src/Api/ProductsController.php:119
 msgid "WooCommerce is not active"
 msgstr "WooCommerce 未激活"
 
@@ -96,44 +123,44 @@ msgstr "优惠券代码为必填项"
 msgid "Template coupon '%s' not found"
 msgstr "未找到模板优惠券 '%s'"
 
-#: src/Api/CouponController.php:155
+#: src/Api/CouponController.php:160
 msgid "discount_type and amount are required when not using template"
 msgstr "不使用模板时，discount_type 和 amount 为必填项"
 
-#: src/Api/ProductsController.php:161
-#: src/Api/RatingsController.php:53
+#: src/Api/ProductsController.php:125
+#: src/Api/RatingsController.php:41
 msgid "Product not found"
 msgstr "未找到产品"
 
-#: src/Api/RatingsController.php:43
+#: src/Api/RatingsController.php:31
 msgid "Product ID is required"
 msgstr "产品 ID 为必填项"
 
-#: src/Api/RatingsController.php:49
+#: src/Api/RatingsController.php:37
 msgid "Invalid product ID"
 msgstr "无效的产品 ID"
 
-#: src/Api/RatingsController.php:93
+#: src/Api/RatingsController.php:66
 msgid "Average stars must be a number between 1 and 5"
 msgstr "平均星级必须是 1 到 5 之间的数字"
 
-#: src/Api/RatingsController.php:97
+#: src/Api/RatingsController.php:70
 msgid "Review count must be a non-negative number"
 msgstr "评论数量必须是非负数"
 
-#: src/Api/RatingsController.php:101
+#: src/Api/RatingsController.php:74
 msgid "Rating counts must be an array"
 msgstr "评分计数必须是数组"
 
-#: src/Api/RatingsController.php:174
+#: src/Api/RatingsController.php:152
 msgid "Customer email is required"
 msgstr "客户邮箱为必填项"
 
-#: src/Api/RatingsController.php:178
+#: src/Api/RatingsController.php:156
 msgid "Invalid email address"
 msgstr "无效的电子邮件地址"
 
-#: src/Core/Plugin.php:481
+#: src/Core/Plugin.php:448
 msgid "Documentation"
 msgstr "文档"
 
@@ -158,343 +185,483 @@ msgstr "每次请求最多允许 50 个产品 ID。"
 msgid "Failed to decode API response."
 msgstr "解码 API 响应失败。"
 
-#: src/functions.php:688
+#: src/functions.php:684
 msgid "Anonymous"
 msgstr "匿名"
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:709
+#: src/functions.php:705
 #, php-format
 msgid "Rated %d out of 5"
 msgstr "评分为 %d（满分 5 分）"
 
+#: src/Integration/GoogleCustomerReviews.php:114
+msgid "Rate your purchase experience"
+msgstr "评价您的购买体验"
+
+#: src/Integration/GoogleCustomerReviews.php:115
+msgid "We use Google Customer Reviews to collect feedback about your purchase. Would you like to receive a short survey after your order arrives?"
+msgstr "我们使用 Google 客户评价收集您对购买的反馈。您是否愿意在订单到达后收到一份简短的调查？"
+
+#: src/Integration/GoogleCustomerReviews.php:116
+msgid "Yes"
+msgstr "是"
+
+#: src/Integration/GoogleCustomerReviews.php:117
+msgid "No"
+msgstr "否"
+
+#: src/Integration/GoogleCustomerReviews.php:293
+#: src/Integration/GoogleCustomerReviews.php:333
+#: src/Integration/GoogleCustomerReviews.php:382
+msgid "This review request is not available."
+msgstr "此评价请求不可用。"
+
+#: src/Integration/GoogleCustomerReviews.php:355
+#: src/Integration/GoogleCustomerReviews.php:422
+msgid "Your choice could not be saved. Please try again."
+msgstr "您的选择无法保存。请再试一次。"
+
+#: src/Integration/GoogleCustomerReviews.php:382
+#: src/Integration/GoogleCustomerReviews.php:429
+#: src/Integration/GoogleCustomerReviews.php:430
+#: src/Integration/GoogleCustomerReviews.php:480
+#: templates/google-customer-reviews.php:19
+#: assets/src/js/components/GoogleCustomerReviews.jsx:153
+msgid "Google Customer Reviews"
+msgstr "Google 客户评价"
+
+#: src/Integration/GoogleCustomerReviews.php:421
+msgid "Loading Google Customer Reviews…"
+msgstr "正在加载 Google 客户评价…"
+
+#: src/Integration/GoogleCustomerReviews.php:423
+msgid "Google Customer Reviews could not load. Please try again."
+msgstr "Google 客户评价加载失败。请再试一次。"
+
+#: src/Integration/GoogleCustomerReviews.php:424
+msgid "Try again"
+msgstr "再试一次"
+
+#: src/Integration/GoogleCustomerReviews.php:425
+msgid "You can close this page when you finish."
+msgstr "完成后您可以关闭此页面。"
+
+#: src/Integration/GoogleCustomerReviews.php:440
+msgid "Enable JavaScript to use Google Customer Reviews."
+msgstr "启用 JavaScript 以使用 Google 客户评价。"
+
+#. translators: %s: Date when the customer selected Yes on the Reviewbird prompt.
+#: src/Integration/GoogleCustomerReviews.php:485
+#, php-format
+msgid "Selected Yes on the Reviewbird prompt: %s"
+msgstr "在 Reviewbird 提示中选择了是：%s"
+
+#: src/Integration/GoogleCustomerReviews.php:487
+msgid "The customer has not selected Yes on the Reviewbird prompt."
+msgstr "客户尚未在 Reviewbird 提示中选择是。"
+
+#: src/Integration/GoogleCustomerReviews.php:492
+msgid "Google opt-in link"
+msgstr "Google 选择加入链接"
+
+#: src/Integration/GoogleCustomerReviews.php:494
+msgid "Link copied."
+msgstr "链接已复制。"
+
+#: src/Integration/GoogleCustomerReviews.php:494
+msgid "Select and copy the link."
+msgstr "选择并复制链接。"
+
+#: src/Integration/GoogleCustomerReviews.php:494
+msgid "Copy link"
+msgstr "复制链接"
+
+#: src/Integration/HealthScheduler.php:171
+msgid "The connection response is invalid. Please try again."
+msgstr "连接响应无效。请再试一次。"
+
+#: src/Integration/HealthScheduler.php:176
+msgid "The connection status could not be saved. Please try again."
+msgstr "连接状态无法保存。请再试一次。"
+
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:171
+#: src/Integration/StarRatingDisplay.php:122
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "评分为 %s（满分 5 分）"
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:174
+#: src/Integration/StarRatingDisplay.php:125
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "评分为 %s（满分 5 分），点击查看评论"
 
-#: src/Integration/WooCommerce.php:75
+#: src/Integration/WooCommerce.php:66
 msgid "Whether the Reviewbird widget is enabled."
 msgstr "是否启用 Reviewbird 小部件。"
 
-#: src/Integration/WooCommerce.php:161
+#: src/Integration/WooCommerce.php:152
 msgid "Leave a review"
 msgstr "留下评论"
 
-#: assets/src/js/components/ConnectionHealth.jsx:10
+#: assets/src/js/components/ConnectionHealth.jsx:8
 msgid "Connected to Reviewbird"
 msgstr "已连接到 Reviewbird"
 
-#: assets/src/js/components/ConnectionHealth.jsx:11
-msgid "Your WooCommerce store is successfully connected to Reviewbird. Review data is syncing properly."
-msgstr "您的 WooCommerce 商店已成功连接到 Reviewbird。评论数据正在正常同步。"
+#: assets/src/js/components/ConnectionHealth.jsx:10
+msgid "View dashboard"
+msgstr "查看仪表板"
 
-#: assets/src/js/components/ConnectionHealth.jsx:12
-msgid "View Dashboard"
-msgstr "查看仪表盘"
+#: assets/src/js/components/ConnectionHealth.jsx:14
+msgid "Your store is not connected"
+msgstr "您的商店未连接"
 
-#: assets/src/js/components/ConnectionHealth.jsx:18
-msgid "WooCommerce Not Connected"
-msgstr "WooCommerce 未连接"
+#: assets/src/js/components/ConnectionHealth.jsx:15
+msgid "Reviewbird is disabled until you connect your WooCommerce store."
+msgstr "未连接您的 WooCommerce 商店前，Reviewbird 被禁用。"
 
 #: assets/src/js/components/ConnectionHealth.jsx:19
-msgid "WooCommerce is not yet connected to Reviewbird. Connect your store to start syncing products and reviews."
-msgstr "WooCommerce 尚未连接到 Reviewbird。连接您的商店以开始同步产品和评论。"
+msgid "Connect store"
+msgstr "连接商店"
 
-#: assets/src/js/components/ConnectionHealth.jsx:20
-msgid "Connect WooCommerce"
-msgstr "连接 WooCommerce"
+#: assets/src/js/components/ConnectionHealth.jsx:23
+msgid "Your store is syncing"
+msgstr "您的商店正在同步"
 
-#: assets/src/js/components/ConnectionHealth.jsx:26
-msgid "Initial Sync in Progress"
-msgstr "初始同步进行中"
+#: assets/src/js/components/ConnectionHealth.jsx:24
+msgid "Your products and reviews are syncing."
+msgstr "您的产品和评价正在同步。"
 
-#: assets/src/js/components/ConnectionHealth.jsx:27
-msgid "Reviewbird is syncing your products and reviews. This may take a few minutes depending on your catalog size. The widget will be available once sync completes."
-msgstr "Reviewbird 正在同步您的产品和评论。根据您的目录大小，这可能需要几分钟。同步完成后小部件将可用。"
+#: assets/src/js/components/ConnectionHealth.jsx:25
+msgid "View progress"
+msgstr "查看进度"
 
-#: assets/src/js/components/ConnectionHealth.jsx:28
-msgid "View Sync Progress"
-msgstr "查看同步进度"
+#: assets/src/js/components/ConnectionHealth.jsx:29
+msgid "Reviewbird is disabled"
+msgstr "Reviewbird 已禁用"
+
+#: assets/src/js/components/ConnectionHealth.jsx:30
+msgid "Your Reviewbird subscription is not active. Update your billing details to turn Reviewbird back on."
+msgstr "您的 Reviewbird 订阅未激活。更新您的账单信息以重新启用 Reviewbird。"
 
 #: assets/src/js/components/ConnectionHealth.jsx:34
-msgid "Subscription Required"
-msgstr "需要订阅"
-
-#: assets/src/js/components/ConnectionHealth.jsx:35
-msgid "Your Reviewbird subscription is inactive. Please update your billing information to continue using the service."
-msgstr "您的 Reviewbird 订阅处于非激活状态。请更新您的账单信息以继续使用服务。"
-
-#: assets/src/js/components/ConnectionHealth.jsx:36
-msgid "Update Billing"
+msgid "Update billing"
 msgstr "更新账单"
 
-#: assets/src/js/components/ConnectionHealth.jsx:42
-#: assets/src/js/components/ConnectionHealth.jsx:50
-msgid "Connection Issue Detected"
-msgstr "检测到连接问题"
+#: assets/src/js/components/ConnectionHealth.jsx:38
+msgid "Reviewbird cannot connect to your store"
+msgstr "Reviewbird 无法连接到您的商店"
+
+#: assets/src/js/components/ConnectionHealth.jsx:39
+msgid "Open the connection settings in Reviewbird to reconnect your store."
+msgstr "打开 Reviewbird 中的连接设置以重新连接您的商店。"
 
 #: assets/src/js/components/ConnectionHealth.jsx:43
-msgid "Unable to connect to Reviewbird. Please check your connection settings."
-msgstr "无法连接到 Reviewbird。请检查您的连接设置。"
+msgid "Check connection"
+msgstr "检查连接"
 
-#: assets/src/js/components/ConnectionHealth.jsx:44
-msgid "Fix Connection"
-msgstr "修复连接"
+#: assets/src/js/components/ConnectionHealth.jsx:47
+msgid "We could not check your connection"
+msgstr "我们无法检查您的连接"
 
-#: assets/src/js/components/ConnectionHealth.jsx:51
-msgid "Unable to reach Reviewbird API. Please check your internet connection."
-msgstr "无法访问 Reviewbird API。请检查您的网络连接。"
+#: assets/src/js/components/ConnectionHealth.jsx:48
+msgid "Refresh to try again, or contact support if the problem continues."
+msgstr "刷新以重试，或如果问题持续，请联系支持。"
 
 #: assets/src/js/components/ConnectionHealth.jsx:52
-msgid "Get Help"
-msgstr "获取帮助"
+msgid "Contact support"
+msgstr "联系支持"
+
+#: assets/src/js/components/ConnectionHealth.jsx:56
+msgid "Checking connection…"
+msgstr "正在检查连接…"
 
 #: assets/src/js/components/ConnectionHealth.jsx:58
-msgid "Checking connection..."
-msgstr "正在检查连接..."
-
-#: assets/src/js/components/ConnectionHealth.jsx:59
-msgid "Verifying connection to Reviewbird..."
-msgstr "正在验证与 Reviewbird 的连接..."
-
-#: assets/src/js/components/ConnectionHealth.jsx:60
 msgid "Open Reviewbird"
 msgstr "打开 Reviewbird"
 
-#. translators: %s: connection error code.
-#: assets/src/js/components/ConnectionHealth.jsx:200
-#, js-format
-msgid "Connection Issue (%s)"
-msgstr "连接问题（%s）"
-
-#: assets/src/js/components/ConnectionHealth.jsx:262
-msgid "Refresh"
-msgstr "刷新"
+#: assets/src/js/components/ConnectionHealth.jsx:305
+#: assets/src/js/components/GoogleCustomerReviews.jsx:103
+msgid "The connection could not be refreshed. Please try again."
+msgstr "无法刷新连接。请再试一次。"
 
 #. translators: %s: time of the last connection check.
-#: assets/src/js/components/ConnectionHealth.jsx:285
+#: assets/src/js/components/ConnectionHealth.jsx:343
 #, js-format
 msgid "Last checked: %s"
 msgstr "最后检查时间：%s"
+
+#: assets/src/js/components/ConnectionHealth.jsx:368
+msgid "Refresh connection status"
+msgstr "刷新连接状态"
+
+#: assets/src/js/components/ConnectionHealth.jsx:374
+#: assets/src/js/components/GoogleCustomerReviews.jsx:241
+msgid "Refreshing…"
+msgstr "刷新中…"
+
+#: assets/src/js/components/ConnectionHealth.jsx:375
+#: assets/src/js/components/GoogleCustomerReviews.jsx:242
+msgid "Refresh"
+msgstr "刷新"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:6
+msgid "Widget title"
+msgstr "小部件标题"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:7
+msgid "Customer message"
+msgstr "客户消息"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:8
+msgid "Yes button text"
+msgstr "是按钮文本"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:9
+msgid "No button text"
+msgstr "否按钮文本"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:53
+msgid "Integration is currently enabled."
+msgstr "集成当前已启用。"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:54
+msgid "Integration is currently disabled."
+msgstr "集成当前已禁用。"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:55
+msgid "Integration status is unknown."
+msgstr "集成状态未知。"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:85
+msgid "Status updated."
+msgstr "状态已更新。"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:96
+msgid "Display setting saved."
+msgstr "显示设置已保存。"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:131
+msgid "Changes saved."
+msgstr "更改已保存。"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:136
+msgid "Your changes could not be saved. Please try again."
+msgstr "无法保存您的更改。请再试一次。"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:175
+msgid "Enable widget on the thank you page"
+msgstr "在感谢页面启用小部件"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:181
+msgid "Ask customers to consent to Google Customer Reviews."
+msgstr "请求客户同意 Google 客户评价。"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:194
+msgid "Requires the Google Customer Reviews integration to be enabled. If you just enabled it, use Refresh to update the status."
+msgstr "需要启用 Google 客户评价集成。如果您刚刚启用它，请使用刷新以更新状态。"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:212
+msgid "Configure integration"
+msgstr "配置集成"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:220
+msgid "Refresh integration status"
+msgstr "刷新集成状态"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:267
+msgid "Customize your widget"
+msgstr "自定义您的小部件"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:314
+#: assets/src/js/components/GoogleCustomerReviews.jsx:317
+msgid "Widget preview"
+msgstr "小部件预览"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:322
+msgid "Customer message preview"
+msgstr "客户消息预览"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:380
+msgid "Reset to defaults"
+msgstr "恢复默认设置"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:388
+#: assets/src/js/components/TogglePanel.jsx:52
+msgid "Saving…"
+msgstr "正在保存…"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:389
+msgid "Save changes"
+msgstr "保存更改"
 
 #: assets/src/js/components/LoadingSpinner.jsx:8
 msgid "Loading..."
 msgstr "加载中..."
 
-#: assets/src/js/components/SettingsApp.jsx:44
-msgid "Failed to update setting. Please try again."
-msgstr "更新设置失败。请重试。"
-
-#: assets/src/js/components/SettingsApp.jsx:89
-msgid "Connected Store Settings"
-msgstr "已连接商店设置"
-
-#: assets/src/js/components/SettingsApp.jsx:95
-msgid "Manage your Reviewbird integration with WooCommerce."
-msgstr "管理您的 Reviewbird 与 WooCommerce 的集成。"
-
-#: assets/src/js/components/SettingsApp.jsx:112
+#: assets/src/js/components/SettingsApp.jsx:102
 msgid "Reviewbird Widget"
 msgstr "Reviewbird 小部件"
 
-#: assets/src/js/components/SettingsApp.jsx:113
-msgid "Display Reviewbird review widget on product pages. The widget shows customer reviews and allows customers to submit new reviews."
-msgstr "在产品页面显示 Reviewbird 评价小部件。该小部件展示客户评价并允许客户提交新评价。"
-
-#: assets/src/js/components/SettingsApp.jsx:119
-msgid "Widget is enabled on all WooCommerce product pages."
-msgstr "小部件已在所有 WooCommerce 产品页面启用。"
+#: assets/src/js/components/SettingsApp.jsx:103
+msgid "Show customer reviews on product pages."
+msgstr "在产品页面显示客户评价。"
 
 #: assets/src/js/components/SettingsApp.jsx:128
-msgid "Forcefully enable reviews on all products"
-msgstr "强制在所有产品上启用评价"
+msgid "Enable reviews for all products"
+msgstr "为所有产品启用评价"
 
 #: assets/src/js/components/SettingsApp.jsx:134
-msgid "Leave this off if you prefer to control reviews per product using the \"Enable reviews\" checkbox."
-msgstr "如果您希望通过“启用评价”复选框单独控制每个产品的评价，请关闭此选项。"
+msgid "Also show reviews on products with reviews turned off."
+msgstr "即使产品关闭评价，也显示评价。"
 
-#: assets/src/js/components/SettingsApp.jsx:170
-msgid "SEO Schema Markup"
-msgstr "SEO 结构化数据标记"
+#: assets/src/js/components/SettingsApp.jsx:153
+msgid "Search results"
+msgstr "搜索结果"
 
-#: assets/src/js/components/SettingsApp.jsx:171
-msgid "Enable Google-compliant structured data (JSON-LD schema) on product pages for rich snippets in search results."
-msgstr "在产品页面启用符合 Google 标准的结构化数据（JSON-LD schema），以便在搜索结果中显示丰富摘要。"
+#: assets/src/js/components/SettingsApp.jsx:154
+msgid "Add review data that search engines can use for star ratings."
+msgstr "添加搜索引擎可用于星级评分的评价数据。"
 
-#: assets/src/js/components/SettingsApp.jsx:177
-msgid "Schema markup is active on all WooCommerce product pages."
-msgstr "结构化数据标记已在所有 WooCommerce 产品页面激活。"
+#: assets/src/js/components/SettingsApp.jsx:165
+msgid "Test rich results"
+msgstr "测试丰富结果"
 
-#: assets/src/js/components/SettingsApp.jsx:182
-msgid "What is Schema Markup?"
-msgstr "什么是结构化数据标记？"
+#: assets/src/js/components/SettingsApp.jsx:169
+msgid "Validate schema"
+msgstr "验证架构"
 
-#: assets/src/js/components/SettingsApp.jsx:184
-msgid "Displays star ratings in Google search results"
-msgstr "在 Google 搜索结果中显示星级评分"
-
-#: assets/src/js/components/SettingsApp.jsx:188
-msgid "Shows review counts and product information"
-msgstr "显示评价数量和产品信息"
-
-#: assets/src/js/components/SettingsApp.jsx:192
-msgid "Review schema is cached for 4 hours for optimal performance"
-msgstr "评价结构化数据缓存 4 小时以优化性能"
-
-#: assets/src/js/components/SettingsApp.jsx:201
-msgid "Test with Google Rich Results"
-msgstr "使用 Google 丰富结果测试"
-
-#: assets/src/js/components/SettingsApp.jsx:208
-msgid "Validate Schema"
-msgstr "验证结构化数据"
-
-#: assets/src/js/components/TogglePanel.jsx:114
-msgid "Enabled"
-msgstr "已启用"
-
-#: assets/src/js/components/TogglePanel.jsx:115
-msgid "Disabled"
-msgstr "已禁用"
-
-#: assets/src/js/components/WelcomeScreen.jsx:105
+#: assets/src/js/components/WelcomeScreen.jsx:89
 msgid "The plugin is installed!"
 msgstr "插件已安装！"
 
-#: assets/src/js/components/WelcomeScreen.jsx:106
+#: assets/src/js/components/WelcomeScreen.jsx:90
 msgid "Your store is connected to Reviewbird"
 msgstr "您的商店已连接到 Reviewbird"
 
-#: assets/src/js/components/WelcomeScreen.jsx:108
+#: assets/src/js/components/WelcomeScreen.jsx:92
 msgid "Now let's connect Reviewbird to your WooCommerce store."
 msgstr "现在让我们将 Reviewbird 连接到您的 WooCommerce 商店。"
 
-#: assets/src/js/components/WelcomeScreen.jsx:112
+#: assets/src/js/components/WelcomeScreen.jsx:96
 msgid "Continue in Reviewbird to customize your widget and review request emails."
 msgstr "继续在 Reviewbird 中自定义您的小部件和评价请求邮件。"
 
-#: assets/src/js/components/WelcomeScreen.jsx:116
+#: assets/src/js/components/WelcomeScreen.jsx:100
 msgid "Continue setup"
 msgstr "继续设置"
 
-#: assets/src/js/components/WelcomeScreen.jsx:120
+#: assets/src/js/components/WelcomeScreen.jsx:104
 msgid "Your store is connected"
 msgstr "您的商店已连接"
 
-#: assets/src/js/components/WelcomeScreen.jsx:121
+#: assets/src/js/components/WelcomeScreen.jsx:105
 msgid "Manage your reviews, widgets, showcases and other settings in the dashboard."
 msgstr "在仪表板中管理您的评价、小部件、展示和其他设置。"
 
-#: assets/src/js/components/WelcomeScreen.jsx:125
+#: assets/src/js/components/WelcomeScreen.jsx:109
 msgid "Open dashboard"
 msgstr "打开仪表板"
 
-#: assets/src/js/components/WelcomeScreen.jsx:135
+#: assets/src/js/components/WelcomeScreen.jsx:119
 msgid "Bring your reviews with you"
 msgstr "随身携带您的评价"
 
-#: assets/src/js/components/WelcomeScreen.jsx:136
+#: assets/src/js/components/WelcomeScreen.jsx:120
 msgid "Import from WooCommerce, Judge.me, Yotpo, and many more."
 msgstr "从 WooCommerce、Judge.me、Yotpo 及更多平台导入。"
 
-#: assets/src/js/components/WelcomeScreen.jsx:148
+#: assets/src/js/components/WelcomeScreen.jsx:132
 msgid "Photo and video reviews"
 msgstr "照片和视频评价"
 
-#: assets/src/js/components/WelcomeScreen.jsx:149
+#: assets/src/js/components/WelcomeScreen.jsx:133
 msgid "Allow customers to upload photos and videos of your product in real life."
 msgstr "允许客户上传产品的真实照片和视频。"
 
-#: assets/src/js/components/WelcomeScreen.jsx:164
+#: assets/src/js/components/WelcomeScreen.jsx:148
 msgid "Match your branding"
 msgstr "匹配您的品牌"
 
-#: assets/src/js/components/WelcomeScreen.jsx:165
+#: assets/src/js/components/WelcomeScreen.jsx:149
 msgid "Customize your emails, widgets, and showcases to match your brand."
 msgstr "自定义您的邮件、小部件和展示以匹配您的品牌。"
 
-#: assets/src/js/components/WelcomeScreen.jsx:186
+#: assets/src/js/components/WelcomeScreen.jsx:170
 msgid "Already use Reviewbird?"
 msgstr "已经使用 Reviewbird？"
 
-#: assets/src/js/components/WelcomeScreen.jsx:193
+#: assets/src/js/components/WelcomeScreen.jsx:177
 msgid "Sign in"
 msgstr "登录"
 
-#: assets/src/js/components/WelcomeScreen.jsx:209
+#: assets/src/js/components/WelcomeScreen.jsx:194
 msgid "Loading Reviewbird…"
 msgstr "正在加载 Reviewbird…"
 
-#: assets/src/js/components/WelcomeScreen.jsx:238
-#: assets/src/js/components/WelcomeScreen.jsx:325
+#: assets/src/js/components/WelcomeScreen.jsx:223
+#: assets/src/js/components/WelcomeScreen.jsx:310
 msgid "(opens in a new tab)"
 msgstr "（在新标签页打开）"
 
-#: assets/src/js/components/WelcomeScreen.jsx:251
+#: assets/src/js/components/WelcomeScreen.jsx:236
 msgid "Plugin settings"
 msgstr "插件设置"
 
-#: assets/src/js/components/WelcomeScreen.jsx:272
+#: assets/src/js/components/WelcomeScreen.jsx:257
 msgid "Let's turn your WooCommerce product reviews up to 11."
 msgstr "让您的 WooCommerce 产品评价提升到极致。"
 
-#: assets/src/js/components/WelcomeScreen.jsx:279
+#: assets/src/js/components/WelcomeScreen.jsx:264
 msgid "Automated review requests help you collect reviews automatically after each order. No busywork, just reliable review collection on autopilot."
 msgstr "自动评价请求帮助您在每笔订单后自动收集评价。无需繁琐操作，只需自动可靠地收集评价。"
 
-#: assets/src/js/components/WelcomeScreen.jsx:320
+#: assets/src/js/components/WelcomeScreen.jsx:305
 msgid "Get started free"
 msgstr "免费开始"
 
-#: assets/src/js/components/WelcomeScreen.jsx:338
+#: assets/src/js/components/WelcomeScreen.jsx:323
 msgid "Example Reviewbird product review request email"
 msgstr "Reviewbird 产品评价请求邮件示例"
 
 #. translators: Keep the <store> tags around the example store name.
-#: assets/src/js/components/WelcomeScreen.jsx:356
+#: assets/src/js/components/WelcomeScreen.jsx:341
 msgid "Reviewbird <store>for Aster & Oak</store>"
 msgstr "Reviewbird <store>适用于 Aster & Oak</store>"
 
-#: assets/src/js/components/WelcomeScreen.jsx:368
+#: assets/src/js/components/WelcomeScreen.jsx:353
 msgid "To: jamie@example.com"
 msgstr "收件人：jamie@example.com"
 
-#: assets/src/js/components/WelcomeScreen.jsx:376
+#: assets/src/js/components/WelcomeScreen.jsx:361
 msgid "Review request"
 msgstr "评价请求"
 
-#: assets/src/js/components/WelcomeScreen.jsx:386
+#: assets/src/js/components/WelcomeScreen.jsx:371
 msgid "How is your new blanket?"
 msgstr "您的新毯子怎么样？"
 
-#: assets/src/js/components/WelcomeScreen.jsx:392
+#: assets/src/js/components/WelcomeScreen.jsx:377
 msgid "Share your experience to help other shoppers choose."
 msgstr "分享您的体验，帮助其他购物者做出选择。"
 
-#: assets/src/js/components/WelcomeScreen.jsx:436
+#: assets/src/js/components/WelcomeScreen.jsx:421
 msgid "Linen Throw Blanket, Sage"
 msgstr "亚麻投掷毯，鼠尾草色"
 
-#: assets/src/js/components/WelcomeScreen.jsx:447
+#: assets/src/js/components/WelcomeScreen.jsx:432
 msgid "Poor"
 msgstr "差"
 
-#: assets/src/js/components/WelcomeScreen.jsx:453
+#: assets/src/js/components/WelcomeScreen.jsx:438
 msgid "Great"
 msgstr "好"
 
-#: assets/src/js/components/WelcomeScreen.jsx:461
+#: assets/src/js/components/WelcomeScreen.jsx:446
 msgid "You received this review request after your purchase from Aster & Oak."
 msgstr "您在从 Aster & Oak 购买后收到了此评价请求。"
 
-#: assets/src/js/components/WelcomeScreen.jsx:467
+#: assets/src/js/components/WelcomeScreen.jsx:452
 msgid "Unsubscribe from review emails"
 msgstr "取消订阅评价邮件"

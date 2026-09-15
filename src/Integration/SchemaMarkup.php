@@ -21,21 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class SchemaMarkup {
 
 	/**
-	 * Get schema reviews from product meta.
-	 *
-	 * Reviews are stored in product meta by SchemaScheduler and
-	 * refreshed when ratings are updated.
-	 *
-	 * @param int $product_id WooCommerce product ID.
-	 * @return array Array of Review schema objects.
-	 */
-	private function get_reviews_for_schema( int $product_id ): array {
-		$reviews = get_post_meta( $product_id, SchemaScheduler::META_KEY, true );
-
-		return is_array( $reviews ) ? $reviews : array();
-	}
-
-	/**
 	 * Filter WooCommerce's structured data to inject reviewbird review data.
 	 *
 	 * This hooks into WooCommerce's schema output to add aggregateRating and
@@ -46,7 +31,7 @@ class SchemaMarkup {
 	 * @return array Modified markup with reviewbird review data.
 	 */
 	public function filter_woocommerce_structured_data( $markup, $product ) {
-		if ( ! $this->is_schema_enabled() ) {
+		if ( ! reviewbird_is_schema_enabled() || ! reviewbird_is_store_connected() ) {
 			return $markup;
 		}
 
@@ -58,22 +43,13 @@ class SchemaMarkup {
 			$markup['aggregateRating'] = $aggregate_rating;
 		}
 
-		$reviews = $this->get_reviews_for_schema( $product_id );
+		$reviews = get_post_meta( $product_id, SchemaScheduler::META_KEY, true );
 
-		if ( ! empty( $reviews ) ) {
+		if ( is_array( $reviews ) && ! empty( $reviews ) ) {
 			$markup['review'] = $reviews;
 		}
 
 		return $markup;
-	}
-
-	/**
-	 * Check if schema markup is enabled and store is connected.
-	 *
-	 * @return bool True if schema should be generated.
-	 */
-	private function is_schema_enabled(): bool {
-		return reviewbird_is_schema_enabled() && reviewbird_is_store_connected();
 	}
 
 	/**

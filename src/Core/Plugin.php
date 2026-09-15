@@ -16,6 +16,7 @@ use reviewbird\Api\ConnectionController;
 use reviewbird\Api\CouponController;
 use reviewbird\Api\ProductsController;
 use reviewbird\Api\RatingsController;
+use reviewbird\Integration\GoogleCustomerReviews;
 use reviewbird\Integration\HealthScheduler;
 use reviewbird\Integration\RatingOverride;
 use reviewbird\Integration\SchemaMarkup;
@@ -32,25 +33,11 @@ use reviewbird\Integration\WooCommerce;
 class Plugin {
 
 	/**
-	 * The unique identifier of this plugin.
-	 *
-	 * @var string
-	 */
-	protected $plugin_name;
-
-	/**
 	 * The current version of the plugin.
 	 *
 	 * @var string
 	 */
 	protected $version;
-
-	/**
-	 * Whether the carousel script has been enqueued.
-	 *
-	 * @var bool
-	 */
-	private static $carousel_script_enqueued = false;
 
 	/**
 	 * Whether the widget has been rendered via shortcode.
@@ -63,21 +50,13 @@ class Plugin {
 	 * Initialize the plugin.
 	 */
 	public function __construct() {
-		$this->plugin_name = 'reviewbird';
-		$this->version     = REVIEWBIRD_VERSION;
+		$this->version = REVIEWBIRD_VERSION;
 	}
 
 	/**
 	 * Run the plugin.
 	 */
 	public function run() {
-		$this->init_hooks();
-	}
-
-	/**
-	 * Initialize plugin hooks.
-	 */
-	private function init_hooks() {
 		add_action(
 			'init',
 			function () {
@@ -113,6 +92,9 @@ class Plugin {
 
 		// Star rating display override.
 		new StarRatingDisplay();
+
+		// Google Customer Reviews opt-in.
+		new GoogleCustomerReviews();
 
 		// WooCommerce integration (adds CusRev media to reviews REST API).
 		new WooCommerce();
@@ -296,7 +278,7 @@ class Plugin {
 
 		$this->enqueue_carousel_script();
 
-		$locale = $this->get_language_code();
+		$locale = implode( '-', array_slice( explode( '_', get_locale() ), 0, 2 ) );
 
 		return sprintf(
 			'<div data-reviewbird-carousel data-store-id="%s" data-carousel-id="%s" data-locale="%s"></div>',
@@ -310,7 +292,7 @@ class Plugin {
 	 * Enqueue carousel script and configuration.
 	 */
 	private function enqueue_carousel_script() {
-		if ( self::$carousel_script_enqueued ) {
+		if ( wp_script_is( 'reviewbird-carousel' ) || wp_script_is( 'reviewbird-carousel', 'done' ) ) {
 			return;
 		}
 
@@ -329,17 +311,6 @@ class Plugin {
 				'apiUrl' => reviewbird_get_api_url(),
 			)
 		);
-
-		self::$carousel_script_enqueued = true;
-	}
-
-	/**
-	 * Get the language tag from the current WordPress locale.
-	 *
-	 * @return string Language tag (e.g., 'pt-BR' from 'pt_BR').
-	 */
-	private function get_language_code() {
-		return str_replace( '_', '-', implode( '_', array_slice( explode( '_', get_locale() ), 0, 2 ) ) );
 	}
 
 	/**
@@ -455,11 +426,7 @@ class Plugin {
 	 * @return bool Whether reviews are allowed.
 	 */
 	public function maybe_force_reviews_allowed( bool $allowed, $product ): bool {
-		if ( ! reviewbird_is_force_reviews_open() ) {
-			return $allowed;
-		}
-
-		return true;
+		return reviewbird_is_force_reviews_open() || $allowed;
 	}
 
 	/**
@@ -476,7 +443,7 @@ class Plugin {
 		);
 
 		$docs_link = sprintf(
-			'<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
+			'<a href="%s" target="_blank" rel="noopener noreferrer">%s <span class="dashicons dashicons-external" aria-hidden="true" style="font-size:14px;width:14px;height:14px;vertical-align:text-bottom;"></span></a>',
 			esc_url( 'https://reviewbird.com/documentation/' ),
 			__( 'Documentation', 'reviewbird' )
 		);
