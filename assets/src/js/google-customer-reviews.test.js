@@ -152,7 +152,13 @@ test( 'Yes saves once before Google loads and renders only once', async () => {
 	window.reviewbirdGcrLoaded();
 	await settle();
 	expect( render ).toHaveBeenCalledTimes( 1 );
-	expect( render.mock.calls[ 0 ][ 0 ].merchant_id ).toBe( 1234 );
+	expect( render ).toHaveBeenCalledWith( {
+		merchant_id: 1234,
+		order_id: '7',
+		email: 'buyer@example.com',
+		delivery_country: 'US',
+		estimated_delivery_date: '2026-09-20',
+	} );
 	expect( root.hidden ).toBe( true );
 	yes.click();
 	expect( render ).toHaveBeenCalledTimes( 1 );
@@ -182,7 +188,7 @@ test( 'a failed save shows retry and prevents Google calls', async () => {
 	expect( render ).not.toHaveBeenCalled();
 	expect( window.gapi.load ).not.toHaveBeenCalled();
 	expect( root.querySelector( '[data-gcr-status]' ).textContent ).toBe(
-		text.error
+		text.saveError
 	);
 	const retry = root.querySelector( '[data-gcr-retry]' );
 	expect( retry.hidden ).toBe( false );
@@ -190,6 +196,51 @@ test( 'a failed save shows retry and prevents Google calls', async () => {
 	await settle();
 	expect( fetch ).toHaveBeenCalledTimes( 2 );
 	expect( render ).toHaveBeenCalledTimes( 1 );
+} );
+
+test( 'a save timeout permits retry without an early Google call', async () => {
+	readyGoogle();
+	fetch.mockImplementationOnce(
+		( url, { signal } ) =>
+			new Promise( ( resolve, reject ) => {
+				signal.addEventListener( 'abort', () =>
+					reject( new Error( 'Timeout' ) )
+				);
+			} )
+	);
+	const root = card();
+	init( root );
+	root.querySelector( '[data-gcr-yes]' ).click();
+	jest.advanceTimersByTime( 15000 );
+	await settle();
+	expect( render ).not.toHaveBeenCalled();
+	expect( root.querySelector( '[data-gcr-status]' ).textContent ).toBe(
+		text.saveError
+	);
+	root.querySelector( '[data-gcr-retry]' ).click();
+	await settle();
+	expect( fetch ).toHaveBeenCalledTimes( 2 );
+	expect( render ).toHaveBeenCalledTimes( 1 );
+} );
+
+test( 'a Google render error permits retry without saving Yes twice', async () => {
+	readyGoogle();
+	render.mockImplementationOnce( () => {
+		throw new Error( 'Render failed' );
+	} );
+	const root = card();
+	init( root );
+	root.querySelector( '[data-gcr-yes]' ).click();
+	await settle();
+	expect( root.hidden ).toBe( false );
+	expect( root.querySelector( '[data-gcr-status]' ).textContent ).toBe(
+		text.error
+	);
+	root.querySelector( '[data-gcr-retry]' ).click();
+	await settle();
+	expect( fetch ).toHaveBeenCalledTimes( 1 );
+	expect( render ).toHaveBeenCalledTimes( 2 );
+	expect( root.hidden ).toBe( true );
 } );
 
 test( 'a Google script error permits another load without saving Yes twice', async () => {

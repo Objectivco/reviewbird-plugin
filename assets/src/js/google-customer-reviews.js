@@ -131,8 +131,9 @@ export function initGoogleCustomerReviews( root ) {
 			root.hidden = config.mode !== 'direct';
 			status.textContent = config.text.opened;
 		} catch {
-			status.textContent =
-				choice === 'no' ? config.text.saveError : config.text.error;
+			status.textContent = saved
+				? config.text.error
+				: config.text.saveError;
 			retry.hidden = false;
 		} finally {
 			busy = false;
