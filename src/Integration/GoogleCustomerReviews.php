@@ -304,7 +304,7 @@ class GoogleCustomerReviews {
 	}
 
 	/**
-	 * Record No once per widget visit without recording consent.
+	 * Record No once per order without recording consent.
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return WP_REST_Response|WP_Error Result.

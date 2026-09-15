@@ -14,6 +14,7 @@ module.exports = ( api ) => ( {
 					} ),
 					{
 						runtime: 'classic',
+						useBuiltIns: true,
 						pragma: 'wp.element.createElement',
 						pragmaFrag: 'wp.element.Fragment',
 					},

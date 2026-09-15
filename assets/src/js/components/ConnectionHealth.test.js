@@ -1,4 +1,5 @@
 import { createRoot } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 import ConnectionHealth from './ConnectionHealth.jsx';
 
 jest.mock( '@wordpress/i18n', () => {
@@ -60,7 +61,7 @@ test( 'refresh is disabled while pending and reports failure without replacing t
 	window.reviewbirdAdmin = {
 		apiUrl: 'https://app.example.com',
 		ajaxUrl: '/admin-ajax.php',
-		locale: 'en-US',
+		locale: 'de-DE',
 	};
 	let completeRefresh;
 	global.fetch = jest
@@ -111,7 +112,7 @@ test.each( [
 	[
 		'billing_required',
 		'Reviewbird is disabled',
-		'Your Reviewbird subscription is not active.',
+		'Your Reviewbird subscription is not active. Update your billing details to turn Reviewbird back on.',
 		'Update billing',
 		'/my-org/stores/7/billing',
 	],
@@ -142,7 +143,7 @@ test.each( [
 		global.IS_REACT_ACT_ENVIRONMENT = true;
 		window.reviewbirdAdmin = {
 			apiUrl: 'https://app.example.com',
-			locale: 'en-US',
+			locale: 'de-DE',
 		};
 		global.fetch = jest.fn().mockResolvedValue( {
 			ok: true,
@@ -158,14 +159,14 @@ test.each( [
 		try {
 			await act( async () => root.render( <ConnectionHealth /> ) );
 			expect( container.querySelector( 'h2' ).textContent ).toBe(
-				heading
+				__( heading, 'reviewbird' )
 			);
-			expect( container.textContent ).toContain( message );
+			expect( container.textContent ).toContain( __( message, 'reviewbird' ) );
 			expect( container.textContent ).not.toContain(
 				'internal_diagnostic'
 			);
 			const link = container.querySelector( 'a' );
-			expect( link.textContent ).toBe( action );
+			expect( link.textContent ).toBe( __( action, 'reviewbird' ) );
 			expect( link.href ).toBe( `https://app.example.com${ route }` );
 			expect( link.target ).toBe( '_blank' );
 		} finally {
