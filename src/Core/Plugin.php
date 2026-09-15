@@ -21,6 +21,7 @@ use reviewbird\Integration\HealthScheduler;
 use reviewbird\Integration\RatingOverride;
 use reviewbird\Integration\SchemaMarkup;
 use reviewbird\Integration\SchemaScheduler;
+use reviewbird\Integration\Scheduler;
 use reviewbird\Integration\StarRatingDisplay;
 use reviewbird\Integration\WooCommerce;
 
@@ -125,6 +126,7 @@ class Plugin {
 		add_filter( 'woocommerce_duplicate_product_exclude_meta', array( $this, 'exclude_reviewbird_meta_from_product_duplicates' ) );
 
 		// Action Scheduler integrations for async API calls.
+		( new Scheduler() )->init();
 		$health_scheduler = new HealthScheduler();
 		$health_scheduler->init();
 

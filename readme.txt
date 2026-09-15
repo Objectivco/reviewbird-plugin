@@ -228,8 +228,10 @@ For development: `pnpm run dev`
 == Changelog ==
 
 = Unreleased =
-Fix - Prevent duplicate health checks when the status cache is empty. Keep one recurring check every five minutes.
-Fix - Remove old health check actions and their logs in background batches after an upgrade.
+Fix - Prevent duplicate health, product schema, and cleanup jobs during concurrent requests. Check health every five minutes, including when the status cache is empty.
+Fix - Remove old health and schema actions and their logs in background batches after an upgrade. Stop old recurring health jobs and preserve pending product updates.
+Fix - Stop new jobs during deactivation. Resume health checks after reactivation.
+Fix - Preserve cached review schema when an API request fails.
 
 = 1.1.4 =
 New - Guide new and existing stores through setup from the Get Started page. Show connection health when setup is complete.

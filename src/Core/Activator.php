@@ -20,6 +20,7 @@ class Activator {
 	 * Run activation tasks.
 	 */
 	public static function activate(): void {
+		delete_option( \reviewbird\Integration\Scheduler::DISABLED_OPTION );
 		update_option( 'reviewbird_do_activation_redirect', 'yes' );
 	}
 }

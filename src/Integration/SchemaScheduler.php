@@ -50,20 +50,16 @@ class SchemaScheduler {
 	 * @param int $product_id   WooCommerce product ID.
 	 */
 	public function schedule_schema_refresh( $product_id ): void {
-		if ( ! function_exists( 'as_schedule_single_action' ) ) {
+		if ( ! is_numeric( $product_id ) ) {
+			return;
+		}
+		$product_id = absint( $product_id );
+		if ( ! $product_id || ! reviewbird_is_schema_enabled() ) {
 			return;
 		}
 
-		if ( ! reviewbird_is_schema_enabled() ) {
-			return;
-		}
-
-		as_schedule_single_action(
-			time(),
-			self::ACTION_HOOK,
-			array( $product_id ),
-			'reviewbird'
-		);
+		// One pending refresh per product. Updates during a running fetch need a later refresh.
+		Scheduler::schedule( self::ACTION_HOOK, array( $product_id ), time(), 10, false );
 	}
 
 	/**
@@ -74,6 +70,9 @@ class SchemaScheduler {
 	 * @param int $product_id WooCommerce product ID.
 	 */
 	public function refresh_schema_reviews( int $product_id ): void {
+		if ( ! Scheduler::enabled() || ! reviewbird_is_schema_enabled() ) {
+			return;
+		}
 		$store_id = reviewbird_get_store_id();
 
 		if ( ! $store_id ) {
@@ -81,6 +80,9 @@ class SchemaScheduler {
 		}
 
 		$reviews = $this->fetch_reviews_from_api( $store_id, $product_id );
+		if ( is_wp_error( $reviews ) ) {
+			return;
+		}
 
 		if ( empty( $reviews ) ) {
 			delete_post_meta( $product_id, self::META_KEY );
@@ -99,9 +101,9 @@ class SchemaScheduler {
 	 *
 	 * @param int $store_id   reviewbird store ID.
 	 * @param int $product_id WooCommerce product ID.
-	 * @return array Raw reviews array or empty array on failure.
+	 * @return array|\WP_Error Raw reviews, or an error that preserves the last good cache.
 	 */
-	private function fetch_reviews_from_api( int $store_id, int $product_id ): array {
+	private function fetch_reviews_from_api( int $store_id, int $product_id ) {
 		$response = wp_remote_get(
 			reviewbird_get_api_url() . "/api/public/{$store_id}/{$product_id}?context=schema&page=1",
 			array(
@@ -116,14 +118,16 @@ class SchemaScheduler {
 
 		if ( is_wp_error( $response ) ) {
 			$this->log_fetch_error( $product_id, $response->get_error_message() );
-			return array();
+			return $response;
 		}
 
 		$body = wp_remote_retrieve_body( $response );
 		$data = json_decode( $body, true );
 
-		if ( null === $data || empty( $data['reviews'] ) || ! is_array( $data['reviews'] ) ) {
-			return array();
+		$code = wp_remote_retrieve_response_code( $response );
+		if ( $code < 200 || $code >= 300 || ! is_array( $data['reviews'] ?? null ) ) {
+			$this->log_fetch_error( $product_id, 'Invalid schema reviews response.' );
+			return new \WP_Error( 'reviewbird_invalid_schema_response', 'Invalid schema reviews response.' );
 		}
 
 		return $data['reviews'];

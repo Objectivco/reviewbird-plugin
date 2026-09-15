@@ -20,23 +20,8 @@ class Deactivator {
 	 * Run deactivation cleanup.
 	 */
 	public static function deactivate(): void {
-		wp_clear_scheduled_hook( \reviewbird\Integration\HealthScheduler::CLEANUP_HOOK );
-		self::unschedule_actions();
+		\reviewbird\Integration\Scheduler::deactivate();
 		self::clear_transients();
-	}
-
-	/**
-	 * Unschedule all Action Scheduler jobs.
-	 */
-	private static function unschedule_actions(): void {
-		if ( ! function_exists( 'as_unschedule_all_actions' ) ) {
-			return;
-		}
-
-		as_unschedule_all_actions( 'reviewbird_refresh_health_status', array(), 'reviewbird' );
-		as_unschedule_all_actions( 'reviewbird_refresh_health_status', array( true ), 'reviewbird-health' );
-		as_unschedule_all_actions( 'reviewbird_refresh_health_status', array( true ), 'reviewbird-health-immediate' );
-		as_unschedule_all_actions( 'reviewbird_refresh_schema_reviews', null, 'reviewbird' );
 	}
 
 	/**
