@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: woocommerce, woocommerce product reviews, woocommerce reviews, judge.me, rich snippets, review snippets, SEO
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -227,6 +227,12 @@ For development: `pnpm run dev`
 
 == Changelog ==
 
+= 1.2.1 =
+Update - Open Google's standard consent window automatically on WooCommerce and CheckoutWC order confirmation pages when Google Customer Reviews is enabled.
+Update - Remove the separate Yes/No prompt, prompt editor, and local display switch. Signed consent links remain available for email invitations.
+Update - Refresh translations in 24 languages for the simplified Google Customer Reviews settings.
+Fix - Show Google consent even when an order has a response from the former Reviewbird prompt.
+
 = 1.2.0 =
 New - Add a Google Customer Reviews prompt to WooCommerce and CheckoutWC order confirmation pages. Customers can open Google's survey opt-in after selecting Yes.
 New - Add signed Google opt-in links to the WooCommerce order API for review request emails.
@@ -316,6 +322,9 @@ Fix - Fix issue with min_rating parameter for API calls.
 * Compatibility updates for WordPress.org submission
 
 == Upgrade Notice ==
+
+= 1.2.1 =
+Google Customer Reviews now opens Google's consent window automatically when enabled. Previous prompt settings no longer control its display. Signed email links continue to work.
 
 = 1.2.0 =
 Adds Google Customer Reviews prompts and fixes duplicate health jobs. Existing health queues and their logs are cleaned up in the background after upgrade.
