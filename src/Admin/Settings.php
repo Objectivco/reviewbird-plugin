@@ -54,7 +54,6 @@ class Settings {
 		'enable_schema',
 		'enable_widget',
 		'force_reviews_open',
-		'enable_gcr_prompt',
 	);
 
 	/**
@@ -62,7 +61,6 @@ class Settings {
 	 */
 	public function __construct() {
 		add_action( 'wp_ajax_reviewbird_update_setting', array( $this, 'handle_setting_update' ) );
-		add_action( 'wp_ajax_reviewbird_update_gcr_prompt', array( $this, 'handle_gcr_prompt_update' ) );
 		add_action( 'wp_ajax_reviewbird_clear_health_cache', array( $this, 'handle_clear_health_cache' ) );
 		add_action( 'admin_post_' . self::REGISTRATION_INTENT_ACTION, array( $this, 'handle_registration_intent' ) );
 		add_action( 'admin_notices', array( $this, 'display_oauth_notices' ) );
@@ -206,7 +204,6 @@ class Settings {
 			$asset_data['version']
 		);
 		wp_style_add_data( 'reviewbird-admin', 'rtl', 'replace' );
-		wp_enqueue_style( 'reviewbird-gcr-preview', REVIEWBIRD_PLUGIN_URL . 'assets/build/google-customer-reviews.css', array( 'reviewbird-admin' ), $asset_data['version'] );
 	}
 
 	/**
@@ -243,7 +240,7 @@ class Settings {
 	/**
 	 * Get the same GCR settings snapshot for page loads and manual refreshes.
 	 *
-	 * @return array GCR state and prompt settings.
+	 * @return array GCR integration state.
 	 */
 	private function get_gcr_settings_data(): array {
 		$status           = reviewbird_get_store_status() ?? array();
@@ -256,10 +253,7 @@ class Settings {
 		return array(
 			'enabled'         => 'enabled' === $feature_status,
 			'status'          => $feature_status,
-			'promptEnabled'   => GoogleCustomerReviews::is_prompt_enabled(),
 			'integrationsUrl' => $integrations_url,
-			'prompt'          => GoogleCustomerReviews::prompt_settings(),
-			'defaults'        => GoogleCustomerReviews::prompt_defaults(),
 		);
 	}
 
@@ -399,40 +393,6 @@ class Settings {
 				'message' => __( 'Setting updated successfully', 'reviewbird' ),
 			)
 		);
-	}
-
-	/**
-	 * Save the plain text used in the Google Customer Reviews prompt.
-	 */
-	public function handle_gcr_prompt_update(): void {
-		$this->verify_ajax_request();
-
-		$limits = array(
-			'heading'   => 160,
-			'message'   => 2000,
-			'yes_label' => 80,
-			'no_label'  => 80,
-		);
-		$prompt = array();
-		foreach ( $limits as $field => $limit ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified above; type checked and text sanitized below.
-			$value = isset( $_POST[ $field ] ) ? wp_unslash( $_POST[ $field ] ) : null;
-			if ( ! is_string( $value ) ) {
-				wp_send_json_error( __( 'Enter text in each prompt field.', 'reviewbird' ), 400 );
-			}
-			$value  = trim( 'message' === $field ? sanitize_textarea_field( $value ) : sanitize_text_field( $value ) );
-			$length = function_exists( 'mb_strlen' ) ? mb_strlen( $value ) : strlen( $value );
-			if ( '' === $value || $length > $limit ) {
-				wp_send_json_error( __( 'Prompt text is empty or too long.', 'reviewbird' ), 400 );
-			}
-			$prompt[ $field ] = $value;
-		}
-
-		$saved = update_option( 'reviewbird_google_customer_reviews_prompt', $prompt );
-		if ( ! $saved && get_option( 'reviewbird_google_customer_reviews_prompt' ) !== $prompt ) {
-			wp_send_json_error( __( 'The prompt could not be saved. Please try again.', 'reviewbird' ), 500 );
-		}
-		wp_send_json_success( array( 'prompt' => $prompt ) );
 	}
 
 	/**

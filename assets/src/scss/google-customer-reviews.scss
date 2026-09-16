@@ -23,7 +23,6 @@
 		line-height: 1.4;
 	}
 
-	.reviewbird-gcr__message,
 	[data-gcr-status] {
 		margin: 0 0 20px;
 		color: #3f3f46;
@@ -34,12 +33,6 @@
 
 	[data-gcr-status]:empty {
 		display: none;
-	}
-
-	.reviewbird-gcr__actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
 	}
 
 	button {

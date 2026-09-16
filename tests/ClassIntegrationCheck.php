@@ -166,12 +166,13 @@ foreach ( array( 'yes' => true, 'no' => false ) as $value => $expected ) {
 	check( $expected === call_user_func( $field['get_callback'], array(), 'reviewbird_widget_enabled', new WP_REST_Request() ), 'System status callback changed.' );
 }
 
-// Exercise guest consent through WordPress REST and real WooCommerce order storage.
+// Keep signed links available and remove obsolete prompt writes from WordPress REST.
 update_option( 'reviewbird_store_status', array(
 	'store_id' => 7, 'status' => 'healthy', 'has_active_subscription' => true,
 	'google_customer_reviews' => array( 'enabled' => true, 'expires_at' => time() + 600, 'merchant_id' => '12345', 'estimated_delivery_days' => 3 ),
 ) );
-update_option( 'reviewbird_enable_gcr_prompt', 'yes' );
+update_option( 'reviewbird_enable_gcr_prompt', 'no' );
+update_option( 'reviewbird_use_gcr_standard_modal', 'yes' );
 $order->set_billing_email( 'buyer@example.test' );
 $order->set_billing_country( 'US' );
 $order->set_status( 'processing' );
@@ -181,18 +182,16 @@ check( is_string( $url ), 'A valid order did not get an opt-in link.' );
 parse_str( wp_parse_url( $url, PHP_URL_QUERY ), $link );
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $_SERVER['REQUEST_METHOD'] = 'POST';
-$request = new WP_REST_Request( 'POST', '/reviewbird/v1/google-customer-reviews/' . $order->get_id() . '/prompt-yes' );
-$request->set_param( 'token', str_repeat( '0', 64 ) );
-check( 403 === rest_do_request( $request )->get_status(), 'REST accepted an invalid guest token.' );
-$request->set_param( 'token', $link['token'] );
-$yes = rest_do_request( $request );
-check( 200 === $yes->get_status() && ! empty( $yes->get_data()['prompt_yes_at'] ), 'REST did not save the Yes choice.' );
-check( $yes->get_data() === rest_do_request( $request )->get_data(), 'A repeat Yes changed the saved timestamp.' );
-$request = new WP_REST_Request( 'POST', '/reviewbird/v1/google-customer-reviews/' . $order->get_id() . '/prompt-no' );
-$request->set_param( 'token', $link['token'] );
-$request->set_param( 'click_id', wp_generate_uuid4() );
-check( array( 'no_click_count' => 1 ) === rest_do_request( $request )->get_data(), 'REST did not save the No click.' );
-check( array( 'no_click_count' => 1 ) === rest_do_request( $request )->get_data(), 'A retry duplicated the No click.' );
+foreach ( array( 'yes', 'no' ) as $choice ) {
+	$request = new WP_REST_Request( 'POST', '/reviewbird/v1/google-customer-reviews/' . $order->get_id() . '/prompt-' . $choice );
+	$request->set_param( 'token', $link['token'] );
+	check( 404 === rest_do_request( $request )->get_status(), 'An obsolete prompt route still accepts requests.' );
+}
+$gcr = new reviewbird\Integration\GoogleCustomerReviews();
+$response = $gcr->add_order_response( new WP_REST_Response( array() ), wc_get_order( $order->get_id() ) );
+check( $url === $response->get_data()['reviewbird_google_customer_reviews']['opt_in_url'], 'Order API lost the email link.' );
+check( null === $response->get_data()['reviewbird_google_customer_reviews']['prompt_yes_at'], 'A stale prompt saved Yes.' );
+check( 0 === $response->get_data()['reviewbird_google_customer_reviews']['no_click_count'], 'A stale prompt saved No.' );
 $_SERVER['REQUEST_METHOD'] = $method;
 
 $stars = new StarRatingDisplay();

@@ -43,27 +43,12 @@ namespace {
 		public function get_meta( $key ) { return $this->meta[ $key ] ?? ''; }
 		public function update_meta_data( $key, $value ) { $this->meta[ $key ] = $value; }
 		public function set_date_modified( $timestamp ) { $this->modified = $timestamp; }
-		public function read_meta_data( $force = false ) {
-			if ( $force ) { $this->meta = $GLOBALS['gcr_orders'][ $this->id ]->meta; }
-		}
 		public function save() {
-			if ( $GLOBALS['gcr_save_fail'] ) { throw new \RuntimeException( 'Save failed.' ); }
-			if ( $GLOBALS['gcr_save_swallow'] ) { return $this->id; }
-			if ( isset( $GLOBALS['before_gcr_save'] ) ) {
-				$callback = $GLOBALS['before_gcr_save'];
-				unset( $GLOBALS['before_gcr_save'] );
-				$callback();
-			}
-			$GLOBALS['gcr_orders'][ $this->id ] = clone $this;
 			++$GLOBALS['gcr_saves'];
 			return $this->id;
 		}
 	}
-	class WP_REST_Request {
-		private $params;
-		public function __construct( $params ) { $this->params = $params; }
-		public function get_param( $name ) { return $this->params[ $name ] ?? null; }
-	}
+
 	class WP_REST_Response {
 		public $data;
 		public $status;
@@ -175,8 +160,6 @@ namespace {
 	}
 
 	$GLOBALS['gcr_saves'] = 0;
-	$GLOBALS['gcr_save_fail'] = false;
-	$GLOBALS['gcr_save_swallow'] = false;
 	$GLOBALS['gcr_current_action'] = '';
 	$GLOBALS['gcr_api_calls'] = 0;
 	$GLOBALS['gcr_option_write_fail'] = false;
@@ -206,6 +189,7 @@ namespace {
 	if ( '--page' === ( $argv[1] ?? null ) ) {
 		$_GET = $query;
 		$GLOBALS['gcr_options']['reviewbird_enable_gcr_prompt'] = 'no';
+		$GLOBALS['gcr_options']['reviewbird_use_gcr_standard_modal'] = 'yes';
 		$GLOBALS['gcr_orders'][7]->meta[ GoogleCustomerReviews::YES_META ] = '2026-09-15T12:00:00+00:00';
 		register_shutdown_function( function () {
 			check( 0 === $GLOBALS['gcr_saves'], 'Direct GET wrote order metadata.' );
@@ -216,28 +200,32 @@ namespace {
 
 	check( is_array( GoogleCustomerReviews::configuration() ), 'Valid configuration rejected.' );
 	check( 'enabled' === GoogleCustomerReviews::status(), 'Enabled feature status is wrong.' );
-	check( GoogleCustomerReviews::is_prompt_enabled(), 'Local prompt is not enabled by default.' );
-	$GLOBALS['gcr_options']['reviewbird_enable_gcr_prompt'] = 'no';
-	check( ! GoogleCustomerReviews::is_prompt_enabled(), 'Local prompt switch is ignored.' );
-	ob_start(); ( new GoogleCustomerReviews() )->render_prompt( 7 ); check( '' === ob_get_clean(), 'Disabled local prompt is rendered.' );
-	check( $url === GoogleCustomerReviews::opt_in_url( $GLOBALS['gcr_orders'][7] ), 'Local prompt switch disables signed links.' );
-	check( 'enabled' === GoogleCustomerReviews::status(), 'Local prompt switch changes account feature status.' );
-	$_SERVER['REQUEST_METHOD'] = 'POST';
-	$disabled_request = new WP_REST_Request( array( 'id' => 7, 'token' => $token ) );
-	check( $integration->authorize_prompt_request( $disabled_request ) instanceof WP_Error, 'Stale prompt can bypass local switch.' );
-	check( $integration->record_prompt_yes( $disabled_request ) instanceof WP_Error && 0 === $GLOBALS['gcr_saves'], 'Disabled prompt records Yes.' );
-	$_SERVER['REQUEST_METHOD'] = 'GET';
-	unset( $GLOBALS['gcr_options']['reviewbird_enable_gcr_prompt'] );
+	// Old display settings and prompt choices must not block Google or email links.
+	foreach ( array( 'yes', 'no' ) as $old_mode ) {
+		$GLOBALS['gcr_options']['reviewbird_enable_gcr_prompt'] = 'no';
+		$GLOBALS['gcr_options']['reviewbird_use_gcr_standard_modal'] = $old_mode;
+		$GLOBALS['gcr_options']['reviewbird_google_customer_reviews_prompt'] = array( 'heading' => 'Old custom prompt' );
+		$GLOBALS['gcr_orders'][7]->meta[ GoogleCustomerReviews::YES_META ] = '2026-09-15T12:00:00+00:00';
+		$GLOBALS['gcr_orders'][7]->meta[ GoogleCustomerReviews::NO_META ] = 1;
+		ob_start(); ( new GoogleCustomerReviews() )->render_consent( 7 ); $html = ob_get_clean();
+		check( 'standard' === card_config( $html )['mode'], 'Legacy settings or prompt choice prevented automatic consent.' );
+		check( false === strpos( $html, 'data-gcr-yes' ) && false === strpos( $html, 'data-gcr-no' ) && false === strpos( $html, 'Old custom prompt' ), 'Checkout still has a custom prompt.' );
+		check( $url === GoogleCustomerReviews::opt_in_url( $GLOBALS['gcr_orders'][7] ), 'Legacy settings or choice disabled the email link.' );
+	}
+	unset( $GLOBALS['gcr_options']['reviewbird_enable_gcr_prompt'], $GLOBALS['gcr_options']['reviewbird_use_gcr_standard_modal'], $GLOBALS['gcr_options']['reviewbird_google_customer_reviews_prompt'] );
+	$GLOBALS['gcr_orders'][7]->meta = array();
+	$api = $integration->add_order_response( new WP_REST_Response( array() ), $GLOBALS['gcr_orders'][7] )->data['reviewbird_google_customer_reviews'];
+	check( $url === $api['opt_in_url'] && ! isset( $api['consent_mode'] ), 'Order API does not provide the email link.' );
+	check( null === $api['prompt_yes_at'] && 0 === $api['no_click_count'] && 0 === $GLOBALS['gcr_saves'], 'Automatic consent records a prompt choice.' );
 	check( false === strpos( $url, 'wc_order_key' ) && false === strpos( $url, 'buyer' ), 'Link exposes order key or email.' );
 	check( 64 === strlen( $token ), 'Unexpected signature.' );
 	check( 0 === $GLOBALS['gcr_saves'], 'URL GET caused a write.' );
 	check( ! isset( $GLOBALS['gcr_hooks']['woocommerce_admin_order_data_after_order_details'] ), 'GCR controls are registered on the order admin screen.' );
 	check( 'add_order_response' === $GLOBALS['gcr_hooks']['woocommerce_rest_prepare_shop_order_object'][0][1], 'GCR fields are not registered on the order API.' );
 	check( ! isset( $GLOBALS['gcr_hooks']['woocommerce_thankyou'] ), 'Widget still uses the late native thank-you hook.' );
-	check( 'render_prompt' === $GLOBALS['gcr_hooks']['woocommerce_before_thankyou'][0][1] && 5 === $GLOBALS['gcr_hooks']['woocommerce_before_thankyou'][1], 'Native widget is not at the start of the thank-you page.' );
-	check( 'render_checkoutwc_prompt' === $GLOBALS['gcr_hooks']['cfw_thank_you_content'][0][1] && 55 === $GLOBALS['gcr_hooks']['cfw_thank_you_content'][1] && 1 === $GLOBALS['gcr_hooks']['cfw_thank_you_content'][2], 'CheckoutWC widget is not below the order status section.' );
-	$integration->register_routes();
-	check( 'POST' === $GLOBALS['gcr_route'][2]['methods'], 'Yes route must be POST.' );
+	check( 'render_consent' === $GLOBALS['gcr_hooks']['woocommerce_before_thankyou'][0][1] && 5 === $GLOBALS['gcr_hooks']['woocommerce_before_thankyou'][1], 'Native widget is not at the start of the thank-you page.' );
+	check( 'render_checkoutwc_consent' === $GLOBALS['gcr_hooks']['cfw_thank_you_content'][0][1] && 55 === $GLOBALS['gcr_hooks']['cfw_thank_you_content'][1] && 1 === $GLOBALS['gcr_hooks']['cfw_thank_you_content'][2], 'CheckoutWC widget is not below the order status section.' );
+	check( ! isset( $GLOBALS['gcr_hooks']['rest_api_init'] ), 'Obsolete prompt routes are still registered.' );
 
 	foreach ( array(
 		array( 'google_customer_reviews', null ),
@@ -269,25 +257,26 @@ namespace {
 	check( '' === ob_get_clean(), 'CheckoutWC replay puts the widget above its page layout.' );
 	$GLOBALS['gcr_current_action'] = 'cfw_thank_you_content';
 	ob_start(); call_user_func( $GLOBALS['gcr_hooks']['cfw_thank_you_content'][0], $GLOBALS['gcr_orders'][7] );
-	check( 'prompt' === card_config( ob_get_clean() )['mode'], 'CheckoutWC callback does not render the order widget.' );
+	check( 'standard' === card_config( ob_get_clean() )['mode'], 'CheckoutWC callback does not render the order widget.' );
 	$GLOBALS['gcr_current_action'] = '';
-	ob_start(); $checkoutwc->render_prompt( 7 );
+	ob_start(); $checkoutwc->render_consent( 7 );
 	check( '' === ob_get_clean(), 'CheckoutWC widget rendered twice.' );
 
 	new GoogleCustomerReviews();
 	ob_start(); call_user_func( $GLOBALS['gcr_hooks']['woocommerce_before_thankyou'][0], 7 );
-	check( 'prompt' === card_config( ob_get_clean() )['mode'], 'Native thank-you hook does not render the widget.' );
-	ob_start(); $integration->render_prompt( 7 ); $html = ob_get_clean();
+	check( 'standard' === card_config( ob_get_clean() )['mode'], 'Native thank-you hook does not render the widget.' );
+	ob_start(); $integration->render_consent( 7 ); $html = ob_get_clean();
 	$config = card_config( $html );
-	check( 'prompt' === $config['mode'] && $config['token'] === $token, 'Wrong frontend contract.' );
+	check( 'standard' === $config['mode'] && ! array_intersect( array( 'token', 'choiceUrl', 'noUrl' ), array_keys( $config ) ), 'Wrong frontend contract.' );
+	check( '7' === $config['google']['order_id'], 'Google order ID changed.' );
 	check( '2026-03-09' === $config['google']['estimated_delivery_date'], 'Calendar delivery date is wrong across DST.' );
 	check( '2026-03-08T04:30:00+00:00' === $GLOBALS['gcr_orders'][7]->created->format( 'c' ), 'Order creation date changed.' );
 	check( 'CA' === $config['google']['delivery_country'], 'Shipping country lost.' );
-	check( false === strpos( $html, 'apis.google.com' ), 'Prompt loads Google before Yes.' );
-	ob_start(); $integration->render_prompt( 7 ); check( '' === ob_get_clean(), 'Prompt rendered twice.' );
+	check( false !== strpos( $html, ' hidden>' ), 'Checkout shows a custom card before Google loads.' );
+	ob_start(); $integration->render_consent( 7 ); check( '' === ob_get_clean(), 'Google consent rendered twice.' );
 
 	$GLOBALS['gcr_orders'][7]->shipping = '';
-	ob_start(); ( new GoogleCustomerReviews() )->render_prompt( 7 ); $digital = card_config( ob_get_clean() );
+	ob_start(); ( new GoogleCustomerReviews() )->render_consent( 7 ); $digital = card_config( ob_get_clean() );
 	check( 'US' === $digital['google']['delivery_country'], 'Digital order lacks billing-country fallback.' );
 	$GLOBALS['gcr_orders'][7]->shipping = 'ZZ';
 	check( null === GoogleCustomerReviews::opt_in_url( $GLOBALS['gcr_orders'][7] ), 'Invalid country accepted.' );
@@ -296,134 +285,63 @@ namespace {
 	foreach ( array( 'failed', 'cancelled', 'refunded', 'draft', 'auto-draft', 'checkout-draft', 'trash' ) as $status ) {
 		$GLOBALS['gcr_orders'][7]->status = $status;
 		check( null === GoogleCustomerReviews::opt_in_url( $GLOBALS['gcr_orders'][7] ), 'Invalid order status accepted.' );
+		ob_start(); ( new GoogleCustomerReviews() )->render_consent( 7 ); check( '' === ob_get_clean(), 'Invalid order displays Google consent.' );
 	}
 	foreach ( array( 'pending', 'on-hold', 'processing', 'completed' ) as $status ) {
 		$GLOBALS['gcr_orders'][7]->status = $status;
 		check( null !== GoogleCustomerReviews::opt_in_url( $GLOBALS['gcr_orders'][7] ), 'Placed order incorrectly rejected.' );
+		ob_start(); ( new GoogleCustomerReviews() )->render_consent( 7 ); check( 'standard' === card_config( ob_get_clean() )['mode'], 'Placed order does not display Google consent.' );
 	}
 
 	$_GET['key'] = 'wrong';
-	ob_start(); ( new GoogleCustomerReviews() )->render_prompt( 7 ); check( '' === ob_get_clean(), 'Wrong order key exposes prompt.' );
+	ob_start(); ( new GoogleCustomerReviews() )->render_consent( 7 ); check( '' === ob_get_clean(), 'Wrong order key exposes customer data.' );
 	$_GET['key'] = 'wc_order_key_7';
 	$GLOBALS['gcr_orders'][7]->customer = 50;
-	ob_start(); ( new GoogleCustomerReviews() )->render_prompt( 7 ); check( '' === ob_get_clean(), 'Wrong customer sees account order.' );
+	ob_start(); ( new GoogleCustomerReviews() )->render_consent( 7 ); check( '' === ob_get_clean(), 'Wrong customer sees account order.' );
 	$GLOBALS['gcr_user'] = 50;
-	ob_start(); ( new GoogleCustomerReviews() )->render_prompt( 7 ); check( '' !== ob_get_clean(), 'Order owner cannot see prompt.' );
+	ob_start(); ( new GoogleCustomerReviews() )->render_consent( 7 ); check( '' !== ob_get_clean(), 'Order owner cannot see Google consent.' );
 	$GLOBALS['gcr_orders'][7]->customer = 0;
 	$GLOBALS['gcr_user'] = 0;
 	$GLOBALS['gcr_endpoint_order'] = 8;
-	ob_start(); ( new GoogleCustomerReviews() )->render_prompt( 7 ); check( '' === ob_get_clean(), 'Wrong endpoint order accepted.' );
+	ob_start(); ( new GoogleCustomerReviews() )->render_consent( 7 ); check( '' === ob_get_clean(), 'Wrong endpoint order accepted.' );
 	$GLOBALS['gcr_endpoint_order'] = 7;
 
-	$request = new WP_REST_Request( array( 'id' => 7, 'token' => $token ) );
-	check( $integration->authorize_prompt_request( $request ) instanceof WP_Error, 'GET transport permitted Yes.' );
-	check( $integration->record_prompt_yes( $request ) instanceof WP_Error && 0 === $GLOBALS['gcr_saves'], 'GET method override saved Yes.' );
-	$_SERVER['REQUEST_METHOD'] = 'POST';
-	check( true === $integration->authorize_prompt_request( $request ), 'Guest signature rejected.' );
-	$wrong_order = new WP_REST_Request( array( 'id' => 8, 'token' => $token ) );
-	check( $integration->record_prompt_yes( $wrong_order ) instanceof WP_Error, 'Cross-order signature accepted.' );
-	$bad_token = new WP_REST_Request( array( 'id' => 7, 'token' => array( $token ) ) );
-	check( $integration->record_prompt_yes( $bad_token ) instanceof WP_Error, 'Array token accepted.' );
-	$GLOBALS['gcr_salt'] = 'rotated-secret';
-	check( $integration->record_prompt_yes( $request ) instanceof WP_Error, 'Rotated signature accepted.' );
-	$GLOBALS['gcr_salt'] = 'test-site-secret';
-	$GLOBALS['gcr_save_fail'] = true;
-	check( 'reviewbird_gcr_save_failed' === $integration->record_prompt_yes( $request )->code && 0 === $GLOBALS['gcr_saves'], 'Save failure not returned.' );
-	$GLOBALS['gcr_save_fail'] = false;
-	$GLOBALS['gcr_save_swallow'] = true;
-	$failed_result = $integration->record_prompt_yes( $request );
-	check( $failed_result instanceof WP_Error && 'reviewbird_gcr_save_failed' === $failed_result->code, 'A swallowed order save failure returned consent success.' );
-	check( empty( $GLOBALS['gcr_orders'][7]->meta ) && 0 === $GLOBALS['gcr_saves'], 'Failed save persisted Yes.' );
-	$GLOBALS['gcr_save_swallow'] = false;
-	$result = $integration->record_prompt_yes( $request );
-	check( $result instanceof WP_REST_Response && 200 === $result->status && 1 === $GLOBALS['gcr_saves'], 'Yes was not saved.' );
-	check( 1800000000 === $GLOBALS['gcr_orders'][7]->modified, 'Yes did not advance the order modified date for the next sync.' );
-	$again = $integration->record_prompt_yes( $request );
-	check( $again->data === $result->data && 1 === $GLOBALS['gcr_saves'], 'Repeat Yes changed first timestamp.' );
-	check( empty( $GLOBALS['gcr_orders'][8]->meta ), 'Yes affected another order.' );
-	$GLOBALS['gcr_options']['reviewbird_store_status']['google_customer_reviews']['enabled'] = false;
-	check( $integration->record_prompt_yes( $request ) instanceof WP_Error, 'Repeat Yes bypasses current feature check.' );
-	$GLOBALS['gcr_options']['reviewbird_store_status'] = $initial_status;
-	ob_start(); ( new GoogleCustomerReviews() )->render_prompt( 7 ); check( '' === ob_get_clean(), 'Saved Yes prompt reappears.' );
-	check( $url === GoogleCustomerReviews::opt_in_url( $GLOBALS['gcr_orders'][7] ), 'Direct retry link changed after Yes.' );
-	$response = $integration->add_order_response( new WP_REST_Response( array() ), $GLOBALS['gcr_orders'][7] );
-	check( $response->data['reviewbird_google_customer_reviews']['prompt_yes_at'] === $result->data['prompt_yes_at'], 'Order API timestamp is wrong.' );
-	check( $response->data['reviewbird_google_customer_reviews']['opt_in_url'] === $url, 'Order API link is wrong.' );
-	check( 1 === $GLOBALS['gcr_saves'], 'Order API GET wrote metadata.' );
-	check( 0 === $response->data['reviewbird_google_customer_reviews']['no_click_count'], 'Missing No metadata must return zero.' );
-
-	// No counts each order once and does not hide the widget on future visits.
-	parse_str( parse_url( GoogleCustomerReviews::opt_in_url( $GLOBALS['gcr_orders'][8] ), PHP_URL_QUERY ), $no_query );
-	$no_params = array( 'id' => 8, 'token' => $no_query['token'] );
-	$no_request = new WP_REST_Request( $no_params );
-	$_SERVER['REQUEST_METHOD'] = 'GET';
-	check( 403 === $integration->record_prompt_no( $no_request )->data['status'], 'GET can record No.' );
-	$_SERVER['REQUEST_METHOD'] = 'POST';
-	check( 403 === $integration->record_prompt_no( new WP_REST_Request( array_merge( $no_params, array( 'token' => $token ) ) ) )->data['status'], 'Cross-order token can record No.' );
-	$GLOBALS['gcr_save_fail'] = true;
-	check( 500 === $integration->record_prompt_no( $no_request )->data['status'] && empty( $GLOBALS['gcr_orders'][8]->meta ), 'Failed No save reports success.' );
-	$GLOBALS['gcr_save_fail'] = false;
-	$GLOBALS['gcr_save_swallow'] = true;
-	check( 500 === $integration->record_prompt_no( $no_request )->data['status'] && empty( $GLOBALS['gcr_orders'][8]->meta ), 'Swallowed No save reports success.' );
-	$GLOBALS['gcr_save_swallow'] = false;
-	$no_result = $integration->record_prompt_no( $no_request );
-	check( 1 === $no_result->data['no_click_count'] && 2 === $GLOBALS['gcr_saves'], 'First No was not saved.' );
-	check( '' === $GLOBALS['gcr_orders'][8]->get_meta( GoogleCustomerReviews::YES_META ), 'No was saved as consent.' );
-	check( 1800000000 === $GLOBALS['gcr_orders'][8]->modified, 'No does not advance the order sync date.' );
-	check( $no_result->data === $integration->record_prompt_no( $no_request )->data && 2 === $GLOBALS['gcr_saves'], 'Repeat No request counts twice.' );
-	$_GET['key'] = 'wc_order_key_8';
-	$GLOBALS['gcr_endpoint_order'] = 8;
-	ob_start(); ( new GoogleCustomerReviews() )->render_prompt( 8 ); $first_visit = card_config( ob_get_clean() );
-	ob_start(); ( new GoogleCustomerReviews() )->render_prompt( 8 ); $next_visit = card_config( ob_get_clean() );
-	check( 'prompt' === $first_visit['mode'] && $first_visit['clickId'] !== $next_visit['clickId'], 'No hides future visits or reuses the click ID.' );
-	check( false !== strpos( $next_visit['noUrl'], '/8/prompt-no' ), 'No endpoint is missing from the card.' );
-	$second_no = new WP_REST_Request( array_merge( $no_params, array( 'click_id' => '00000000-0000-4000-8000-000000000002' ) ) );
-	check( 1 === $integration->record_prompt_no( $second_no )->data['no_click_count'] && 2 === $GLOBALS['gcr_saves'], 'A separate No click counted or saved the order twice.' );
-	$yes_eight = $integration->record_prompt_yes( new WP_REST_Request( $no_params ) );
-	$next_no = new WP_REST_Request( array_merge( $no_params, array( 'click_id' => $next_visit['clickId'] ) ) );
-	check( 1 === $integration->record_prompt_no( $next_no )->data['no_click_count'], 'No after Yes counted the order twice.' );
-	check( $yes_eight->data['prompt_yes_at'] === $GLOBALS['gcr_orders'][8]->get_meta( GoogleCustomerReviews::YES_META ), 'No overwrites Yes consent.' );
-	check( $yes_eight->data === $integration->record_prompt_yes( new WP_REST_Request( $no_params ) )->data, 'Yes overwrites first consent after No.' );
-	$no_api = $integration->add_order_response( new WP_REST_Response( array() ), $GLOBALS['gcr_orders'][8] );
-	check( 1 === $no_api->data['reviewbird_google_customer_reviews']['no_click_count'], 'Order sync must report at most one No per order.' );
-	$GLOBALS['gcr_options']['reviewbird_store_status']['google_customer_reviews']['enabled'] = false;
-	check( 403 === $integration->record_prompt_no( $no_request )->data['status'], 'Disabled integration can record No.' );
-	$GLOBALS['gcr_options']['reviewbird_store_status'] = $initial_status;
-	$GLOBALS['gcr_options']['reviewbird_enable_gcr_prompt'] = 'no';
-	check( 403 === $integration->record_prompt_no( $no_request )->data['status'], 'Disabled prompt can record No.' );
-	unset( $GLOBALS['gcr_options']['reviewbird_enable_gcr_prompt'] );
-	$_GET['key'] = 'wc_order_key_7';
-	$GLOBALS['gcr_endpoint_order'] = 7;
-
-	// Overlapping No requests save the same marker and both return success.
-	$GLOBALS['gcr_orders'][9] = new WC_Order( 9 );
-	parse_str( parse_url( GoogleCustomerReviews::opt_in_url( $GLOBALS['gcr_orders'][9] ), PHP_URL_QUERY ), $concurrent_query );
-	$concurrent_params = array( 'id' => 9, 'token' => $concurrent_query['token'] );
-	$first_request = new WP_REST_Request( array_merge( $concurrent_params, array( 'click_id' => '00000000-0000-4000-8000-000000000011' ) ) );
-	$second_request = new WP_REST_Request( array_merge( $concurrent_params, array( 'click_id' => '00000000-0000-4000-8000-000000000012' ) ) );
-	$GLOBALS['before_gcr_save'] = function () use ( $integration, $second_request ) {
-		$GLOBALS['concurrent_response'] = $integration->record_prompt_no( $second_request );
-	};
-	$first_response = $integration->record_prompt_no( $first_request );
-	check( 200 === $first_response->status && 200 === $GLOBALS['concurrent_response']->status, 'Concurrent No requests were not accepted.' );
-	check( array( 'no_click_count' => 1 ) === $first_response->data && $first_response->data === $GLOBALS['concurrent_response']->data, 'Concurrent No requests counted twice.' );
-	$concurrent_api = $integration->add_order_response( new WP_REST_Response( array() ), $GLOBALS['gcr_orders'][9] );
-	check( 1 === $concurrent_api->data['reviewbird_google_customer_reviews']['no_click_count'], 'Concurrent No requests must persist one No.' );
-
-	foreach ( array( array(), '', 0, '0', array( 'old-click-1', 'old-click-2' ), 3, '4' ) as $legacy_no ) {
-		$GLOBALS['gcr_orders'][9]->meta[ GoogleCustomerReviews::NO_META ] = $legacy_no;
-		$legacy_api = $integration->add_order_response( new WP_REST_Response( array() ), $GLOBALS['gcr_orders'][9] );
-		check( ( $legacy_no ? 1 : 0 ) === $legacy_api->data['reviewbird_google_customer_reviews']['no_click_count'], 'Legacy No data is not limited to one response per order.' );
-		if ( $legacy_no ) {
-			$saves_before_retry = $GLOBALS['gcr_saves'];
-			check( array( 'no_click_count' => 1 ) === $integration->record_prompt_no( $first_request )->data && $saves_before_retry === $GLOBALS['gcr_saves'], 'Legacy No was counted or saved again.' );
-		}
+	// Signed landing pages must reject malformed, cross-order, and expired access.
+	foreach ( array(
+		array( 'reviewbird_gcr_order' => 8, 'token' => $token ),
+		array( 'reviewbird_gcr_order' => 7, 'token' => str_repeat( '0', 64 ) ),
+		array( 'reviewbird_gcr_order' => 7, 'token' => array( $token ) ),
+		array( 'reviewbird_gcr_order' => array( 7 ), 'token' => $token ),
+		array( 'reviewbird_gcr_order' => 7 ),
+	) as $bad_link ) {
+		$_GET = $bad_link;
+		try { $integration->render_link_page(); check( false, 'Invalid link was accepted.' ); }
+		catch ( \RuntimeException $error ) { check( 'Page unavailable.' === $error->getMessage(), 'Unexpected landing page error.' ); }
 	}
+	$_GET = $query;
+	$GLOBALS['gcr_salt'] = 'rotated-secret';
+	try { $integration->render_link_page(); check( false, 'Rotated signature was accepted.' ); }
+	catch ( \RuntimeException $error ) { check( 'Page unavailable.' === $error->getMessage(), 'Unexpected signature error.' ); }
+	$GLOBALS['gcr_salt'] = 'test-site-secret';
+	$GLOBALS['gcr_options']['reviewbird_store_status']['google_customer_reviews']['enabled'] = false;
+	check( null === GoogleCustomerReviews::opt_in_url( $GLOBALS['gcr_orders'][7] ), 'Disabled integration provides new links.' );
+	try { $integration->render_link_page(); check( false, 'Disabled integration accepted a saved link.' ); }
+	catch ( \RuntimeException $error ) { check( 'Page unavailable.' === $error->getMessage(), 'Unexpected disabled integration error.' ); }
+	$_GET = array( 'key' => 'wc_order_key_7' );
+	ob_start(); ( new GoogleCustomerReviews() )->render_consent( 7 ); check( '' === ob_get_clean(), 'Disabled integration renders at checkout.' );
+	$GLOBALS['gcr_options']['reviewbird_store_status'] = $initial_status;
+	check( $GLOBALS['gcr_no_cache'], 'Landing page errors can be cached.' );
 
-	$GLOBALS['gcr_options']['reviewbird_google_customer_reviews_prompt'] = array( 'heading' => '<script>unsafe</script>', 'message' => "Line one\nLine two", 'yes_label' => '', 'no_label' => array() );
-	$prompt = GoogleCustomerReviews::prompt_settings();
-	check( 'unsafe' === $prompt['heading'] && 'Yes' === $prompt['yes_label'] && 'No' === $prompt['no_label'], 'Prompt defaults or sanitization failed.' );
-	check( "Line one\nLine two" === $prompt['message'], 'Prompt message line breaks lost.' );
+	// Historical prompt statistics remain read-only and do not suppress the modal.
+	$timestamp = '2026-09-15T12:00:00+00:00';
+	$GLOBALS['gcr_orders'][7]->meta[ GoogleCustomerReviews::YES_META ] = $timestamp;
+	foreach ( array( array( 'old-click-1', 'old-click-2' ), array(), '', 0, 1, 5 ) as $legacy_no ) {
+		$GLOBALS['gcr_orders'][7]->meta[ GoogleCustomerReviews::NO_META ] = $legacy_no;
+		$api = $integration->add_order_response( new WP_REST_Response( array() ), $GLOBALS['gcr_orders'][7] )->data['reviewbird_google_customer_reviews'];
+		check( $timestamp === $api['prompt_yes_at'] && ( $legacy_no ? 1 : 0 ) === $api['no_click_count'], 'Historical prompt data changed.' );
+		check( $url === $api['opt_in_url'], 'Historical prompt data prevents email links.' );
+	}
+	check( 0 === $GLOBALS['gcr_saves'], 'Checkout or order API wrote consent metadata.' );
 
 	$command = escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( __FILE__ ) . ' --page';
 	exec( $command, $page_lines, $exit_code );
@@ -431,6 +349,7 @@ namespace {
 	check( 0 === $exit_code && false !== strpos( $page, 'GCR_GET_NO_WRITES' ), 'Direct page failed or changed metadata.' );
 	check( 'direct' === card_config( $page )['mode'] && false === strpos( $page, 'data-gcr-yes' ), 'Direct page has a custom prompt.' );
 	check( false !== strpos( $page, 'noindex, nofollow' ), 'Direct page can be indexed.' );
+	check( $config['google'] === card_config( $page )['google'], 'Checkout and landing page use different order details.' );
 
 	// Manual refresh uses the scheduler and returns the same saved GCR state as the page.
 	$settings = new \reviewbird\Admin\Settings();
@@ -442,7 +361,7 @@ namespace {
 	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 		check( 200 === $response->getCode() && $response->data['status'] === $fresh, 'Refresh did not return the fresh response.' );
 		check( 'disabled' === $response->data['googleCustomerReviews']['status'] && false === $response->data['googleCustomerReviews']['enabled'], 'Fresh disabled feature state is wrong.' );
-		check( true === $response->data['googleCustomerReviews']['promptEnabled'], 'Refresh lost local prompt default.' );
+		check( ! array_intersect( array( 'promptEnabled', 'standardModal', 'prompt' ), array_keys( $response->data['googleCustomerReviews'] ) ), 'Refresh still exposes obsolete prompt settings.' );
 	}
 	check( $GLOBALS['gcr_options']['reviewbird_store_status'] === $fresh, 'Refresh did not update the saved cache.' );
 	$before_calls = $GLOBALS['gcr_api_calls'];

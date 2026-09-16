@@ -708,38 +708,11 @@ body.reviewbird_page_reviewbird-settings .wrap {
 		background: #fafafa;
 	}
 
-	.reviewbird-settings-button--primary {
-		border-color: transparent;
-		background: #0d9488;
-		color: #fff;
-	}
-
-	.reviewbird-settings-button--primary:hover:not(:disabled) {
-		border-color: transparent;
-		background: #0f766e;
-	}
-
-	.reviewbird-settings-button--ghost {
-		border-color: transparent;
-		background: transparent;
-		color: #52525b;
-	}
-
-	.reviewbird-settings-button--ghost:hover:not(:disabled) {
-		border-color: transparent;
-		background: #f3f3f5;
-	}
-
 	.reviewbird-settings-button:disabled {
 		border-color: transparent;
 		background: #e5e5e7;
 		color: #71717a;
 		cursor: default;
-	}
-
-	.reviewbird-settings-button--ghost:disabled {
-		background: transparent;
-		color: #a1a1aa;
 	}
 
 	.reviewbird-settings-link {
@@ -1011,17 +984,13 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	}
 
 	.reviewbird-gcr-settings__header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 16px;
 		padding: 20px 24px;
 	}
 
-
-	.reviewbird-gcr-settings__visibility {
-		border-bottom: 1px solid var(--reviewbird-divider);
+	.reviewbird-gcr-settings__content {
 		padding: 0 24px 24px;
+		color: #52525b;
+		font-size: 15px;
 	}
 
 	.reviewbird-gcr-settings__integration {
@@ -1060,141 +1029,11 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	}
 
 	.reviewbird-gcr-settings__notice {
-		padding: 12px 24px 0;
+		margin-top: 12px;
 		color: #b91c1c;
 		font-size: 15px;
 	}
 
-	.reviewbird-gcr-settings__editor {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-		align-items: stretch;
-		gap: 32px;
-		padding: 24px;
-	}
-
-	.reviewbird-gcr-settings fieldset {
-		min-width: 0;
-		border: 0;
-	}
-
-	.reviewbird-gcr-settings__preview-heading h3 {
-		margin-bottom: 20px;
-		color: #3f3f46;
-		font-size: 15px;
-		font-weight: 600;
-		line-height: 1.5;
-	}
-
-	.reviewbird-gcr-settings__fields {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 20px 12px;
-	}
-
-	.reviewbird-gcr-settings__fields label {
-		display: block;
-		margin: 0 0 7px;
-		color: #3f3f46;
-		font-size: 15px;
-		font-weight: 600;
-		line-height: 1.5;
-	}
-
-	.reviewbird-gcr-settings__fields input,
-	.reviewbird-gcr-settings__fields textarea {
-		appearance: none;
-		display: block;
-		width: 100%;
-		min-height: 42px;
-		margin: 0;
-		border: 1px solid var(--reviewbird-input-border);
-		border-radius: 9px;
-		padding: 10px 12px;
-		background: #fff;
-		box-shadow: none;
-		color: #3f3f46;
-		font: 400 16px/1.5 var(--reviewbird-settings-font);
-	}
-
-	.reviewbird-gcr-settings__fields textarea {
-		min-height: 126px;
-		resize: vertical;
-	}
-
-	.reviewbird-gcr-settings__fields input:focus,
-	.reviewbird-gcr-settings__fields textarea:focus {
-		border-color: #0d9488;
-		outline: none;
-		box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
-	}
-
-	.reviewbird-gcr-settings__fields :disabled {
-		background: #fafafa;
-		color: #71717a;
-	}
-
-	.reviewbird-gcr-settings__wide-field {
-		grid-column: 1 / -1;
-	}
-
-	.reviewbird-gcr-settings__preview {
-		border: 1px solid var(--reviewbird-divider);
-		border-radius: 12px;
-		padding: 24px;
-		background: #f3f3f5;
-	}
-
-	.reviewbird-gcr-settings__preview-surface .reviewbird-gcr {
-		margin: 0;
-		color: #18181b;
-	}
-
-	.reviewbird-gcr-settings__preview-surface .reviewbird-gcr__heading {
-		margin: 0 0 8px;
-		font-size: 20px;
-		font-weight: 700;
-		line-height: 1.4;
-	}
-
-	.reviewbird-gcr-settings__preview-surface .reviewbird-gcr__message {
-		margin: 0 0 20px;
-		font-size: 16px;
-		line-height: 1.5;
-	}
-
-	.reviewbird-gcr-settings__preview-surface button {
-		font-family: inherit;
-		font-size: 16px;
-		cursor: default;
-	}
-
-	.reviewbird-gcr-settings__footer {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 16px;
-		border-top: 1px solid var(--reviewbird-divider);
-		padding: 16px 24px;
-	}
-
-	.reviewbird-gcr-settings__footer > p {
-		color: #71717a;
-		font-size: 15px;
-	}
-
-	.reviewbird-gcr-settings__footer > p[role="alert"] {
-		color: #b91c1c;
-	}
-
-	.reviewbird-gcr-settings__footer > div {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: flex-end;
-		gap: 8px;
-		margin-inline-start: auto;
-	}
 }
 
 @keyframes reviewbird-settings-spin {
@@ -1228,23 +1067,10 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	}
 }
 
-@media (max-width: 960px) {
-
-	#reviewbird-settings-root .reviewbird-gcr-settings__editor {
-		grid-template-columns: minmax(0, 1fr);
-	}
-}
-
 @media (max-width: 600px) {
 
 	#reviewbird-settings-root .reviewbird-settings-page {
 		gap: 16px;
-	}
-
-	#reviewbird-settings-root .reviewbird-gcr-settings__header,
-	#reviewbird-settings-root .reviewbird-gcr-settings__footer {
-		align-items: flex-start;
-		flex-direction: column;
 	}
 
 	#reviewbird-settings-root .reviewbird-settings-card,
@@ -1255,14 +1081,8 @@ body.reviewbird_page_reviewbird-settings .wrap {
 	#reviewbird-settings-root .reviewbird-toggle-panel,
 	#reviewbird-settings-root .reviewbird-connection,
 	#reviewbird-settings-root .reviewbird-gcr-settings__header,
-	#reviewbird-settings-root .reviewbird-gcr-settings__visibility,
-	#reviewbird-settings-root .reviewbird-gcr-settings__editor,
-	#reviewbird-settings-root .reviewbird-gcr-settings__footer {
+	#reviewbird-settings-root .reviewbird-gcr-settings__content {
 		padding: 20px 16px;
-	}
-
-	#reviewbird-settings-root .reviewbird-gcr-settings__preview {
-		padding: 12px;
 	}
 }
 

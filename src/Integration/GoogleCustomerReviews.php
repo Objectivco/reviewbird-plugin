@@ -1,6 +1,6 @@
 <?php
 /**
- * Google Customer Reviews prompts and order links.
+ * Google Customer Reviews consent and order links.
  *
  * @package reviewbird
  */
@@ -8,8 +8,6 @@
 namespace reviewbird\Integration;
 
 use WC_Order;
-use WP_Error;
-use WP_REST_Request;
 use WP_REST_Response;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,14 +15,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Show Google's opt-in after the customer selects Yes.
+ * Show Google's opt-in on order confirmations and signed landing pages.
  */
 class GoogleCustomerReviews {
+	// Keep historical prompt data available to order sync.
 	const YES_META = '_reviewbird_gcr_prompt_yes_at';
 	const NO_META  = '_reviewbird_gcr_prompt_no_click_ids';
 
 	/**
-	 * Whether this request already contains a prompt.
+	 * Whether this request already contains the Google consent module.
 	 *
 	 * @var bool
 	 */
@@ -34,10 +33,9 @@ class GoogleCustomerReviews {
 	 * Register the common WooCommerce hook and the order link handlers.
 	 */
 	public function __construct() {
-		add_action( 'woocommerce_before_thankyou', array( $this, 'render_prompt' ), 5, 1 );
-		add_action( 'cfw_thank_you_content', array( $this, 'render_checkoutwc_prompt' ), 55, 1 );
+		add_action( 'woocommerce_before_thankyou', array( $this, 'render_consent' ), 5, 1 );
+		add_action( 'cfw_thank_you_content', array( $this, 'render_checkoutwc_consent' ), 55, 1 );
 		add_action( 'template_redirect', array( $this, 'render_link_page' ), 1, 0 );
-		add_action( 'rest_api_init', array( $this, 'register_routes' ), 10, 0 );
 		add_filter( 'woocommerce_rest_prepare_shop_order_object', array( $this, 'add_order_response' ), 10, 2 );
 	}
 
@@ -95,48 +93,6 @@ class GoogleCustomerReviews {
 	}
 
 	/**
-	 * Check the local thank-you prompt switch.
-	 *
-	 * @return bool Whether the custom prompt is enabled.
-	 */
-	public static function is_prompt_enabled(): bool {
-		return 'yes' === get_option( 'reviewbird_enable_gcr_prompt', 'yes' );
-	}
-
-	/**
-	 * Default text for the prompt and settings preview.
-	 *
-	 * @return array Text by field name.
-	 */
-	public static function prompt_defaults(): array {
-		return array(
-			'heading'   => __( 'Rate your purchase experience', 'reviewbird' ),
-			'message'   => __( 'We use Google Customer Reviews to collect feedback about your purchase. Would you like to receive a short survey after your order arrives?', 'reviewbird' ),
-			'yes_label' => __( 'Yes', 'reviewbird' ),
-			'no_label'  => __( 'No', 'reviewbird' ),
-		);
-	}
-
-	/**
-	 * Get saved text with safe defaults for missing fields.
-	 *
-	 * @return array Text by field name.
-	 */
-	public static function prompt_settings(): array {
-		$prompt = self::prompt_defaults();
-		$saved  = get_option( 'reviewbird_google_customer_reviews_prompt', array() );
-
-		foreach ( $prompt as $key => $default ) {
-			if ( is_array( $saved ) && isset( $saved[ $key ] ) && is_string( $saved[ $key ] ) ) {
-				$value          = 'message' === $key ? sanitize_textarea_field( $saved[ $key ] ) : sanitize_text_field( $saved[ $key ] );
-				$prompt[ $key ] = '' !== trim( $value ) ? $value : $default;
-			}
-		}
-
-		return $prompt;
-	}
-
-	/**
 	 * Build Google's order data without changing the order.
 	 *
 	 * @param WC_Order $order Order.
@@ -183,7 +139,7 @@ class GoogleCustomerReviews {
 	}
 
 	/**
-	 * Get the guest link. This also works after the customer selected Yes.
+	 * Get the guest link, including after Google was shown at checkout.
 	 *
 	 * @param WC_Order $order Order.
 	 * @return string|null Link, or null when the integration is unavailable.
@@ -225,11 +181,11 @@ class GoogleCustomerReviews {
 	}
 
 	/**
-	 * Show the prompt only inside the customer's order confirmation.
+	 * Show Google consent only inside the customer's order confirmation.
 	 *
 	 * @param int $order_id Order ID.
 	 */
-	public function render_prompt( $order_id ): void {
+	public function render_consent( $order_id ): void {
 		// CheckoutWC also runs the native hook before its main layout.
 		if ( doing_action( 'cfw_thank_you_main_container_start' ) ) {
 			return;
@@ -240,121 +196,27 @@ class GoogleCustomerReviews {
 		// Also verify the URL and owner before adding any customer data.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce order key authorizes this read.
 		$key = isset( $_GET['key'] ) && is_string( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : '';
-		if ( ! self::is_prompt_enabled() || $this->rendered || ! $order instanceof WC_Order || ! is_order_received_page()
+		if ( $this->rendered || ! $order instanceof WC_Order || ! is_order_received_page()
 			|| (int) get_query_var( 'order-received' ) !== $order->get_id()
 			|| ! hash_equals( $order->get_order_key(), $key )
 			|| ( $order->get_customer_id() && $order->get_customer_id() !== get_current_user_id() && ! current_user_can( 'manage_woocommerce' ) )
-			|| $order->get_meta( self::YES_META ) || ! self::order_data( $order )
+			|| ! self::order_data( $order )
 		) {
 			return;
 		}
 
 		$this->rendered = true;
 		$this->enqueue_assets();
-		$this->render_card( $order, 'prompt' );
+		$this->render_card( $order, 'standard' );
 	}
 
 	/**
-	 * Show the widget after CheckoutWC's order status section.
+	 * Load Google consent after CheckoutWC's order status section.
 	 *
 	 * @param WC_Order $order Order.
 	 */
-	public function render_checkoutwc_prompt( WC_Order $order ): void {
-		$this->render_prompt( $order->get_id() );
-	}
-
-	/**
-	 * Register the guest POST route. The scoped token is the credential.
-	 */
-	public function register_routes(): void {
-		foreach ( array( 'yes', 'no' ) as $choice ) {
-			register_rest_route(
-				'reviewbird/v1',
-				'/google-customer-reviews/(?P<id>\d+)/prompt-' . $choice,
-				array(
-					'methods'             => 'POST',
-					'permission_callback' => array( $this, 'authorize_prompt_request' ),
-					'callback'            => array( $this, 'record_prompt_' . $choice ),
-				)
-			);
-		}
-	}
-
-	/**
-	 * Check the token for every choice request, including repeat requests.
-	 *
-	 * @param WP_REST_Request $request Request.
-	 * @return true|WP_Error Access result.
-	 */
-	public function authorize_prompt_request( WP_REST_Request $request ) {
-		return self::is_prompt_enabled() && 'POST' === sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' ) ) && self::authorized_order( $request->get_param( 'id' ), $request->get_param( 'token' ) )
-			? true
-			: new WP_Error( 'reviewbird_gcr_unavailable', __( 'This review request is not available.', 'reviewbird' ), array( 'status' => 403 ) );
-	}
-
-	/**
-	 * Record the first Yes to our prompt, not Google's response.
-	 *
-	 * @param WP_REST_Request $request Request.
-	 * @return WP_REST_Response|WP_Error Result.
-	 */
-	public function record_prompt_yes( WP_REST_Request $request ) {
-		return $this->record_prompt_choice( $request, 'yes' );
-	}
-
-	/**
-	 * Record No once per order without recording consent.
-	 *
-	 * @param WP_REST_Request $request Request.
-	 * @return WP_REST_Response|WP_Error Result.
-	 */
-	public function record_prompt_no( WP_REST_Request $request ) {
-		return $this->record_prompt_choice( $request, 'no' );
-	}
-
-	/**
-	 * Save a choice and advance the date used by order sync.
-	 *
-	 * @param WP_REST_Request $request Request.
-	 * @param string          $choice Yes or no.
-	 * @return WP_REST_Response|WP_Error Result.
-	 * @throws \RuntimeException On save failure; caught below and returned as WP_Error.
-	 */
-	private function record_prompt_choice( WP_REST_Request $request, string $choice ) {
-		$authorized = $this->authorize_prompt_request( $request );
-		if ( true !== $authorized ) {
-			return $authorized;
-		}
-
-		try {
-			$order = self::authorized_order( $request->get_param( 'id' ), $request->get_param( 'token' ) );
-			if ( ! $order || ! self::is_prompt_enabled() ) {
-				return new WP_Error( 'reviewbird_gcr_unavailable', __( 'This review request is not available.', 'reviewbird' ), array( 'status' => 403 ) );
-			}
-			$order->read_meta_data( true );
-			$key   = 'yes' === $choice ? self::YES_META : self::NO_META;
-			$value = $order->get_meta( $key );
-			$save  = ! $value;
-			if ( $save ) {
-				$value = 'yes' === $choice ? gmdate( 'c' ) : 1;
-				$order->update_meta_data( $key, $value );
-				// Metadata alone does not advance the legacy order storage sync date.
-				$order->set_date_modified( time() );
-				if ( ! $order->save() ) {
-					throw new \RuntimeException( 'Order save failed.' );
-				}
-				// WooCommerce can catch save errors internally and still return an ID.
-				$order->read_meta_data( true );
-				$saved_value = $order->get_meta( $key );
-				if ( ! $saved_value || ( 'yes' === $choice && $value !== $saved_value ) ) {
-					throw new \RuntimeException( 'Order choice was not saved.' );
-				}
-			}
-		} catch ( \Exception $exception ) {
-			return new WP_Error( 'reviewbird_gcr_save_failed', __( 'Your choice could not be saved. Please try again.', 'reviewbird' ), array( 'status' => 500 ) );
-		}
-
-		return new WP_REST_Response( 'yes' === $choice ? array( 'prompt_yes_at' => $value ) : array( 'no_click_count' => 1 ), 200 );
+	public function render_checkoutwc_consent( WC_Order $order ): void {
+		$this->render_consent( $order->get_id() );
 	}
 
 	/**
@@ -388,7 +250,7 @@ class GoogleCustomerReviews {
 	}
 
 	/**
-	 * Enqueue assets for the prompt and signed-link page.
+	 * Enqueue assets for checkout and the signed-link page.
 	 */
 	private function enqueue_assets(): void {
 		$asset_file = REVIEWBIRD_PLUGIN_DIR . 'assets/build/google-customer-reviews.asset.php';
@@ -404,36 +266,22 @@ class GoogleCustomerReviews {
 	 * Render the same card for checkout and the dedicated page.
 	 *
 	 * @param WC_Order $order Order.
-	 * @param string   $mode Prompt or direct.
+	 * @param string   $mode Standard checkout modal or direct link.
 	 */
 	private function render_card( WC_Order $order, string $mode ): void {
-		$prompt = self::prompt_settings();
 		$config = array(
-			'mode'      => $mode,
-			'choiceUrl' => rest_url( 'reviewbird/v1/google-customer-reviews/' . $order->get_id() . '/prompt-yes' ),
-			'noUrl'     => rest_url( 'reviewbird/v1/google-customer-reviews/' . $order->get_id() . '/prompt-no' ),
-			'clickId'   => wp_generate_uuid4(),
-			'token'     => self::token( $order ),
-			'orderId'   => $order->get_id(),
-			'google'    => self::order_data( $order ),
-			'text'      => array(
-				'loading'   => __( 'Loading Google Customer Reviews…', 'reviewbird' ),
-				'saveError' => __( 'Your choice could not be saved. Please try again.', 'reviewbird' ),
-				'error'     => __( 'Google Customer Reviews could not load. Please try again.', 'reviewbird' ),
-				'retry'     => __( 'Try again', 'reviewbird' ),
-				'opened'    => __( 'You can close this page when you finish.', 'reviewbird' ),
+			'mode'   => $mode,
+			'google' => self::order_data( $order ),
+			'text'   => array(
+				'loading' => __( 'Loading Google Customer Reviews…', 'reviewbird' ),
+				'error'   => __( 'Google Customer Reviews could not load. Please try again.', 'reviewbird' ),
+				'retry'   => __( 'Try again', 'reviewbird' ),
+				'opened'  => __( 'You can close this page when you finish.', 'reviewbird' ),
 			),
 		);
 		?>
-		<section class="reviewbird-gcr" data-reviewbird-gcr="<?php echo esc_attr( wp_json_encode( $config ) ); ?>" aria-label="<?php esc_attr_e( 'Google Customer Reviews', 'reviewbird' ); ?>">
-			<h2 class="reviewbird-gcr__heading"><?php echo esc_html( 'direct' === $mode ? __( 'Google Customer Reviews', 'reviewbird' ) : $prompt['heading'] ); ?></h2>
-			<?php if ( 'prompt' === $mode ) : ?>
-				<p class="reviewbird-gcr__message"><?php echo esc_html( $prompt['message'] ); ?></p>
-				<div class="reviewbird-gcr__actions">
-					<button type="button" data-gcr-yes><?php echo esc_html( $prompt['yes_label'] ); ?></button>
-					<button type="button" data-gcr-no><?php echo esc_html( $prompt['no_label'] ); ?></button>
-				</div>
-			<?php endif; ?>
+		<section class="reviewbird-gcr" data-reviewbird-gcr="<?php echo esc_attr( wp_json_encode( $config ) ); ?>" aria-label="<?php esc_attr_e( 'Google Customer Reviews', 'reviewbird' ); ?>" <?php echo 'direct' === $mode ? '' : 'hidden'; ?>>
+			<h2 class="reviewbird-gcr__heading"><?php esc_html_e( 'Google Customer Reviews', 'reviewbird' ); ?></h2>
 			<p data-gcr-status role="status" aria-live="polite"></p>
 			<button type="button" data-gcr-retry hidden><?php echo esc_html( $config['text']['retry'] ); ?></button>
 			<noscript><p><?php esc_html_e( 'Enable JavaScript to use Google Customer Reviews.', 'reviewbird' ); ?></p></noscript>
@@ -446,7 +294,7 @@ class GoogleCustomerReviews {
 	 *
 	 * @param WP_REST_Response $response Order response.
 	 * @param WC_Order         $order Order.
-	 * @return WP_REST_Response Response with the link and our prompt timestamp.
+	 * @return WP_REST_Response Response with the link and historical prompt data.
 	 */
 	public function add_order_response( $response, $order ) {
 		$timestamp = $order->get_meta( self::YES_META );

@@ -62,19 +62,11 @@ export function initGoogleCustomerReviews( root ) {
 	root.parentElement
 		?.querySelector( ':scope.wc-block-order-confirmation-status > h1' )
 		?.after( root );
-	const yes = root.querySelector( '[data-gcr-yes]' );
-	const no = root.querySelector( '[data-gcr-no]' );
 	const status = root.querySelector( '[data-gcr-status]' );
 	const retry = root.querySelector( '[data-gcr-retry]' );
 	let busy = false;
-	let saved = config.mode === 'direct';
-	let choice = 'yes';
-	let dismissed = false;
 
-	async function submitChoice() {
-		if ( dismissed ) {
-			return;
-		}
+	async function openGoogle() {
 		if ( state.rendered ) {
 			root.hidden = true;
 			return;
@@ -84,42 +76,10 @@ export function initGoogleCustomerReviews( root ) {
 		}
 		busy = true;
 		root.setAttribute( 'aria-busy', 'true' );
-		[ yes, no, retry ].forEach( ( button ) => {
-			if ( button ) {
-				button.disabled = true;
-			}
-		} );
+		retry.disabled = true;
 		retry.hidden = true;
-		status.textContent = choice === 'no' ? '' : config.text.loading;
+		status.textContent = config.text.loading;
 		try {
-			if ( ! saved ) {
-				const controller = new window.AbortController();
-				const timeout = setTimeout( () => controller.abort(), 15000 );
-				const response = await fetch(
-					choice === 'no' ? config.noUrl : config.choiceUrl,
-					{
-						method: 'POST',
-						credentials: 'same-origin',
-						signal: controller.signal,
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify( {
-							token: config.token,
-							...( choice === 'no'
-								? { click_id: config.clickId }
-								: {} ),
-						} ),
-					}
-				).finally( () => clearTimeout( timeout ) );
-				if ( ! response.ok ) {
-					throw new Error( 'The choice could not be saved.' );
-				}
-				saved = true;
-			}
-			if ( choice === 'no' ) {
-				dismissed = true;
-				root.hidden = true;
-				return;
-			}
 			const google = await loadGoogle();
 			if ( ! state.rendered ) {
 				google.render( {
@@ -131,47 +91,20 @@ export function initGoogleCustomerReviews( root ) {
 			root.hidden = config.mode !== 'direct';
 			status.textContent = config.text.opened;
 		} catch {
-			status.textContent = saved
-				? config.text.error
-				: config.text.saveError;
+			root.hidden = false;
+			status.textContent = config.text.error;
 			retry.hidden = false;
 		} finally {
 			busy = false;
 			root.removeAttribute( 'aria-busy' );
-			[ yes, no, retry ].forEach( ( button ) => {
-				if ( button ) {
-					button.disabled = false;
-				}
-			} );
+			retry.disabled = false;
 			if ( ! retry.hidden ) {
 				retry.focus();
 			}
-			if ( saved ) {
-				if ( yes ) {
-					yes.hidden = true;
-				}
-				if ( no ) {
-					no.hidden = true;
-				}
-			}
 		}
 	}
-	yes?.addEventListener( 'click', () => {
-		if ( ! busy ) {
-			choice = 'yes';
-			submitChoice();
-		}
-	} );
-	no?.addEventListener( 'click', () => {
-		if ( ! busy && ! saved ) {
-			choice = 'no';
-			submitChoice();
-		}
-	} );
-	retry.addEventListener( 'click', submitChoice );
-	if ( config.mode === 'direct' ) {
-		submitChoice();
-	}
+	retry.addEventListener( 'click', openGoogle );
+	openGoogle();
 }
 
 function start() {
