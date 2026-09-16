@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:129
-#: src/Admin/Settings.php:130
+#: src/Admin/Settings.php:127
+#: src/Admin/Settings.php:128
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -31,73 +31,60 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "WooCommerce 的自动评论收集，阻止垃圾信息，捕捉投诉，并展示您的最佳反馈。"
 
-#: src/Admin/Settings.php:96
+#: src/Admin/Settings.php:94
 msgid "Reviewbird Connection Error:"
 msgstr "Reviewbird 连接错误："
 
-#: src/Admin/Settings.php:115
+#: src/Admin/Settings.php:113
 msgid "Successfully connected to Reviewbird!"
 msgstr "成功连接到 Reviewbird！"
 
-#: src/Admin/Settings.php:142
-#: src/Admin/Settings.php:143
+#: src/Admin/Settings.php:140
+#: src/Admin/Settings.php:141
 msgid "Get Started"
 msgstr "开始使用"
 
-#: src/Admin/Settings.php:151
+#: src/Admin/Settings.php:149
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "Reviewbird 设置"
 
-#: src/Admin/Settings.php:152
+#: src/Admin/Settings.php:150
 #: src/Core/Plugin.php:442
 msgid "Settings"
 msgstr "设置"
 
-#: src/Admin/Settings.php:361
+#: src/Admin/Settings.php:355
 msgid "Invalid security token"
 msgstr "无效的安全令牌"
 
-#: src/Admin/Settings.php:365
-#: src/Admin/Settings.php:463
+#: src/Admin/Settings.php:359
+#: src/Admin/Settings.php:423
 msgid "Insufficient permissions"
 msgstr "权限不足"
 
-#: src/Admin/Settings.php:379
+#: src/Admin/Settings.php:373
 msgid "Invalid setting"
 msgstr "无效的设置"
 
-#: src/Admin/Settings.php:385
+#: src/Admin/Settings.php:379
 msgid "Invalid setting value"
 msgstr "无效的设置值"
 
-#: src/Admin/Settings.php:392
-#: assets/src/js/components/GoogleCustomerReviews.jsx:107
+#: src/Admin/Settings.php:386
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr "设置无法保存。请再试一次。"
 
-#: src/Admin/Settings.php:399
+#: src/Admin/Settings.php:393
 msgid "Setting updated successfully"
 msgstr "设置更新成功"
 
-#: src/Admin/Settings.php:421
-msgid "Enter text in each prompt field."
-msgstr "请在每个提示字段中输入文本。"
-
-#: src/Admin/Settings.php:426
-msgid "Prompt text is empty or too long."
-msgstr "提示文本为空或过长。"
-
-#: src/Admin/Settings.php:433
-msgid "The prompt could not be saved. Please try again."
-msgstr "提示无法保存。请再试一次。"
-
-#: src/Admin/Settings.php:446
+#: src/Admin/Settings.php:406
 msgid "The connection status could not be refreshed. Please try again."
 msgstr "无法刷新连接状态。请再试一次。"
 
-#: src/Admin/Settings.php:453
+#: src/Admin/Settings.php:413
 msgid "Connection status refreshed"
 msgstr "连接状态已刷新"
 
@@ -195,87 +182,37 @@ msgstr "匿名"
 msgid "Rated %d out of 5"
 msgstr "评分为 %d（满分 5 分）"
 
-#: src/Integration/GoogleCustomerReviews.php:114
-msgid "Rate your purchase experience"
-msgstr "评价您的购买体验"
-
-#: src/Integration/GoogleCustomerReviews.php:115
-msgid "We use Google Customer Reviews to collect feedback about your purchase. Would you like to receive a short survey after your order arrives?"
-msgstr "我们使用 Google 客户评价收集您对购买的反馈。您是否愿意在订单到达后收到一份简短的调查？"
-
-#: src/Integration/GoogleCustomerReviews.php:116
-msgid "Yes"
-msgstr "是"
-
-#: src/Integration/GoogleCustomerReviews.php:117
-msgid "No"
-msgstr "否"
-
-#: src/Integration/GoogleCustomerReviews.php:293
-#: src/Integration/GoogleCustomerReviews.php:333
-#: src/Integration/GoogleCustomerReviews.php:382
+#: src/Integration/GoogleCustomerReviews.php:243
 msgid "This review request is not available."
 msgstr "此评价请求不可用。"
 
-#: src/Integration/GoogleCustomerReviews.php:355
-#: src/Integration/GoogleCustomerReviews.php:422
-msgid "Your choice could not be saved. Please try again."
-msgstr "您的选择无法保存。请再试一次。"
-
-#: src/Integration/GoogleCustomerReviews.php:382
-#: src/Integration/GoogleCustomerReviews.php:429
-#: src/Integration/GoogleCustomerReviews.php:430
-#: src/Integration/GoogleCustomerReviews.php:480
+#: src/Integration/GoogleCustomerReviews.php:243
+#: src/Integration/GoogleCustomerReviews.php:283
+#: src/Integration/GoogleCustomerReviews.php:284
 #: templates/google-customer-reviews.php:19
-#: assets/src/js/components/GoogleCustomerReviews.jsx:153
+#: assets/src/js/components/GoogleCustomerReviews.jsx:65
 msgid "Google Customer Reviews"
 msgstr "Google 客户评价"
 
-#: src/Integration/GoogleCustomerReviews.php:421
+#: src/Integration/GoogleCustomerReviews.php:276
 msgid "Loading Google Customer Reviews…"
 msgstr "正在加载 Google 客户评价…"
 
-#: src/Integration/GoogleCustomerReviews.php:423
+#: src/Integration/GoogleCustomerReviews.php:277
 msgid "Google Customer Reviews could not load. Please try again."
 msgstr "Google 客户评价加载失败。请再试一次。"
 
-#: src/Integration/GoogleCustomerReviews.php:424
+#: src/Integration/GoogleCustomerReviews.php:278
 msgid "Try again"
 msgstr "再试一次"
 
-#: src/Integration/GoogleCustomerReviews.php:425
+#: src/Integration/GoogleCustomerReviews.php:279
 msgid "You can close this page when you finish."
 msgstr "完成后您可以关闭此页面。"
 
-#: src/Integration/GoogleCustomerReviews.php:440
+#: src/Integration/GoogleCustomerReviews.php:287
 msgid "Enable JavaScript to use Google Customer Reviews."
 msgstr "启用 JavaScript 以使用 Google 客户评价。"
-
-#. translators: %s: Date when the customer selected Yes on the Reviewbird prompt.
-#: src/Integration/GoogleCustomerReviews.php:485
-#, php-format
-msgid "Selected Yes on the Reviewbird prompt: %s"
-msgstr "在 Reviewbird 提示中选择了是：%s"
-
-#: src/Integration/GoogleCustomerReviews.php:487
-msgid "The customer has not selected Yes on the Reviewbird prompt."
-msgstr "客户尚未在 Reviewbird 提示中选择是。"
-
-#: src/Integration/GoogleCustomerReviews.php:492
-msgid "Google opt-in link"
-msgstr "Google 选择加入链接"
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Link copied."
-msgstr "链接已复制。"
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Select and copy the link."
-msgstr "选择并复制链接。"
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Copy link"
-msgstr "复制链接"
 
 #: src/Integration/HealthScheduler.php:171
 msgid "The connection response is invalid. Please try again."
@@ -382,7 +319,7 @@ msgid "Open Reviewbird"
 msgstr "打开 Reviewbird"
 
 #: assets/src/js/components/ConnectionHealth.jsx:305
-#: assets/src/js/components/GoogleCustomerReviews.jsx:103
+#: assets/src/js/components/GoogleCustomerReviews.jsx:48
 msgid "The connection could not be refreshed. Please try again."
 msgstr "无法刷新连接。请再试一次。"
 
@@ -397,104 +334,49 @@ msgid "Refresh connection status"
 msgstr "刷新连接状态"
 
 #: assets/src/js/components/ConnectionHealth.jsx:374
-#: assets/src/js/components/GoogleCustomerReviews.jsx:241
+#: assets/src/js/components/GoogleCustomerReviews.jsx:126
 msgid "Refreshing…"
 msgstr "刷新中…"
 
 #: assets/src/js/components/ConnectionHealth.jsx:375
-#: assets/src/js/components/GoogleCustomerReviews.jsx:242
 msgid "Refresh"
 msgstr "刷新"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:6
-msgid "Widget title"
-msgstr "小部件标题"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:7
-msgid "Customer message"
-msgstr "客户消息"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:8
-msgid "Yes button text"
-msgstr "是按钮文本"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:9
-msgid "No button text"
-msgstr "否按钮文本"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:53
+#: assets/src/js/components/GoogleCustomerReviews.jsx:14
 msgid "Integration is currently enabled."
 msgstr "集成当前已启用。"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:54
+#: assets/src/js/components/GoogleCustomerReviews.jsx:15
 msgid "Integration is currently disabled."
 msgstr "集成当前已禁用。"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:55
+#: assets/src/js/components/GoogleCustomerReviews.jsx:17
 msgid "Integration status is unknown."
 msgstr "集成状态未知。"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:85
+#: assets/src/js/components/GoogleCustomerReviews.jsx:44
 msgid "Status updated."
 msgstr "状态已更新。"
 
+#: assets/src/js/components/GoogleCustomerReviews.jsx:70
+msgid "When the integration is enabled, Google's consent window opens automatically for every order on the thank you page."
+msgstr "启用集成后，Google 的同意窗口将在感谢页面的每个订单上自动打开。"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:78
+msgid "Use Configure integration to enable or disable Google Customer Reviews. Then select Refresh status."
+msgstr "使用“配置集成”来启用或禁用 Google 客户评价。然后选择“刷新状态”。"
+
 #: assets/src/js/components/GoogleCustomerReviews.jsx:96
-msgid "Display setting saved."
-msgstr "显示设置已保存。"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:131
-msgid "Changes saved."
-msgstr "更改已保存。"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:136
-msgid "Your changes could not be saved. Please try again."
-msgstr "无法保存您的更改。请再试一次。"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:175
-msgid "Enable widget on the thank you page"
-msgstr "在感谢页面启用小部件"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:181
-msgid "Ask customers to consent to Google Customer Reviews."
-msgstr "请求客户同意 Google 客户评价。"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:194
-msgid "Requires the Google Customer Reviews integration to be enabled. If you just enabled it, use Refresh to update the status."
-msgstr "需要启用 Google 客户评价集成。如果您刚刚启用它，请使用刷新以更新状态。"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:212
 msgid "Configure integration"
 msgstr "配置集成"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:220
+#: assets/src/js/components/GoogleCustomerReviews.jsx:105
 msgid "Refresh integration status"
 msgstr "刷新集成状态"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:267
-msgid "Customize your widget"
-msgstr "自定义您的小部件"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:314
-#: assets/src/js/components/GoogleCustomerReviews.jsx:317
-msgid "Widget preview"
-msgstr "小部件预览"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:322
-msgid "Customer message preview"
-msgstr "客户消息预览"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:380
-msgid "Reset to defaults"
-msgstr "恢复默认设置"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:388
-#: assets/src/js/components/TogglePanel.jsx:52
-msgid "Saving…"
-msgstr "正在保存…"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:389
-msgid "Save changes"
-msgstr "保存更改"
+#: assets/src/js/components/GoogleCustomerReviews.jsx:127
+msgid "Refresh status"
+msgstr "刷新状态"
 
 #: assets/src/js/components/LoadingSpinner.jsx:8
 msgid "Loading..."
@@ -531,6 +413,10 @@ msgstr "测试丰富结果"
 #: assets/src/js/components/SettingsApp.jsx:169
 msgid "Validate schema"
 msgstr "验证架构"
+
+#: assets/src/js/components/TogglePanel.jsx:52
+msgid "Saving…"
+msgstr "正在保存…"
 
 #: assets/src/js/components/WelcomeScreen.jsx:89
 msgid "The plugin is installed!"

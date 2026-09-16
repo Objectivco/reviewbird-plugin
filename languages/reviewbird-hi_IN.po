@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:129
-#: src/Admin/Settings.php:130
+#: src/Admin/Settings.php:127
+#: src/Admin/Settings.php:128
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -31,73 +31,60 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "WooCommerce के लिए स्वचालित समीक्षा संग्रह जो स्पैम को ब्लॉक करता है, शिकायतों को पकड़ता है, और आपकी सर्वश्रेष्ठ प्रतिक्रिया को प्रदर्शित करता है।"
 
-#: src/Admin/Settings.php:96
+#: src/Admin/Settings.php:94
 msgid "Reviewbird Connection Error:"
 msgstr "Reviewbird कनेक्शन त्रुटि:"
 
-#: src/Admin/Settings.php:115
+#: src/Admin/Settings.php:113
 msgid "Successfully connected to Reviewbird!"
 msgstr "Reviewbird से सफलतापूर्वक जुड़ा गया!"
 
-#: src/Admin/Settings.php:142
-#: src/Admin/Settings.php:143
+#: src/Admin/Settings.php:140
+#: src/Admin/Settings.php:141
 msgid "Get Started"
 msgstr "शुरू करें"
 
-#: src/Admin/Settings.php:151
+#: src/Admin/Settings.php:149
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "Reviewbird सेटिंग्स"
 
-#: src/Admin/Settings.php:152
+#: src/Admin/Settings.php:150
 #: src/Core/Plugin.php:442
 msgid "Settings"
 msgstr "सेटिंग्स"
 
-#: src/Admin/Settings.php:361
+#: src/Admin/Settings.php:355
 msgid "Invalid security token"
 msgstr "अमान्य सुरक्षा टोकन"
 
-#: src/Admin/Settings.php:365
-#: src/Admin/Settings.php:463
+#: src/Admin/Settings.php:359
+#: src/Admin/Settings.php:423
 msgid "Insufficient permissions"
 msgstr "पर्याप्त अनुमतियाँ नहीं हैं"
 
-#: src/Admin/Settings.php:379
+#: src/Admin/Settings.php:373
 msgid "Invalid setting"
 msgstr "अमान्य सेटिंग"
 
-#: src/Admin/Settings.php:385
+#: src/Admin/Settings.php:379
 msgid "Invalid setting value"
 msgstr "अमान्य सेटिंग मान"
 
-#: src/Admin/Settings.php:392
-#: assets/src/js/components/GoogleCustomerReviews.jsx:107
+#: src/Admin/Settings.php:386
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr "सेटिंग सहेजी नहीं जा सकी। कृपया पुनः प्रयास करें।"
 
-#: src/Admin/Settings.php:399
+#: src/Admin/Settings.php:393
 msgid "Setting updated successfully"
 msgstr "सेटिंग सफलतापूर्वक अपडेट की गई"
 
-#: src/Admin/Settings.php:421
-msgid "Enter text in each prompt field."
-msgstr "प्रत्येक प्रॉम्प्ट फ़ील्ड में टेक्स्ट दर्ज करें।"
-
-#: src/Admin/Settings.php:426
-msgid "Prompt text is empty or too long."
-msgstr "प्रॉम्प्ट टेक्स्ट खाली है या बहुत लंबा है।"
-
-#: src/Admin/Settings.php:433
-msgid "The prompt could not be saved. Please try again."
-msgstr "प्रॉम्प्ट सहेजा नहीं जा सका। कृपया पुनः प्रयास करें।"
-
-#: src/Admin/Settings.php:446
+#: src/Admin/Settings.php:406
 msgid "The connection status could not be refreshed. Please try again."
 msgstr "कनेक्शन स्थिति को ताज़ा नहीं किया जा सका। कृपया पुनः प्रयास करें।"
 
-#: src/Admin/Settings.php:453
+#: src/Admin/Settings.php:413
 msgid "Connection status refreshed"
 msgstr "कनेक्शन स्थिति ताज़ा की गई"
 
@@ -195,87 +182,37 @@ msgstr "गुमनाम"
 msgid "Rated %d out of 5"
 msgstr "5 में से %d रेट किया गया"
 
-#: src/Integration/GoogleCustomerReviews.php:114
-msgid "Rate your purchase experience"
-msgstr "अपना खरीदारी अनुभव रेट करें"
-
-#: src/Integration/GoogleCustomerReviews.php:115
-msgid "We use Google Customer Reviews to collect feedback about your purchase. Would you like to receive a short survey after your order arrives?"
-msgstr "हम आपकी खरीदारी के बारे में प्रतिक्रिया एकत्र करने के लिए Google ग्राहक समीक्षाओं का उपयोग करते हैं। क्या आप अपने ऑर्डर के आने के बाद एक छोटा सर्वेक्षण प्राप्त करना चाहेंगे?"
-
-#: src/Integration/GoogleCustomerReviews.php:116
-msgid "Yes"
-msgstr "हाँ"
-
-#: src/Integration/GoogleCustomerReviews.php:117
-msgid "No"
-msgstr "नहीं"
-
-#: src/Integration/GoogleCustomerReviews.php:293
-#: src/Integration/GoogleCustomerReviews.php:333
-#: src/Integration/GoogleCustomerReviews.php:382
+#: src/Integration/GoogleCustomerReviews.php:243
 msgid "This review request is not available."
 msgstr "यह समीक्षा अनुरोध उपलब्ध नहीं है।"
 
-#: src/Integration/GoogleCustomerReviews.php:355
-#: src/Integration/GoogleCustomerReviews.php:422
-msgid "Your choice could not be saved. Please try again."
-msgstr "आपका चयन सहेजा नहीं जा सका। कृपया पुनः प्रयास करें।"
-
-#: src/Integration/GoogleCustomerReviews.php:382
-#: src/Integration/GoogleCustomerReviews.php:429
-#: src/Integration/GoogleCustomerReviews.php:430
-#: src/Integration/GoogleCustomerReviews.php:480
+#: src/Integration/GoogleCustomerReviews.php:243
+#: src/Integration/GoogleCustomerReviews.php:283
+#: src/Integration/GoogleCustomerReviews.php:284
 #: templates/google-customer-reviews.php:19
-#: assets/src/js/components/GoogleCustomerReviews.jsx:153
+#: assets/src/js/components/GoogleCustomerReviews.jsx:65
 msgid "Google Customer Reviews"
 msgstr "Google ग्राहक समीक्षाएँ"
 
-#: src/Integration/GoogleCustomerReviews.php:421
+#: src/Integration/GoogleCustomerReviews.php:276
 msgid "Loading Google Customer Reviews…"
 msgstr "Google ग्राहक समीक्षाएँ लोड हो रही हैं…"
 
-#: src/Integration/GoogleCustomerReviews.php:423
+#: src/Integration/GoogleCustomerReviews.php:277
 msgid "Google Customer Reviews could not load. Please try again."
 msgstr "Google ग्राहक समीक्षाएँ लोड नहीं हो सकीं। कृपया पुनः प्रयास करें।"
 
-#: src/Integration/GoogleCustomerReviews.php:424
+#: src/Integration/GoogleCustomerReviews.php:278
 msgid "Try again"
 msgstr "पुनः प्रयास करें"
 
-#: src/Integration/GoogleCustomerReviews.php:425
+#: src/Integration/GoogleCustomerReviews.php:279
 msgid "You can close this page when you finish."
 msgstr "जब आप समाप्त कर लें तो आप इस पृष्ठ को बंद कर सकते हैं।"
 
-#: src/Integration/GoogleCustomerReviews.php:440
+#: src/Integration/GoogleCustomerReviews.php:287
 msgid "Enable JavaScript to use Google Customer Reviews."
 msgstr "Google ग्राहक समीक्षाओं का उपयोग करने के लिए JavaScript सक्षम करें।"
-
-#. translators: %s: Date when the customer selected Yes on the Reviewbird prompt.
-#: src/Integration/GoogleCustomerReviews.php:485
-#, php-format
-msgid "Selected Yes on the Reviewbird prompt: %s"
-msgstr "Reviewbird प्रॉम्प्ट पर हाँ चुना गया: %s"
-
-#: src/Integration/GoogleCustomerReviews.php:487
-msgid "The customer has not selected Yes on the Reviewbird prompt."
-msgstr "ग्राहक ने Reviewbird प्रॉम्प्ट पर हाँ नहीं चुना है।"
-
-#: src/Integration/GoogleCustomerReviews.php:492
-msgid "Google opt-in link"
-msgstr "Google ऑप्ट-इन लिंक"
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Link copied."
-msgstr "लिंक कॉपी किया गया।"
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Select and copy the link."
-msgstr "लिंक चुनें और कॉपी करें।"
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Copy link"
-msgstr "लिंक कॉपी करें"
 
 #: src/Integration/HealthScheduler.php:171
 msgid "The connection response is invalid. Please try again."
@@ -382,7 +319,7 @@ msgid "Open Reviewbird"
 msgstr "Reviewbird खोलें"
 
 #: assets/src/js/components/ConnectionHealth.jsx:305
-#: assets/src/js/components/GoogleCustomerReviews.jsx:103
+#: assets/src/js/components/GoogleCustomerReviews.jsx:48
 msgid "The connection could not be refreshed. Please try again."
 msgstr "कनेक्शन ताज़ा नहीं किया जा सका। कृपया पुनः प्रयास करें।"
 
@@ -397,104 +334,49 @@ msgid "Refresh connection status"
 msgstr "कनेक्शन स्थिति ताज़ा करें"
 
 #: assets/src/js/components/ConnectionHealth.jsx:374
-#: assets/src/js/components/GoogleCustomerReviews.jsx:241
+#: assets/src/js/components/GoogleCustomerReviews.jsx:126
 msgid "Refreshing…"
 msgstr "ताज़ा किया जा रहा है…"
 
 #: assets/src/js/components/ConnectionHealth.jsx:375
-#: assets/src/js/components/GoogleCustomerReviews.jsx:242
 msgid "Refresh"
 msgstr "रिफ्रेश करें"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:6
-msgid "Widget title"
-msgstr "विजेट शीर्षक"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:7
-msgid "Customer message"
-msgstr "ग्राहक संदेश"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:8
-msgid "Yes button text"
-msgstr "हाँ बटन टेक्स्ट"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:9
-msgid "No button text"
-msgstr "नहीं बटन टेक्स्ट"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:53
+#: assets/src/js/components/GoogleCustomerReviews.jsx:14
 msgid "Integration is currently enabled."
 msgstr "इंटीग्रेशन वर्तमान में सक्षम है।"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:54
+#: assets/src/js/components/GoogleCustomerReviews.jsx:15
 msgid "Integration is currently disabled."
 msgstr "इंटीग्रेशन वर्तमान में अक्षम है।"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:55
+#: assets/src/js/components/GoogleCustomerReviews.jsx:17
 msgid "Integration status is unknown."
 msgstr "इंटीग्रेशन स्थिति अज्ञात है।"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:85
+#: assets/src/js/components/GoogleCustomerReviews.jsx:44
 msgid "Status updated."
 msgstr "स्थिति अपडेट की गई।"
 
+#: assets/src/js/components/GoogleCustomerReviews.jsx:70
+msgid "When the integration is enabled, Google's consent window opens automatically for every order on the thank you page."
+msgstr "जब एकीकरण सक्षम होता है, तो धन्यवाद पृष्ठ पर हर आदेश के लिए Google की सहमति विंडो स्वचालित रूप से खुलती है।"
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:78
+msgid "Use Configure integration to enable or disable Google Customer Reviews. Then select Refresh status."
+msgstr "Google ग्राहक समीक्षाओं को सक्षम या अक्षम करने के लिए एकीकरण कॉन्फ़िगर करें। फिर स्थिति ताज़ा करें चुनें।"
+
 #: assets/src/js/components/GoogleCustomerReviews.jsx:96
-msgid "Display setting saved."
-msgstr "डिस्प्ले सेटिंग सहेजी गई।"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:131
-msgid "Changes saved."
-msgstr "परिवर्तन सहेजे गए।"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:136
-msgid "Your changes could not be saved. Please try again."
-msgstr "आपके परिवर्तन सहेजे नहीं जा सके। कृपया पुनः प्रयास करें।"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:175
-msgid "Enable widget on the thank you page"
-msgstr "थैंक यू पेज पर विजेट सक्षम करें"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:181
-msgid "Ask customers to consent to Google Customer Reviews."
-msgstr "ग्राहकों से Google ग्राहक समीक्षाओं के लिए सहमति मांगें।"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:194
-msgid "Requires the Google Customer Reviews integration to be enabled. If you just enabled it, use Refresh to update the status."
-msgstr "Google ग्राहक समीक्षाएँ एकीकरण सक्षम होना आवश्यक है। यदि आपने इसे अभी सक्षम किया है, तो स्थिति अपडेट करने के लिए रिफ्रेश का उपयोग करें।"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:212
 msgid "Configure integration"
 msgstr "एकीकरण कॉन्फ़िगर करें"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:220
+#: assets/src/js/components/GoogleCustomerReviews.jsx:105
 msgid "Refresh integration status"
 msgstr "एकीकरण स्थिति रिफ्रेश करें"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:267
-msgid "Customize your widget"
-msgstr "अपने विजेट को अनुकूलित करें"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:314
-#: assets/src/js/components/GoogleCustomerReviews.jsx:317
-msgid "Widget preview"
-msgstr "विजेट पूर्वावलोकन"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:322
-msgid "Customer message preview"
-msgstr "ग्राहक संदेश पूर्वावलोकन"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:380
-msgid "Reset to defaults"
-msgstr "डिफ़ॉल्ट पर रीसेट करें"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:388
-#: assets/src/js/components/TogglePanel.jsx:52
-msgid "Saving…"
-msgstr "सहेजा जा रहा है…"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:389
-msgid "Save changes"
-msgstr "परिवर्तनों को सहेजें"
+#: assets/src/js/components/GoogleCustomerReviews.jsx:127
+msgid "Refresh status"
+msgstr "स्थिति ताज़ा करें"
 
 #: assets/src/js/components/LoadingSpinner.jsx:8
 msgid "Loading..."
@@ -531,6 +413,10 @@ msgstr "रिच परिणामों का परीक्षण कर�
 #: assets/src/js/components/SettingsApp.jsx:169
 msgid "Validate schema"
 msgstr "स्कीमा सत्यापित करें"
+
+#: assets/src/js/components/TogglePanel.jsx:52
+msgid "Saving…"
+msgstr "सहेजा जा रहा है…"
 
 #: assets/src/js/components/WelcomeScreen.jsx:89
 msgid "The plugin is installed!"

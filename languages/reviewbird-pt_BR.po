@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:129
-#: src/Admin/Settings.php:130
+#: src/Admin/Settings.php:127
+#: src/Admin/Settings.php:128
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -31,73 +31,60 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "Coleta automatizada de avaliações para WooCommerce que bloqueia spam, captura reclamações e exibe seu melhor feedback."
 
-#: src/Admin/Settings.php:96
+#: src/Admin/Settings.php:94
 msgid "Reviewbird Connection Error:"
 msgstr "Erro de conexão com Reviewbird:"
 
-#: src/Admin/Settings.php:115
+#: src/Admin/Settings.php:113
 msgid "Successfully connected to Reviewbird!"
 msgstr "Conectado com sucesso ao Reviewbird!"
 
-#: src/Admin/Settings.php:142
-#: src/Admin/Settings.php:143
+#: src/Admin/Settings.php:140
+#: src/Admin/Settings.php:141
 msgid "Get Started"
 msgstr "Começar"
 
-#: src/Admin/Settings.php:151
+#: src/Admin/Settings.php:149
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "Configurações do Reviewbird"
 
-#: src/Admin/Settings.php:152
+#: src/Admin/Settings.php:150
 #: src/Core/Plugin.php:442
 msgid "Settings"
 msgstr "Configurações"
 
-#: src/Admin/Settings.php:361
+#: src/Admin/Settings.php:355
 msgid "Invalid security token"
 msgstr "Token de segurança inválido"
 
-#: src/Admin/Settings.php:365
-#: src/Admin/Settings.php:463
+#: src/Admin/Settings.php:359
+#: src/Admin/Settings.php:423
 msgid "Insufficient permissions"
 msgstr "Permissões insuficientes"
 
-#: src/Admin/Settings.php:379
+#: src/Admin/Settings.php:373
 msgid "Invalid setting"
 msgstr "Configuração inválida"
 
-#: src/Admin/Settings.php:385
+#: src/Admin/Settings.php:379
 msgid "Invalid setting value"
 msgstr "Valor de configuração inválido"
 
-#: src/Admin/Settings.php:392
-#: assets/src/js/components/GoogleCustomerReviews.jsx:107
+#: src/Admin/Settings.php:386
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr "A configuração não pôde ser salva. Por favor, tente novamente."
 
-#: src/Admin/Settings.php:399
+#: src/Admin/Settings.php:393
 msgid "Setting updated successfully"
 msgstr "Configuração atualizada com sucesso"
 
-#: src/Admin/Settings.php:421
-msgid "Enter text in each prompt field."
-msgstr "Digite texto em cada campo de prompt."
-
-#: src/Admin/Settings.php:426
-msgid "Prompt text is empty or too long."
-msgstr "O texto do prompt está vazio ou muito longo."
-
-#: src/Admin/Settings.php:433
-msgid "The prompt could not be saved. Please try again."
-msgstr "O prompt não pôde ser salvo. Por favor, tente novamente."
-
-#: src/Admin/Settings.php:446
+#: src/Admin/Settings.php:406
 msgid "The connection status could not be refreshed. Please try again."
 msgstr "O status da conexão não pôde ser atualizado. Por favor, tente novamente."
 
-#: src/Admin/Settings.php:453
+#: src/Admin/Settings.php:413
 msgid "Connection status refreshed"
 msgstr "Status da conexão atualizado"
 
@@ -195,87 +182,37 @@ msgstr "Anônimo"
 msgid "Rated %d out of 5"
 msgstr "Avaliado com %d de 5"
 
-#: src/Integration/GoogleCustomerReviews.php:114
-msgid "Rate your purchase experience"
-msgstr "Avalie sua experiência de compra"
-
-#: src/Integration/GoogleCustomerReviews.php:115
-msgid "We use Google Customer Reviews to collect feedback about your purchase. Would you like to receive a short survey after your order arrives?"
-msgstr "Usamos o Google Customer Reviews para coletar feedback sobre sua compra. Você gostaria de receber uma pesquisa rápida após a chegada do seu pedido?"
-
-#: src/Integration/GoogleCustomerReviews.php:116
-msgid "Yes"
-msgstr "Sim"
-
-#: src/Integration/GoogleCustomerReviews.php:117
-msgid "No"
-msgstr "Não"
-
-#: src/Integration/GoogleCustomerReviews.php:293
-#: src/Integration/GoogleCustomerReviews.php:333
-#: src/Integration/GoogleCustomerReviews.php:382
+#: src/Integration/GoogleCustomerReviews.php:243
 msgid "This review request is not available."
 msgstr "Esta solicitação de avaliação não está disponível."
 
-#: src/Integration/GoogleCustomerReviews.php:355
-#: src/Integration/GoogleCustomerReviews.php:422
-msgid "Your choice could not be saved. Please try again."
-msgstr "Sua escolha não pôde ser salva. Por favor, tente novamente."
-
-#: src/Integration/GoogleCustomerReviews.php:382
-#: src/Integration/GoogleCustomerReviews.php:429
-#: src/Integration/GoogleCustomerReviews.php:430
-#: src/Integration/GoogleCustomerReviews.php:480
+#: src/Integration/GoogleCustomerReviews.php:243
+#: src/Integration/GoogleCustomerReviews.php:283
+#: src/Integration/GoogleCustomerReviews.php:284
 #: templates/google-customer-reviews.php:19
-#: assets/src/js/components/GoogleCustomerReviews.jsx:153
+#: assets/src/js/components/GoogleCustomerReviews.jsx:65
 msgid "Google Customer Reviews"
 msgstr "Google Customer Reviews"
 
-#: src/Integration/GoogleCustomerReviews.php:421
+#: src/Integration/GoogleCustomerReviews.php:276
 msgid "Loading Google Customer Reviews…"
 msgstr "Carregando Google Customer Reviews…"
 
-#: src/Integration/GoogleCustomerReviews.php:423
+#: src/Integration/GoogleCustomerReviews.php:277
 msgid "Google Customer Reviews could not load. Please try again."
 msgstr "Google Customer Reviews não pôde ser carregado. Por favor, tente novamente."
 
-#: src/Integration/GoogleCustomerReviews.php:424
+#: src/Integration/GoogleCustomerReviews.php:278
 msgid "Try again"
 msgstr "Tentar novamente"
 
-#: src/Integration/GoogleCustomerReviews.php:425
+#: src/Integration/GoogleCustomerReviews.php:279
 msgid "You can close this page when you finish."
 msgstr "Você pode fechar esta página quando terminar."
 
-#: src/Integration/GoogleCustomerReviews.php:440
+#: src/Integration/GoogleCustomerReviews.php:287
 msgid "Enable JavaScript to use Google Customer Reviews."
 msgstr "Ative o JavaScript para usar o Google Customer Reviews."
-
-#. translators: %s: Date when the customer selected Yes on the Reviewbird prompt.
-#: src/Integration/GoogleCustomerReviews.php:485
-#, php-format
-msgid "Selected Yes on the Reviewbird prompt: %s"
-msgstr "Selecionado Sim no prompt do Reviewbird: %s"
-
-#: src/Integration/GoogleCustomerReviews.php:487
-msgid "The customer has not selected Yes on the Reviewbird prompt."
-msgstr "O cliente não selecionou Sim no prompt do Reviewbird."
-
-#: src/Integration/GoogleCustomerReviews.php:492
-msgid "Google opt-in link"
-msgstr "Link de opt-in do Google"
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Link copied."
-msgstr "Link copiado."
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Select and copy the link."
-msgstr "Selecione e copie o link."
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Copy link"
-msgstr "Copiar link"
 
 #: src/Integration/HealthScheduler.php:171
 msgid "The connection response is invalid. Please try again."
@@ -382,7 +319,7 @@ msgid "Open Reviewbird"
 msgstr "Abrir Reviewbird"
 
 #: assets/src/js/components/ConnectionHealth.jsx:305
-#: assets/src/js/components/GoogleCustomerReviews.jsx:103
+#: assets/src/js/components/GoogleCustomerReviews.jsx:48
 msgid "The connection could not be refreshed. Please try again."
 msgstr "A conexão não pôde ser atualizada. Por favor, tente novamente."
 
@@ -397,104 +334,49 @@ msgid "Refresh connection status"
 msgstr "Atualizar status da conexão"
 
 #: assets/src/js/components/ConnectionHealth.jsx:374
-#: assets/src/js/components/GoogleCustomerReviews.jsx:241
+#: assets/src/js/components/GoogleCustomerReviews.jsx:126
 msgid "Refreshing…"
 msgstr "Atualizando…"
 
 #: assets/src/js/components/ConnectionHealth.jsx:375
-#: assets/src/js/components/GoogleCustomerReviews.jsx:242
 msgid "Refresh"
 msgstr "Atualizar"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:6
-msgid "Widget title"
-msgstr "Título do widget"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:7
-msgid "Customer message"
-msgstr "Mensagem do cliente"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:8
-msgid "Yes button text"
-msgstr "Texto do botão Sim"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:9
-msgid "No button text"
-msgstr "Texto do botão Não"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:53
+#: assets/src/js/components/GoogleCustomerReviews.jsx:14
 msgid "Integration is currently enabled."
 msgstr "A integração está atualmente ativada."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:54
+#: assets/src/js/components/GoogleCustomerReviews.jsx:15
 msgid "Integration is currently disabled."
 msgstr "A integração está atualmente desativada."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:55
+#: assets/src/js/components/GoogleCustomerReviews.jsx:17
 msgid "Integration status is unknown."
 msgstr "O status da integração é desconhecido."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:85
+#: assets/src/js/components/GoogleCustomerReviews.jsx:44
 msgid "Status updated."
 msgstr "Status atualizado."
 
+#: assets/src/js/components/GoogleCustomerReviews.jsx:70
+msgid "When the integration is enabled, Google's consent window opens automatically for every order on the thank you page."
+msgstr "Quando a integração está ativada, a janela de consentimento do Google é aberta automaticamente para cada pedido na página de agradecimento."
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:78
+msgid "Use Configure integration to enable or disable Google Customer Reviews. Then select Refresh status."
+msgstr "Use Configurar integração para ativar ou desativar o Google Customer Reviews. Em seguida, selecione Atualizar status."
+
 #: assets/src/js/components/GoogleCustomerReviews.jsx:96
-msgid "Display setting saved."
-msgstr "Configuração de exibição salva."
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:131
-msgid "Changes saved."
-msgstr "Alterações salvas."
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:136
-msgid "Your changes could not be saved. Please try again."
-msgstr "Suas alterações não puderam ser salvas. Por favor, tente novamente."
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:175
-msgid "Enable widget on the thank you page"
-msgstr "Ativar widget na página de agradecimento"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:181
-msgid "Ask customers to consent to Google Customer Reviews."
-msgstr "Peça aos clientes para consentirem com o Google Customer Reviews."
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:194
-msgid "Requires the Google Customer Reviews integration to be enabled. If you just enabled it, use Refresh to update the status."
-msgstr "Requer que a integração do Google Customer Reviews esteja ativada. Se você acabou de ativá-la, use Atualizar para atualizar o status."
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:212
 msgid "Configure integration"
 msgstr "Configurar integração"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:220
+#: assets/src/js/components/GoogleCustomerReviews.jsx:105
 msgid "Refresh integration status"
 msgstr "Atualizar status da integração"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:267
-msgid "Customize your widget"
-msgstr "Personalize seu widget"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:314
-#: assets/src/js/components/GoogleCustomerReviews.jsx:317
-msgid "Widget preview"
-msgstr "Visualização do widget"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:322
-msgid "Customer message preview"
-msgstr "Visualização da mensagem do cliente"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:380
-msgid "Reset to defaults"
-msgstr "Redefinir para os padrões"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:388
-#: assets/src/js/components/TogglePanel.jsx:52
-msgid "Saving…"
-msgstr "Salvando…"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:389
-msgid "Save changes"
-msgstr "Salvar alterações"
+#: assets/src/js/components/GoogleCustomerReviews.jsx:127
+msgid "Refresh status"
+msgstr "Atualizar status"
 
 #: assets/src/js/components/LoadingSpinner.jsx:8
 msgid "Loading..."
@@ -531,6 +413,10 @@ msgstr "Testar resultados ricos"
 #: assets/src/js/components/SettingsApp.jsx:169
 msgid "Validate schema"
 msgstr "Validar esquema"
+
+#: assets/src/js/components/TogglePanel.jsx:52
+msgid "Saving…"
+msgstr "Salvando…"
 
 #: assets/src/js/components/WelcomeScreen.jsx:89
 msgid "The plugin is installed!"

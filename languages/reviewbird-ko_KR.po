@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:129
-#: src/Admin/Settings.php:130
+#: src/Admin/Settings.php:127
+#: src/Admin/Settings.php:128
 msgid "Reviewbird"
 msgstr "리뷰버드"
 
@@ -31,73 +31,60 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "스팸을 차단하고 불만을 포착하며 최고의 피드백을 보여주는 WooCommerce용 자동 리뷰 수집기입니다."
 
-#: src/Admin/Settings.php:96
+#: src/Admin/Settings.php:94
 msgid "Reviewbird Connection Error:"
 msgstr "리뷰버드 연결 오류:"
 
-#: src/Admin/Settings.php:115
+#: src/Admin/Settings.php:113
 msgid "Successfully connected to Reviewbird!"
 msgstr "리뷰버드에 성공적으로 연결되었습니다!"
 
-#: src/Admin/Settings.php:142
-#: src/Admin/Settings.php:143
+#: src/Admin/Settings.php:140
+#: src/Admin/Settings.php:141
 msgid "Get Started"
 msgstr "시작하기"
 
-#: src/Admin/Settings.php:151
+#: src/Admin/Settings.php:149
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "리뷰버드 설정"
 
-#: src/Admin/Settings.php:152
+#: src/Admin/Settings.php:150
 #: src/Core/Plugin.php:442
 msgid "Settings"
 msgstr "설정"
 
-#: src/Admin/Settings.php:361
+#: src/Admin/Settings.php:355
 msgid "Invalid security token"
 msgstr "잘못된 보안 토큰"
 
-#: src/Admin/Settings.php:365
-#: src/Admin/Settings.php:463
+#: src/Admin/Settings.php:359
+#: src/Admin/Settings.php:423
 msgid "Insufficient permissions"
 msgstr "권한이 부족합니다"
 
-#: src/Admin/Settings.php:379
+#: src/Admin/Settings.php:373
 msgid "Invalid setting"
 msgstr "잘못된 설정"
 
-#: src/Admin/Settings.php:385
+#: src/Admin/Settings.php:379
 msgid "Invalid setting value"
 msgstr "잘못된 설정 값"
 
-#: src/Admin/Settings.php:392
-#: assets/src/js/components/GoogleCustomerReviews.jsx:107
+#: src/Admin/Settings.php:386
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr "설정을 저장할 수 없습니다. 다시 시도해 주세요."
 
-#: src/Admin/Settings.php:399
+#: src/Admin/Settings.php:393
 msgid "Setting updated successfully"
 msgstr "설정이 성공적으로 업데이트되었습니다"
 
-#: src/Admin/Settings.php:421
-msgid "Enter text in each prompt field."
-msgstr "각 프롬프트 필드에 텍스트를 입력하세요."
-
-#: src/Admin/Settings.php:426
-msgid "Prompt text is empty or too long."
-msgstr "프롬프트 텍스트가 비어 있거나 너무 깁니다."
-
-#: src/Admin/Settings.php:433
-msgid "The prompt could not be saved. Please try again."
-msgstr "프롬프트를 저장할 수 없습니다. 다시 시도해 주세요."
-
-#: src/Admin/Settings.php:446
+#: src/Admin/Settings.php:406
 msgid "The connection status could not be refreshed. Please try again."
 msgstr "연결 상태를 새로 고칠 수 없습니다. 다시 시도해 주세요."
 
-#: src/Admin/Settings.php:453
+#: src/Admin/Settings.php:413
 msgid "Connection status refreshed"
 msgstr "연결 상태가 새로 고쳐졌습니다"
 
@@ -195,87 +182,37 @@ msgstr "익명"
 msgid "Rated %d out of 5"
 msgstr "5점 만점에 %d점 평가됨"
 
-#: src/Integration/GoogleCustomerReviews.php:114
-msgid "Rate your purchase experience"
-msgstr "구매 경험을 평가해 주세요"
-
-#: src/Integration/GoogleCustomerReviews.php:115
-msgid "We use Google Customer Reviews to collect feedback about your purchase. Would you like to receive a short survey after your order arrives?"
-msgstr "구매에 대한 피드백을 수집하기 위해 Google 고객 리뷰를 사용합니다. 주문이 도착한 후 짧은 설문조사를 받으시겠습니까?"
-
-#: src/Integration/GoogleCustomerReviews.php:116
-msgid "Yes"
-msgstr "예"
-
-#: src/Integration/GoogleCustomerReviews.php:117
-msgid "No"
-msgstr "아니요"
-
-#: src/Integration/GoogleCustomerReviews.php:293
-#: src/Integration/GoogleCustomerReviews.php:333
-#: src/Integration/GoogleCustomerReviews.php:382
+#: src/Integration/GoogleCustomerReviews.php:243
 msgid "This review request is not available."
 msgstr "이 리뷰 요청은 사용할 수 없습니다."
 
-#: src/Integration/GoogleCustomerReviews.php:355
-#: src/Integration/GoogleCustomerReviews.php:422
-msgid "Your choice could not be saved. Please try again."
-msgstr "선택 사항을 저장할 수 없습니다. 다시 시도해 주세요."
-
-#: src/Integration/GoogleCustomerReviews.php:382
-#: src/Integration/GoogleCustomerReviews.php:429
-#: src/Integration/GoogleCustomerReviews.php:430
-#: src/Integration/GoogleCustomerReviews.php:480
+#: src/Integration/GoogleCustomerReviews.php:243
+#: src/Integration/GoogleCustomerReviews.php:283
+#: src/Integration/GoogleCustomerReviews.php:284
 #: templates/google-customer-reviews.php:19
-#: assets/src/js/components/GoogleCustomerReviews.jsx:153
+#: assets/src/js/components/GoogleCustomerReviews.jsx:65
 msgid "Google Customer Reviews"
 msgstr "Google 고객 리뷰"
 
-#: src/Integration/GoogleCustomerReviews.php:421
+#: src/Integration/GoogleCustomerReviews.php:276
 msgid "Loading Google Customer Reviews…"
 msgstr "Google 고객 리뷰를 불러오는 중…"
 
-#: src/Integration/GoogleCustomerReviews.php:423
+#: src/Integration/GoogleCustomerReviews.php:277
 msgid "Google Customer Reviews could not load. Please try again."
 msgstr "Google 고객 리뷰를 불러올 수 없습니다. 다시 시도해 주세요."
 
-#: src/Integration/GoogleCustomerReviews.php:424
+#: src/Integration/GoogleCustomerReviews.php:278
 msgid "Try again"
 msgstr "다시 시도"
 
-#: src/Integration/GoogleCustomerReviews.php:425
+#: src/Integration/GoogleCustomerReviews.php:279
 msgid "You can close this page when you finish."
 msgstr "완료되면 이 페이지를 닫을 수 있습니다."
 
-#: src/Integration/GoogleCustomerReviews.php:440
+#: src/Integration/GoogleCustomerReviews.php:287
 msgid "Enable JavaScript to use Google Customer Reviews."
 msgstr "Google 고객 리뷰를 사용하려면 JavaScript를 활성화하세요."
-
-#. translators: %s: Date when the customer selected Yes on the Reviewbird prompt.
-#: src/Integration/GoogleCustomerReviews.php:485
-#, php-format
-msgid "Selected Yes on the Reviewbird prompt: %s"
-msgstr "Reviewbird 프롬프트에서 예를 선택한 날짜: %s"
-
-#: src/Integration/GoogleCustomerReviews.php:487
-msgid "The customer has not selected Yes on the Reviewbird prompt."
-msgstr "고객이 Reviewbird 프롬프트에서 예를 선택하지 않았습니다."
-
-#: src/Integration/GoogleCustomerReviews.php:492
-msgid "Google opt-in link"
-msgstr "Google 옵트인 링크"
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Link copied."
-msgstr "링크가 복사되었습니다."
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Select and copy the link."
-msgstr "링크를 선택하고 복사하세요."
-
-#: src/Integration/GoogleCustomerReviews.php:494
-msgid "Copy link"
-msgstr "링크 복사"
 
 #: src/Integration/HealthScheduler.php:171
 msgid "The connection response is invalid. Please try again."
@@ -382,7 +319,7 @@ msgid "Open Reviewbird"
 msgstr "리뷰버드 열기"
 
 #: assets/src/js/components/ConnectionHealth.jsx:305
-#: assets/src/js/components/GoogleCustomerReviews.jsx:103
+#: assets/src/js/components/GoogleCustomerReviews.jsx:48
 msgid "The connection could not be refreshed. Please try again."
 msgstr "연결을 새로 고칠 수 없습니다. 다시 시도해 주세요."
 
@@ -397,104 +334,49 @@ msgid "Refresh connection status"
 msgstr "연결 상태 새로 고침"
 
 #: assets/src/js/components/ConnectionHealth.jsx:374
-#: assets/src/js/components/GoogleCustomerReviews.jsx:241
+#: assets/src/js/components/GoogleCustomerReviews.jsx:126
 msgid "Refreshing…"
 msgstr "새로 고치는 중…"
 
 #: assets/src/js/components/ConnectionHealth.jsx:375
-#: assets/src/js/components/GoogleCustomerReviews.jsx:242
 msgid "Refresh"
 msgstr "새로 고침"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:6
-msgid "Widget title"
-msgstr "위젯 제목"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:7
-msgid "Customer message"
-msgstr "고객 메시지"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:8
-msgid "Yes button text"
-msgstr "예 버튼 텍스트"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:9
-msgid "No button text"
-msgstr "아니요 버튼 텍스트"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:53
+#: assets/src/js/components/GoogleCustomerReviews.jsx:14
 msgid "Integration is currently enabled."
 msgstr "통합이 현재 활성화되어 있습니다."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:54
+#: assets/src/js/components/GoogleCustomerReviews.jsx:15
 msgid "Integration is currently disabled."
 msgstr "통합이 현재 비활성화되어 있습니다."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:55
+#: assets/src/js/components/GoogleCustomerReviews.jsx:17
 msgid "Integration status is unknown."
 msgstr "통합 상태를 알 수 없습니다."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:85
+#: assets/src/js/components/GoogleCustomerReviews.jsx:44
 msgid "Status updated."
 msgstr "상태가 업데이트되었습니다."
 
+#: assets/src/js/components/GoogleCustomerReviews.jsx:70
+msgid "When the integration is enabled, Google's consent window opens automatically for every order on the thank you page."
+msgstr "통합이 활성화되면, 감사 페이지에서 모든 주문에 대해 Google의 동의 창이 자동으로 열립니다."
+
+#: assets/src/js/components/GoogleCustomerReviews.jsx:78
+msgid "Use Configure integration to enable or disable Google Customer Reviews. Then select Refresh status."
+msgstr "Google 고객 리뷰를 활성화하거나 비활성화하려면 통합 구성을 사용하세요. 그런 다음 상태 새로 고침을 선택하세요."
+
 #: assets/src/js/components/GoogleCustomerReviews.jsx:96
-msgid "Display setting saved."
-msgstr "표시 설정이 저장되었습니다."
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:131
-msgid "Changes saved."
-msgstr "변경 사항이 저장되었습니다."
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:136
-msgid "Your changes could not be saved. Please try again."
-msgstr "변경 사항을 저장할 수 없습니다. 다시 시도해 주세요."
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:175
-msgid "Enable widget on the thank you page"
-msgstr "감사 페이지에서 위젯 활성화"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:181
-msgid "Ask customers to consent to Google Customer Reviews."
-msgstr "고객에게 Google 고객 리뷰 동의를 요청하세요."
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:194
-msgid "Requires the Google Customer Reviews integration to be enabled. If you just enabled it, use Refresh to update the status."
-msgstr "Google 고객 리뷰 통합이 활성화되어 있어야 합니다. 방금 활성화한 경우, 상태를 업데이트하려면 새로 고침을 사용하세요."
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:212
 msgid "Configure integration"
 msgstr "통합 구성"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:220
+#: assets/src/js/components/GoogleCustomerReviews.jsx:105
 msgid "Refresh integration status"
 msgstr "통합 상태 새로 고침"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:267
-msgid "Customize your widget"
-msgstr "위젯 사용자 지정"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:314
-#: assets/src/js/components/GoogleCustomerReviews.jsx:317
-msgid "Widget preview"
-msgstr "위젯 미리보기"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:322
-msgid "Customer message preview"
-msgstr "고객 메시지 미리보기"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:380
-msgid "Reset to defaults"
-msgstr "기본값으로 재설정"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:388
-#: assets/src/js/components/TogglePanel.jsx:52
-msgid "Saving…"
-msgstr "저장 중…"
-
-#: assets/src/js/components/GoogleCustomerReviews.jsx:389
-msgid "Save changes"
-msgstr "변경 사항 저장"
+#: assets/src/js/components/GoogleCustomerReviews.jsx:127
+msgid "Refresh status"
+msgstr "상태 새로 고침"
 
 #: assets/src/js/components/LoadingSpinner.jsx:8
 msgid "Loading..."
@@ -531,6 +413,10 @@ msgstr "리치 결과 테스트"
 #: assets/src/js/components/SettingsApp.jsx:169
 msgid "Validate schema"
 msgstr "스키마 검증"
+
+#: assets/src/js/components/TogglePanel.jsx:52
+msgid "Saving…"
+msgstr "저장 중…"
 
 #: assets/src/js/components/WelcomeScreen.jsx:89
 msgid "The plugin is installed!"
