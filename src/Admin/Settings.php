@@ -61,6 +61,7 @@ class Settings {
 	 */
 	public function __construct() {
 		add_action( 'wp_ajax_reviewbird_update_setting', array( $this, 'handle_setting_update' ) );
+		add_action( 'wp_ajax_reviewbird_get_health_status', array( $this, 'handle_get_health_status' ) );
 		add_action( 'wp_ajax_reviewbird_clear_health_cache', array( $this, 'handle_clear_health_cache' ) );
 		add_action( 'admin_post_' . self::REGISTRATION_INTENT_ACTION, array( $this, 'handle_registration_intent' ) );
 		add_action( 'admin_notices', array( $this, 'display_oauth_notices' ) );
@@ -399,11 +400,24 @@ class Settings {
 	 * Refresh the saved connection status without discarding the last good value.
 	 */
 	public function handle_clear_health_cache(): void {
+		$this->handle_get_health_status( true );
+	}
+
+	/**
+	 * Return the admin connection status with a five-minute cache.
+	 *
+	 * @param bool $force_refresh Whether to bypass the transient cache.
+	 */
+	public function handle_get_health_status( bool $force_refresh = false ): void {
 		$this->verify_ajax_request();
 
-		$status = ( new HealthScheduler() )->refresh_health_status();
-		if ( is_wp_error( $status ) ) {
-			wp_send_json_error( __( 'The connection status could not be refreshed. Please try again.', 'reviewbird' ), 502 );
+		$status = $force_refresh ? false : get_transient( 'reviewbird_admin_health_status' );
+		if ( false === $status ) {
+			$status = ( new HealthScheduler() )->refresh_health_status();
+			if ( is_wp_error( $status ) ) {
+				wp_send_json_error( __( 'The connection status could not be refreshed. Please try again.', 'reviewbird' ), 502 );
+			}
+			set_transient( 'reviewbird_admin_health_status', $status, 5 * MINUTE_IN_SECONDS );
 		}
 
 		wp_send_json_success(

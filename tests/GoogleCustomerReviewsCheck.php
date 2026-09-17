@@ -12,6 +12,7 @@ namespace {
 	define( 'REVIEWBIRD_PLUGIN_DIR', dirname( __DIR__ ) . '/' );
 	define( 'REVIEWBIRD_PLUGIN_URL', 'https://store.test/wp-content/plugins/reviewbird/' );
 	define( 'REVIEWBIRD_VERSION', 'test' );
+	define( 'MINUTE_IN_SECONDS', 60 );
 
 	class WC_Order {
 		public $id;
@@ -130,6 +131,14 @@ namespace reviewbird\Admin {
 	function reviewbird_get_store_status() { return \reviewbird\Integration\reviewbird_get_store_status(); }
 	function reviewbird_get_store_id() { return \reviewbird\Integration\get_option( 'reviewbird_store_id' ); }
 	function reviewbird_get_api_url() { return 'https://app.reviewbird.test'; }
+	function get_transient( $key ) {
+		$cached = $GLOBALS['gcr_transients'][ $key ] ?? null;
+		return $cached && $cached['expires'] > $GLOBALS['gcr_cache_time'] ? $cached['value'] : false;
+	}
+	function set_transient( $key, $value, $expiration ) {
+		$GLOBALS['gcr_transients'][ $key ] = array( 'value' => $value, 'expires' => $GLOBALS['gcr_cache_time'] + $expiration );
+		return true;
+	}
 	function wp_send_json_error( $data, $code ) { throw new GcrAdminResponse( $data, $code ); }
 	function wp_send_json_success( $data ) { throw new GcrAdminResponse( $data, 200 ); }
 }
@@ -162,6 +171,8 @@ namespace {
 	$GLOBALS['gcr_saves'] = 0;
 	$GLOBALS['gcr_current_action'] = '';
 	$GLOBALS['gcr_api_calls'] = 0;
+	$GLOBALS['gcr_transients'] = array();
+	$GLOBALS['gcr_cache_time'] = 0;
 	$GLOBALS['gcr_option_write_fail'] = false;
 	$GLOBALS['gcr_salt'] = 'test-site-secret';
 	$GLOBALS['gcr_received'] = true;
@@ -351,12 +362,32 @@ namespace {
 	check( false !== strpos( $page, 'noindex, nofollow' ), 'Direct page can be indexed.' );
 	check( $config['google'] === card_config( $page )['google'], 'Checkout and landing page use different order details.' );
 
-	// Manual refresh uses the scheduler and returns the same saved GCR state as the page.
+	// Admin page loads share a five-minute cache. Manual refresh bypasses it.
 	$settings = new \reviewbird\Admin\Settings();
 	$_POST = array( 'nonce' => 'valid-nonce' );
 	$GLOBALS['gcr_admin'] = true;
 	$fresh = $initial_status;
 	$fresh['google_customer_reviews']['enabled'] = false;
+	$GLOBALS['gcr_api_response'] = $initial_status;
+	$before_calls = $GLOBALS['gcr_api_calls'];
+	try { $settings->handle_get_health_status(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		check( 200 === $response->getCode() && $initial_status === $response->data['status'], 'Page load did not return the API response.' );
+	}
+	check( $before_calls + 1 === $GLOBALS['gcr_api_calls'], 'Page load did not fetch a missing cache.' );
+	$GLOBALS['gcr_api_response'] = $fresh;
+	$GLOBALS['gcr_cache_time'] = 299;
+	try { $settings->handle_get_health_status(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		check( $initial_status === $response->data['status'] && $before_calls + 1 === $GLOBALS['gcr_api_calls'], 'Page load ignored the five-minute cache.' );
+	}
+	$GLOBALS['gcr_cache_time'] = 300;
+	try { $settings->handle_get_health_status(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		check( $fresh === $response->data['status'] && $before_calls + 2 === $GLOBALS['gcr_api_calls'], 'Page load did not refresh the expired cache.' );
+	}
+	$GLOBALS['gcr_api_response'] = $initial_status;
+	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		check( $initial_status === $response->data['status'] && $before_calls + 3 === $GLOBALS['gcr_api_calls'], 'Manual refresh did not bypass the cache.' );
+		check( $initial_status === \reviewbird\Admin\get_transient( 'reviewbird_admin_health_status' ), 'Manual refresh did not replace the transient.' );
+	}
 	$GLOBALS['gcr_api_response'] = $fresh;
 	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 		check( 200 === $response->getCode() && $response->data['status'] === $fresh, 'Refresh did not return the fresh response.' );
@@ -366,6 +397,9 @@ namespace {
 	check( $GLOBALS['gcr_options']['reviewbird_store_status'] === $fresh, 'Refresh did not update the saved cache.' );
 	$before_calls = $GLOBALS['gcr_api_calls'];
 	$_POST['nonce'] = 'wrong';
+	try { $settings->handle_get_health_status(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		check( 403 === $response->getCode() && $before_calls === $GLOBALS['gcr_api_calls'], 'Invalid nonce read the admin cache.' );
+	}
 	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 		check( 403 === $response->getCode() && $before_calls === $GLOBALS['gcr_api_calls'], 'Invalid nonce refreshed the cache.' );
 	}
@@ -374,12 +408,16 @@ namespace {
 	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 		check( 403 === $response->getCode() && $before_calls === $GLOBALS['gcr_api_calls'], 'Unprivileged user refreshed the cache.' );
 	}
+	try { $settings->handle_get_health_status(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		check( 403 === $response->getCode() && $before_calls === $GLOBALS['gcr_api_calls'], 'Unprivileged user read the admin cache.' );
+	}
 	$GLOBALS['gcr_admin'] = true;
 	foreach ( array( new WP_Error( 'network', 'Offline' ), new WP_Error( 'http', 'Server error', array( 'status' => 500, 'response' => array( 'status' => 'not_connected' ) ) ), null, array(), array( 'status' => array() ) ) as $bad_response ) {
 		$GLOBALS['gcr_api_response'] = $bad_response;
 		try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 			check( 502 === $response->getCode(), 'Failed refresh returned success.' );
 			check( $GLOBALS['gcr_options']['reviewbird_store_status'] === $fresh, 'Failed refresh deleted the last good cache.' );
+			check( $fresh === \reviewbird\Admin\get_transient( 'reviewbird_admin_health_status' ), 'Failed refresh replaced the transient.' );
 		}
 	}
 	$GLOBALS['gcr_api_response'] = $initial_status;

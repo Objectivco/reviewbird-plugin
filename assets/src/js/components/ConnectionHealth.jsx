@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
-const HEALTH_CHECK_INTERVAL = 300000; // 5 minutes
-
 const STATUS_CONFIG = {
 	healthy: {
 		text: __( 'Connected to Reviewbird', 'reviewbird' ),
@@ -210,44 +208,27 @@ function StatusIcon( { status } ) {
 	}
 }
 
-async function clearHealthCache() {
+export async function fetchHealthStatus( signal, forceRefresh = false ) {
 	const formData = new FormData();
-	formData.append( 'action', 'reviewbird_clear_health_cache' );
+	formData.append(
+		'action',
+		forceRefresh
+			? 'reviewbird_clear_health_cache'
+			: 'reviewbird_get_health_status'
+	);
 	formData.append( 'nonce', window.reviewbirdAdmin.nonce );
 
 	const response = await fetch( window.reviewbirdAdmin.ajaxUrl, {
 		method: 'POST',
 		body: formData,
+		signal,
 	} );
-	const result = await response.json();
-	if ( ! response.ok || ! result.success ) {
-		throw new Error( 'Unable to refresh the store connection' );
-	}
-}
-
-export async function fetchHealthStatus( signal ) {
-	const response = await fetch(
-		`${
-			window.reviewbirdAdmin.apiUrl
-		}/api/woocommerce/health?domain=${ encodeURIComponent(
-			window.reviewbirdAdmin.siteDomain || window.location.hostname
-		) }`,
-		{
-			method: 'GET',
-			signal,
-			cache: 'no-store',
-			headers: { Accept: 'application/json' },
-		}
-	);
-
-	const data = await response.json().catch( () => ( {} ) );
-	if (
-		! response.ok &&
-		! ( response.status === 404 && data.status === 'not_connected' )
-	) {
+	const result = await response.json().catch( () => null );
+	if ( ! response.ok || ! result?.success ) {
 		throw new Error( 'Unable to check the store connection' );
 	}
-	if ( ! data.status ) {
+	const data = result.data?.status;
+	if ( typeof data?.status !== 'string' || ! data.status ) {
 		throw new Error( 'Invalid store status' );
 	}
 	const status = data.status;
@@ -287,20 +268,19 @@ export default function ConnectionHealth() {
 	const [ refreshing, setRefreshing ] = useState( false );
 	const [ refreshError, setRefreshError ] = useState( '' );
 
-	const checkHealth = useCallback( async ( shouldClearCache = false ) => {
+	const checkHealth = useCallback( async ( forceRefresh = false ) => {
 		setRefreshing( true );
 		setRefreshError( '' );
 		try {
-			if ( shouldClearCache ) {
-				await clearHealthCache();
-			}
-
-			const { data, status } = await fetchHealthStatus();
+			const { data, status } = await fetchHealthStatus(
+				undefined,
+				forceRefresh
+			);
 			setHealthData( data );
 			setHealthStatus( status );
 			setLastChecked( new Date() );
 		} catch {
-			if ( shouldClearCache ) {
+			if ( forceRefresh ) {
 				setRefreshError(
 					__(
 						'The connection could not be refreshed. Please try again.',
@@ -318,8 +298,6 @@ export default function ConnectionHealth() {
 
 	useEffect( () => {
 		checkHealth();
-		const interval = setInterval( checkHealth, HEALTH_CHECK_INTERVAL );
-		return () => clearInterval( interval );
 	}, [ checkHealth ] );
 
 	const config = STATUS_CONFIG[ healthStatus ] || STATUS_CONFIG.checking;

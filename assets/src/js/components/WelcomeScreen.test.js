@@ -83,20 +83,30 @@ afterEach( () => {
 	delete global.fetch;
 } );
 
-test( 'checks the public store domain and accepts a confirmed new store', async () => {
+test( 'checks the cached WordPress endpoint and accepts a confirmed new store', async () => {
 	window.reviewbirdAdmin = {
-		apiUrl: 'https://app.example.com',
-		siteDomain: 'shop.example.com',
+		ajaxUrl: '/admin-ajax.php',
+		nonce: 'admin-token',
 	};
 	global.fetch = jest.fn().mockResolvedValue( {
-		ok: false,
-		status: 404,
-		json: async () => ( { status: 'not_connected' } ),
+		ok: true,
+		json: async () => ( {
+			success: true,
+			data: { status: { status: 'not_connected' } },
+		} ),
 	} );
-	expect( ( await fetchHealthStatus() ).status ).toBe( 'not_connected' );
-	expect( fetch.mock.calls[ 0 ][ 0 ] ).toBe(
-		'https://app.example.com/api/woocommerce/health?domain=shop.example.com'
+	const controller = new AbortController();
+	expect( ( await fetchHealthStatus( controller.signal ) ).status ).toBe(
+		'not_connected'
 	);
+	const [ url, request ] = fetch.mock.calls[ 0 ];
+	expect( url ).toBe( '/admin-ajax.php' );
+	expect( request.method ).toBe( 'POST' );
+	expect( request.signal ).toBe( controller.signal );
+	expect( request.body.get( 'action' ) ).toBe(
+		'reviewbird_get_health_status'
+	);
+	expect( request.body.get( 'nonce' ) ).toBe( 'admin-token' );
 } );
 
 test.each( [
@@ -106,6 +116,15 @@ test.each( [
 		json: async () => ( { status: 'not_connected' } ),
 	},
 	{ ok: true, status: 200, json: async () => ( {} ) },
+	{ ok: true, json: async () => ( { success: false } ) },
+	{ ok: true, json: async () => ( { success: true, data: {} } ) },
+	{
+		ok: true,
+		json: async () => ( {
+			success: true,
+			data: { status: { status: [] } },
+		} ),
+	},
 ] )(
 	'reports failed checks so the welcome page can apply its fallback',
 	async ( response ) => {
@@ -142,7 +161,10 @@ test.each( [
 		};
 		global.fetch = jest.fn().mockImplementation( async () => ( {
 			ok: true,
-			json: async () => ( { ...data } ),
+			json: async () => ( {
+				success: true,
+				data: { status: { ...data } },
+			} ),
 		} ) );
 		global.IS_REACT_ACT_ENVIRONMENT = true;
 		const container = document.createElement( 'div' );
@@ -278,7 +300,10 @@ test.each( [ 'new', 'setup', 'ready' ] )(
 		};
 		global.fetch = jest.fn().mockResolvedValue( {
 			ok: true,
-			json: async () => ( { status: 'healthy', store_id: 7 } ),
+			json: async () => ( {
+				success: true,
+				data: { status: { status: 'healthy', store_id: 7 } },
+			} ),
 		} );
 		global.IS_REACT_ACT_ENVIRONMENT = true;
 		const container = document.createElement( 'div' );

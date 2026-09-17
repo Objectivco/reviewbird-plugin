@@ -17,19 +17,27 @@ const { act } = require(
 	} )
 );
 
-test( 'health status uses WordPress translations instead of English API messages', async () => {
+test( 'health status uses translations, checks once on load, and permits manual refresh', async () => {
+	jest.useFakeTimers();
 	global.IS_REACT_ACT_ENVIRONMENT = true;
 	window.reviewbirdAdmin = {
 		apiUrl: 'https://app.example.com',
+		ajaxUrl: '/admin-ajax.php',
+		nonce: 'admin-token',
 		locale: 'de-DE',
 	};
 	global.fetch = jest.fn().mockResolvedValue( {
 		ok: true,
 		json: async () => ( {
-			status: 'healthy',
-			store_id: 7,
-			message:
-				'An English API diagnostic that must not replace the translation.',
+			success: true,
+			data: {
+				status: {
+					status: 'healthy',
+					store_id: 7,
+					message:
+						'An English API diagnostic that must not replace the translation.',
+				},
+			},
 		} ),
 	} );
 	const time = jest
@@ -49,9 +57,20 @@ test( 'health status uses WordPress translations instead of English API messages
 			'An English API diagnostic'
 		);
 		expect( time ).toHaveBeenCalledWith( 'de-DE' );
+		await act( async () => jest.advanceTimersByTime( 30 * 60 * 1000 ) );
+		expect( global.fetch ).toHaveBeenCalledTimes( 1 );
+		expect( fetch.mock.calls[ 0 ][ 1 ].body.get( 'action' ) ).toBe(
+			'reviewbird_get_health_status'
+		);
+		await act( async () => container.querySelector( 'button' ).click() );
+		expect( global.fetch ).toHaveBeenCalledTimes( 2 );
+		expect( fetch.mock.calls[ 1 ][ 1 ].body.get( 'action' ) ).toBe(
+			'reviewbird_clear_health_cache'
+		);
 	} finally {
 		act( () => root.unmount() );
 		time.mockRestore();
+		jest.useRealTimers();
 		delete window.reviewbirdAdmin;
 		delete global.fetch;
 		delete global.IS_REACT_ACT_ENVIRONMENT;
@@ -70,7 +89,10 @@ test( 'refresh is disabled while pending and reports failure without replacing t
 		.fn()
 		.mockResolvedValueOnce( {
 			ok: true,
-			json: async () => ( { status: 'healthy', store_id: 7 } ),
+			json: async () => ( {
+				success: true,
+				data: { status: { status: 'healthy', store_id: 7 } },
+			} ),
 		} )
 		.mockImplementationOnce(
 			() =>
@@ -150,10 +172,15 @@ test.each( [
 		global.fetch = jest.fn().mockResolvedValue( {
 			ok: true,
 			json: async () => ( {
-				status,
-				store_id: 7,
-				org_slug: 'my-org',
-				error_code: 'internal_diagnostic',
+				success: true,
+				data: {
+					status: {
+						status,
+						store_id: 7,
+						org_slug: 'my-org',
+						error_code: 'internal_diagnostic',
+					},
+				},
 			} ),
 		} );
 		const container = document.createElement( 'div' );

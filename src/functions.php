@@ -397,6 +397,7 @@ function reviewbird_get_store_status( bool $skip_cache = false ): ?array {
  */
 function reviewbird_clear_status_cache(): void {
 	delete_option( 'reviewbird_store_status' );
+	delete_transient( 'reviewbird_admin_health_status' );
 }
 
 /**
