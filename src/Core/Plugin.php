@@ -23,6 +23,7 @@ use reviewbird\Integration\SchemaMarkup;
 use reviewbird\Integration\SchemaScheduler;
 use reviewbird\Integration\StarRatingDisplay;
 use reviewbird\Integration\WooCommerce;
+use reviewbird\Integration\WPRocket;
 
 /**
  * The core plugin class.
@@ -98,6 +99,7 @@ class Plugin {
 
 		// WooCommerce integration (adds CusRev media to reviews REST API).
 		new WooCommerce();
+		new WPRocket();
 
 		// Do not copy cached Reviewbird data when a product is duplicated.
 		add_filter( 'woocommerce_duplicate_product_exclude_meta', array( $this, 'exclude_reviewbird_meta_from_product_duplicates' ) );
