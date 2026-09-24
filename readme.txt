@@ -95,6 +95,7 @@ Setup guides, shortcode reference, and developer hooks are documented at [review
 
 * `[reviewbird_widget]` — Displays the full review widget. Optional `product_id` attribute (defaults to the current product).
 * `[reviewbird_showcase id="123"]` — Displays a review showcase. The `id` attribute is required (get it from your Reviewbird dashboard).
+* `[reviewbird_badge]` — Displays the connected store’s rating, review count, and Reviewbird logo. Optional attributes: `layout` (`horizontal` or `seal`), `theme` (`light` or `dark`), and `alignment` (`left`, `center`, or `right`). Defaults: `horizontal`, `light`, and `left`.
 * `[reviewbird_stars]` — Displays the star rating and review count. Optional `product_id` attribute (defaults to the current product).
 
 == External Services ==

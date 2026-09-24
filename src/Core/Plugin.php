@@ -86,6 +86,7 @@ class Plugin {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_star_styles' ) );
 		add_shortcode( 'reviewbird_widget', array( $this, 'widget_shortcode' ) );
 		add_shortcode( 'reviewbird_showcase', array( $this, 'carousel_shortcode' ) );
+		add_shortcode( 'reviewbird_badge', array( $this, 'badge_shortcode' ) );
 		add_shortcode( 'reviewbird_stars', array( $this, 'stars_shortcode' ) );
 
 		// Rating override integration.
@@ -287,6 +288,58 @@ class Plugin {
 			esc_attr( $store_id ),
 			esc_attr( $carousel_id ),
 			esc_attr( $locale )
+		);
+	}
+
+	/**
+	 * Handle the Reviewbird store rating badge shortcode.
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string
+	 */
+	public function badge_shortcode( $atts ) {
+		$store_id = reviewbird_get_store_id();
+		if ( ! $store_id ) {
+			return '<!-- Reviewbird Badge: Store not connected -->';
+		}
+
+		$choices = array(
+			'layout'    => array( 'horizontal', 'seal' ),
+			'theme'     => array( 'light', 'dark' ),
+			'alignment' => array( 'left', 'center', 'right' ),
+		);
+		$atts    = shortcode_atts(
+			array(
+				'layout'    => 'horizontal',
+				'theme'     => 'light',
+				'alignment' => 'left',
+			),
+			$atts,
+			'reviewbird_badge'
+		);
+
+		foreach ( $choices as $name => $allowed ) {
+			if ( ! in_array( $atts[ $name ], $allowed, true ) ) {
+				$atts[ $name ] = $allowed[0];
+			}
+		}
+
+		if ( ! wp_script_is( 'reviewbird-badge' ) && ! wp_script_is( 'reviewbird-badge', 'done' ) ) {
+			wp_enqueue_script(
+				'reviewbird-badge',
+				reviewbird_get_api_url() . '/build/review-badge.js',
+				array(),
+				null,
+				true
+			);
+		}
+
+		return sprintf(
+			'<div data-reviewbird-store-badge data-store-id="%s" data-layout="%s" data-theme="%s" data-alignment="%s"></div>',
+			esc_attr( $store_id ),
+			esc_attr( $atts['layout'] ),
+			esc_attr( $atts['theme'] ),
+			esc_attr( $atts['alignment'] )
 		);
 	}
 
