@@ -289,6 +289,18 @@ namespace {
 				$GLOBALS['reviewbird_test_post_meta'][4100]['_reviewbird_rating_counts']
 			);
 		}
+
+		public function test_zero_ratings_do_not_fetch_or_restore_old_api_totals(): void {
+			$GLOBALS['reviewbird_test_options']['reviewbird_store_id'] = 37;
+			$GLOBALS['reviewbird_test_post_meta'][4101] = array(
+				'_reviewbird_avg_stars' => '0',
+				'_reviewbird_reviews_count' => '0',
+				'_reviewbird_rating_counts' => array_fill( 1, 5, 0 ),
+			);
+			reviewbird_sync_product_rating( 4101 );
+			self::assertNull( $GLOBALS['reviewbird_test_remote_get'] );
+			self::assertSame( '0', get_post_meta( 4101, '_reviewbird_reviews_count', true ) );
+		}
 	}
 }
 

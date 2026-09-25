@@ -445,13 +445,11 @@ class Plugin {
 	 * Render the reviewbird widget after product summary.
 	 */
 	public function render_product_widget(): void {
-		if ( self::$shortcode_rendered ) {
+		if ( self::$shortcode_rendered || ! reviewbird_can_show_widget() ) {
 			return;
 		}
 
-		if ( reviewbird_can_show_widget() ) {
-			echo wp_kses_post( reviewbird_render_widget() );
-		}
+		echo wp_kses_post( reviewbird_render_widget() );
 	}
 
 	/**

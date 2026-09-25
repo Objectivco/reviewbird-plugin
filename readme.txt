@@ -1,9 +1,9 @@
 === Reviewbird Product Reviews for WooCommerce ===
 Contributors: reviewbird, clifgriffin
 Tags: woocommerce, woocommerce product reviews, woocommerce reviews, judge.me, rich snippets, review snippets, SEO
-Requires at least: 5.9
+Requires at least: 6.0
 Tested up to: 7.1
-Stable tag: 1.2.1
+Stable tag: 1.3.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -228,6 +228,15 @@ For development: `pnpm run dev`
 
 == Changelog ==
 
+= 1.3.0 =
+New - Add the [reviewbird_badge] shortcode to display the store rating and review count.
+Update - Cache admin connection checks for five minutes and remove repeated browser checks. The Refresh button requests a new status.
+Update - Require WordPress 6.0 or later. PHP 7.4 remains supported.
+Fix - Keep Reviewbird assets out of the WP Rocket local file cache.
+Fix - Allow zero review totals to clear product ratings. Prevent old ratings, review text, and review schema from appearing after a reset.
+Fix - Keep the admin connection cache current after background health checks.
+Fix - Reject invalid product IDs before rating updates.
+
 = 1.2.1 =
 Update - Open Google's standard consent window automatically on WooCommerce and CheckoutWC order confirmation pages when Google Customer Reviews is enabled.
 Update - Remove the separate Yes/No prompt, prompt editor, and local display switch. Signed consent links remain available for email invitations.
@@ -323,6 +332,9 @@ Fix - Fix issue with min_rating parameter for API calls.
 * Compatibility updates for WordPress.org submission
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+Adds a store rating badge and fixes rating resets, connection status caching, and WP Rocket asset handling. Requires WordPress 6.0 or later and PHP 7.4 or later.
 
 = 1.2.1 =
 Google Customer Reviews now opens Google's consent window automatically when enabled. Previous prompt settings no longer control its display. Signed email links continue to work.

@@ -31,11 +31,10 @@ class RatingsController {
 			return new WP_Error( 'missing_product_id', __( 'Product ID is required', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
-		$product_id = absint( $product_id );
-
-		if ( ! $product_id ) {
+		if ( ! is_numeric( $product_id ) || false === filter_var( $product_id, FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 1 ) ) ) ) {
 			return new WP_Error( 'invalid_product_id', __( 'Invalid product ID', 'reviewbird' ), array( 'status' => 400 ) );
 		}
+		$product_id = (int) $product_id;
 
 		if ( 'product' !== get_post_type( $product_id ) ) {
 			return new WP_Error( 'product_not_found', __( 'Product not found', 'reviewbird' ), array( 'status' => 404 ) );

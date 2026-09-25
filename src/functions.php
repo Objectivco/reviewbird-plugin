@@ -511,7 +511,7 @@ function reviewbird_sync_product_rating( int $product_id ): void {
 
 	$synced[ $product_id ] = true;
 
-	if ( ! empty( get_post_meta( $product_id, '_reviewbird_reviews_count', true ) ) ) {
+	if ( '' !== get_post_meta( $product_id, '_reviewbird_reviews_count', true ) ) {
 		return;
 	}
 
@@ -639,7 +639,7 @@ function reviewbird_enqueue_widget_script(): void {
  */
 function reviewbird_get_cached_product_reviews( int $product_id ): array {
 	// Setup reads reviews in the browser with its temporary token.
-	if ( reviewbird_is_onboarding_preview() ) {
+	if ( reviewbird_is_onboarding_preview() || '0' === (string) get_post_meta( $product_id, '_reviewbird_reviews_count', true ) ) {
 		return array();
 	}
 

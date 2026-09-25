@@ -150,6 +150,17 @@ foreach ( array( '', 'bad metadata', array() ) as $reviews ) {
 update_post_meta( $product->get_id(), SchemaScheduler::META_KEY, array( 'cached review' ) );
 $markup = $schema->filter_woocommerce_structured_data( $original, $product );
 check( array( 'cached review' ) === $markup['review'] && 4.5 === $markup['aggregateRating']['ratingValue'], 'Cached schema changed.' );
+// A zero total must also hide old cached reviews before the background refresh runs.
+set_transient( 'reviewbird_ssr_' . $product->get_id(), array( 'reviews' => array( 'old review' ) ), HOUR_IN_SECONDS );
+$result = $ratings->update_ratings( request( array( 'product_id' => $product->get_id(), 'avg_stars' => 0, 'review_count' => 0 ) ) );
+check( 200 === $result->get_status(), 'Zero ratings were rejected.' );
+$overrides = new \reviewbird\Integration\RatingOverride();
+check( 0.0 === $overrides->override_average_rating( 4.5, $product ), 'Zero average restored old ratings.' );
+check( 0 === $overrides->override_rating_count( 2, $product ), 'Zero count restored old ratings.' );
+check( array_fill( 1, 5, 0 ) === $overrides->override_rating_counts( array( 5 => 2 ), $product ), 'Zero total left a rating distribution.' );
+$markup['name'] = 'Keep product fields';
+check( array( 'name' => 'Keep product fields' ) === $schema->filter_woocommerce_structured_data( $markup, $product ), 'Zero ratings retained old review schema.' );
+check( array() === reviewbird_get_cached_product_reviews( $product->get_id() ), 'Zero ratings retained old review HTML.' );
 update_option( 'reviewbird_enable_schema', 'no' );
 check( $original === $schema->filter_woocommerce_structured_data( $original, $product ), 'Disabled schema changed native markup.' );
 

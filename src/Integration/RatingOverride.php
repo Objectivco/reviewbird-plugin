@@ -108,11 +108,11 @@ class RatingOverride {
 		$product_id = $product->get_id();
 		$value      = get_post_meta( $product_id, $meta_key, true );
 
-		if ( empty( $value ) ) {
-			reviewbird_sync_product_rating( $product_id );
-			$value = get_post_meta( $product_id, $meta_key, true );
+		if ( '' !== $value ) {
+			return $value;
 		}
 
-		return $value;
+		reviewbird_sync_product_rating( $product_id );
+		return get_post_meta( $product_id, $meta_key, true );
 	}
 }
