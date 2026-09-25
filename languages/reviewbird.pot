@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Reviewbird 1.2.1\n"
+"Project-Id-Version: Reviewbird 1.3.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-16T17:42:22+00:00\n"
+"POT-Creation-Date: 2026-09-25T16:20:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
@@ -17,8 +17,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:127
 #: src/Admin/Settings.php:128
+#: src/Admin/Settings.php:129
 msgid "Reviewbird"
 msgstr ""
 
@@ -32,60 +32,60 @@ msgstr ""
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr ""
 
-#: src/Admin/Settings.php:94
+#: src/Admin/Settings.php:95
 msgid "Reviewbird Connection Error:"
 msgstr ""
 
-#: src/Admin/Settings.php:113
+#: src/Admin/Settings.php:114
 msgid "Successfully connected to Reviewbird!"
 msgstr ""
 
-#: src/Admin/Settings.php:140
 #: src/Admin/Settings.php:141
+#: src/Admin/Settings.php:142
 msgid "Get Started"
 msgstr ""
 
-#: src/Admin/Settings.php:149
+#: src/Admin/Settings.php:150
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr ""
 
-#: src/Admin/Settings.php:150
-#: src/Core/Plugin.php:442
+#: src/Admin/Settings.php:151
+#: src/Core/Plugin.php:495
 msgid "Settings"
 msgstr ""
 
-#: src/Admin/Settings.php:355
+#: src/Admin/Settings.php:356
 msgid "Invalid security token"
 msgstr ""
 
-#: src/Admin/Settings.php:359
-#: src/Admin/Settings.php:423
+#: src/Admin/Settings.php:360
+#: src/Admin/Settings.php:436
 msgid "Insufficient permissions"
 msgstr ""
 
-#: src/Admin/Settings.php:373
+#: src/Admin/Settings.php:374
 msgid "Invalid setting"
 msgstr ""
 
-#: src/Admin/Settings.php:379
+#: src/Admin/Settings.php:380
 msgid "Invalid setting value"
 msgstr ""
 
-#: src/Admin/Settings.php:386
+#: src/Admin/Settings.php:387
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr ""
 
-#: src/Admin/Settings.php:393
+#: src/Admin/Settings.php:394
 msgid "Setting updated successfully"
 msgstr ""
 
-#: src/Admin/Settings.php:406
+#: src/Admin/Settings.php:419
 msgid "The connection status could not be refreshed. Please try again."
 msgstr ""
 
-#: src/Admin/Settings.php:413
+#: src/Admin/Settings.php:426
 msgid "Connection status refreshed"
 msgstr ""
 
@@ -116,7 +116,7 @@ msgid "discount_type and amount are required when not using template"
 msgstr ""
 
 #: src/Api/ProductsController.php:125
-#: src/Api/RatingsController.php:41
+#: src/Api/RatingsController.php:40
 msgid "Product not found"
 msgstr ""
 
@@ -124,31 +124,31 @@ msgstr ""
 msgid "Product ID is required"
 msgstr ""
 
-#: src/Api/RatingsController.php:37
+#: src/Api/RatingsController.php:35
 msgid "Invalid product ID"
 msgstr ""
 
 #: src/Api/RatingsController.php:66
-msgid "Average stars must be a number between 1 and 5"
+msgid "Review count must be a whole number of 0 or more"
 msgstr ""
 
-#: src/Api/RatingsController.php:70
-msgid "Review count must be a non-negative number"
+#: src/Api/RatingsController.php:72
+msgid "Average stars must be 0 when there are no reviews, or a number between 1 and 5"
 msgstr ""
 
-#: src/Api/RatingsController.php:74
+#: src/Api/RatingsController.php:76
 msgid "Rating counts must be an array"
 msgstr ""
 
-#: src/Api/RatingsController.php:152
+#: src/Api/RatingsController.php:157
 msgid "Customer email is required"
 msgstr ""
 
-#: src/Api/RatingsController.php:156
+#: src/Api/RatingsController.php:161
 msgid "Invalid email address"
 msgstr ""
 
-#: src/Core/Plugin.php:448
+#: src/Core/Plugin.php:501
 msgid "Documentation"
 msgstr ""
 
@@ -173,12 +173,12 @@ msgstr ""
 msgid "Failed to decode API response."
 msgstr ""
 
-#: src/functions.php:684
+#: src/functions.php:685
 msgid "Anonymous"
 msgstr ""
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:705
+#: src/functions.php:706
 #, php-format
 msgid "Rated %d out of 5"
 msgstr ""
@@ -243,103 +243,103 @@ msgstr ""
 msgid "Leave a review"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:8
+#: assets/src/js/components/ConnectionHealth.jsx:6
 msgid "Connected to Reviewbird"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:10
+#: assets/src/js/components/ConnectionHealth.jsx:8
 msgid "View dashboard"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:14
+#: assets/src/js/components/ConnectionHealth.jsx:12
 msgid "Your store is not connected"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:15
+#: assets/src/js/components/ConnectionHealth.jsx:13
 msgid "Reviewbird is disabled until you connect your WooCommerce store."
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:19
+#: assets/src/js/components/ConnectionHealth.jsx:17
 msgid "Connect store"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:23
+#: assets/src/js/components/ConnectionHealth.jsx:21
 msgid "Your store is syncing"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:24
+#: assets/src/js/components/ConnectionHealth.jsx:22
 msgid "Your products and reviews are syncing."
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:25
+#: assets/src/js/components/ConnectionHealth.jsx:23
 msgid "View progress"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:29
+#: assets/src/js/components/ConnectionHealth.jsx:27
 msgid "Reviewbird is disabled"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:30
+#: assets/src/js/components/ConnectionHealth.jsx:28
 msgid "Your Reviewbird subscription is not active. Update your billing details to turn Reviewbird back on."
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:34
+#: assets/src/js/components/ConnectionHealth.jsx:32
 msgid "Update billing"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:38
+#: assets/src/js/components/ConnectionHealth.jsx:36
 msgid "Reviewbird cannot connect to your store"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:39
+#: assets/src/js/components/ConnectionHealth.jsx:37
 msgid "Open the connection settings in Reviewbird to reconnect your store."
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:43
+#: assets/src/js/components/ConnectionHealth.jsx:41
 msgid "Check connection"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:47
+#: assets/src/js/components/ConnectionHealth.jsx:45
 msgid "We could not check your connection"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:48
+#: assets/src/js/components/ConnectionHealth.jsx:46
 msgid "Refresh to try again, or contact support if the problem continues."
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:52
+#: assets/src/js/components/ConnectionHealth.jsx:50
 msgid "Contact support"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:56
+#: assets/src/js/components/ConnectionHealth.jsx:54
 msgid "Checking connection…"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:58
+#: assets/src/js/components/ConnectionHealth.jsx:56
 msgid "Open Reviewbird"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:305
+#: assets/src/js/components/ConnectionHealth.jsx:285
 #: assets/src/js/components/GoogleCustomerReviews.jsx:48
 msgid "The connection could not be refreshed. Please try again."
 msgstr ""
 
 #. translators: %s: time of the last connection check.
-#: assets/src/js/components/ConnectionHealth.jsx:343
+#: assets/src/js/components/ConnectionHealth.jsx:321
 #, js-format
 msgid "Last checked: %s"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:368
+#: assets/src/js/components/ConnectionHealth.jsx:346
 msgid "Refresh connection status"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:374
+#: assets/src/js/components/ConnectionHealth.jsx:352
 #: assets/src/js/components/GoogleCustomerReviews.jsx:126
 msgid "Refreshing…"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:375
+#: assets/src/js/components/ConnectionHealth.jsx:353
 msgid "Refresh"
 msgstr ""
 

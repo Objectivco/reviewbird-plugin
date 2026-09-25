@@ -83,9 +83,10 @@ class HealthScheduler {
 	 * @param string $type Check type. Old jobs have no recognized type and do no API work.
 	 */
 	public function run_scheduled_check( $type = '' ): void {
-		if ( in_array( $type, array( 'periodic', 'immediate' ), true ) ) {
-			$this->refresh_health_status();
+		if ( ! in_array( $type, array( 'periodic', 'immediate' ), true ) ) {
+			return;
 		}
+		$this->refresh_health_status();
 	}
 
 	/** Remove old health actions and their logs in small batches after an upgrade. */
@@ -154,9 +155,7 @@ class HealthScheduler {
 
 		if ( is_wp_error( $response ) ) {
 			$error_data = $response->get_error_data();
-			if ( 404 === ( $error_data['status'] ?? null ) && 'not_connected' === ( $error_data['response']['status'] ?? null ) ) {
-				$response = $error_data['response'];
-			} else {
+			if ( 404 !== ( $error_data['status'] ?? null ) || 'not_connected' !== ( $error_data['response']['status'] ?? null ) ) {
 				if ( function_exists( 'wc_get_logger' ) ) {
 					wc_get_logger()->warning(
 						sprintf( 'Health status refresh failed: %s', $response->get_error_message() ),
@@ -165,6 +164,7 @@ class HealthScheduler {
 				}
 				return $response;
 			}
+			$response = $error_data['response'];
 		}
 
 		if ( ! is_array( $response ) || ! is_string( $response['status'] ?? null ) || '' === $response['status'] ) {
@@ -175,6 +175,7 @@ class HealthScheduler {
 		if ( ! $saved && get_option( 'reviewbird_store_status' ) !== $response ) {
 			return new \WP_Error( 'reviewbird_health_cache_failed', __( 'The connection status could not be saved. Please try again.', 'reviewbird' ) );
 		}
+		set_transient( 'reviewbird_admin_health_status', $response, self::REFRESH_INTERVAL );
 
 		$store_id = absint( $response['store_id'] ?? 0 );
 

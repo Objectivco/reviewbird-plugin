@@ -36,6 +36,10 @@ class SchemaMarkup {
 		}
 
 		$product_id = $product->get_id();
+		if ( '0' === (string) get_post_meta( $product_id, '_reviewbird_reviews_count', true ) ) {
+			unset( $markup['aggregateRating'], $markup['review'] );
+			return $markup;
+		}
 
 		$aggregate_rating = $this->build_aggregate_rating( $product_id );
 

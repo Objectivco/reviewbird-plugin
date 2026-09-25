@@ -13,7 +13,7 @@ if ( ! defined( 'DB_NAME' ) || ! preg_match( '/^reviewbird_scheduler_test_[a-z0-
 	throw new RuntimeException( 'Use the disposable test database.' );
 }
 $active = class_exists( 'WooCommerce' );
-if ( shortcode_exists( 'reviewbird_widget' ) !== $active || shortcode_exists( 'reviewbird_showcase' ) !== $active ) {
+if ( shortcode_exists( 'reviewbird_widget' ) !== $active || shortcode_exists( 'reviewbird_showcase' ) !== $active || shortcode_exists( 'reviewbird_badge' ) !== $active ) {
 	throw new RuntimeException( 'Plugin hooks do not match WooCommerce availability.' );
 }
 do_action( 'wp_enqueue_scripts' );
