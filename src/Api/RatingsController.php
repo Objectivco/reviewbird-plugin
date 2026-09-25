@@ -62,12 +62,15 @@ class RatingsController {
 			return $product_id;
 		}
 
-		if ( ! is_numeric( $avg_stars ) || $avg_stars < 1 || $avg_stars > 5 ) {
-			return new WP_Error( 'invalid_rating', __( 'Average stars must be a number between 1 and 5', 'reviewbird' ), array( 'status' => 400 ) );
+		if ( ! is_numeric( $review_count ) || ! is_finite( (float) $review_count )
+			|| false === filter_var( $review_count, FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0 ) ) ) ) {
+			return new WP_Error( 'invalid_count', __( 'Review count must be a whole number of 0 or more', 'reviewbird' ), array( 'status' => 400 ) );
 		}
+		$review_count = (int) $review_count;
 
-		if ( ! is_numeric( $review_count ) || $review_count < 0 ) {
-			return new WP_Error( 'invalid_count', __( 'Review count must be a non-negative number', 'reviewbird' ), array( 'status' => 400 ) );
+		if ( ! is_numeric( $avg_stars ) || ! is_finite( (float) $avg_stars )
+			|| ( 0 === $review_count ? 0.0 !== (float) $avg_stars : ( $avg_stars < 1 || $avg_stars > 5 ) ) ) {
+			return new WP_Error( 'invalid_rating', __( 'Average stars must be 0 when there are no reviews, or a number between 1 and 5', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
 		if ( ! empty( $rating_counts ) && ! is_array( $rating_counts ) ) {
@@ -77,6 +80,9 @@ class RatingsController {
 		update_post_meta( $product_id, '_reviewbird_avg_stars', floatval( $avg_stars ) );
 		update_post_meta( $product_id, '_reviewbird_reviews_count', intval( $review_count ) );
 
+		if ( 0 === $review_count ) {
+			$rating_counts = array_fill( 1, 5, 0 );
+		}
 		if ( ! empty( $rating_counts ) ) {
 			update_post_meta( $product_id, '_reviewbird_rating_counts', $rating_counts );
 		}
