@@ -287,10 +287,10 @@ export default function ConnectionHealth() {
 						'reviewbird'
 					)
 				);
-			} else {
-				setHealthStatus( 'error' );
-				setHealthData( null );
+				return;
 			}
+			setHealthStatus( 'error' );
+			setHealthData( null );
 		} finally {
 			setRefreshing( false );
 		}

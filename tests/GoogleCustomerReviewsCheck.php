@@ -86,6 +86,7 @@ namespace reviewbird\Integration {
 	function wp_parse_url( $url, $component ) { return parse_url( $url, $component ); }
 	function absint( $value ) { return abs( (int) $value ); }
 	function reviewbird_api_request( $endpoint ) { ++$GLOBALS['gcr_api_calls']; return $GLOBALS['gcr_api_response']; }
+	function set_transient( $key, $value, $expiration ) { return \reviewbird\Admin\set_transient( $key, $value, $expiration ); }
 	function update_option( $name, $value, $autoload = null ) {
 		if ( $GLOBALS['gcr_option_write_fail'] || get_option( $name ) === $value ) { return false; }
 		$GLOBALS['gcr_options'][ $name ] = $value;
@@ -395,6 +396,16 @@ namespace {
 		check( ! array_intersect( array( 'promptEnabled', 'standardModal', 'prompt' ), array_keys( $response->data['googleCustomerReviews'] ) ), 'Refresh still exposes obsolete prompt settings.' );
 	}
 	check( $GLOBALS['gcr_options']['reviewbird_store_status'] === $fresh, 'Refresh did not update the saved cache.' );
+	// Background checks must update the same cache used by the admin page.
+	$GLOBALS['gcr_api_response'] = $initial_status;
+	( new \reviewbird\Integration\HealthScheduler() )->run_scheduled_check( 'periodic' );
+	$before_calls = $GLOBALS['gcr_api_calls'];
+	try { $settings->handle_get_health_status(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		check( $initial_status === $response->data['status'] && $before_calls === $GLOBALS['gcr_api_calls'], 'Admin cache ignored the background health check.' );
+		check( true === $response->data['googleCustomerReviews']['enabled'], 'Health and Google settings used different cached responses.' );
+	}
+	$GLOBALS['gcr_api_response'] = $fresh;
+	( new \reviewbird\Integration\HealthScheduler() )->run_scheduled_check( 'immediate' );
 	$before_calls = $GLOBALS['gcr_api_calls'];
 	$_POST['nonce'] = 'wrong';
 	try { $settings->handle_get_health_status(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {

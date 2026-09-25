@@ -414,10 +414,9 @@ class Settings {
 		$status = $force_refresh ? false : get_transient( 'reviewbird_admin_health_status' );
 		if ( false === $status ) {
 			$status = ( new HealthScheduler() )->refresh_health_status();
-			if ( is_wp_error( $status ) ) {
-				wp_send_json_error( __( 'The connection status could not be refreshed. Please try again.', 'reviewbird' ), 502 );
-			}
-			set_transient( 'reviewbird_admin_health_status', $status, 5 * MINUTE_IN_SECONDS );
+		}
+		if ( is_wp_error( $status ) ) {
+			wp_send_json_error( __( 'The connection status could not be refreshed. Please try again.', 'reviewbird' ), 502 );
 		}
 
 		wp_send_json_success(

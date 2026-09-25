@@ -52,6 +52,19 @@ namespace reviewbird\Tests {
 
 	final class RatingsControllerTest extends TestCase {
 
+		public function test_invalid_product_ids_cannot_update_another_product(): void {
+			$controller = new RatingsController();
+			$GLOBALS['ratings_test_meta'] = array();
+			foreach ( array( array( 7 ), true, -7, 7.5, '7wrong', INF, (string) PHP_INT_MAX . '0' ) as $id ) {
+				$request = new \WP_REST_Request( array( 'product_id' => $id, 'avg_stars' => 5, 'review_count' => 1 ) );
+				$result = $controller->update_ratings( $request );
+				self::assertInstanceOf( \WP_Error::class, $result );
+				self::assertSame( 'invalid_product_id', $result->code );
+				self::assertFalse( RatingsController::permission_callback( $request ) );
+				self::assertSame( array(), $GLOBALS['ratings_test_meta'] );
+			}
+		}
+
 		public function test_rating_updates_clear_empty_totals_and_reject_invalid_data_without_writes(): void {
 			$controller = new RatingsController();
 			$update = static function ( $average, $count, array $extra = array() ) use ( $controller ) {
