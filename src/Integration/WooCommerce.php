@@ -35,7 +35,7 @@ class WooCommerce {
 			'woocommerce_rest_prepare_product_review',
 			array(
 				$this,
-				'add_cusrev_review_media_to_rest_response',
+				'add_cusrev_review_data_to_rest_response',
 			),
 			10,
 			2
@@ -154,7 +154,7 @@ class WooCommerce {
 	}
 
 	/**
-	 * Add CusRev media data to the WooCommerce product review REST response.
+	 * Add CusRev title and media data to the WooCommerce review REST response.
 	 *
 	 * CusRev stores media as WordPress attachment IDs in comment meta:
 	 * - ivole_review_image2: Photo attachment IDs
@@ -162,15 +162,20 @@ class WooCommerce {
 	 *
 	 * @param WP_REST_Response $response The response object.
 	 * @param WP_Comment       $review   The review comment object.
-	 * @return WP_REST_Response Modified response with media data.
+	 * @return WP_REST_Response Modified response with title and media data.
 	 */
-	public function add_cusrev_review_media_to_rest_response( $response, $review ): WP_REST_Response {
+	public function add_cusrev_review_data_to_rest_response( $response, $review ): WP_REST_Response {
 		$media = array_merge(
 			$this->get_attachment_media( $review->comment_ID, 'ivole_review_image2', 'image' ),
 			$this->get_attachment_media( $review->comment_ID, 'ivole_review_video2', 'video' )
 		);
 
 		$response->data['media'] = $media;
+
+		$title = get_comment_meta( $review->comment_ID, 'cr_rev_title', true );
+		if ( is_string( $title ) && '' !== trim( $title ) && empty( $response->data['title'] ) ) {
+			$response->data['title'] = $title;
+		}
 
 		return $response;
 	}

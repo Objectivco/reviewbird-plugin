@@ -7,6 +7,15 @@
 
 // phpcs:ignoreFile -- This isolated test defines small WordPress function stubs.
 
+namespace {
+	if ( ! class_exists( 'WP_REST_Response' ) ) {
+		class WP_REST_Response {
+			public $data;
+			public function __construct( $data, $status = 200 ) { $this->data = $data; }
+		}
+	}
+}
+
 namespace reviewbird\Integration {
 
 	if ( ! defined( 'ABSPATH' ) ) {
@@ -66,6 +75,14 @@ namespace reviewbird\Integration {
 		return $text;
 	}
 
+	function get_comment_meta( $comment_id, $key, $single = false ) {
+		return $GLOBALS['reviewbird_test_comment_meta'][ $comment_id ][ $key ] ?? ( $single ? '' : array() );
+	}
+
+	function wp_get_attachment_url( $attachment_id ) {
+		return $GLOBALS['reviewbird_test_attachment_urls'][ $attachment_id ] ?? false;
+	}
+
 	require_once dirname( __DIR__ ) . '/src/Integration/WooCommerce.php';
 }
 
@@ -81,6 +98,49 @@ namespace reviewbird\Tests {
 
 			$GLOBALS['reviewbird_test_can_show_widget'] = true;
 			$GLOBALS['reviewbird_test_is_product']      = true;
+			$GLOBALS['reviewbird_test_comment_meta']     = array();
+			$GLOBALS['reviewbird_test_attachment_urls']  = array();
+		}
+
+		public function test_exposes_cusrev_title_photos_and_videos(): void {
+			$GLOBALS['reviewbird_test_comment_meta'][7] = array(
+				'cr_rev_title'         => 'Love it',
+				'ivole_review_image2' => array( 11, 99 ),
+				'ivole_review_video2' => array( 12 ),
+			);
+			$GLOBALS['reviewbird_test_attachment_urls'] = array(
+				11 => 'https://store.test/photo.jpg',
+				12 => 'https://store.test/video.mp4',
+			);
+			$integration = new WooCommerce();
+			$review = (object) array( 'comment_ID' => 7 );
+			$response = new \WP_REST_Response( array( 'id' => 7, 'review' => 'Great product!' ), 200 );
+
+			$result = $integration->add_cusrev_review_data_to_rest_response( $response, $review );
+
+			self::assertSame( $response, $result );
+			self::assertSame( 'Love it', $result->data['title'] );
+			self::assertSame( 'Great product!', $result->data['review'] );
+			self::assertSame( array(
+				array( 'type' => 'image', 'url' => 'https://store.test/photo.jpg' ),
+				array( 'type' => 'video', 'url' => 'https://store.test/video.mp4' ),
+			), $result->data['media'] );
+		}
+
+		public function test_keeps_an_existing_review_title(): void {
+			$GLOBALS['reviewbird_test_comment_meta'][7]['cr_rev_title'] = 'CusRev title';
+			$response = new \WP_REST_Response( array( 'title' => 'Existing title' ), 200 );
+			$result = ( new WooCommerce() )->add_cusrev_review_data_to_rest_response( $response, (object) array( 'comment_ID' => 7 ) );
+
+			self::assertSame( 'Existing title', $result->data['title'] );
+		}
+
+		public function test_plain_reviews_do_not_get_a_cusrev_title(): void {
+			$response = new \WP_REST_Response( array( 'id' => 7 ), 200 );
+			$result = ( new WooCommerce() )->add_cusrev_review_data_to_rest_response( $response, (object) array( 'comment_ID' => 7 ) );
+
+			self::assertArrayNotHasKey( 'title', $result->data );
+			self::assertSame( array(), $result->data['media'] );
 		}
 
 		public function test_exposes_widget_setting_in_woocommerce_system_status(): void {
