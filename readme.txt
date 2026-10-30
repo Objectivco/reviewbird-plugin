@@ -230,7 +230,12 @@ For development: `pnpm run dev`
 
 = 1.3.1 =
 New - Include CusRev review titles in the WooCommerce review API response. Preserve existing review titles.
-Fix - Check purchases across Polylang product translations. Return variation attributes from matching purchases in any language.
+New - Share Reviewbird product IDs across Polylang and WPML translations. Use the same reviews, ratings, and review schema for each translation.
+Update - Add filters for product translation IDs, initial product IDs, and product locales. Keep Polylang and WPML support in separate compatibility classes.
+Fix - Check purchases across translated products and variations. Return attributes from the purchased variation.
+Fix - Preserve shared product IDs when the original translation is removed. Use a published translation for product exports when one is available.
+Fix - Include all languages in Reviewbird order and review imports. Preserve known source languages. Exclude WPML review copies from imports.
+Fix - Restore the WPML query language after Reviewbird requests, including nested requests and WPML 5 language scopes.
 
 = 1.3.0 =
 New - Add the [reviewbird_badge] shortcode to display the store rating and review count.
@@ -338,7 +343,7 @@ Fix - Fix issue with min_rating parameter for API calls.
 == Upgrade Notice ==
 
 = 1.3.1 =
-Includes CusRev review titles in the WooCommerce review API response. Fixes purchase checks and variation attributes for Polylang product translations.
+Adds shared product IDs for Polylang and WPML translations. Fixes translated purchase checks, review imports, and shared rating data. Includes CusRev review titles.
 
 = 1.3.0 =
 Adds a store rating badge and fixes rating resets, connection status caching, and WP Rocket asset handling. Requires WordPress 6.0 or later and PHP 7.4 or later.
