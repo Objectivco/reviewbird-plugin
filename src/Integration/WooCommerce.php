@@ -37,8 +37,8 @@ class WooCommerce {
 				$this,
 				'add_cusrev_review_data_to_rest_response',
 			),
-			10,
-			2
+			100,
+			3
 		);
 
 		// Save locale when order is created.
@@ -46,7 +46,9 @@ class WooCommerce {
 		add_action( 'woocommerce_checkout_order_created', array( $this, 'save_order_locale' ), 10, 1 );
 
 		// Expose locale in REST response.
-		add_filter( 'woocommerce_rest_prepare_shop_order_object', array( $this, 'add_locale_to_order_response' ), 10, 2 );
+		add_filter( 'woocommerce_rest_prepare_shop_order_object', array( $this, 'add_locale_to_order_response' ), 100, 3 );
+		add_filter( 'woocommerce_rest_shop_order_object_query', array( $this, 'query_all_languages' ), 10, 2 );
+		add_filter( 'woocommerce_rest_product_review_query', array( $this, 'query_all_languages' ), 10, 2 );
 
 		// Link account order items to the product review form.
 		add_action( 'woocommerce_order_item_meta_end', array( $this, 'add_account_review_link' ), 10, 4 );
@@ -160,11 +162,12 @@ class WooCommerce {
 	 * - ivole_review_image2: Photo attachment IDs
 	 * - ivole_review_video2: Video attachment IDs
 	 *
-	 * @param WP_REST_Response $response The response object.
-	 * @param WP_Comment       $review   The review comment object.
+	 * @param WP_REST_Response     $response The response object.
+	 * @param WP_Comment           $review   The review comment object.
+	 * @param WP_REST_Request|null $request  REST request, when available.
 	 * @return WP_REST_Response Modified response with title and media data.
 	 */
-	public function add_cusrev_review_data_to_rest_response( $response, $review ): WP_REST_Response {
+	public function add_cusrev_review_data_to_rest_response( $response, $review, $request = null ): WP_REST_Response {
 		$media = array_merge(
 			$this->get_attachment_media( $review->comment_ID, 'ivole_review_image2', 'image' ),
 			$this->get_attachment_media( $review->comment_ID, 'ivole_review_video2', 'video' )
@@ -175,6 +178,22 @@ class WooCommerce {
 		$title = get_comment_meta( $review->comment_ID, 'cr_rev_title', true );
 		if ( is_string( $title ) && '' !== trim( $title ) && empty( $response->data['title'] ) ) {
 			$response->data['title'] = $title;
+		}
+		if ( $request && '1' === $request->get_header( 'X-Reviewbird-Request' ) ) {
+			$response->data['product_id'] = reviewbird_product_id( (int) $review->comment_post_ID );
+			$locale                       = get_comment_meta( $review->comment_ID, '_reviewbird_locale', true );
+			if ( ! $locale ) {
+				/**
+				 * Filter the product locale when the review has no saved locale.
+				 *
+				 * @param string $locale     Product locale.
+				 * @param int    $product_id Actual product ID.
+				 */
+				$locale = apply_filters( 'reviewbird_product_locale', '', (int) $review->comment_post_ID );
+			}
+			if ( is_string( $locale ) && '' !== $locale ) {
+				$response->data['locale'] = $locale;
+			}
 		}
 
 		return $response;
@@ -240,9 +259,43 @@ class WooCommerce {
 	 * @param WP_REST_Request  $request  The request object.
 	 * @return WP_REST_Response Modified response with locale.
 	 */
-	public function add_locale_to_order_response( $response, $order ) {
+	public function add_locale_to_order_response( $response, $order, $request = null ) {
 		$saved_locale             = $order->get_meta( '_reviewbird_locale' );
 		$response->data['locale'] = $saved_locale ? $saved_locale : get_locale();
+		if ( $request && '1' === $request->get_header( 'X-Reviewbird-Request' ) ) {
+			foreach ( $response->data['line_items'] ?? array() as $key => $item ) {
+				$source = $order->get_item( (int) $item['id'] );
+				if ( ! $source instanceof \WC_Order_Item_Product ) {
+					continue;
+				}
+				$product_id   = $source->get_product_id( 'edit' );
+				$variation_id = $source->get_variation_id( 'edit' );
+				$product      = wc_get_product( $variation_id ? $variation_id : $product_id );
+
+				$response->data['line_items'][ $key ]['name'] = $source->get_name( 'edit' );
+				if ( $product ) {
+					$image = wp_get_attachment_url( $product->get_image_id() );
+					$response->data['line_items'][ $key ]['product_url']   = $product->get_permalink();
+					$response->data['line_items'][ $key ]['product_image'] = $image ? $image : null;
+				}
+				$response->data['line_items'][ $key ]['product_id']   = reviewbird_product_id( (int) $product_id );
+				$response->data['line_items'][ $key ]['variation_id'] = $variation_id ? reviewbird_product_id( (int) $variation_id ) : 0;
+			}
+		}
 		return $response;
+	}
+
+	/**
+	 * Include every language in Reviewbird order and review imports.
+	 *
+	 * @param array           $args Query arguments.
+	 * @param WP_REST_Request $request REST request.
+	 * @return array
+	 */
+	public function query_all_languages( array $args, WP_REST_Request $request ): array {
+		if ( '1' === $request->get_header( 'X-Reviewbird-Request' ) ) {
+			$args['lang'] = '';
+		}
+		return $args;
 	}
 }

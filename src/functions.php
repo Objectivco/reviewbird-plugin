@@ -10,6 +10,136 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Find a product by its current ID or a saved Reviewbird ID.
+ *
+ * @param int $product_id Current or saved product ID.
+ * @return \WC_Product|false
+ */
+function reviewbird_find_product( int $product_id ) {
+	$product = wc_get_product( $product_id );
+	if ( $product && 'trash' !== $product->get_status() ) {
+		return $product;
+	}
+
+	// ponytail: Deleted identities use a meta lookup; add an indexed map if these lookups become frequent.
+	$ids = get_posts(
+		array(
+			'post_type'        => array( 'product', 'product_variation' ),
+			'post_status'      => 'any',
+			'posts_per_page'   => 1,
+			'fields'           => 'ids',
+			'orderby'          => 'ID',
+			'order'            => 'ASC',
+			'meta_key'         => '_reviewbird_product_id',
+			'meta_value'       => $product_id,
+			'lang'             => '',
+			'suppress_filters' => true,
+		)
+	);
+
+	return $ids ? wc_get_product( (int) $ids[0] ) : false;
+}
+
+/**
+ * Get the actual product IDs in one translation set.
+ *
+ * @param int $product_id Product ID.
+ * @return int[] Actual product IDs.
+ */
+function reviewbird_product_translation_ids( int $product_id ): array {
+	$product = reviewbird_find_product( $product_id );
+	if ( ! $product ) {
+		return array();
+	}
+
+	$product_id = $product->get_id();
+	$type       = get_post_type( $product_id );
+
+	/**
+	 * Filter the actual IDs in a product translation set.
+	 *
+	 * @param int[] $ids        Product IDs.
+	 * @param int   $product_id Actual product ID.
+	 */
+	$ids = apply_filters( 'reviewbird_product_translation_ids', array( $product_id ), $product_id );
+	$ids = array_map( 'intval', (array) $ids );
+	$ids = array_filter(
+		$ids,
+		static function ( $id ) use ( $type ) {
+			return $id > 0 && get_post_type( $id ) === $type;
+		}
+	);
+	return array_values( array_unique( $ids ) );
+}
+
+/**
+ * Get the saved Reviewbird identity for a product and its translations.
+ *
+ * @param int $product_id Actual or saved product ID.
+ * @return int Shared Reviewbird product ID.
+ */
+function reviewbird_product_id( int $product_id ): int {
+	if ( ! has_filter( 'reviewbird_product_translation_ids' ) ) {
+		$saved_id = (int) get_post_meta( $product_id, '_reviewbird_product_id', true );
+		if ( $saved_id > 0 ) {
+			return $saved_id;
+		}
+		if ( $product_id > 0 && ( ! function_exists( 'get_post_type' ) || in_array( get_post_type( $product_id ), array( 'product', 'product_variation' ), true ) ) ) {
+			update_post_meta( $product_id, '_reviewbird_product_id', $product_id );
+		}
+		return $product_id;
+	}
+
+	$ids = reviewbird_product_translation_ids( $product_id );
+	if ( ! $ids ) {
+		return $product_id;
+	}
+
+	$saved = array();
+	foreach ( $ids as $id ) {
+		$saved_id = (int) get_post_meta( $id, '_reviewbird_product_id', true );
+		if ( $saved_id > 0 ) {
+			$saved[] = $saved_id;
+		}
+	}
+	if ( $saved ) {
+		$shared_id = min( $saved );
+	} else {
+		/**
+		 * Filter the initial identity before it is saved for all translations.
+		 *
+		 * @param int $shared_id  Default identity.
+		 * @param int $product_id Actual product ID.
+		 */
+		$shared_id = (int) apply_filters( 'reviewbird_original_product_id', min( $ids ), $ids[0] );
+		$shared_id = in_array( $shared_id, $ids, true ) ? $shared_id : min( $ids );
+	}
+
+	foreach ( $ids as $id ) {
+		if ( (int) get_post_meta( $id, '_reviewbird_product_id', true ) !== $shared_id ) {
+			update_post_meta( $id, '_reviewbird_product_id', $shared_id );
+		}
+	}
+
+	return $shared_id;
+}
+
+/**
+ * Get the surviving product that stores shared Reviewbird data.
+ *
+ * @param int $product_id Actual or saved product ID.
+ * @return int Product ID used for cached data.
+ */
+function reviewbird_product_meta_id( int $product_id ): int {
+	$shared_id = reviewbird_product_id( $product_id );
+	if ( ! function_exists( 'wc_get_product' ) ) {
+		return $shared_id;
+	}
+	$product = reviewbird_find_product( $shared_id );
+	return $product ? $product->get_id() : $shared_id;
+}
+
 // =============================================================================
 // ENVIRONMENT FUNCTIONS
 // =============================================================================
@@ -217,7 +347,7 @@ function reviewbird_get_product_reviews( array $product_ids = array(), int $per_
 	}
 
 	// Validate and sanitize product IDs.
-	$product_ids = array_map( 'absint', $product_ids );
+	$product_ids = array_map( 'reviewbird_product_id', array_map( 'absint', $product_ids ) );
 	$product_ids = array_filter( $product_ids );
 	$product_ids = array_unique( $product_ids );
 	$product_ids = array_values( $product_ids );
@@ -503,6 +633,8 @@ function reviewbird_can_show_widget(): bool {
  * @return void
  */
 function reviewbird_sync_product_rating( int $product_id ): void {
+	$shared_id  = reviewbird_product_id( $product_id );
+	$product_id = reviewbird_product_meta_id( $product_id );
 	static $synced = array();
 
 	if ( $product_id < 1 || isset( $synced[ $product_id ] ) ) {
@@ -526,7 +658,7 @@ function reviewbird_sync_product_rating( int $product_id ): void {
 	}
 
 	$response = wp_remote_get(
-		reviewbird_get_api_url() . '/api/public/' . $store_id . '/' . $product_id . '?context=widget&page=1',
+		reviewbird_get_api_url() . '/api/public/' . $store_id . '/' . $shared_id . '?context=widget&page=1',
 		array(
 			'timeout'   => 5,
 			'sslverify' => ! reviewbird_should_disable_ssl_verify(),
@@ -638,6 +770,7 @@ function reviewbird_enqueue_widget_script(): void {
  * @return array API response array (with 'reviews' key) or empty array on failure.
  */
 function reviewbird_get_cached_product_reviews( int $product_id ): array {
+	$product_id = reviewbird_product_meta_id( $product_id );
 	// Setup reads reviews in the browser with its temporary token.
 	if ( reviewbird_is_onboarding_preview() || '0' === (string) get_post_meta( $product_id, '_reviewbird_reviews_count', true ) ) {
 		return array();
@@ -772,7 +905,7 @@ function reviewbird_render_widget( $product_id = null ): string {
 		'reviewbird_widget_attributes',
 		array(
 			'store-id'    => $store_id,
-			'product-key' => $actual_product_id,
+			'product-key' => reviewbird_product_id( $actual_product_id ),
 			'locale'      => get_locale(),
 		),
 		$product

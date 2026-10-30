@@ -88,6 +88,7 @@ class ProductsController {
 			'paginate' => true,
 			'orderby'  => 'ID',
 			'order'    => 'ASC',
+			'lang'     => '',
 		);
 
 		$modified_after = $request->get_param( 'modified_after' );
@@ -97,10 +98,21 @@ class ProductsController {
 
 		$results = wc_get_products( $args );
 
-		$products = array_map( array( $this, 'format_product_with_variations' ), $results->products );
+		$products = array();
+		foreach ( $results->products as $product ) {
+			$shared = $this->get_export_product( $product->get_id() );
+			if ( $shared ) {
+				$products[ reviewbird_product_id( $shared->get_id() ) ] = $this->format_product_with_variations( $shared );
+			}
+		}
 
-		$response = new WP_REST_Response( $products, 200 );
+		$response = new WP_REST_Response( array_values( $products ), 200 );
 		$response->header( 'X-Reviewbird-Version', REVIEWBIRD_VERSION );
+		$response->header( 'X-Reviewbird-Shared-Products', '1' );
+		$response->header( 'X-Reviewbird-Product-Identities', '1' );
+		// Page counts describe the complete native catalog traversal.
+		$response->header( 'X-WP-Total', (int) $results->total );
+		$response->header( 'X-WP-TotalPages', (int) $results->max_num_pages );
 
 		return $response;
 	}
@@ -119,14 +131,15 @@ class ProductsController {
 			return new WP_Error( 'woocommerce_not_active', __( 'WooCommerce is not active', 'reviewbird' ), array( 'status' => 503 ) );
 		}
 
-		$product = wc_get_product( absint( $request->get_param( 'id' ) ) );
+		$requested_id = reviewbird_product_id( absint( $request->get_param( 'id' ) ) );
+		$product      = $this->get_export_product( $requested_id );
 
 		if ( ! $product || ! $product->exists() ) {
 			return new WP_Error( 'product_not_found', __( 'Product not found', 'reviewbird' ), array( 'status' => 404 ) );
 		}
 
 		if ( $product->is_type( 'variation' ) ) {
-			$parent = wc_get_product( $product->get_parent_id() );
+			$parent = $this->get_export_product( $product->get_parent_id() );
 
 			if ( $parent && $parent->exists() ) {
 				$product = $parent;
@@ -135,8 +148,40 @@ class ProductsController {
 
 		$response = new WP_REST_Response( $this->format_product_with_variations( $product ), 200 );
 		$response->header( 'X-Reviewbird-Version', REVIEWBIRD_VERSION );
+		$response->header( 'X-Reviewbird-Shared-Products', '1' );
+		$response->header( 'X-Reviewbird-Product-Identities', '1' );
+		$response->header( 'X-Reviewbird-Product-ID', (string) $requested_id );
 
 		return $response;
+	}
+
+	/**
+	 * Use a published translation when the saved product is not published.
+	 *
+	 * @param int $product_id Actual or shared product ID.
+	 * @return \WC_Product|false
+	 */
+	private function get_export_product( int $product_id ) {
+		$product = reviewbird_find_product( reviewbird_product_id( $product_id ) );
+		if ( $product && 'publish' !== $product->get_status() ) {
+			foreach ( reviewbird_product_translation_ids( $product->get_id() ) as $translation_id ) {
+				$translation = wc_get_product( $translation_id );
+				if ( $translation && 'publish' === $translation->get_status() ) {
+					return $translation;
+				}
+			}
+		}
+		return $product;
+	}
+
+	/**
+	 * Get native product IDs that redirect to the shared product identity.
+	 *
+	 * @param int $product_id Actual product ID.
+	 * @return int[]
+	 */
+	private function get_legacy_external_ids( int $product_id ): array {
+		return array_values( array_diff( reviewbird_product_translation_ids( $product_id ), array( reviewbird_product_id( $product_id ) ) ) );
 	}
 
 	/**
@@ -147,23 +192,24 @@ class ProductsController {
 	 */
 	private function format_product_with_variations( $product ): array {
 		return array(
-			'id'               => $product->get_id(),
-			'name'             => $product->get_name(),
-			'slug'             => $product->get_slug(),
-			'permalink'        => $product->get_permalink(),
-			'type'             => $product->get_type(),
-			'status'           => $product->get_status(),
-			'sku'              => $product->get_sku(),
-			'global_unique_id' => method_exists( $product, 'get_global_unique_id' ) ? $product->get_global_unique_id() : '',
-			'brand'            => $this->get_product_brand( $product ),
-			'price'            => $product->get_price(),
-			'image'            => wp_get_attachment_url( $product->get_image_id() ),
-			'images'           => array_filter( array_map( 'wp_get_attachment_url', $product->get_gallery_image_ids() ) ),
-			'stock_status'     => $product->get_stock_status(),
-			'in_stock'         => $product->is_in_stock(),
-			'tags'             => $this->get_product_tags( $product ),
-			'categories'       => $this->get_product_categories( $product ),
-			'variations'       => $product->is_type( 'variable' ) ? $this->get_product_variations( $product ) : array(),
+			'id'                  => reviewbird_product_id( $product->get_id() ),
+			'legacy_external_ids' => $this->get_legacy_external_ids( $product->get_id() ),
+			'name'                => $product->get_name(),
+			'slug'                => $product->get_slug(),
+			'permalink'           => $product->get_permalink(),
+			'type'                => $product->get_type(),
+			'status'              => $product->get_status(),
+			'sku'                 => $product->get_sku(),
+			'global_unique_id'    => method_exists( $product, 'get_global_unique_id' ) ? $product->get_global_unique_id() : '',
+			'brand'               => $this->get_product_brand( $product ),
+			'price'               => $product->get_price(),
+			'image'               => wp_get_attachment_url( $product->get_image_id() ),
+			'images'              => array_filter( array_map( 'wp_get_attachment_url', $product->get_gallery_image_ids() ) ),
+			'stock_status'        => $product->get_stock_status(),
+			'in_stock'            => $product->is_in_stock(),
+			'tags'                => $this->get_product_tags( $product ),
+			'categories'          => $this->get_product_categories( $product ),
+			'variations'          => $product->is_type( 'variable' ) ? $this->get_product_variations( $product ) : array(),
 		);
 	}
 
@@ -274,10 +320,14 @@ class ProductsController {
 				continue;
 			}
 
-			$variations[] = $this->format_variation( $variation );
+			$shared_id = reviewbird_product_id( $variation->get_id() );
+			$variation = $this->get_export_product( $shared_id );
+			if ( $variation ) {
+				$variations[ $shared_id ] = $this->format_variation( $variation );
+			}
 		}
 
-		return $variations;
+		return array_values( $variations );
 	}
 
 	/**
@@ -288,14 +338,15 @@ class ProductsController {
 	 */
 	private function format_variation( $variation ): array {
 		return array(
-			'id'               => $variation->get_id(),
-			'sku'              => $variation->get_sku(),
-			'global_unique_id' => method_exists( $variation, 'get_global_unique_id' ) ? $variation->get_global_unique_id() : '',
-			'brand'            => $this->get_product_brand( $variation ),
-			'price'            => $variation->get_price(),
-			'image'            => wp_get_attachment_url( $variation->get_image_id() ),
-			'attributes'       => $variation->get_attributes(),
-			'in_stock'         => $variation->is_in_stock(),
+			'id'                  => reviewbird_product_id( $variation->get_id() ),
+			'legacy_external_ids' => $this->get_legacy_external_ids( $variation->get_id() ),
+			'sku'                 => $variation->get_sku(),
+			'global_unique_id'    => method_exists( $variation, 'get_global_unique_id' ) ? $variation->get_global_unique_id() : '',
+			'brand'               => $this->get_product_brand( $variation ),
+			'price'               => $variation->get_price(),
+			'image'               => wp_get_attachment_url( $variation->get_image_id() ),
+			'attributes'          => $variation->get_attributes(),
+			'in_stock'            => $variation->is_in_stock(),
 		);
 	}
 

@@ -15,6 +15,10 @@ namespace {
 		define( 'ABSPATH', __DIR__ );
 	}
 
+	if ( ! function_exists( 'has_filter' ) ) {
+		function has_filter( $hook ) { return false; }
+	}
+
 	if ( ! function_exists( 'absint' ) ) {
 		function absint( $value ) {
 			return abs( (int) $value );

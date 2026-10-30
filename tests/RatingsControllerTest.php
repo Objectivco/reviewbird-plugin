@@ -35,6 +35,21 @@ namespace {
 }
 
 namespace reviewbird\Api {
+
+	function reviewbird_find_product( $id ) { return wc_get_product( $id ); }
+	function reviewbird_product_id( $id ) { return $id; }
+	function reviewbird_product_meta_id( $id ) { return $id; }
+	function delete_transient( $key ) {}
+	function reviewbird_product_translation_ids( $id ) {
+		$ids = array( $id );
+		if ( function_exists( 'pll_get_post_translations' ) ) {
+			foreach ( pll_get_post_translations( $id ) as $translation_id ) {
+				if ( 'product' === get_post_type( $translation_id ) ) { $ids[] = (int) $translation_id; }
+			}
+		}
+		return array_unique( $ids );
+	}
+
 	function __( $text ) { return $text; }
 	function absint( $value ) { return abs( (int) $value ); }
 	function get_post_type( $id ) { return $GLOBALS['ratings_test_post_types'][ $id ] ?? 'product'; }

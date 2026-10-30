@@ -18,11 +18,13 @@ use reviewbird\Api\ProductsController;
 use reviewbird\Api\RatingsController;
 use reviewbird\Integration\GoogleCustomerReviews;
 use reviewbird\Integration\HealthScheduler;
+use reviewbird\Integration\Polylang;
 use reviewbird\Integration\RatingOverride;
 use reviewbird\Integration\SchemaMarkup;
 use reviewbird\Integration\SchemaScheduler;
 use reviewbird\Integration\StarRatingDisplay;
 use reviewbird\Integration\WooCommerce;
+use reviewbird\Integration\WPML;
 use reviewbird\Integration\WPRocket;
 
 /**
@@ -98,6 +100,10 @@ class Plugin {
 		// Google Customer Reviews opt-in.
 		new GoogleCustomerReviews();
 
+		// Product language compatibility.
+		new Polylang();
+		new WPML();
+
 		// WooCommerce integration (adds CusRev media to reviews REST API).
 		new WooCommerce();
 		new WPRocket();
@@ -137,6 +143,7 @@ class Plugin {
 	 */
 	public function exclude_reviewbird_meta_from_product_duplicates( array $excluded_meta ): array {
 		$reviewbird_meta = array(
+			'_reviewbird_product_id',
 			'_reviewbird_avg_stars',
 			'_reviewbird_reviews_count',
 			'_reviewbird_rating_counts',
