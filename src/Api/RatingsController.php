@@ -161,8 +161,25 @@ class RatingsController {
 			return new WP_Error( 'invalid_email', __( 'Invalid email address', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
-		$verified_purchase    = wc_customer_bought_product( $customer_email, null, $product_id );
-		$purchased_attributes = $verified_purchase ? $this->get_purchased_attributes( $customer_email, $product_id ) : array();
+		$product_ids = array( $product_id );
+		if ( function_exists( 'pll_get_post_translations' ) ) {
+			foreach ( pll_get_post_translations( $product_id ) as $translation_id ) {
+				if ( 'product' === get_post_type( $translation_id ) ) {
+					$product_ids[] = (int) $translation_id;
+				}
+			}
+			$product_ids = array_unique( $product_ids );
+		}
+
+		$verified_purchase = false;
+		foreach ( $product_ids as $purchase_product_id ) {
+			if ( wc_customer_bought_product( $customer_email, null, $purchase_product_id ) ) {
+				$verified_purchase = true;
+				break;
+			}
+		}
+
+		$purchased_attributes = $verified_purchase ? $this->get_purchased_attributes( $customer_email, $product_ids ) : array();
 		$location             = $this->get_customer_location( $customer_email );
 
 		if ( function_exists( 'wc_get_logger' ) ) {
@@ -223,17 +240,10 @@ class RatingsController {
 	 * Get variation attributes for a customer's purchase of a product.
 	 *
 	 * @param string $customer_email Customer email address.
-	 * @param int    $product_id     Product ID (parent or variation).
+	 * @param int[]  $product_ids    Product IDs, including translations.
 	 * @return array Purchased variation attributes.
 	 */
-	private function get_purchased_attributes( string $customer_email, int $product_id ): array {
-		$product = wc_get_product( $product_id );
-		if ( ! $product ) {
-			return array();
-		}
-
-		$parent_id = $product->get_parent_id() ? $product->get_parent_id() : $product_id;
-
+	private function get_purchased_attributes( string $customer_email, array $product_ids ): array {
 		$orders = wc_get_orders(
 			array(
 				'billing_email' => $customer_email,
@@ -241,6 +251,7 @@ class RatingsController {
 				'limit'         => 10,
 				'orderby'       => 'date',
 				'order'         => 'DESC',
+				'lang'          => '',
 			)
 		);
 
@@ -250,7 +261,7 @@ class RatingsController {
 				$variation_id    = $item->get_variation_id();
 
 				// Skip if not matching parent or no variation.
-				if ( $item_product_id !== $parent_id || ! $variation_id ) {
+				if ( ! in_array( $item_product_id, $product_ids, true ) || ! $variation_id ) {
 					continue;
 				}
 

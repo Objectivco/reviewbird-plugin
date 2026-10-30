@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: woocommerce, woocommerce product reviews, woocommerce reviews, judge.me, rich snippets, review snippets, SEO
 Requires at least: 6.0
 Tested up to: 7.1
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -228,6 +228,10 @@ For development: `pnpm run dev`
 
 == Changelog ==
 
+= 1.3.1 =
+New - Include CusRev review titles in the WooCommerce review API response. Preserve existing review titles.
+Fix - Check purchases across Polylang product translations. Return variation attributes from matching purchases in any language.
+
 = 1.3.0 =
 New - Add the [reviewbird_badge] shortcode to display the store rating and review count.
 Update - Cache admin connection checks for five minutes and remove repeated browser checks. The Refresh button requests a new status.
@@ -332,6 +336,9 @@ Fix - Fix issue with min_rating parameter for API calls.
 * Compatibility updates for WordPress.org submission
 
 == Upgrade Notice ==
+
+= 1.3.1 =
+Includes CusRev review titles in the WooCommerce review API response. Fixes purchase checks and variation attributes for Polylang product translations.
 
 = 1.3.0 =
 Adds a store rating badge and fixes rating resets, connection status caching, and WP Rocket asset handling. Requires WordPress 6.0 or later and PHP 7.4 or later.
