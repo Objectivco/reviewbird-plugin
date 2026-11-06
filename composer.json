@@ -12,9 +12,15 @@
         }
     ],
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "pressmodo/wp-admin-notices": "dev-master"
     },
     "repositories": [
+        {
+            "name": "reviewbird-notices",
+            "type": "vcs",
+            "url": "https://github.com/Objectivco/wp-admin-notices.git"
+        },
         {
             "type": "vcs",
             "url": "git@github.com:kestrelwp/owl.git"

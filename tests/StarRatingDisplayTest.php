@@ -22,6 +22,10 @@ namespace {
 	define( 'REVIEWBIRD_VERSION', '1.0.0-test' );
 	define( 'DAY_IN_SECONDS', 86400 );
 
+	if ( ! function_exists( 'has_filter' ) ) {
+		function has_filter( $hook ) { return false; }
+	}
+
 	function get_option( $key, $default = false ) {
 		if ( array_key_exists( $key, $GLOBALS['reviewbird_test_options'] ?? array() ) ) {
 			return $GLOBALS['reviewbird_test_options'][ $key ];

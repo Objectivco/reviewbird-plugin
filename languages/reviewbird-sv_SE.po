@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reviewbird 1.0.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
-"Last-Translator: gpt-po v1.2.3\n"
+"Last-Translator: gpt-po v1.3.0\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:127
-#: src/Admin/Settings.php:128
+#: src/Admin/Settings.php:189
+#: src/Admin/Settings.php:190
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -31,60 +31,76 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "Automatiserad insamling av recensioner för WooCommerce som blockerar skräppost, fångar klagomål och visar upp dina bästa omdömen."
 
-#: src/Admin/Settings.php:94
+#: src/Admin/Settings.php:99
+msgid "Hey, there! It looks like you enjoy collecting product reviews with Reviewbird. Would you do us a favor and take a few seconds to give us a review? We’d love to hear from you."
+msgstr "Hej där! Det verkar som att du gillar att samla in produktrecensioner med Reviewbird. Skulle du kunna göra oss en tjänst och ta några sekunder för att ge oss en recension? Vi skulle gärna vilja höra från dig."
+
+#: src/Admin/Settings.php:101
+msgid "Ok, you deserve it"
+msgstr "Okej, det förtjänar du"
+
+#: src/Admin/Settings.php:103
+msgid "Nope, maybe later"
+msgstr "Nej, kanske senare"
+
+#: src/Admin/Settings.php:105
+msgid "I already did"
+msgstr "Jag har redan gjort det"
+
+#: src/Admin/Settings.php:156
 msgid "Reviewbird Connection Error:"
 msgstr "Reviewbird anslutningsfel:"
 
-#: src/Admin/Settings.php:113
+#: src/Admin/Settings.php:175
 msgid "Successfully connected to Reviewbird!"
 msgstr "Ansluten till Reviewbird!"
 
-#: src/Admin/Settings.php:140
-#: src/Admin/Settings.php:141
+#: src/Admin/Settings.php:202
+#: src/Admin/Settings.php:203
 msgid "Get Started"
 msgstr "Kom igång"
 
-#: src/Admin/Settings.php:149
+#: src/Admin/Settings.php:211
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "Reviewbird-inställningar"
 
-#: src/Admin/Settings.php:150
-#: src/Core/Plugin.php:442
+#: src/Admin/Settings.php:212
+#: src/Core/Plugin.php:502
 msgid "Settings"
 msgstr "Inställningar"
 
-#: src/Admin/Settings.php:355
+#: src/Admin/Settings.php:436
 msgid "Invalid security token"
 msgstr "Ogiltig säkerhetstoken"
 
-#: src/Admin/Settings.php:359
-#: src/Admin/Settings.php:423
+#: src/Admin/Settings.php:440
+#: src/Admin/Settings.php:516
 msgid "Insufficient permissions"
 msgstr "Otillräckliga behörigheter"
 
-#: src/Admin/Settings.php:373
+#: src/Admin/Settings.php:454
 msgid "Invalid setting"
 msgstr "Ogiltig inställning"
 
-#: src/Admin/Settings.php:379
+#: src/Admin/Settings.php:460
 msgid "Invalid setting value"
 msgstr "Ogiltigt inställningsvärde"
 
-#: src/Admin/Settings.php:386
+#: src/Admin/Settings.php:467
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr "Inställningen kunde inte sparas. Försök igen."
 
-#: src/Admin/Settings.php:393
+#: src/Admin/Settings.php:474
 msgid "Setting updated successfully"
 msgstr "Inställning uppdaterad"
 
-#: src/Admin/Settings.php:406
+#: src/Admin/Settings.php:499
 msgid "The connection status could not be refreshed. Please try again."
 msgstr "Anslutningsstatus kunde inte uppdateras. Försök igen."
 
-#: src/Admin/Settings.php:413
+#: src/Admin/Settings.php:506
 msgid "Connection status refreshed"
 msgstr "Anslutningsstatus uppdaterad"
 
@@ -96,7 +112,7 @@ msgstr "Butiks-ID %d har sparats"
 
 #: src/Api/CouponController.php:79
 #: src/Api/ProductsController.php:81
-#: src/Api/ProductsController.php:119
+#: src/Api/ProductsController.php:131
 msgid "WooCommerce is not active"
 msgstr "WooCommerce är inte aktivt"
 
@@ -114,70 +130,70 @@ msgstr "Mallkupong '%s' hittades inte"
 msgid "discount_type and amount are required when not using template"
 msgstr "discount_type och amount krävs när mall inte används"
 
-#: src/Api/ProductsController.php:125
-#: src/Api/RatingsController.php:41
+#: src/Api/ProductsController.php:138
+#: src/Api/RatingsController.php:46
 msgid "Product not found"
 msgstr "Produkten hittades inte"
 
-#: src/Api/RatingsController.php:31
+#: src/Api/RatingsController.php:32
 msgid "Product ID is required"
 msgstr "Produkt-ID krävs"
 
-#: src/Api/RatingsController.php:37
+#: src/Api/RatingsController.php:36
 msgid "Invalid product ID"
 msgstr "Ogiltigt produkt-ID"
 
-#: src/Api/RatingsController.php:66
-msgid "Average stars must be a number between 1 and 5"
-msgstr "Genomsnittliga stjärnor måste vara ett tal mellan 1 och 5"
+#: src/Api/RatingsController.php:72
+msgid "Review count must be a whole number of 0 or more"
+msgstr "Antal recensioner måste vara ett heltal 0 eller mer"
 
-#: src/Api/RatingsController.php:70
-msgid "Review count must be a non-negative number"
-msgstr "Antal recensioner måste vara ett icke-negativt tal"
+#: src/Api/RatingsController.php:78
+msgid "Average stars must be 0 when there are no reviews, or a number between 1 and 5"
+msgstr "Genomsnittliga stjärnor måste vara 0 när det inte finns några recensioner, eller ett tal mellan 1 och 5"
 
-#: src/Api/RatingsController.php:74
+#: src/Api/RatingsController.php:82
 msgid "Rating counts must be an array"
 msgstr "Betygsantal måste vara en array"
 
-#: src/Api/RatingsController.php:152
+#: src/Api/RatingsController.php:170
 msgid "Customer email is required"
 msgstr "Kundens e-post krävs"
 
-#: src/Api/RatingsController.php:156
+#: src/Api/RatingsController.php:174
 msgid "Invalid email address"
 msgstr "Ogiltig e-postadress"
 
-#: src/Core/Plugin.php:448
+#: src/Core/Plugin.php:508
 msgid "Documentation"
 msgstr "Dokumentation"
 
-#: src/functions.php:115
-#: src/functions.php:298
+#: src/functions.php:245
+#: src/functions.php:428
 msgid "API request failed"
 msgstr "API-förfrågan misslyckades"
 
-#: src/functions.php:205
+#: src/functions.php:335
 msgid "Store is not connected to Reviewbird."
 msgstr "Butiken är inte ansluten till Reviewbird."
 
-#: src/functions.php:215
+#: src/functions.php:345
 msgid "Unable to generate API key for authentication."
 msgstr "Kan inte generera API-nyckel för autentisering."
 
-#: src/functions.php:229
+#: src/functions.php:359
 msgid "Maximum of 50 product IDs allowed per request."
 msgstr "Max 50 produkt-ID:n tillåts per förfrågan."
 
-#: src/functions.php:334
+#: src/functions.php:464
 msgid "Failed to decode API response."
 msgstr "Misslyckades med att avkoda API-svar."
 
-#: src/functions.php:684
+#: src/functions.php:818
 msgid "Anonymous"
 msgstr "Anonym"
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:705
+#: src/functions.php:839
 #, php-format
 msgid "Rated %d out of 5"
 msgstr "Betygsatt %d av 5"
@@ -234,111 +250,111 @@ msgstr "Betygsatt %s av 5"
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "Betygsatt %s av 5, klicka för att se recensioner"
 
-#: src/Integration/WooCommerce.php:66
+#: src/Integration/WooCommerce.php:68
 msgid "Whether the Reviewbird widget is enabled."
 msgstr "Om Reviewbird-widgeten är aktiverad."
 
-#: src/Integration/WooCommerce.php:152
+#: src/Integration/WooCommerce.php:154
 msgid "Leave a review"
 msgstr "Lämna en recension"
 
-#: assets/src/js/components/ConnectionHealth.jsx:8
+#: assets/src/js/components/ConnectionHealth.jsx:6
 msgid "Connected to Reviewbird"
 msgstr "Ansluten till Reviewbird"
 
-#: assets/src/js/components/ConnectionHealth.jsx:10
+#: assets/src/js/components/ConnectionHealth.jsx:8
 msgid "View dashboard"
 msgstr "Visa instrumentpanel"
 
-#: assets/src/js/components/ConnectionHealth.jsx:14
+#: assets/src/js/components/ConnectionHealth.jsx:12
 msgid "Your store is not connected"
 msgstr "Din butik är inte ansluten"
 
-#: assets/src/js/components/ConnectionHealth.jsx:15
+#: assets/src/js/components/ConnectionHealth.jsx:13
 msgid "Reviewbird is disabled until you connect your WooCommerce store."
 msgstr "Reviewbird är inaktiverat tills du ansluter din WooCommerce-butik."
 
-#: assets/src/js/components/ConnectionHealth.jsx:19
+#: assets/src/js/components/ConnectionHealth.jsx:17
 msgid "Connect store"
 msgstr "Anslut butik"
 
-#: assets/src/js/components/ConnectionHealth.jsx:23
+#: assets/src/js/components/ConnectionHealth.jsx:21
 msgid "Your store is syncing"
 msgstr "Din butik synkroniseras"
 
-#: assets/src/js/components/ConnectionHealth.jsx:24
+#: assets/src/js/components/ConnectionHealth.jsx:22
 msgid "Your products and reviews are syncing."
 msgstr "Dina produkter och recensioner synkroniseras."
 
-#: assets/src/js/components/ConnectionHealth.jsx:25
+#: assets/src/js/components/ConnectionHealth.jsx:23
 msgid "View progress"
 msgstr "Visa framsteg"
 
-#: assets/src/js/components/ConnectionHealth.jsx:29
+#: assets/src/js/components/ConnectionHealth.jsx:27
 msgid "Reviewbird is disabled"
 msgstr "Reviewbird är inaktiverat"
 
-#: assets/src/js/components/ConnectionHealth.jsx:30
+#: assets/src/js/components/ConnectionHealth.jsx:28
 msgid "Your Reviewbird subscription is not active. Update your billing details to turn Reviewbird back on."
 msgstr "Din Reviewbird-prenumeration är inte aktiv. Uppdatera dina faktureringsuppgifter för att aktivera Reviewbird igen."
 
-#: assets/src/js/components/ConnectionHealth.jsx:34
+#: assets/src/js/components/ConnectionHealth.jsx:32
 msgid "Update billing"
 msgstr "Uppdatera fakturering"
 
-#: assets/src/js/components/ConnectionHealth.jsx:38
+#: assets/src/js/components/ConnectionHealth.jsx:36
 msgid "Reviewbird cannot connect to your store"
 msgstr "Reviewbird kan inte ansluta till din butik"
 
-#: assets/src/js/components/ConnectionHealth.jsx:39
+#: assets/src/js/components/ConnectionHealth.jsx:37
 msgid "Open the connection settings in Reviewbird to reconnect your store."
 msgstr "Öppna anslutningsinställningarna i Reviewbird för att återansluta din butik."
 
-#: assets/src/js/components/ConnectionHealth.jsx:43
+#: assets/src/js/components/ConnectionHealth.jsx:41
 msgid "Check connection"
 msgstr "Kontrollera anslutning"
 
-#: assets/src/js/components/ConnectionHealth.jsx:47
+#: assets/src/js/components/ConnectionHealth.jsx:45
 msgid "We could not check your connection"
 msgstr "Vi kunde inte kontrollera din anslutning"
 
-#: assets/src/js/components/ConnectionHealth.jsx:48
+#: assets/src/js/components/ConnectionHealth.jsx:46
 msgid "Refresh to try again, or contact support if the problem continues."
 msgstr "Uppdatera för att försöka igen, eller kontakta support om problemet kvarstår."
 
-#: assets/src/js/components/ConnectionHealth.jsx:52
+#: assets/src/js/components/ConnectionHealth.jsx:50
 msgid "Contact support"
 msgstr "Kontakta support"
 
-#: assets/src/js/components/ConnectionHealth.jsx:56
+#: assets/src/js/components/ConnectionHealth.jsx:54
 msgid "Checking connection…"
 msgstr "Kontrollerar anslutning…"
 
-#: assets/src/js/components/ConnectionHealth.jsx:58
+#: assets/src/js/components/ConnectionHealth.jsx:56
 msgid "Open Reviewbird"
 msgstr "Öppna Reviewbird"
 
-#: assets/src/js/components/ConnectionHealth.jsx:305
+#: assets/src/js/components/ConnectionHealth.jsx:285
 #: assets/src/js/components/GoogleCustomerReviews.jsx:48
 msgid "The connection could not be refreshed. Please try again."
 msgstr "Anslutningen kunde inte uppdateras. Försök igen."
 
 #. translators: %s: time of the last connection check.
-#: assets/src/js/components/ConnectionHealth.jsx:343
+#: assets/src/js/components/ConnectionHealth.jsx:321
 #, js-format
 msgid "Last checked: %s"
 msgstr "Senast kontrollerad: %s"
 
-#: assets/src/js/components/ConnectionHealth.jsx:368
+#: assets/src/js/components/ConnectionHealth.jsx:346
 msgid "Refresh connection status"
 msgstr "Uppdatera anslutningsstatus"
 
-#: assets/src/js/components/ConnectionHealth.jsx:374
+#: assets/src/js/components/ConnectionHealth.jsx:352
 #: assets/src/js/components/GoogleCustomerReviews.jsx:126
 msgid "Refreshing…"
 msgstr "Uppdaterar…"
 
-#: assets/src/js/components/ConnectionHealth.jsx:375
+#: assets/src/js/components/ConnectionHealth.jsx:353
 msgid "Refresh"
 msgstr "Uppdatera"
 

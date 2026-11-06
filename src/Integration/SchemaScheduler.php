@@ -53,7 +53,7 @@ class SchemaScheduler {
 		if ( ! is_numeric( $product_id ) || ! class_exists( '\ActionScheduler' ) || ! \ActionScheduler::is_initialized() ) {
 			return;
 		}
-		$product_id = absint( $product_id );
+		$product_id = reviewbird_product_meta_id( absint( $product_id ) );
 		if ( ! $product_id || ! reviewbird_is_schema_enabled() ) {
 			return;
 		}
@@ -81,7 +81,8 @@ class SchemaScheduler {
 			return;
 		}
 
-		$reviews = $this->fetch_reviews_from_api( $store_id, $product_id );
+		$product_id = reviewbird_product_meta_id( $product_id );
+		$reviews    = $this->fetch_reviews_from_api( $store_id, reviewbird_product_id( $product_id ) );
 		if ( is_wp_error( $reviews ) ) {
 			return;
 		}

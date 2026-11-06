@@ -4,8 +4,74 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "de46925b7504e4e91ec002f4b9923f28",
-    "packages": [],
+    "content-hash": "08c0d7111e874bf915563c4892ba90af",
+    "packages": [
+        {
+            "name": "pressmodo/wp-admin-notices",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Objectivco/wp-admin-notices.git",
+                "reference": "9d07775b16c20bd4c4b7a02381ab705e298dcf74"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Objectivco/wp-admin-notices/zipball/9d07775b16c20bd4c4b7a02381ab705e298dcf74",
+                "reference": "9d07775b16c20bd4c4b7a02381ab705e298dcf74",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+                "pressmodo/phpcs-config": "dev-master"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Pressmodo\\AdminNotices\\": "src/"
+                }
+            },
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Pressmodo",
+                    "email": "hello@pressmodo.com",
+                    "homepage": "https://pressmodo.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Alessandro Tesoro",
+                    "email": "hello@sematico.com",
+                    "homepage": "https://alessandrotesoro.me",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Alessandro Tesoro",
+                    "email": "hello@sematico.com",
+                    "homepage": "https://sematico",
+                    "role": "Founder & MD"
+                }
+            ],
+            "description": "An helper library to create persistent and dismissible WordPress admin notices.",
+            "homepage": "https://github.com/pressmodo/wp-admin-notices",
+            "keywords": [
+                "admin",
+                "notices",
+                "pressmodo",
+                "wordpress"
+            ],
+            "support": {
+                "issues": "https://github.com/pressmodo/wp-admin-notices/issues",
+                "source": "https://github.com/Objectivco/wp-admin-notices/tree/1.0.5"
+            },
+            "time": "2024-01-08T21:18:36+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "10up/wp_mock",
@@ -6370,7 +6436,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "kestrelwp/owl": 20
+        "kestrelwp/owl": 20,
+        "pressmodo/wp-admin-notices": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

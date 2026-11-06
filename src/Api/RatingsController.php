@@ -23,10 +23,11 @@ class RatingsController {
 	/**
 	 * Validate and sanitize a product ID.
 	 *
-	 * @param mixed $product_id The product ID to validate.
+	 * @param mixed $product_id       The product ID to validate.
+	 * @param bool  $allow_variations Whether variation IDs are valid.
 	 * @return int|WP_Error The sanitized product ID or an error.
 	 */
-	private static function validate_product_id( $product_id ) {
+	private static function validate_product_id( $product_id, bool $allow_variations = false ) {
 		if ( empty( $product_id ) ) {
 			return new WP_Error( 'missing_product_id', __( 'Product ID is required', 'reviewbird' ), array( 'status' => 400 ) );
 		}
@@ -36,7 +37,12 @@ class RatingsController {
 		}
 		$product_id = (int) $product_id;
 
-		if ( 'product' !== get_post_type( $product_id ) ) {
+		$product_types = $allow_variations ? array( 'product', 'product_variation' ) : array( 'product' );
+		if ( ! in_array( get_post_type( $product_id ), $product_types, true ) ) {
+			$product = reviewbird_find_product( $product_id );
+			if ( $product && in_array( get_post_type( $product->get_id() ), $product_types, true ) ) {
+				return $product_id;
+			}
 			return new WP_Error( 'product_not_found', __( 'Product not found', 'reviewbird' ), array( 'status' => 404 ) );
 		}
 
@@ -76,6 +82,8 @@ class RatingsController {
 			return new WP_Error( 'invalid_rating_counts', __( 'Rating counts must be an array', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
+		$shared_id  = reviewbird_product_id( $product_id );
+		$product_id = reviewbird_product_meta_id( $product_id );
 		update_post_meta( $product_id, '_reviewbird_avg_stars', floatval( $avg_stars ) );
 		update_post_meta( $product_id, '_reviewbird_reviews_count', intval( $review_count ) );
 
@@ -90,6 +98,7 @@ class RatingsController {
 			wc_delete_product_transients( $product_id );
 		}
 
+		delete_transient( 'reviewbird_ssr_' . $product_id );
 		do_action( 'reviewbird_rating_updated', $product_id, $avg_stars, $review_count );
 
 		if ( function_exists( 'wc_get_logger' ) ) {
@@ -102,7 +111,7 @@ class RatingsController {
 		return new WP_REST_Response(
 			array(
 				'success'      => true,
-				'product_id'   => $product_id,
+				'product_id'   => $shared_id,
 				'avg_stars'    => floatval( $avg_stars ),
 				'review_count' => intval( $review_count ),
 			),
@@ -124,6 +133,10 @@ class RatingsController {
 			return false;
 		}
 
+		if ( 'product' !== get_post_type( $product_id ) ) {
+			$product = reviewbird_find_product( $product_id );
+			$product_id = $product->get_id();
+		}
 		return wc_rest_check_post_permissions( 'product', 'edit', $product_id );
 	}
 
@@ -148,7 +161,7 @@ class RatingsController {
 		$product_id     = $request->get_param( 'product_id' );
 		$customer_email = $request->get_param( 'customer_email' );
 
-		$product_id = self::validate_product_id( $product_id );
+		$product_id = self::validate_product_id( $product_id, true );
 		if ( is_wp_error( $product_id ) ) {
 			return $product_id;
 		}
@@ -161,8 +174,22 @@ class RatingsController {
 			return new WP_Error( 'invalid_email', __( 'Invalid email address', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
-		$verified_purchase    = wc_customer_bought_product( $customer_email, null, $product_id );
-		$purchased_attributes = $verified_purchase ? $this->get_purchased_attributes( $customer_email, $product_id ) : array();
+		$product_ids = reviewbird_product_translation_ids( $product_id );
+		$shared_id   = reviewbird_product_id( $product_id );
+		// Native orders can still reference the deleted product that owns this saved identity.
+		if ( $product_ids && ! get_post_type( $shared_id ) && ! in_array( $shared_id, $product_ids, true ) ) {
+			$product_ids[] = $shared_id;
+		}
+
+		$verified_purchase = false;
+		foreach ( $product_ids as $purchase_product_id ) {
+			if ( wc_customer_bought_product( $customer_email, null, $purchase_product_id ) ) {
+				$verified_purchase = true;
+				break;
+			}
+		}
+
+		$purchased_attributes = $verified_purchase ? $this->get_purchased_attributes( $customer_email, $product_ids ) : array();
 		$location             = $this->get_customer_location( $customer_email );
 
 		if ( function_exists( 'wc_get_logger' ) ) {
@@ -223,17 +250,10 @@ class RatingsController {
 	 * Get variation attributes for a customer's purchase of a product.
 	 *
 	 * @param string $customer_email Customer email address.
-	 * @param int    $product_id     Product ID (parent or variation).
+	 * @param int[]  $product_ids    Product IDs, including translations.
 	 * @return array Purchased variation attributes.
 	 */
-	private function get_purchased_attributes( string $customer_email, int $product_id ): array {
-		$product = wc_get_product( $product_id );
-		if ( ! $product ) {
-			return array();
-		}
-
-		$parent_id = $product->get_parent_id() ? $product->get_parent_id() : $product_id;
-
+	private function get_purchased_attributes( string $customer_email, array $product_ids ): array {
 		$orders = wc_get_orders(
 			array(
 				'billing_email' => $customer_email,
@@ -241,16 +261,17 @@ class RatingsController {
 				'limit'         => 10,
 				'orderby'       => 'date',
 				'order'         => 'DESC',
+				'lang'          => '',
 			)
 		);
 
 		foreach ( $orders as $order ) {
 			foreach ( $order->get_items() as $item ) {
-				$item_product_id = $item->get_product_id();
-				$variation_id    = $item->get_variation_id();
+				$item_product_id = (int) $item->get_product_id( 'edit' );
+				$variation_id    = (int) $item->get_variation_id( 'edit' );
 
-				// Skip if not matching parent or no variation.
-				if ( $item_product_id !== $parent_id || ! $variation_id ) {
+				// Match the reviewed parent or the exact reviewed variation.
+				if ( ! $variation_id || ( ! in_array( $item_product_id, $product_ids, true ) && ! in_array( $variation_id, $product_ids, true ) ) ) {
 					continue;
 				}
 
