@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use Pressmodo\AdminNotices\Notices;
 use reviewbird\Integration\StarRatingDisplay;
 use reviewbird\Integration\GoogleCustomerReviews;
 use reviewbird\Integration\HealthScheduler;
@@ -57,6 +58,13 @@ class Settings {
 	);
 
 	/**
+	 * Review request notices.
+	 *
+	 * @var Notices|null
+	 */
+	private $review_notices;
+
+	/**
 	 * Initialize admin hooks.
 	 */
 	public function __construct() {
@@ -64,7 +72,60 @@ class Settings {
 		add_action( 'wp_ajax_reviewbird_get_health_status', array( $this, 'handle_get_health_status' ) );
 		add_action( 'wp_ajax_reviewbird_clear_health_cache', array( $this, 'handle_clear_health_cache' ) );
 		add_action( 'admin_post_' . self::REGISTRATION_INTENT_ACTION, array( $this, 'handle_registration_intent' ) );
+		add_action( 'admin_init', array( $this, 'register_review_notice' ) );
 		add_action( 'admin_notices', array( $this, 'display_oauth_notices' ) );
+	}
+
+	/**
+	 * Register a review request after 14 days of connected use.
+	 */
+	public function register_review_notice(): void {
+		if ( ! current_user_can( 'manage_options' ) || is_network_admin() || ! reviewbird_is_store_connected() ) {
+			return;
+		}
+
+		$started_at = (int) get_option( 'reviewbird_review_notice_started_at' );
+		if ( ! $started_at ) {
+			add_option( 'reviewbird_review_notice_started_at', time(), '', false );
+			return;
+		}
+
+		if ( time() < $started_at + 14 * DAY_IN_SECONDS ) {
+			return;
+		}
+
+		ob_start();
+		?>
+		<p><?php esc_html_e( 'Hey, there! It looks like you enjoy collecting product reviews with Reviewbird. Would you do us a favor and take a few seconds to give us a review? We’d love to hear from you.', 'reviewbird' ); ?></p>
+		<p>
+			<a href="https://wordpress.org/support/plugin/reviewbird/reviews/#new-post" class="reviewbird-notice-dismiss" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Ok, you deserve it', 'reviewbird' ); ?></a>
+			<br>
+			<a href="#" class="reviewbird-notice-dismiss"><?php esc_html_e( 'Nope, maybe later', 'reviewbird' ); ?></a>
+			<br>
+			<a href="#" class="reviewbird-notice-dismiss"><?php esc_html_e( 'I already did', 'reviewbird' ); ?></a>
+		</p>
+		<?php
+		$this->review_notices = new Notices();
+		$this->review_notices->add(
+			'reviewbird_review',
+			false,
+			ob_get_clean(),
+			array(
+				'capability' => 'manage_options',
+				'screens'    => array( 'dashboard', 'plugins', 'toplevel_page_reviewbird-get-started', 'reviewbird_page_reviewbird-settings' ),
+				'image'      => false,
+			)
+		);
+		$this->review_notices->boot();
+	}
+
+	/**
+	 * Restore the review request on the Get Started page.
+	 */
+	public function display_review_notice(): void {
+		if ( $this->review_notices ) {
+			$this->review_notices->the_notices();
+		}
 	}
 
 	/**
@@ -161,6 +222,7 @@ class Settings {
 	public function suppress_admin_notices(): void {
 		remove_all_actions( 'admin_notices' );
 		remove_all_actions( 'all_admin_notices' );
+		add_action( 'admin_notices', array( $this, 'display_review_notice' ) );
 		add_action( 'admin_notices', array( $this, 'display_oauth_notices' ) );
 	}
 
@@ -170,6 +232,24 @@ class Settings {
 	 * @param string $hook The current admin page hook.
 	 */
 	public function enqueue_scripts( string $hook ): void {
+		$review_notice = $this->review_notices ? $this->review_notices->get( 'reviewbird_review' ) : null;
+		if ( $review_notice && $review_notice->show() ) {
+			wp_enqueue_script( 'jquery' );
+			wp_add_inline_script(
+				'jquery-core',
+				<<<'JS'
+jQuery(function($) {
+	$(document).on('click', '#pressmodo-notice-reviewbird_review .reviewbird-notice-dismiss', function(event) {
+		if (this.getAttribute('href') === '#') {
+			event.preventDefault();
+		}
+		$(this).closest('.notice').find('button.notice-dismiss').trigger('click');
+	});
+});
+JS
+			);
+		}
+
 		if ( ! $this->is_reviewbird_screen( $hook ) ) {
 			return;
 		}

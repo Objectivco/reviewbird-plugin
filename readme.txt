@@ -14,14 +14,20 @@ Reviewbird collects, manages and displays reviews for your shop, including photo
 
 Reviewbird helps you collect and display star ratings and reviews about your products and WooCommerce store. Social proof from reviews and other user-generated content like photos and videos increases your conversion rate, organic traffic, and buyer engagement. [Create an account](https://reviewbird.com) to get started.
 
+The plugin is free to install. New stores need a Reviewbird account with an active trial or paid plan. Each plan has a 30-day trial. Payment details are required to start a trial. Existing free stores keep their access.
+
+Review requests have monthly limits: Starter includes 100 requests, and Plus includes 1,500. Both stop at their monthly limit. Everything includes 10,000 customer emails per month. Extra emails cost $1.50 per 1,000. See [current plans and prices](https://reviewbird.com/pricing).
+
+Feature availability depends on your plan. Starter includes one photo per review and three showcases. Plus and Everything include video reviews, custom questions, Review Guard, public replies, translation, and the Google Product Ratings feed. Everything adds AI review summaries and highlights, helpful votes, Review Triage, and team access.
+
 ## Collect reviews on autopilot
 
-* Unlimited review requests: schedule automatic requests after fulfillment or delivery, set the delay time for domestic and international orders.
+* Automated review requests (subject to plan limits): schedule automatic requests after fulfillment or delivery, set the delay time for domestic and international orders.
 * Email templates: fully-customizable email templates (including in-email review forms)
 * Automatic reminders: send email reminders to customers who haven’t left a review yet.
 * Coupons: automatically send a static/dynamic coupon to all reviewers that meet your coupon conditions.
 * Advanced blacklisting: disable review requests for certain products or customers.
-* Manual requests: send unlimited review requests to orders fulfilled prior to the app installation.
+* Manual requests: send review requests to orders fulfilled prior to the app installation, subject to plan limits.
 * Product groups and cross-shop reviews syndication: share reviews among similar products in the same product groups or shop groups.
 
 ## Create High-Quality User Content
@@ -36,6 +42,7 @@ Reviewbird helps you collect and display star ratings and reviews about your pro
 
 * Review Widget: collect and display your product reviews and star ratings on your product pages.
 * Preview Badge: display your star ratings and number of reviews as a badge below the product title on product or collection pages.
+* Store Rating Badge: display your store rating and review count with the `[reviewbird_badge]` shortcode.
 * Reviews Showcase: feature selected reviews on your front page, or anywhere you want.
 * All Reviews page: Use a review wall showcase to show-off all your reviews.
 * Fully optimized for mobile and loading speed.
@@ -51,8 +58,8 @@ You can choose among multiple layouts and styles:
 
 ## Boost your organic traffic
 
-* Automatic rich snippets: show your star ratings in Google Search
-* Automatic Google Shopping XML feed: show reviews in Google Shopping.
+* Automatic rich snippets: add product rating schema for Google Search. Google decides whether to display rich results.
+* Automatic Google Shopping XML feed: provide a Google Product Ratings feed on Plus and Everything. Google eligibility requirements apply.
 
 ## Simple migration & great support
 
@@ -63,8 +70,8 @@ You can choose among multiple layouts and styles:
 **🌟Key Features:**
 
 * **Automated Review Collection** - Automatically request reviews from customers after purchase
-* **Spam Protection** - AI-powered spam detection blocks fake, inappropriate, and low-quality reviews
-* **Complaint Catching** - Intercept negative feedback before it goes public, giving you a chance to resolve issues
+* **Spam Protection** - Review Guard checks text, photos, and videos for spam, unsafe content, and personal information
+* **Complaint Catching** - Offer support before a customer submits a review with Review Triage. Customers can still submit their review.
 * **Beautiful Display** - Display your reviews with a beautiful, customizable widget that matches your store design
 * **Multimedia Reviews** - Customers can submit reviews with photos and videos so customers can really see what your products look like.
 * **Star Ratings** - Seamlessly integrates with WooCommerce so your ratings show up on product pages and catalog pages
@@ -72,8 +79,14 @@ You can choose among multiple layouts and styles:
 * **Showcases** - Show-off your best reviews in a variety of formats including sliders, tickers, a review wall, etc.
 * **Discount Incentives** - Offers discounts to customers that leave a review - or incentivize them to add a photo or video.
 * **Import/Export Reviews** - Easily import and export reviews, with all of your data.
-* **Google Merchant Feed** - Sync your reviews to Google shopping search results.
+* **Google Merchant Feed** - Provide a Google Product Ratings XML feed for eligible reviews.
 * **Translated and Localized** - Translate your reviews to your user's language, automatically.
+* **Google Customer Reviews** - Open Google's survey consent window on order confirmation pages, including CheckoutWC.
+* **Review Editing and Replies** - Customers can edit their reviews. Plus and Everything include public replies.
+* **AI Review Highlights** - Mark a sentence from a customer review on Everything.
+* **Product Translations** - Share reviews and ratings between Polylang and WPML product translations.
+* **Integrations** - Connect Klaviyo and WooCommerce Marketplace Review Sync on Plus and Everything.
+* **MCP Access** - Connect AI tools to your reviews. Starter includes read access. Plus and Everything include write access when you enable it for the store.
 
 **🔭 SEO Optimized**
 
@@ -81,7 +94,7 @@ Reviews from your customers are one of the best sources of SEO content you can g
 
 - Fresh, Unique Content: Customer reviews naturally include diverse keywords and phrases.
 - Photos and Videos: Collect customer photos and videos to enhance your reviews
-- Rich Search Results: Display product ratings and review counts in Google results.
+- Rich Search Results: Add product rating and review count schema for Google. Google decides whether to display rich results.
 
 **🛠️Made for Developers by Developers**
 
@@ -137,6 +150,7 @@ By using this plugin, you agree to the Reviewbird Terms and Conditions and Priva
 
 **Requirements:**
 
+* WordPress 6.0 or higher
 * WooCommerce 5.0 or higher
 * PHP 7.4 or higher
 * A Reviewbird account with an active trial or paid plan. Existing free stores keep their access. Sign up at [reviewbird.com](https://reviewbird.com).
@@ -177,7 +191,7 @@ Yes. Create an account at [reviewbird.com](https://reviewbird.com), set up your 
 
 = Is Reviewbird for WooCommerce free? =
 
-The plugin is free to install. New stores need an active Reviewbird trial or paid plan to use the service. Payment details are required to start a trial. Existing free stores keep their access.
+The plugin is free to install. New stores need an active Reviewbird trial or paid plan to use the service. Each plan has a 30-day trial. Payment details are required to start a trial. Existing free stores keep their access.
 
 = Can I migrate my reviews from Judge.me? =
 
@@ -185,7 +199,7 @@ Yes, we have a dedicated import tool to help you import reviews from Judge.me.
 
 = Can I send review request emails to old clients?  =
 
-You can send a bulk review request to all customers with orders within the last 90 days. Up to 5000 at a time.
+You can send bulk review requests for past orders. Select the cutoff date in the Reviewbird dashboard. Each run can process up to 5000 orders. Your plan limits apply.
 
 = Is WooCommerce required? =
 
@@ -229,6 +243,8 @@ For development: `pnpm run dev`
 == Changelog ==
 
 = 1.3.1 =
+New - Ask for a WordPress.org review after 14 days of connected use. Dismiss the notice permanently for the site.
+Update - Correct review request limits and plan requirements in the listing. Add missing feature information.
 New - Include CusRev review titles in the WooCommerce review API response. Preserve existing review titles.
 New - Share Reviewbird product IDs across Polylang and WPML translations. Use the same reviews, ratings, and review schema for each translation.
 Update - Add filters for product translation IDs, initial product IDs, and product locales. Keep Polylang and WPML support in separate compatibility classes.

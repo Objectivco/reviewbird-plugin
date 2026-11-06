@@ -16,6 +16,7 @@
 		"templates/**",
 		"src/**",
 		"vendor/autoload.php",
+		"vendor/pressmodo/wp-admin-notices/src/**",
 		"vendor/composer/*.php",
 		"vendor/composer/installed.json",
 		"vendor/composer/LICENSE",
