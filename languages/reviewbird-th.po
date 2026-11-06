@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reviewbird 1.0.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
-"Last-Translator: gpt-po v1.2.3\n"
+"Last-Translator: gpt-po v1.3.0\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:127
-#: src/Admin/Settings.php:128
+#: src/Admin/Settings.php:189
+#: src/Admin/Settings.php:190
 msgid "Reviewbird"
 msgstr "รีวิวเบิร์ด"
 
@@ -31,60 +31,76 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "การรวบรวมรีวิวอัตโนมัติสำหรับ WooCommerce ที่บล็อกสแปม จับข้อร้องเรียน และแสดงผลตอบรับที่ดีที่สุดของคุณ"
 
-#: src/Admin/Settings.php:94
+#: src/Admin/Settings.php:99
+msgid "Hey, there! It looks like you enjoy collecting product reviews with Reviewbird. Would you do us a favor and take a few seconds to give us a review? We’d love to hear from you."
+msgstr "สวัสดีครับ/ค่ะ! ดูเหมือนว่าคุณจะชอบเก็บรวบรวมรีวิวสินค้ากับ Reviewbird คุณช่วยกรุณาใช้เวลาสักครู่เพื่อให้รีวิวกับเราหน่อยได้ไหม? เราอยากฟังความคิดเห็นจากคุณมากครับ/ค่ะ"
+
+#: src/Admin/Settings.php:101
+msgid "Ok, you deserve it"
+msgstr "ตกลง คุณสมควรได้รับมัน"
+
+#: src/Admin/Settings.php:103
+msgid "Nope, maybe later"
+msgstr "ไม่ใช่ บางทีทีหลัง"
+
+#: src/Admin/Settings.php:105
+msgid "I already did"
+msgstr "ฉันได้ทำไปแล้ว"
+
+#: src/Admin/Settings.php:156
 msgid "Reviewbird Connection Error:"
 msgstr "ข้อผิดพลาดการเชื่อมต่อ Reviewbird:"
 
-#: src/Admin/Settings.php:113
+#: src/Admin/Settings.php:175
 msgid "Successfully connected to Reviewbird!"
 msgstr "เชื่อมต่อกับ Reviewbird สำเร็จ!"
 
-#: src/Admin/Settings.php:140
-#: src/Admin/Settings.php:141
+#: src/Admin/Settings.php:202
+#: src/Admin/Settings.php:203
 msgid "Get Started"
 msgstr "เริ่มต้น"
 
-#: src/Admin/Settings.php:149
+#: src/Admin/Settings.php:211
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "การตั้งค่า Reviewbird"
 
-#: src/Admin/Settings.php:150
-#: src/Core/Plugin.php:442
+#: src/Admin/Settings.php:212
+#: src/Core/Plugin.php:502
 msgid "Settings"
 msgstr "การตั้งค่า"
 
-#: src/Admin/Settings.php:355
+#: src/Admin/Settings.php:436
 msgid "Invalid security token"
 msgstr "โทเค็นความปลอดภัยไม่ถูกต้อง"
 
-#: src/Admin/Settings.php:359
-#: src/Admin/Settings.php:423
+#: src/Admin/Settings.php:440
+#: src/Admin/Settings.php:516
 msgid "Insufficient permissions"
 msgstr "สิทธิ์ไม่เพียงพอ"
 
-#: src/Admin/Settings.php:373
+#: src/Admin/Settings.php:454
 msgid "Invalid setting"
 msgstr "การตั้งค่าไม่ถูกต้อง"
 
-#: src/Admin/Settings.php:379
+#: src/Admin/Settings.php:460
 msgid "Invalid setting value"
 msgstr "ค่าการตั้งค่าไม่ถูกต้อง"
 
-#: src/Admin/Settings.php:386
+#: src/Admin/Settings.php:467
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr "ไม่สามารถบันทึกการตั้งค่าได้ กรุณาลองใหม่อีกครั้ง"
 
-#: src/Admin/Settings.php:393
+#: src/Admin/Settings.php:474
 msgid "Setting updated successfully"
 msgstr "อัปเดตการตั้งค่าสำเร็จ"
 
-#: src/Admin/Settings.php:406
+#: src/Admin/Settings.php:499
 msgid "The connection status could not be refreshed. Please try again."
 msgstr "ไม่สามารถรีเฟรชสถานะการเชื่อมต่อได้ กรุณาลองใหม่อีกครั้ง"
 
-#: src/Admin/Settings.php:413
+#: src/Admin/Settings.php:506
 msgid "Connection status refreshed"
 msgstr "รีเฟรชสถานะการเชื่อมต่อเรียบร้อยแล้ว"
 
@@ -96,7 +112,7 @@ msgstr "ร้านค้า ID %d ถูกบันทึกเรียบ�
 
 #: src/Api/CouponController.php:79
 #: src/Api/ProductsController.php:81
-#: src/Api/ProductsController.php:119
+#: src/Api/ProductsController.php:131
 msgid "WooCommerce is not active"
 msgstr "WooCommerce ไม่ได้เปิดใช้งาน"
 
@@ -114,70 +130,70 @@ msgstr "ไม่พบเทมเพลตคูปอง '%s'"
 msgid "discount_type and amount are required when not using template"
 msgstr "ต้องระบุ discount_type และ amount เมื่อไม่ใช้เทมเพลต"
 
-#: src/Api/ProductsController.php:125
-#: src/Api/RatingsController.php:41
+#: src/Api/ProductsController.php:138
+#: src/Api/RatingsController.php:46
 msgid "Product not found"
 msgstr "ไม่พบสินค้า"
 
-#: src/Api/RatingsController.php:31
+#: src/Api/RatingsController.php:32
 msgid "Product ID is required"
 msgstr "ต้องระบุรหัสสินค้า"
 
-#: src/Api/RatingsController.php:37
+#: src/Api/RatingsController.php:36
 msgid "Invalid product ID"
 msgstr "รหัสสินค้าผิดพลาด"
 
-#: src/Api/RatingsController.php:66
-msgid "Average stars must be a number between 1 and 5"
-msgstr "คะแนนเฉลี่ยต้องเป็นตัวเลขระหว่าง 1 ถึง 5"
+#: src/Api/RatingsController.php:72
+msgid "Review count must be a whole number of 0 or more"
+msgstr "จำนวนรีวิวต้องเป็นจำนวนเต็มที่มีค่า 0 หรือมากกว่า"
 
-#: src/Api/RatingsController.php:70
-msgid "Review count must be a non-negative number"
-msgstr "จำนวนรีวิวต้องเป็นตัวเลขที่ไม่ติดลบ"
+#: src/Api/RatingsController.php:78
+msgid "Average stars must be 0 when there are no reviews, or a number between 1 and 5"
+msgstr "จำนวนดาวเฉลี่ยต้องเป็น 0 เมื่อไม่มีรีวิว หรือเป็นตัวเลขระหว่าง 1 ถึง 5"
 
-#: src/Api/RatingsController.php:74
+#: src/Api/RatingsController.php:82
 msgid "Rating counts must be an array"
 msgstr "จำนวนคะแนนต้องเป็นอาร์เรย์"
 
-#: src/Api/RatingsController.php:152
+#: src/Api/RatingsController.php:170
 msgid "Customer email is required"
 msgstr "ต้องระบุอีเมลลูกค้า"
 
-#: src/Api/RatingsController.php:156
+#: src/Api/RatingsController.php:174
 msgid "Invalid email address"
 msgstr "ที่อยู่อีเมลไม่ถูกต้อง"
 
-#: src/Core/Plugin.php:448
+#: src/Core/Plugin.php:508
 msgid "Documentation"
 msgstr "เอกสาร"
 
-#: src/functions.php:115
-#: src/functions.php:298
+#: src/functions.php:245
+#: src/functions.php:428
 msgid "API request failed"
 msgstr "คำขอ API ล้มเหลว"
 
-#: src/functions.php:205
+#: src/functions.php:335
 msgid "Store is not connected to Reviewbird."
 msgstr "ร้านค้าไม่ได้เชื่อมต่อกับ Reviewbird."
 
-#: src/functions.php:215
+#: src/functions.php:345
 msgid "Unable to generate API key for authentication."
 msgstr "ไม่สามารถสร้างคีย์ API สำหรับการยืนยันตัวตนได้."
 
-#: src/functions.php:229
+#: src/functions.php:359
 msgid "Maximum of 50 product IDs allowed per request."
 msgstr "อนุญาตให้ใช้รหัสสินค้าสูงสุด 50 รายการต่อคำขอ."
 
-#: src/functions.php:334
+#: src/functions.php:464
 msgid "Failed to decode API response."
 msgstr "ไม่สามารถถอดรหัสการตอบสนอง API ได้."
 
-#: src/functions.php:684
+#: src/functions.php:818
 msgid "Anonymous"
 msgstr "ไม่ระบุชื่อ"
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:705
+#: src/functions.php:839
 #, php-format
 msgid "Rated %d out of 5"
 msgstr "ให้คะแนน %d จาก 5"
@@ -234,111 +250,111 @@ msgstr "ให้คะแนน %s จาก 5"
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "ให้คะแนน %s จาก 5, คลิกเพื่อดูรีวิว"
 
-#: src/Integration/WooCommerce.php:66
+#: src/Integration/WooCommerce.php:68
 msgid "Whether the Reviewbird widget is enabled."
 msgstr "วิดเจ็ต Reviewbird เปิดใช้งานหรือไม่"
 
-#: src/Integration/WooCommerce.php:152
+#: src/Integration/WooCommerce.php:154
 msgid "Leave a review"
 msgstr "ฝากรีวิว"
 
-#: assets/src/js/components/ConnectionHealth.jsx:8
+#: assets/src/js/components/ConnectionHealth.jsx:6
 msgid "Connected to Reviewbird"
 msgstr "เชื่อมต่อกับ Reviewbird แล้ว"
 
-#: assets/src/js/components/ConnectionHealth.jsx:10
+#: assets/src/js/components/ConnectionHealth.jsx:8
 msgid "View dashboard"
 msgstr "ดูแดชบอร์ด"
 
-#: assets/src/js/components/ConnectionHealth.jsx:14
+#: assets/src/js/components/ConnectionHealth.jsx:12
 msgid "Your store is not connected"
 msgstr "ร้านค้าของคุณยังไม่ได้เชื่อมต่อ"
 
-#: assets/src/js/components/ConnectionHealth.jsx:15
+#: assets/src/js/components/ConnectionHealth.jsx:13
 msgid "Reviewbird is disabled until you connect your WooCommerce store."
 msgstr "Reviewbird ถูกปิดใช้งานจนกว่าคุณจะเชื่อมต่อร้าน WooCommerce ของคุณ"
 
-#: assets/src/js/components/ConnectionHealth.jsx:19
+#: assets/src/js/components/ConnectionHealth.jsx:17
 msgid "Connect store"
 msgstr "เชื่อมต่อร้านค้า"
 
-#: assets/src/js/components/ConnectionHealth.jsx:23
+#: assets/src/js/components/ConnectionHealth.jsx:21
 msgid "Your store is syncing"
 msgstr "ร้านค้าของคุณกำลังซิงค์"
 
-#: assets/src/js/components/ConnectionHealth.jsx:24
+#: assets/src/js/components/ConnectionHealth.jsx:22
 msgid "Your products and reviews are syncing."
 msgstr "สินค้าของคุณและรีวิวกำลังซิงค์"
 
-#: assets/src/js/components/ConnectionHealth.jsx:25
+#: assets/src/js/components/ConnectionHealth.jsx:23
 msgid "View progress"
 msgstr "ดูความคืบหน้า"
 
-#: assets/src/js/components/ConnectionHealth.jsx:29
+#: assets/src/js/components/ConnectionHealth.jsx:27
 msgid "Reviewbird is disabled"
 msgstr "Reviewbird ถูกปิดใช้งาน"
 
-#: assets/src/js/components/ConnectionHealth.jsx:30
+#: assets/src/js/components/ConnectionHealth.jsx:28
 msgid "Your Reviewbird subscription is not active. Update your billing details to turn Reviewbird back on."
 msgstr "การสมัครใช้งาน Reviewbird ของคุณไม่ใช้งานอยู่ อัปเดตรายละเอียดการชำระเงินของคุณเพื่อเปิดใช้งาน Reviewbird อีกครั้ง"
 
-#: assets/src/js/components/ConnectionHealth.jsx:34
+#: assets/src/js/components/ConnectionHealth.jsx:32
 msgid "Update billing"
 msgstr "อัปเดตการชำระเงิน"
 
-#: assets/src/js/components/ConnectionHealth.jsx:38
+#: assets/src/js/components/ConnectionHealth.jsx:36
 msgid "Reviewbird cannot connect to your store"
 msgstr "Reviewbird ไม่สามารถเชื่อมต่อกับร้านค้าของคุณได้"
 
-#: assets/src/js/components/ConnectionHealth.jsx:39
+#: assets/src/js/components/ConnectionHealth.jsx:37
 msgid "Open the connection settings in Reviewbird to reconnect your store."
 msgstr "เปิดการตั้งค่าการเชื่อมต่อใน Reviewbird เพื่อเชื่อมต่อร้านค้าของคุณอีกครั้ง"
 
-#: assets/src/js/components/ConnectionHealth.jsx:43
+#: assets/src/js/components/ConnectionHealth.jsx:41
 msgid "Check connection"
 msgstr "ตรวจสอบการเชื่อมต่อ"
 
-#: assets/src/js/components/ConnectionHealth.jsx:47
+#: assets/src/js/components/ConnectionHealth.jsx:45
 msgid "We could not check your connection"
 msgstr "เราไม่สามารถตรวจสอบการเชื่อมต่อของคุณได้"
 
-#: assets/src/js/components/ConnectionHealth.jsx:48
+#: assets/src/js/components/ConnectionHealth.jsx:46
 msgid "Refresh to try again, or contact support if the problem continues."
 msgstr "รีเฟรชเพื่อลองอีกครั้ง หรือ ติดต่อฝ่ายสนับสนุนหากปัญหายังคงอยู่"
 
-#: assets/src/js/components/ConnectionHealth.jsx:52
+#: assets/src/js/components/ConnectionHealth.jsx:50
 msgid "Contact support"
 msgstr "ติดต่อฝ่ายสนับสนุน"
 
-#: assets/src/js/components/ConnectionHealth.jsx:56
+#: assets/src/js/components/ConnectionHealth.jsx:54
 msgid "Checking connection…"
 msgstr "กำลังตรวจสอบการเชื่อมต่อ…"
 
-#: assets/src/js/components/ConnectionHealth.jsx:58
+#: assets/src/js/components/ConnectionHealth.jsx:56
 msgid "Open Reviewbird"
 msgstr "เปิด Reviewbird"
 
-#: assets/src/js/components/ConnectionHealth.jsx:305
+#: assets/src/js/components/ConnectionHealth.jsx:285
 #: assets/src/js/components/GoogleCustomerReviews.jsx:48
 msgid "The connection could not be refreshed. Please try again."
 msgstr "ไม่สามารถรีเฟรชการเชื่อมต่อได้ กรุณาลองใหม่อีกครั้ง"
 
 #. translators: %s: time of the last connection check.
-#: assets/src/js/components/ConnectionHealth.jsx:343
+#: assets/src/js/components/ConnectionHealth.jsx:321
 #, js-format
 msgid "Last checked: %s"
 msgstr "ตรวจสอบล่าสุด: %s"
 
-#: assets/src/js/components/ConnectionHealth.jsx:368
+#: assets/src/js/components/ConnectionHealth.jsx:346
 msgid "Refresh connection status"
 msgstr "รีเฟรชสถานะการเชื่อมต่อ"
 
-#: assets/src/js/components/ConnectionHealth.jsx:374
+#: assets/src/js/components/ConnectionHealth.jsx:352
 #: assets/src/js/components/GoogleCustomerReviews.jsx:126
 msgid "Refreshing…"
 msgstr "กำลังรีเฟรช…"
 
-#: assets/src/js/components/ConnectionHealth.jsx:375
+#: assets/src/js/components/ConnectionHealth.jsx:353
 msgid "Refresh"
 msgstr "รีเฟรช"
 

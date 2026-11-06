@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-30T17:37:00+00:00\n"
+"POT-Creation-Date: 2026-11-06T16:06:29+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
@@ -17,8 +17,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:128
-#: src/Admin/Settings.php:129
+#: src/Admin/Settings.php:189
+#: src/Admin/Settings.php:190
 msgid "Reviewbird"
 msgstr ""
 
@@ -32,60 +32,76 @@ msgstr ""
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr ""
 
-#: src/Admin/Settings.php:95
+#: src/Admin/Settings.php:99
+msgid "Hey, there! It looks like you enjoy collecting product reviews with Reviewbird. Would you do us a favor and take a few seconds to give us a review? We’d love to hear from you."
+msgstr ""
+
+#: src/Admin/Settings.php:101
+msgid "Ok, you deserve it"
+msgstr ""
+
+#: src/Admin/Settings.php:103
+msgid "Nope, maybe later"
+msgstr ""
+
+#: src/Admin/Settings.php:105
+msgid "I already did"
+msgstr ""
+
+#: src/Admin/Settings.php:156
 msgid "Reviewbird Connection Error:"
 msgstr ""
 
-#: src/Admin/Settings.php:114
+#: src/Admin/Settings.php:175
 msgid "Successfully connected to Reviewbird!"
 msgstr ""
 
-#: src/Admin/Settings.php:141
-#: src/Admin/Settings.php:142
+#: src/Admin/Settings.php:202
+#: src/Admin/Settings.php:203
 msgid "Get Started"
 msgstr ""
 
-#: src/Admin/Settings.php:150
+#: src/Admin/Settings.php:211
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr ""
 
-#: src/Admin/Settings.php:151
-#: src/Core/Plugin.php:495
+#: src/Admin/Settings.php:212
+#: src/Core/Plugin.php:502
 msgid "Settings"
 msgstr ""
 
-#: src/Admin/Settings.php:356
+#: src/Admin/Settings.php:436
 msgid "Invalid security token"
 msgstr ""
 
-#: src/Admin/Settings.php:360
-#: src/Admin/Settings.php:436
+#: src/Admin/Settings.php:440
+#: src/Admin/Settings.php:516
 msgid "Insufficient permissions"
 msgstr ""
 
-#: src/Admin/Settings.php:374
+#: src/Admin/Settings.php:454
 msgid "Invalid setting"
 msgstr ""
 
-#: src/Admin/Settings.php:380
+#: src/Admin/Settings.php:460
 msgid "Invalid setting value"
 msgstr ""
 
-#: src/Admin/Settings.php:387
+#: src/Admin/Settings.php:467
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr ""
 
-#: src/Admin/Settings.php:394
+#: src/Admin/Settings.php:474
 msgid "Setting updated successfully"
 msgstr ""
 
-#: src/Admin/Settings.php:419
+#: src/Admin/Settings.php:499
 msgid "The connection status could not be refreshed. Please try again."
 msgstr ""
 
-#: src/Admin/Settings.php:426
+#: src/Admin/Settings.php:506
 msgid "Connection status refreshed"
 msgstr ""
 
@@ -97,7 +113,7 @@ msgstr ""
 
 #: src/Api/CouponController.php:79
 #: src/Api/ProductsController.php:81
-#: src/Api/ProductsController.php:119
+#: src/Api/ProductsController.php:131
 msgid "WooCommerce is not active"
 msgstr ""
 
@@ -115,70 +131,70 @@ msgstr ""
 msgid "discount_type and amount are required when not using template"
 msgstr ""
 
-#: src/Api/ProductsController.php:125
-#: src/Api/RatingsController.php:40
+#: src/Api/ProductsController.php:138
+#: src/Api/RatingsController.php:46
 msgid "Product not found"
 msgstr ""
 
-#: src/Api/RatingsController.php:31
+#: src/Api/RatingsController.php:32
 msgid "Product ID is required"
 msgstr ""
 
-#: src/Api/RatingsController.php:35
+#: src/Api/RatingsController.php:36
 msgid "Invalid product ID"
 msgstr ""
 
-#: src/Api/RatingsController.php:66
+#: src/Api/RatingsController.php:72
 msgid "Review count must be a whole number of 0 or more"
 msgstr ""
 
-#: src/Api/RatingsController.php:72
+#: src/Api/RatingsController.php:78
 msgid "Average stars must be 0 when there are no reviews, or a number between 1 and 5"
 msgstr ""
 
-#: src/Api/RatingsController.php:76
+#: src/Api/RatingsController.php:82
 msgid "Rating counts must be an array"
 msgstr ""
 
-#: src/Api/RatingsController.php:157
+#: src/Api/RatingsController.php:170
 msgid "Customer email is required"
 msgstr ""
 
-#: src/Api/RatingsController.php:161
+#: src/Api/RatingsController.php:174
 msgid "Invalid email address"
 msgstr ""
 
-#: src/Core/Plugin.php:501
+#: src/Core/Plugin.php:508
 msgid "Documentation"
 msgstr ""
 
-#: src/functions.php:115
-#: src/functions.php:298
+#: src/functions.php:245
+#: src/functions.php:428
 msgid "API request failed"
 msgstr ""
 
-#: src/functions.php:205
+#: src/functions.php:335
 msgid "Store is not connected to Reviewbird."
 msgstr ""
 
-#: src/functions.php:215
+#: src/functions.php:345
 msgid "Unable to generate API key for authentication."
 msgstr ""
 
-#: src/functions.php:229
+#: src/functions.php:359
 msgid "Maximum of 50 product IDs allowed per request."
 msgstr ""
 
-#: src/functions.php:334
+#: src/functions.php:464
 msgid "Failed to decode API response."
 msgstr ""
 
-#: src/functions.php:685
+#: src/functions.php:818
 msgid "Anonymous"
 msgstr ""
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:706
+#: src/functions.php:839
 #, php-format
 msgid "Rated %d out of 5"
 msgstr ""
@@ -235,11 +251,11 @@ msgstr ""
 msgid "Rated %s out of 5, click to view reviews"
 msgstr ""
 
-#: src/Integration/WooCommerce.php:66
+#: src/Integration/WooCommerce.php:68
 msgid "Whether the Reviewbird widget is enabled."
 msgstr ""
 
-#: src/Integration/WooCommerce.php:152
+#: src/Integration/WooCommerce.php:154
 msgid "Leave a review"
 msgstr ""
 

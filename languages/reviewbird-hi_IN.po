@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reviewbird 1.0.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
-"Last-Translator: gpt-po v1.2.3\n"
+"Last-Translator: gpt-po v1.3.0\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:127
-#: src/Admin/Settings.php:128
+#: src/Admin/Settings.php:189
+#: src/Admin/Settings.php:190
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -31,60 +31,76 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "WooCommerce के लिए स्वचालित समीक्षा संग्रह जो स्पैम को ब्लॉक करता है, शिकायतों को पकड़ता है, और आपकी सर्वश्रेष्ठ प्रतिक्रिया को प्रदर्शित करता है।"
 
-#: src/Admin/Settings.php:94
+#: src/Admin/Settings.php:99
+msgid "Hey, there! It looks like you enjoy collecting product reviews with Reviewbird. Would you do us a favor and take a few seconds to give us a review? We’d love to hear from you."
+msgstr "अरे, वहाँ! ऐसा लगता है कि आप Reviewbird के साथ उत्पाद समीक्षाएँ इकट्ठा करना पसंद करते हैं। क्या आप हमारे लिए कुछ सेकंड निकालकर हमें एक समीक्षा देंगे? हमें आपकी प्रतिक्रिया सुनना अच्छा लगेगा।"
+
+#: src/Admin/Settings.php:101
+msgid "Ok, you deserve it"
+msgstr "ठीक है, आप इसके हकदार हैं"
+
+#: src/Admin/Settings.php:103
+msgid "Nope, maybe later"
+msgstr "नहीं, शायद बाद में"
+
+#: src/Admin/Settings.php:105
+msgid "I already did"
+msgstr "मैं पहले ही कर चुका हूँ"
+
+#: src/Admin/Settings.php:156
 msgid "Reviewbird Connection Error:"
 msgstr "Reviewbird कनेक्शन त्रुटि:"
 
-#: src/Admin/Settings.php:113
+#: src/Admin/Settings.php:175
 msgid "Successfully connected to Reviewbird!"
 msgstr "Reviewbird से सफलतापूर्वक जुड़ा गया!"
 
-#: src/Admin/Settings.php:140
-#: src/Admin/Settings.php:141
+#: src/Admin/Settings.php:202
+#: src/Admin/Settings.php:203
 msgid "Get Started"
 msgstr "शुरू करें"
 
-#: src/Admin/Settings.php:149
+#: src/Admin/Settings.php:211
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "Reviewbird सेटिंग्स"
 
-#: src/Admin/Settings.php:150
-#: src/Core/Plugin.php:442
+#: src/Admin/Settings.php:212
+#: src/Core/Plugin.php:502
 msgid "Settings"
 msgstr "सेटिंग्स"
 
-#: src/Admin/Settings.php:355
+#: src/Admin/Settings.php:436
 msgid "Invalid security token"
 msgstr "अमान्य सुरक्षा टोकन"
 
-#: src/Admin/Settings.php:359
-#: src/Admin/Settings.php:423
+#: src/Admin/Settings.php:440
+#: src/Admin/Settings.php:516
 msgid "Insufficient permissions"
 msgstr "पर्याप्त अनुमतियाँ नहीं हैं"
 
-#: src/Admin/Settings.php:373
+#: src/Admin/Settings.php:454
 msgid "Invalid setting"
 msgstr "अमान्य सेटिंग"
 
-#: src/Admin/Settings.php:379
+#: src/Admin/Settings.php:460
 msgid "Invalid setting value"
 msgstr "अमान्य सेटिंग मान"
 
-#: src/Admin/Settings.php:386
+#: src/Admin/Settings.php:467
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr "सेटिंग सहेजी नहीं जा सकी। कृपया पुनः प्रयास करें।"
 
-#: src/Admin/Settings.php:393
+#: src/Admin/Settings.php:474
 msgid "Setting updated successfully"
 msgstr "सेटिंग सफलतापूर्वक अपडेट की गई"
 
-#: src/Admin/Settings.php:406
+#: src/Admin/Settings.php:499
 msgid "The connection status could not be refreshed. Please try again."
 msgstr "कनेक्शन स्थिति को ताज़ा नहीं किया जा सका। कृपया पुनः प्रयास करें।"
 
-#: src/Admin/Settings.php:413
+#: src/Admin/Settings.php:506
 msgid "Connection status refreshed"
 msgstr "कनेक्शन स्थिति ताज़ा की गई"
 
@@ -96,7 +112,7 @@ msgstr "स्टोर ID %d सफलतापूर्वक सहेजा 
 
 #: src/Api/CouponController.php:79
 #: src/Api/ProductsController.php:81
-#: src/Api/ProductsController.php:119
+#: src/Api/ProductsController.php:131
 msgid "WooCommerce is not active"
 msgstr "WooCommerce सक्रिय नहीं है"
 
@@ -114,70 +130,70 @@ msgstr "टेम्पलेट कूपन '%s' नहीं मिला"
 msgid "discount_type and amount are required when not using template"
 msgstr "टेम्पलेट का उपयोग न करने पर discount_type और amount आवश्यक हैं"
 
-#: src/Api/ProductsController.php:125
-#: src/Api/RatingsController.php:41
+#: src/Api/ProductsController.php:138
+#: src/Api/RatingsController.php:46
 msgid "Product not found"
 msgstr "उत्पाद नहीं मिला"
 
-#: src/Api/RatingsController.php:31
+#: src/Api/RatingsController.php:32
 msgid "Product ID is required"
 msgstr "उत्पाद ID आवश्यक है"
 
-#: src/Api/RatingsController.php:37
+#: src/Api/RatingsController.php:36
 msgid "Invalid product ID"
 msgstr "अमान्य उत्पाद ID"
 
-#: src/Api/RatingsController.php:66
-msgid "Average stars must be a number between 1 and 5"
-msgstr "औसत सितारे 1 से 5 के बीच एक संख्या होनी चाहिए"
+#: src/Api/RatingsController.php:72
+msgid "Review count must be a whole number of 0 or more"
+msgstr "समीक्षा की संख्या 0 या उससे अधिक का पूर्णांक होना चाहिए"
 
-#: src/Api/RatingsController.php:70
-msgid "Review count must be a non-negative number"
-msgstr "समीक्षा गणना गैर-नकारात्मक संख्या होनी चाहिए"
+#: src/Api/RatingsController.php:78
+msgid "Average stars must be 0 when there are no reviews, or a number between 1 and 5"
+msgstr "जब कोई समीक्षा नहीं होती है तो औसत सितारे 0 होने चाहिए, या 1 से 5 के बीच कोई संख्या"
 
-#: src/Api/RatingsController.php:74
+#: src/Api/RatingsController.php:82
 msgid "Rating counts must be an array"
 msgstr "रेटिंग गणना एक सरणी होनी चाहिए"
 
-#: src/Api/RatingsController.php:152
+#: src/Api/RatingsController.php:170
 msgid "Customer email is required"
 msgstr "ग्राहक ईमेल आवश्यक है"
 
-#: src/Api/RatingsController.php:156
+#: src/Api/RatingsController.php:174
 msgid "Invalid email address"
 msgstr "अमान्य ईमेल पता"
 
-#: src/Core/Plugin.php:448
+#: src/Core/Plugin.php:508
 msgid "Documentation"
 msgstr "दस्तावेज़"
 
-#: src/functions.php:115
-#: src/functions.php:298
+#: src/functions.php:245
+#: src/functions.php:428
 msgid "API request failed"
 msgstr "API अनुरोध विफल"
 
-#: src/functions.php:205
+#: src/functions.php:335
 msgid "Store is not connected to Reviewbird."
 msgstr "स्टोर Reviewbird से जुड़ा नहीं है।"
 
-#: src/functions.php:215
+#: src/functions.php:345
 msgid "Unable to generate API key for authentication."
 msgstr "प्रमाणीकरण के लिए API कुंजी उत्पन्न करने में असमर्थ।"
 
-#: src/functions.php:229
+#: src/functions.php:359
 msgid "Maximum of 50 product IDs allowed per request."
 msgstr "प्रति अनुरोध अधिकतम 50 उत्पाद ID की अनुमति है।"
 
-#: src/functions.php:334
+#: src/functions.php:464
 msgid "Failed to decode API response."
 msgstr "API प्रतिक्रिया को डिकोड करने में विफल।"
 
-#: src/functions.php:684
+#: src/functions.php:818
 msgid "Anonymous"
 msgstr "गुमनाम"
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:705
+#: src/functions.php:839
 #, php-format
 msgid "Rated %d out of 5"
 msgstr "5 में से %d रेट किया गया"
@@ -234,111 +250,111 @@ msgstr "5 में से %s रेट किया गया"
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "5 में से %s रेट किया गया, समीक्षाएँ देखने के लिए क्लिक करें"
 
-#: src/Integration/WooCommerce.php:66
+#: src/Integration/WooCommerce.php:68
 msgid "Whether the Reviewbird widget is enabled."
 msgstr "क्या Reviewbird विजेट सक्षम है।"
 
-#: src/Integration/WooCommerce.php:152
+#: src/Integration/WooCommerce.php:154
 msgid "Leave a review"
 msgstr "समीक्षा छोड़ें"
 
-#: assets/src/js/components/ConnectionHealth.jsx:8
+#: assets/src/js/components/ConnectionHealth.jsx:6
 msgid "Connected to Reviewbird"
 msgstr "Reviewbird से जुड़ा हुआ"
 
-#: assets/src/js/components/ConnectionHealth.jsx:10
+#: assets/src/js/components/ConnectionHealth.jsx:8
 msgid "View dashboard"
 msgstr "डैशबोर्ड देखें"
 
-#: assets/src/js/components/ConnectionHealth.jsx:14
+#: assets/src/js/components/ConnectionHealth.jsx:12
 msgid "Your store is not connected"
 msgstr "आपकी दुकान कनेक्ट नहीं है"
 
-#: assets/src/js/components/ConnectionHealth.jsx:15
+#: assets/src/js/components/ConnectionHealth.jsx:13
 msgid "Reviewbird is disabled until you connect your WooCommerce store."
 msgstr "Reviewbird तब तक अक्षम है जब तक आप अपनी WooCommerce दुकान को कनेक्ट नहीं करते।"
 
-#: assets/src/js/components/ConnectionHealth.jsx:19
+#: assets/src/js/components/ConnectionHealth.jsx:17
 msgid "Connect store"
 msgstr "दुकान कनेक्ट करें"
 
-#: assets/src/js/components/ConnectionHealth.jsx:23
+#: assets/src/js/components/ConnectionHealth.jsx:21
 msgid "Your store is syncing"
 msgstr "आपकी दुकान सिंक हो रही है"
 
-#: assets/src/js/components/ConnectionHealth.jsx:24
+#: assets/src/js/components/ConnectionHealth.jsx:22
 msgid "Your products and reviews are syncing."
 msgstr "आपके उत्पाद और समीक्षाएँ सिंक हो रही हैं।"
 
-#: assets/src/js/components/ConnectionHealth.jsx:25
+#: assets/src/js/components/ConnectionHealth.jsx:23
 msgid "View progress"
 msgstr "प्रगति देखें"
 
-#: assets/src/js/components/ConnectionHealth.jsx:29
+#: assets/src/js/components/ConnectionHealth.jsx:27
 msgid "Reviewbird is disabled"
 msgstr "Reviewbird अक्षम है"
 
-#: assets/src/js/components/ConnectionHealth.jsx:30
+#: assets/src/js/components/ConnectionHealth.jsx:28
 msgid "Your Reviewbird subscription is not active. Update your billing details to turn Reviewbird back on."
 msgstr "आपकी Reviewbird सदस्यता सक्रिय नहीं है। Reviewbird को पुनः चालू करने के लिए अपनी बिलिंग विवरण अपडेट करें।"
 
-#: assets/src/js/components/ConnectionHealth.jsx:34
+#: assets/src/js/components/ConnectionHealth.jsx:32
 msgid "Update billing"
 msgstr "बिलिंग अपडेट करें"
 
-#: assets/src/js/components/ConnectionHealth.jsx:38
+#: assets/src/js/components/ConnectionHealth.jsx:36
 msgid "Reviewbird cannot connect to your store"
 msgstr "Reviewbird आपकी दुकान से कनेक्ट नहीं हो सकता"
 
-#: assets/src/js/components/ConnectionHealth.jsx:39
+#: assets/src/js/components/ConnectionHealth.jsx:37
 msgid "Open the connection settings in Reviewbird to reconnect your store."
 msgstr "अपनी दुकान को पुनः कनेक्ट करने के लिए Reviewbird में कनेक्शन सेटिंग्स खोलें।"
 
-#: assets/src/js/components/ConnectionHealth.jsx:43
+#: assets/src/js/components/ConnectionHealth.jsx:41
 msgid "Check connection"
 msgstr "कनेक्शन जांचें"
 
-#: assets/src/js/components/ConnectionHealth.jsx:47
+#: assets/src/js/components/ConnectionHealth.jsx:45
 msgid "We could not check your connection"
 msgstr "हम आपका कनेक्शन जांच नहीं सके"
 
-#: assets/src/js/components/ConnectionHealth.jsx:48
+#: assets/src/js/components/ConnectionHealth.jsx:46
 msgid "Refresh to try again, or contact support if the problem continues."
 msgstr "पुनः प्रयास करने के लिए रिफ्रेश करें, या समस्या जारी रहने पर समर्थन से संपर्क करें।"
 
-#: assets/src/js/components/ConnectionHealth.jsx:52
+#: assets/src/js/components/ConnectionHealth.jsx:50
 msgid "Contact support"
 msgstr "समर्थन से संपर्क करें"
 
-#: assets/src/js/components/ConnectionHealth.jsx:56
+#: assets/src/js/components/ConnectionHealth.jsx:54
 msgid "Checking connection…"
 msgstr "कनेक्शन जांच रहा है…"
 
-#: assets/src/js/components/ConnectionHealth.jsx:58
+#: assets/src/js/components/ConnectionHealth.jsx:56
 msgid "Open Reviewbird"
 msgstr "Reviewbird खोलें"
 
-#: assets/src/js/components/ConnectionHealth.jsx:305
+#: assets/src/js/components/ConnectionHealth.jsx:285
 #: assets/src/js/components/GoogleCustomerReviews.jsx:48
 msgid "The connection could not be refreshed. Please try again."
 msgstr "कनेक्शन ताज़ा नहीं किया जा सका। कृपया पुनः प्रयास करें।"
 
 #. translators: %s: time of the last connection check.
-#: assets/src/js/components/ConnectionHealth.jsx:343
+#: assets/src/js/components/ConnectionHealth.jsx:321
 #, js-format
 msgid "Last checked: %s"
 msgstr "अंतिम जांच: %s"
 
-#: assets/src/js/components/ConnectionHealth.jsx:368
+#: assets/src/js/components/ConnectionHealth.jsx:346
 msgid "Refresh connection status"
 msgstr "कनेक्शन स्थिति ताज़ा करें"
 
-#: assets/src/js/components/ConnectionHealth.jsx:374
+#: assets/src/js/components/ConnectionHealth.jsx:352
 #: assets/src/js/components/GoogleCustomerReviews.jsx:126
 msgid "Refreshing…"
 msgstr "ताज़ा किया जा रहा है…"
 
-#: assets/src/js/components/ConnectionHealth.jsx:375
+#: assets/src/js/components/ConnectionHealth.jsx:353
 msgid "Refresh"
 msgstr "रिफ्रेश करें"
 

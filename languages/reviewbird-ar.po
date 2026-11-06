@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reviewbird 1.0.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/reviewbird\n"
-"Last-Translator: gpt-po v1.2.3\n"
+"Last-Translator: gpt-po v1.3.0\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:127
-#: src/Admin/Settings.php:128
+#: src/Admin/Settings.php:189
+#: src/Admin/Settings.php:190
 msgid "Reviewbird"
 msgstr "ريفيوبيرد"
 
@@ -31,60 +31,76 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "جمع المراجعات الآلي لـ WooCommerce الذي يمنع الرسائل المزعجة، يلتقط الشكاوى، ويعرض أفضل تعليقاتك."
 
-#: src/Admin/Settings.php:94
+#: src/Admin/Settings.php:99
+msgid "Hey, there! It looks like you enjoy collecting product reviews with Reviewbird. Would you do us a favor and take a few seconds to give us a review? We’d love to hear from you."
+msgstr "مرحبًا! يبدو أنك تستمتع بجمع تقييمات المنتجات مع Reviewbird. هل تود أن تقدم لنا خدمة وتأخذ بضع ثوانٍ لتكتب لنا تقييمًا؟ نود أن نسمع منك."
+
+#: src/Admin/Settings.php:101
+msgid "Ok, you deserve it"
+msgstr "حسنًا، أنت تستحق ذلك"
+
+#: src/Admin/Settings.php:103
+msgid "Nope, maybe later"
+msgstr "لا، ربما لاحقًا"
+
+#: src/Admin/Settings.php:105
+msgid "I already did"
+msgstr "لقد فعلت ذلك بالفعل"
+
+#: src/Admin/Settings.php:156
 msgid "Reviewbird Connection Error:"
 msgstr "خطأ في اتصال ريفيوبيرد:"
 
-#: src/Admin/Settings.php:113
+#: src/Admin/Settings.php:175
 msgid "Successfully connected to Reviewbird!"
 msgstr "تم الاتصال بريفيوبيرد بنجاح!"
 
-#: src/Admin/Settings.php:140
-#: src/Admin/Settings.php:141
+#: src/Admin/Settings.php:202
+#: src/Admin/Settings.php:203
 msgid "Get Started"
 msgstr "ابدأ الآن"
 
-#: src/Admin/Settings.php:149
+#: src/Admin/Settings.php:211
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "إعدادات ريفيوبيرد"
 
-#: src/Admin/Settings.php:150
-#: src/Core/Plugin.php:442
+#: src/Admin/Settings.php:212
+#: src/Core/Plugin.php:502
 msgid "Settings"
 msgstr "الإعدادات"
 
-#: src/Admin/Settings.php:355
+#: src/Admin/Settings.php:436
 msgid "Invalid security token"
 msgstr "رمز الأمان غير صالح"
 
-#: src/Admin/Settings.php:359
-#: src/Admin/Settings.php:423
+#: src/Admin/Settings.php:440
+#: src/Admin/Settings.php:516
 msgid "Insufficient permissions"
 msgstr "صلاحيات غير كافية"
 
-#: src/Admin/Settings.php:373
+#: src/Admin/Settings.php:454
 msgid "Invalid setting"
 msgstr "إعداد غير صالح"
 
-#: src/Admin/Settings.php:379
+#: src/Admin/Settings.php:460
 msgid "Invalid setting value"
 msgstr "قيمة الإعداد غير صالحة"
 
-#: src/Admin/Settings.php:386
+#: src/Admin/Settings.php:467
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr "تعذر حفظ الإعداد. يرجى المحاولة مرة أخرى."
 
-#: src/Admin/Settings.php:393
+#: src/Admin/Settings.php:474
 msgid "Setting updated successfully"
 msgstr "تم تحديث الإعداد بنجاح"
 
-#: src/Admin/Settings.php:406
+#: src/Admin/Settings.php:499
 msgid "The connection status could not be refreshed. Please try again."
 msgstr "تعذر تحديث حالة الاتصال. يرجى المحاولة مرة أخرى."
 
-#: src/Admin/Settings.php:413
+#: src/Admin/Settings.php:506
 msgid "Connection status refreshed"
 msgstr "تم تحديث حالة الاتصال"
 
@@ -96,7 +112,7 @@ msgstr "تم حفظ معرف المتجر %d بنجاح"
 
 #: src/Api/CouponController.php:79
 #: src/Api/ProductsController.php:81
-#: src/Api/ProductsController.php:119
+#: src/Api/ProductsController.php:131
 msgid "WooCommerce is not active"
 msgstr "WooCommerce غير نشط"
 
@@ -114,70 +130,70 @@ msgstr "القالب القسيمة '%s' غير موجود"
 msgid "discount_type and amount are required when not using template"
 msgstr "نوع الخصم والمبلغ مطلوبان عند عدم استخدام القالب"
 
-#: src/Api/ProductsController.php:125
-#: src/Api/RatingsController.php:41
+#: src/Api/ProductsController.php:138
+#: src/Api/RatingsController.php:46
 msgid "Product not found"
 msgstr "المنتج غير موجود"
 
-#: src/Api/RatingsController.php:31
+#: src/Api/RatingsController.php:32
 msgid "Product ID is required"
 msgstr "معرف المنتج مطلوب"
 
-#: src/Api/RatingsController.php:37
+#: src/Api/RatingsController.php:36
 msgid "Invalid product ID"
 msgstr "معرف المنتج غير صالح"
 
-#: src/Api/RatingsController.php:66
-msgid "Average stars must be a number between 1 and 5"
-msgstr "يجب أن يكون متوسط النجوم رقماً بين 1 و 5"
+#: src/Api/RatingsController.php:72
+msgid "Review count must be a whole number of 0 or more"
+msgstr "يجب أن يكون عدد التقييمات عددًا صحيحًا صفر أو أكثر"
 
-#: src/Api/RatingsController.php:70
-msgid "Review count must be a non-negative number"
-msgstr "يجب أن يكون عدد المراجعات رقماً غير سالب"
+#: src/Api/RatingsController.php:78
+msgid "Average stars must be 0 when there are no reviews, or a number between 1 and 5"
+msgstr "يجب أن يكون متوسط النجوم 0 عندما لا توجد تقييمات، أو رقمًا بين 1 و 5"
 
-#: src/Api/RatingsController.php:74
+#: src/Api/RatingsController.php:82
 msgid "Rating counts must be an array"
 msgstr "يجب أن يكون عدد التقييمات مصفوفة"
 
-#: src/Api/RatingsController.php:152
+#: src/Api/RatingsController.php:170
 msgid "Customer email is required"
 msgstr "البريد الإلكتروني للعميل مطلوب"
 
-#: src/Api/RatingsController.php:156
+#: src/Api/RatingsController.php:174
 msgid "Invalid email address"
 msgstr "عنوان البريد الإلكتروني غير صالح"
 
-#: src/Core/Plugin.php:448
+#: src/Core/Plugin.php:508
 msgid "Documentation"
 msgstr "الوثائق"
 
-#: src/functions.php:115
-#: src/functions.php:298
+#: src/functions.php:245
+#: src/functions.php:428
 msgid "API request failed"
 msgstr "فشل طلب API"
 
-#: src/functions.php:205
+#: src/functions.php:335
 msgid "Store is not connected to Reviewbird."
 msgstr "المتجر غير متصل بريفيوبيرد."
 
-#: src/functions.php:215
+#: src/functions.php:345
 msgid "Unable to generate API key for authentication."
 msgstr "غير قادر على إنشاء مفتاح API للمصادقة."
 
-#: src/functions.php:229
+#: src/functions.php:359
 msgid "Maximum of 50 product IDs allowed per request."
 msgstr "الحد الأقصى 50 معرف منتج لكل طلب."
 
-#: src/functions.php:334
+#: src/functions.php:464
 msgid "Failed to decode API response."
 msgstr "فشل في فك ترميز استجابة API."
 
-#: src/functions.php:684
+#: src/functions.php:818
 msgid "Anonymous"
 msgstr "مجهول"
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:705
+#: src/functions.php:839
 #, php-format
 msgid "Rated %d out of 5"
 msgstr "تم التقييم %d من 5"
@@ -234,111 +250,111 @@ msgstr "تم التقييم %s من 5"
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "تم التقييم %s من 5، انقر لعرض المراجعات"
 
-#: src/Integration/WooCommerce.php:66
+#: src/Integration/WooCommerce.php:68
 msgid "Whether the Reviewbird widget is enabled."
 msgstr "ما إذا كان عنصر واجهة Reviewbird ممكّنًا."
 
-#: src/Integration/WooCommerce.php:152
+#: src/Integration/WooCommerce.php:154
 msgid "Leave a review"
 msgstr "اترك تقييماً"
 
-#: assets/src/js/components/ConnectionHealth.jsx:8
+#: assets/src/js/components/ConnectionHealth.jsx:6
 msgid "Connected to Reviewbird"
 msgstr "متصل بريفيوبيرد"
 
-#: assets/src/js/components/ConnectionHealth.jsx:10
+#: assets/src/js/components/ConnectionHealth.jsx:8
 msgid "View dashboard"
 msgstr "عرض لوحة التحكم"
 
-#: assets/src/js/components/ConnectionHealth.jsx:14
+#: assets/src/js/components/ConnectionHealth.jsx:12
 msgid "Your store is not connected"
 msgstr "متجرك غير متصل"
 
-#: assets/src/js/components/ConnectionHealth.jsx:15
+#: assets/src/js/components/ConnectionHealth.jsx:13
 msgid "Reviewbird is disabled until you connect your WooCommerce store."
 msgstr "تم تعطيل Reviewbird حتى تقوم بتوصيل متجر WooCommerce الخاص بك."
 
-#: assets/src/js/components/ConnectionHealth.jsx:19
+#: assets/src/js/components/ConnectionHealth.jsx:17
 msgid "Connect store"
 msgstr "توصيل المتجر"
 
-#: assets/src/js/components/ConnectionHealth.jsx:23
+#: assets/src/js/components/ConnectionHealth.jsx:21
 msgid "Your store is syncing"
 msgstr "متجرك يتم مزامنته"
 
-#: assets/src/js/components/ConnectionHealth.jsx:24
+#: assets/src/js/components/ConnectionHealth.jsx:22
 msgid "Your products and reviews are syncing."
 msgstr "يتم مزامنة منتجاتك ومراجعاتك."
 
-#: assets/src/js/components/ConnectionHealth.jsx:25
+#: assets/src/js/components/ConnectionHealth.jsx:23
 msgid "View progress"
 msgstr "عرض التقدم"
 
-#: assets/src/js/components/ConnectionHealth.jsx:29
+#: assets/src/js/components/ConnectionHealth.jsx:27
 msgid "Reviewbird is disabled"
 msgstr "تم تعطيل Reviewbird"
 
-#: assets/src/js/components/ConnectionHealth.jsx:30
+#: assets/src/js/components/ConnectionHealth.jsx:28
 msgid "Your Reviewbird subscription is not active. Update your billing details to turn Reviewbird back on."
 msgstr "اشتراكك في Reviewbird غير نشط. قم بتحديث تفاصيل الفوترة لإعادة تشغيل Reviewbird."
 
-#: assets/src/js/components/ConnectionHealth.jsx:34
+#: assets/src/js/components/ConnectionHealth.jsx:32
 msgid "Update billing"
 msgstr "تحديث الفوترة"
 
-#: assets/src/js/components/ConnectionHealth.jsx:38
+#: assets/src/js/components/ConnectionHealth.jsx:36
 msgid "Reviewbird cannot connect to your store"
 msgstr "لا يمكن لـ Reviewbird الاتصال بمتجرك"
 
-#: assets/src/js/components/ConnectionHealth.jsx:39
+#: assets/src/js/components/ConnectionHealth.jsx:37
 msgid "Open the connection settings in Reviewbird to reconnect your store."
 msgstr "افتح إعدادات الاتصال في Reviewbird لإعادة توصيل متجرك."
 
-#: assets/src/js/components/ConnectionHealth.jsx:43
+#: assets/src/js/components/ConnectionHealth.jsx:41
 msgid "Check connection"
 msgstr "التحقق من الاتصال"
 
-#: assets/src/js/components/ConnectionHealth.jsx:47
+#: assets/src/js/components/ConnectionHealth.jsx:45
 msgid "We could not check your connection"
 msgstr "تعذر علينا التحقق من اتصالك"
 
-#: assets/src/js/components/ConnectionHealth.jsx:48
+#: assets/src/js/components/ConnectionHealth.jsx:46
 msgid "Refresh to try again, or contact support if the problem continues."
 msgstr "قم بالتحديث للمحاولة مرة أخرى، أو اتصل بالدعم إذا استمرت المشكلة."
 
-#: assets/src/js/components/ConnectionHealth.jsx:52
+#: assets/src/js/components/ConnectionHealth.jsx:50
 msgid "Contact support"
 msgstr "الاتصال بالدعم"
 
-#: assets/src/js/components/ConnectionHealth.jsx:56
+#: assets/src/js/components/ConnectionHealth.jsx:54
 msgid "Checking connection…"
 msgstr "جارٍ التحقق من الاتصال…"
 
-#: assets/src/js/components/ConnectionHealth.jsx:58
+#: assets/src/js/components/ConnectionHealth.jsx:56
 msgid "Open Reviewbird"
 msgstr "فتح ريفيوبيرد"
 
-#: assets/src/js/components/ConnectionHealth.jsx:305
+#: assets/src/js/components/ConnectionHealth.jsx:285
 #: assets/src/js/components/GoogleCustomerReviews.jsx:48
 msgid "The connection could not be refreshed. Please try again."
 msgstr "تعذر تحديث الاتصال. يرجى المحاولة مرة أخرى."
 
 #. translators: %s: time of the last connection check.
-#: assets/src/js/components/ConnectionHealth.jsx:343
+#: assets/src/js/components/ConnectionHealth.jsx:321
 #, js-format
 msgid "Last checked: %s"
 msgstr "آخر فحص: %s"
 
-#: assets/src/js/components/ConnectionHealth.jsx:368
+#: assets/src/js/components/ConnectionHealth.jsx:346
 msgid "Refresh connection status"
 msgstr "تحديث حالة الاتصال"
 
-#: assets/src/js/components/ConnectionHealth.jsx:374
+#: assets/src/js/components/ConnectionHealth.jsx:352
 #: assets/src/js/components/GoogleCustomerReviews.jsx:126
 msgid "Refreshing…"
 msgstr "جارٍ التحديث…"
 
-#: assets/src/js/components/ConnectionHealth.jsx:375
+#: assets/src/js/components/ConnectionHealth.jsx:353
 msgid "Refresh"
 msgstr "تحديث"
 
