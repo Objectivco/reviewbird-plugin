@@ -14,20 +14,14 @@ Reviewbird collects, manages and displays reviews for your shop, including photo
 
 Reviewbird helps you collect and display star ratings and reviews about your products and WooCommerce store. Social proof from reviews and other user-generated content like photos and videos increases your conversion rate, organic traffic, and buyer engagement. [Create an account](https://reviewbird.com) to get started.
 
-The plugin is free to install. New stores need a Reviewbird account with an active trial or paid plan. Each plan has a 30-day trial. Payment details are required to start a trial. Existing free stores keep their access.
-
-Review requests have monthly limits: Starter includes 100 requests, and Plus includes 1,500. Both stop at their monthly limit. Everything includes 10,000 customer emails per month. Extra emails cost $1.50 per 1,000. See [current plans and prices](https://reviewbird.com/pricing).
-
-Feature availability depends on your plan. Starter includes one photo per review and three showcases. Plus and Everything include video reviews, custom questions, Review Guard, public replies, translation, and the Google Product Ratings feed. Everything adds AI review summaries and highlights, helpful votes, Review Triage, and team access.
-
 ## Collect reviews on autopilot
 
-* Automated review requests (subject to plan limits): schedule automatic requests after fulfillment or delivery, set the delay time for domestic and international orders.
+* Automated review requests: schedule automatic requests after fulfillment or delivery, set the delay time for domestic and international orders.
 * Email templates: fully-customizable email templates (including in-email review forms)
 * Automatic reminders: send email reminders to customers who haven’t left a review yet.
 * Coupons: automatically send a static/dynamic coupon to all reviewers that meet your coupon conditions.
 * Advanced blacklisting: disable review requests for certain products or customers.
-* Manual requests: send review requests to orders fulfilled prior to the app installation, subject to plan limits.
+* Manual requests: send review requests to orders fulfilled prior to the app installation.
 * Product groups and cross-shop reviews syndication: share reviews among similar products in the same product groups or shop groups.
 
 ## Create High-Quality User Content
@@ -58,7 +52,7 @@ You can choose among multiple layouts and styles:
 
 ## Boost your organic traffic
 
-* Automatic rich snippets: add product rating schema for Google Search. Google decides whether to display rich results.
+* Automatic rich snippets: add product rating schema for Google Search.
 * Automatic Google Shopping XML feed: provide a Google Product Ratings feed on Plus and Everything. Google eligibility requirements apply.
 
 ## Simple migration & great support
@@ -94,7 +88,7 @@ Reviews from your customers are one of the best sources of SEO content you can g
 
 - Fresh, Unique Content: Customer reviews naturally include diverse keywords and phrases.
 - Photos and Videos: Collect customer photos and videos to enhance your reviews
-- Rich Search Results: Add product rating and review count schema for Google. Google decides whether to display rich results.
+- Rich Search Results: Add product rating and review count schema for Google.
 
 **🛠️Made for Developers by Developers**
 
@@ -199,7 +193,7 @@ Yes, we have a dedicated import tool to help you import reviews from Judge.me.
 
 = Can I send review request emails to old clients?  =
 
-You can send bulk review requests for past orders. Select the cutoff date in the Reviewbird dashboard. Each run can process up to 5000 orders. Your plan limits apply.
+You can send bulk review requests for past orders. Select the cutoff date in the Reviewbird dashboard. Each run can process up to 5000 orders.
 
 = Is WooCommerce required? =
 
