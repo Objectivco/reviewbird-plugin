@@ -36,7 +36,8 @@ Reviewbird helps you collect and display star ratings and reviews about your pro
 
 * Review Widget: collect and display your product reviews and star ratings on your product pages.
 * Preview Badge: display your star ratings and number of reviews as a badge below the product title on product or collection pages.
-* Store Rating Badge: display your store rating and review count with the `[reviewbird_badge]` shortcode.
+* Trust Badge: display your store rating and review count with the `[reviewbird_badge]` shortcode.
+* Store reviews: collect and display customer feedback about your store.
 * Reviews Showcase: feature selected reviews on your front page, or anywhere you want.
 * All Reviews page: Use a review wall showcase to show-off all your reviews.
 * Fully optimized for mobile and loading speed.
@@ -102,7 +103,7 @@ Setup guides, shortcode reference, and developer hooks are documented at [review
 
 * `[reviewbird_widget]` — Displays the full review widget. Optional `product_id` attribute (defaults to the current product).
 * `[reviewbird_showcase id="123"]` — Displays a review showcase. The `id` attribute is required (get it from your Reviewbird dashboard).
-* `[reviewbird_badge]` — Displays the connected store’s rating, review count, and Reviewbird logo. Optional attributes: `layout` (`horizontal` or `seal`), `theme` (`light` or `dark`), and `alignment` (`left`, `center`, or `right`). Defaults: `horizontal`, `light`, and `left`.
+* `[reviewbird_badge]` — Displays the Trust Badge with the connected store’s rating, review count, and Reviewbird logo. Optional attributes: `layout` (`horizontal` or `seal`), `theme` (`light` or `dark`), and `alignment` (`left`, `center`, or `right`). Defaults: `horizontal`, `light`, and `left`.
 * `[reviewbird_stars]` — Displays the star rating and review count. Optional `product_id` attribute (defaults to the current product).
 
 == External Services ==
@@ -361,7 +362,7 @@ Adds a review notice after 14 days of connected use and updates the WordPress.or
 Adds shared product IDs for Polylang and WPML translations. Fixes translated purchase checks, review imports, and shared rating data. Includes CusRev review titles.
 
 = 1.3.0 =
-Adds a store rating badge and fixes rating resets, connection status caching, and WP Rocket asset handling. Requires WordPress 6.0 or later and PHP 7.4 or later.
+Adds the Trust Badge and fixes rating resets, connection status caching, and WP Rocket asset handling. Requires WordPress 6.0 or later and PHP 7.4 or later.
 
 = 1.2.1 =
 Google Customer Reviews now opens Google's consent window automatically when enabled. Previous prompt settings no longer control its display. Signed email links continue to work.
