@@ -324,6 +324,17 @@ test.each( [ 'new', 'setup', 'ready' ] )(
 				link.href.startsWith( 'https://app.example.com' )
 			);
 			expect( external.length ).toBeGreaterThan( 0 );
+			const connect = container.querySelector(
+				'.reviewbird-header-account a'
+			);
+			expect( connect?.textContent ).toBe(
+				preview === 'new' ? 'Connect store' : undefined
+			);
+			expect( connect?.href ).toBe(
+				preview === 'new'
+					? 'https://app.example.com/register'
+					: undefined
+			);
 			external.forEach( ( link ) => {
 				expect( link.target ).toBe( '_blank' );
 				expect( link.rel ).toContain( 'noopener' );

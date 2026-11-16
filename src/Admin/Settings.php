@@ -327,7 +327,7 @@ JS
 		$status           = reviewbird_get_store_status() ?? array();
 		$store_id         = reviewbird_get_store_id();
 		$org_path         = empty( $status['org_slug'] ) ? '' : '/' . rawurlencode( $status['org_slug'] );
-		$integrations_url = reviewbird_get_api_url() . $org_path . '/stores' . ( $store_id ? '/' . $store_id . '/integrations' : '' );
+		$integrations_url = reviewbird_get_api_url() . ( $store_id && $org_path ? $org_path . '/stores/' . $store_id . '/integrations' : '/dashboard' );
 
 		$feature_status = GoogleCustomerReviews::status();
 

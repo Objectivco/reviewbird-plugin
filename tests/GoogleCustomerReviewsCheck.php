@@ -455,5 +455,18 @@ namespace {
 	$GLOBALS['gcr_options']['reviewbird_store_status'] = $initial_status;
 	$_POST = array();
 
+	$gcr_settings = new \ReflectionMethod( $settings, 'get_gcr_settings_data' );
+	$gcr_settings->setAccessible( true );
+	foreach ( array(
+		array( null, null, '/dashboard' ),
+		array( 7, null, '/dashboard' ),
+		array( null, 'my-org', '/dashboard' ),
+		array( 7, 'my-org', '/my-org/stores/7/integrations' ),
+	) as [ $store_id, $org_slug, $path ] ) {
+		$GLOBALS['gcr_options']['reviewbird_store_id'] = $store_id;
+		$GLOBALS['gcr_options']['reviewbird_store_status'] = array( 'org_slug' => $org_slug );
+		check( 'https://app.reviewbird.test' . $path === $gcr_settings->invoke( $settings )['integrationsUrl'], 'Integration link requires a valid store route or dashboard.' );
+	}
+
 	echo 'Google Customer Reviews: ' . $checks . " checks passed.\n";
 }

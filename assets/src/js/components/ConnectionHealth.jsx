@@ -239,13 +239,9 @@ export async function fetchHealthStatus( signal, forceRefresh = false ) {
 function getActionUrl( status, healthData ) {
 	const storeId = healthData?.store_id || window.reviewbirdConfig?.storeId;
 	const baseUrl = window.reviewbirdAdmin.apiUrl;
-	const orgSlug = healthData?.org_slug;
-
-	if ( ! storeId ) {
-		return orgSlug
-			? `${ baseUrl }/${ orgSlug }/stores`
-			: `${ baseUrl }/stores`;
-	}
+	const orgSlug = healthData?.org_slug
+		? encodeURIComponent( healthData.org_slug )
+		: null;
 
 	const config = STATUS_CONFIG[ status ] || STATUS_CONFIG.checking;
 	const route = config.route;
@@ -253,12 +249,18 @@ function getActionUrl( status, healthData ) {
 	if ( route === 'support' ) {
 		return orgSlug
 			? `${ baseUrl }/${ orgSlug }/support`
-			: `${ baseUrl }/support`;
+			: 'mailto:support@reviewbird.com';
 	}
 
-	return orgSlug
-		? `${ baseUrl }/${ orgSlug }/stores/${ storeId }/${ route }`
-		: `${ baseUrl }/stores/${ storeId }/${ route }`;
+	if ( ! storeId && route === 'connect' ) {
+		return window.reviewbirdAdmin.registerUrl;
+	}
+
+	if ( ! storeId || ! orgSlug ) {
+		return `${ baseUrl }/dashboard`;
+	}
+
+	return `${ baseUrl }/${ orgSlug }/stores/${ storeId }/${ route }`;
 }
 
 export default function ConnectionHealth() {

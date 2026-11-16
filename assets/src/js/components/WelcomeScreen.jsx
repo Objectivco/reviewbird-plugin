@@ -170,11 +170,11 @@ export default function WelcomeScreen( {
 							{ __( 'Already use Reviewbird?', 'reviewbird' ) }
 						</span>{ ' ' }
 						<a
-							href={ dashboardUrl }
+							href={ registerUrl }
 							target="_blank"
 							rel="noopener noreferrer"
 						>
-							{ __( 'Sign in', 'reviewbird' ) }
+							{ __( 'Connect store', 'reviewbird' ) }
 							<ExternalLinkIcon />
 						</a>
 					</p>

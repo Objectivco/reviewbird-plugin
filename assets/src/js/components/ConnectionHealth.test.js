@@ -148,6 +148,22 @@ test.each( [
 		'/my-org/stores/7/connect',
 	],
 	[
+		'not_connected',
+		'Your store is not connected',
+		'Reviewbird is disabled until you connect your WooCommerce store.',
+		'Connect store',
+		'/register-store',
+		{ store_id: null, org_slug: null },
+	],
+	[
+		'not_connected',
+		'Your store is not connected',
+		'Reviewbird is disabled until you connect your WooCommerce store.',
+		'Connect store',
+		'/dashboard',
+		{ org_slug: null },
+	],
+	[
 		'unhealthy',
 		'Reviewbird cannot connect to your store',
 		'Open the connection settings in Reviewbird to reconnect your store.',
@@ -161,12 +177,21 @@ test.each( [
 		'Contact support',
 		'/my-org/support',
 	],
+	[
+		'error',
+		'We could not check your connection',
+		'Refresh to try again, or contact support if the problem continues.',
+		'Contact support',
+		'mailto:support@reviewbird.com',
+		{ store_id: null, org_slug: null },
+	],
 ] )(
 	'explains %s with a useful next action',
-	async ( status, heading, message, action, route ) => {
+	async ( status, heading, message, action, route, health = {} ) => {
 		global.IS_REACT_ACT_ENVIRONMENT = true;
 		window.reviewbirdAdmin = {
 			apiUrl: 'https://app.example.com',
+			registerUrl: 'https://app.example.com/register-store',
 			locale: 'de-DE',
 		};
 		global.fetch = jest.fn().mockResolvedValue( {
@@ -179,6 +204,7 @@ test.each( [
 						store_id: 7,
 						org_slug: 'my-org',
 						error_code: 'internal_diagnostic',
+						...health,
 					},
 				},
 			} ),
@@ -198,7 +224,11 @@ test.each( [
 			);
 			const link = container.querySelector( 'a' );
 			expect( link.textContent ).toBe( __( action, 'reviewbird' ) );
-			expect( link.href ).toBe( `https://app.example.com${ route }` );
+			expect( link.href ).toBe(
+				route.startsWith( 'mailto:' )
+					? route
+					: `https://app.example.com${ route }`
+			);
 			expect( link.target ).toBe( '_blank' );
 		} finally {
 			act( () => root.unmount() );
