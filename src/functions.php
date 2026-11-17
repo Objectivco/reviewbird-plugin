@@ -575,8 +575,17 @@ function reviewbird_enqueue_remote_script( string $handle, string $file ): bool 
 	if ( wp_script_is( $handle ) || wp_script_is( $handle, 'done' ) ) {
 		return false;
 	}
-	// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- The service updates its scripts independently of plugin releases.
-	wp_enqueue_script( $handle, reviewbird_get_api_url() . '/build/' . $file, array(), null, true );
+	// Async so a slow Reviewbird server never delays DOMContentLoaded and the store's own scripts.
+	wp_enqueue_script(
+		$handle,
+		reviewbird_get_api_url() . '/build/' . $file,
+		array(),
+		null, // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- The service updates its scripts independently of plugin releases.
+		array(
+			'in_footer' => true,
+			'strategy'  => 'async',
+		)
+	);
 	return true;
 }
 
@@ -745,12 +754,8 @@ function reviewbird_render_widget( $product_id = null ): string {
 		}
 
 		// The script prints in the footer, so enqueueing while content renders works on any page.
+		// The loader initializes itself. An inline "after" script would make WordPress load it blocking.
 		reviewbird_enqueue_widget_script();
-		static $inline_script_added = false;
-		if ( ! $inline_script_added ) {
-			wp_add_inline_script( 'reviewbird-widget', 'if(typeof reviewbird !== "undefined") reviewbird.init();' );
-			$inline_script_added = true;
-		}
 
 		// Server-rendered reviews for search engines.
 		$html = apply_filters(

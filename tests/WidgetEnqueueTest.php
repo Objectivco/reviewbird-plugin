@@ -41,7 +41,7 @@ final class WidgetEnqueueTest extends TestCase {
 		self::assertSame( $expected, reviewbird_badge_shortcode( array() ) );
 		self::assertSame( $expected, reviewbird_badge_shortcode( array( 'store_id' => '999' ) ) );
 		self::assertSame( array( 'reviewbird-badge' ), WP_Fake::$script_calls );
-		self::assertSame( array( REVIEWBIRD_API_URL_PRODUCTION . '/build/review-badge.js', true ), WP_Fake::$scripts['reviewbird-badge'] );
+		self::assertSame( array( REVIEWBIRD_API_URL_PRODUCTION . '/build/review-badge.js', array( 'in_footer' => true, 'strategy' => 'async' ) ), WP_Fake::$scripts['reviewbird-badge'] );
 
 		// A removed script can be queued again, but a printed script cannot.
 		unset( WP_Fake::$scripts['reviewbird-badge'] );
@@ -107,7 +107,8 @@ final class WidgetEnqueueTest extends TestCase {
 		self::assertSame( '', ob_get_clean(), 'The classic fallback must not duplicate a block widget.' );
 		self::assertSame( '', reviewbird_widget_shortcode( array( 'product_id' => 21 ) ), 'A shortcode must not duplicate the product widget.' );
 		self::assertStringContainsString( 'reviewbird-widget-container-22', reviewbird_widget_shortcode( array( 'product_id' => 22 ) ) );
-		self::assertSame( array( 'if(typeof reviewbird !== "undefined") reviewbird.init();' ), WP_Fake::$inline['reviewbird-widget'] );
+		self::assertArrayNotHasKey( 'reviewbird-widget', WP_Fake::$inline, 'An inline after-script would make WordPress load the widget blocking.' );
+		self::assertSame( 'async', WP_Fake::$scripts['reviewbird-widget'][1]['strategy'], 'A slow Reviewbird server must not delay the page.' );
 	}
 
 	public function test_main_product_widget_keeps_the_native_reviews_anchor(): void {
