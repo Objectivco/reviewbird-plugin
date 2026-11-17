@@ -34,11 +34,11 @@ class StarRatingDisplay {
 	private const STAR_COLOR_TRANSIENT = 'reviewbird_star_color';
 
 	/**
-	 * Product whose average rating was read most recently.
+	 * Product being rendered by a WooCommerce product rating that omits its count.
 	 *
 	 * @var \WC_Product|null
 	 */
-	private $rated_product = null;
+	private $rating_product = null;
 
 	/**
 	 * Initialize star rating display overrides.
@@ -50,7 +50,14 @@ class StarRatingDisplay {
 
 		// Filter rating HTML output - works for both classic and block themes.
 		add_filter( 'woocommerce_product_get_rating_html', array( $this, 'filter_rating_html' ), 999, 3 );
-		add_filter( 'woocommerce_product_get_average_rating', array( $this, 'remember_rated_product' ), 1000, 2 );
+
+		// WooCommerce's loop rating and product rating block call wc_get_rating_html() without a count.
+		// Set their product just before they render and clear it right after, so other ratings
+		// (such as individual reviews) never inherit a product count.
+		add_action( 'woocommerce_after_shop_loop_item_title', array( $this, 'set_loop_rating_product' ), 4 );
+		add_action( 'woocommerce_after_shop_loop_item_title', array( $this, 'clear_rating_product' ), 6 );
+		add_filter( 'render_block_context', array( $this, 'set_rating_block_product' ), 10, 2 );
+		add_filter( 'render_block_woocommerce/product-rating', array( $this, 'clear_rating_product' ) );
 
 		// Replace single product rating template - only needed for classic themes.
 		// Block themes use the woocommerce/product-rating block which calls wc_get_rating_html()
@@ -103,10 +110,8 @@ class StarRatingDisplay {
 	 * @return string The filtered HTML string.
 	 */
 	public function filter_rating_html( string $html, float $rating, int $count ): string {
-		// WooCommerce's loop template and rating block call wc_get_rating_html( $product->get_average_rating() )
-		// without a count. The global $product can be a different product there, so use the one just read.
-		if ( $count < 1 && $this->rated_product && (float) $this->rated_product->get_average_rating() === $rating ) {
-			$count = (int) $this->rated_product->get_rating_count();
+		if ( $count < 1 && $this->rating_product ) {
+			$count = (int) $this->rating_product->get_rating_count();
 		}
 
 		if ( $rating <= 0 && $count < 1 ) {
@@ -144,16 +149,37 @@ class StarRatingDisplay {
 	}
 
 	/**
-	 * Remember which product's average rating was read, so a following
-	 * wc_get_rating_html() call without a count can use that product's count.
-	 *
-	 * @param float       $rating  Average rating.
-	 * @param \WC_Product $product Product object.
-	 * @return float Unchanged average rating.
+	 * Use the loop product for woocommerce_template_loop_rating(), which runs at priority 5.
 	 */
-	public function remember_rated_product( $rating, $product ) {
-		$this->rated_product = $product;
-		return $rating;
+	public function set_loop_rating_product(): void {
+		global $product;
+		$this->rating_product = $product instanceof \WC_Product ? $product : null;
+	}
+
+	/**
+	 * Use the block's postId product while a woocommerce/product-rating block renders.
+	 *
+	 * @param array $context      Block context.
+	 * @param array $parsed_block Parsed block.
+	 * @return array Unchanged block context.
+	 */
+	public function set_rating_block_product( $context, $parsed_block ) {
+		if ( 'woocommerce/product-rating' === ( $parsed_block['blockName'] ?? '' ) ) {
+			$product              = empty( $context['postId'] ) ? null : wc_get_product( $context['postId'] );
+			$this->rating_product = $product instanceof \WC_Product ? $product : null;
+		}
+		return $context;
+	}
+
+	/**
+	 * Stop using the product once its rating has rendered.
+	 *
+	 * @param string $block_content Block content when used as a filter.
+	 * @return string Unchanged block content.
+	 */
+	public function clear_rating_product( $block_content = '' ) {
+		$this->rating_product = null;
+		return $block_content;
 	}
 
 	/**

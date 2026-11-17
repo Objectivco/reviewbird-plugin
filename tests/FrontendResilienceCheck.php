@@ -84,6 +84,8 @@ class WC_Order {
     public function save_meta_data() { ++$this->saved_meta; }
 }
 class WC_Product { public function get_rating_count() { return 999; } }
+function wc_get_product( $id ) { return 5 === $id ? $GLOBALS['variation'] : false; }
+function get_posts( $args ) { return array(); }
 
 require __DIR__ . '/../src/functions.php';
 require __DIR__ . '/../src/Integration/RatingOverride.php';
@@ -103,13 +105,17 @@ $stars = ( new ReflectionClass( reviewbird\Integration\StarRatingDisplay::class 
 $html = $stars->filter_rating_html( '', 4.5, 0 );
 check( ! str_contains( $html, 'rb-wc-rating-count' ) && str_contains( $html, 'rb-wc-star' ), 'Unknown counts must not use the main product count.' );
 check( str_contains( $stars->filter_rating_html( '', 4.5, 12 ), '(12)' ), 'Keep an explicit rating count.' );
-$rated = new class extends WC_Product {
-    public function get_average_rating() { return 4.5; }
-    public function get_rating_count() { return 7; }
-};
-$stars->remember_rated_product( 4.5, $rated );
-check( str_contains( $stars->filter_rating_html( '', 4.5, 0 ), '(7)' ), 'Loop ratings use the count of the product just rated.' );
-check( ! str_contains( $stars->filter_rating_html( '', 3.0, 0 ), 'rb-wc-rating-count' ), 'A different rating must not borrow that count.' );
+$GLOBALS['product'] = new class extends WC_Product { public function get_rating_count() { return 27; } };
+$variation = new class extends WC_Product { public function get_rating_count() { return 3; } };
+$stars->set_loop_rating_product();
+check( str_contains( $stars->filter_rating_html( '', 5.0, 0 ), '(27)' ), 'Loop ratings use the loop product count.' );
+$stars->clear_rating_product();
+check( ! str_contains( $stars->filter_rating_html( '', 5.0, 0 ), 'rb-wc-rating-count' ), 'An individual review after the loop must not inherit the product count.' );
+$stars->set_rating_block_product( array( 'postId' => 5 ), array( 'blockName' => 'woocommerce/product-rating' ) );
+check( str_contains( $stars->filter_rating_html( '', 5.0, 0 ), '(3)' ), 'The rating block uses its own product, including a variation.' );
+check( 'x' === $stars->clear_rating_product( 'x' ) && ! str_contains( $stars->filter_rating_html( '', 5.0, 0 ), 'rb-wc-rating-count' ), 'Clear the product after the rating block renders.' );
+$stars->set_rating_block_product( array( 'postId' => 5 ), array( 'blockName' => 'core/paragraph' ) );
+check( ! str_contains( $stars->filter_rating_html( '', 5.0, 0 ), 'rb-wc-rating-count' ), 'Other blocks set no rating product.' );
 
 $ratings = new reviewbird\Integration\RatingOverride();
 $product = new class { public function get_id() { return 11; } };
