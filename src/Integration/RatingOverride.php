@@ -65,7 +65,7 @@ class RatingOverride {
 			return (float) $native_rating;
 		}
 
-		return (float) $cached_value;
+		return reviewbird_rated_average( $this->get_product_meta( $product, '_reviewbird_rating_counts' ), (float) $cached_value );
 	}
 
 	/**
@@ -124,7 +124,8 @@ class RatingOverride {
 		$product_id = reviewbird_product_meta_id( $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id() );
 		$value      = get_post_meta( $product_id, $meta_key, true );
 
-		if ( '' !== $value ) {
+		// Sync fills only a missing total, so an older product without buckets needs no job.
+		if ( '' !== $value || '' !== get_post_meta( $product_id, '_reviewbird_reviews_count', true ) ) {
 			return $value;
 		}
 

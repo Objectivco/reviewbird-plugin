@@ -231,6 +231,15 @@ $rated_product = new class {
 };
 $aggregate = ( new reviewbird\Integration\SchemaMarkup() )->filter_woocommerce_structured_data( array(), $rated_product )['aggregateRating'];
 check( $ratings->override_average_rating( 0, $rated_product ) === $aggregate['ratingValue'] && 1 === $aggregate['ratingCount'] && 6 === $aggregate['reviewCount'], 'Schema and visible stars must show the same rating.' );
+// Upgrade: sync skips products with saved totals, so readers must correct an old average.
+$meta[96] = array( '_reviewbird_avg_stars' => 0.83, '_reviewbird_reviews_count' => 6, '_reviewbird_rating_counts' => array( '5' => '1' ) );
+$legacy_product = new class {
+    public function get_id() { return 96; }
+    public function is_type( $type ) { return false; }
+};
+$hooks['reviewbird_sync_product_rating']( 96 );
+$aggregate = ( new reviewbird\Integration\SchemaMarkup() )->filter_woocommerce_structured_data( array(), $legacy_product )['aggregateRating'];
+check( 0.83 === get_post_meta( 96, '_reviewbird_avg_stars' ) && 5.0 === $ratings->override_average_rating( 0, $legacy_product ) && 5.0 === $aggregate['ratingValue'], 'Averages saved before this release must show the rated average in stars and schema.' );
 unset( $options['reviewbird_enable_schema'] );
 $queued = $saved_queue;
 $response['body'] = '{"statistics":{"total_reviews":3,"average_rating":0,"rating_distribution":{"1":0,"2":0,"3":0,"4":0,"5":0}}}';

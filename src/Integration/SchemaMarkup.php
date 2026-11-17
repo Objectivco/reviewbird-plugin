@@ -66,10 +66,10 @@ class SchemaMarkup {
 	 * @return array|null Aggregate rating schema or null if no data.
 	 */
 	private function build_aggregate_rating( $product_id ) {
-		// Use the stored average that the visible stars show; it covers rated reviews only.
-		$rating_value = (float) get_post_meta( $product_id, '_reviewbird_avg_stars', true );
-		$review_count = (int) get_post_meta( $product_id, '_reviewbird_reviews_count', true );
+		// Match the visible stars: average rated reviews only.
 		$counts       = get_post_meta( $product_id, '_reviewbird_rating_counts', true );
+		$rating_value = reviewbird_rated_average( $counts, (float) get_post_meta( $product_id, '_reviewbird_avg_stars', true ) );
+		$review_count = (int) get_post_meta( $product_id, '_reviewbird_reviews_count', true );
 		// Meta saved before rating counts were stored rated every review.
 		$rating_count = is_array( $counts ) ? array_sum( array_map( fn( $stars ) => (int) ( $counts[ $stars ] ?? 0 ), range( 1, 5 ) ) ) : $review_count;
 

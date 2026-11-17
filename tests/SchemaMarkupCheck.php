@@ -37,6 +37,8 @@ function wc_get_product( $id ) {
     };
 }
 function reviewbird_get_store_id() { return 7; }
+// FrontendResilienceCheck covers the real average; this check covers scheduling.
+function reviewbird_rated_average( $counts, $fallback = 0.0 ) { return $fallback; }
 function reviewbird_get_api_url() { return 'https://example.test'; }
 function reviewbird_should_disable_ssl_verify() { return false; }
 function home_url() { return 'https://store.test'; }

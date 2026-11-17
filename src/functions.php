@@ -729,13 +729,22 @@ function reviewbird_normalize_rating_counts( $counts, int $review_count ): ?arra
  * Average the rated reviews so stars and schema show the same value.
  *
  * Unrated reviews count toward the review total but have no stars to average.
+ * Readers pass the saved average as the fallback, which also corrects
+ * averages saved before this calculation existed.
  *
- * @param array $counts Normalized rating counts for stars 1 to 5.
- * @return float Average rating, or 0 when nothing is rated.
+ * @param mixed $counts   Rating counts indexed by stars 1 to 5.
+ * @param float $fallback Average to use when no review has stars.
+ * @return float Average rating.
  */
-function reviewbird_rated_average( array $counts ): float {
-	$rated = array_sum( $counts );
-	return $rated ? round( array_sum( array_map( fn( $stars ) => $stars * $counts[ $stars ], range( 1, 5 ) ) ) / $rated, 2 ) : 0.0;
+function reviewbird_rated_average( $counts, float $fallback = 0.0 ): float {
+	$rated = 0;
+	$stars = 0;
+	foreach ( range( 1, 5 ) as $rating ) {
+		$count  = is_array( $counts ) ? (int) ( $counts[ $rating ] ?? 0 ) : 0;
+		$rated += $count;
+		$stars += $rating * $count;
+	}
+	return $rated ? round( $stars / $rated, 2 ) : $fallback;
 }
 
 /**
