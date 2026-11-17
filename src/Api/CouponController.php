@@ -51,6 +51,16 @@ class CouponController {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'create_coupon' ),
 				'permission_callback' => array( $this, 'permission_callback' ),
+				'args'                => array(
+					'code'           => array(
+						'type'     => 'string',
+						'required' => true,
+					),
+					'reviewer_email' => array(
+						'type'   => array( 'string', 'null' ),
+						'format' => 'email',
+					),
+				),
 			)
 		);
 	}
@@ -83,11 +93,9 @@ class CouponController {
 		$amount         = $request->get_param( 'amount' );
 		$reviewer_email = $request->get_param( 'reviewer_email' );
 
-		if ( ! is_string( $code ) || '' === trim( $code ) ) {
+		// The route schema validates types and the reviewer email format.
+		if ( '' === trim( $code ) ) {
 			return new WP_Error( 'missing_code', __( 'Coupon code is required', 'reviewbird' ), array( 'status' => 400 ) );
-		}
-		if ( null !== $reviewer_email && ( ! is_string( $reviewer_email ) || ! is_email( $reviewer_email ) ) ) {
-			return new WP_Error( 'invalid_reviewer_email', __( 'A valid reviewer email is required.', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 		if ( wc_get_coupon_id_by_code( $code ) ) {
 			return new WP_Error( 'duplicate_coupon', __( 'This coupon code already exists.', 'reviewbird' ), array( 'status' => 409 ) );

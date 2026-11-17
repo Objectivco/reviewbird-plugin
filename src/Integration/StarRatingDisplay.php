@@ -34,6 +34,13 @@ class StarRatingDisplay {
 	private const STAR_COLOR_TRANSIENT = 'reviewbird_star_color';
 
 	/**
+	 * Product whose average rating was read most recently.
+	 *
+	 * @var \WC_Product|null
+	 */
+	private $rated_product = null;
+
+	/**
 	 * Initialize star rating display overrides.
 	 */
 	public function __construct() {
@@ -43,6 +50,7 @@ class StarRatingDisplay {
 
 		// Filter rating HTML output - works for both classic and block themes.
 		add_filter( 'woocommerce_product_get_rating_html', array( $this, 'filter_rating_html' ), 999, 3 );
+		add_filter( 'woocommerce_product_get_average_rating', array( $this, 'remember_rated_product' ), 1000, 2 );
 
 		// Replace single product rating template - only needed for classic themes.
 		// Block themes use the woocommerce/product-rating block which calls wc_get_rating_html()
@@ -95,6 +103,12 @@ class StarRatingDisplay {
 	 * @return string The filtered HTML string.
 	 */
 	public function filter_rating_html( string $html, float $rating, int $count ): string {
+		// WooCommerce's loop template and rating block call wc_get_rating_html( $product->get_average_rating() )
+		// without a count. The global $product can be a different product there, so use the one just read.
+		if ( $count < 1 && $this->rated_product && (float) $this->rated_product->get_average_rating() === $rating ) {
+			$count = (int) $this->rated_product->get_rating_count();
+		}
+
 		if ( $rating <= 0 && $count < 1 ) {
 			return '';
 		}
@@ -127,6 +141,19 @@ class StarRatingDisplay {
 		$output .= '</div>';
 
 		return $output;
+	}
+
+	/**
+	 * Remember which product's average rating was read, so a following
+	 * wc_get_rating_html() call without a count can use that product's count.
+	 *
+	 * @param float       $rating  Average rating.
+	 * @param \WC_Product $product Product object.
+	 * @return float Unchanged average rating.
+	 */
+	public function remember_rated_product( $rating, $product ) {
+		$this->rated_product = $product;
+		return $rating;
 	}
 
 	/**

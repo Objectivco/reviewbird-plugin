@@ -30,5 +30,6 @@ class Deactivator {
 		delete_transient( 'reviewbird_oauth_error' );
 		delete_transient( 'reviewbird_oauth_success' );
 		delete_transient( 'reviewbird_star_color' );
+		delete_option( 'reviewbird_preview_check_lock' );
 	}
 }

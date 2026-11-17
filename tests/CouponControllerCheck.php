@@ -35,6 +35,7 @@ function is_email( $email ) { return filter_var( $email, FILTER_VALIDATE_EMAIL )
 function is_wp_error( $value ) { return $value instanceof WP_Error; }
 function wc_get_coupon_id_by_code( $code ) { return in_array( strtolower( $code ), array( 'template', 'duplicate' ), true ) ? 5 : 0; }
 function wp_update_post( $post ) {}
+function register_rest_route( $namespace, $route, $args ) { $GLOBALS['route_args'] = $args['args']; }
 function check( $condition, $message ) { if ( ! $condition ) { throw new RuntimeException( $message ); } ++$GLOBALS['checks']; }
 require __DIR__ . '/../src/Api/CouponController.php';
 $saved = array();
@@ -55,10 +56,12 @@ foreach ( array( null, 'TEMPLATE' ) as $template ) {
 }
 foreach ( array(
     array( 'code' => 'DUPLICATE', 'expected' => 'duplicate_coupon' ),
-    array( 'code' => 'REVIEW-456', 'reviewer_email' => 'invalid', 'expected' => 'invalid_reviewer_email' ),
 ) as $params ) {
     $before = count( $saved );
     $result = $controller->create_coupon( new WP_REST_Request( $params ) );
-    check( $result instanceof WP_Error && $params['expected'] === $result->code && $before === count( $saved ), 'Reject duplicate codes and invalid recipients before saving.' );
+    check( $result instanceof WP_Error && $params['expected'] === $result->code && $before === count( $saved ), 'Reject duplicate codes before saving.' );
 }
+$controller->register_routes();
+check( true === $route_args['code']['required'] && 'string' === $route_args['code']['type'], 'Require a string coupon code in the route schema.' );
+check( 'email' === $route_args['reviewer_email']['format'] && array( 'string', 'null' ) === $route_args['reviewer_email']['type'], 'Validate the reviewer email in the route schema.' );
 echo "Coupon restrictions: {$checks} checks passed.\n";

@@ -597,6 +597,8 @@ function reviewbird_is_onboarding_preview(): bool {
 				)
 			);
 			if ( ! $acquired ) {
+				// Remember the miss so later calls in this request skip the lock query.
+				$results[ $token ] = false;
 				return false;
 			}
 			wp_cache_delete( $lock_key, 'options' );

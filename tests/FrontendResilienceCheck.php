@@ -51,8 +51,8 @@ function has_filter( $hook ) { return false; }
 function add_filter( ...$args ) {}
 function add_action( $hook, $callback, ...$args ) { $GLOBALS['hooks'][$hook] = $callback; }
 function as_next_scheduled_action( $hook, $args ) { return isset( $GLOBALS['queued'][$args[0]] ); }
-function as_enqueue_async_action( $hook, $args, $group, $unique ) {
-    check( $unique, 'Rating jobs must be unique.' );
+function as_enqueue_async_action( $hook, $args, $group ) {
+    check( 'reviewbird' === $group, 'Rating jobs use the shared reviewbird group.' );
     $GLOBALS['queued'][$args[0]] = $hook;
 }
 function home_url() { return 'https://store.test'; }
@@ -79,7 +79,9 @@ class WC_Order {
     public $meta = array();
     public function get_meta( $key ) { return $this->meta[$key] ?? ''; }
     public function update_meta_data( $key, $value ) { $this->meta[$key] = $value; }
-    public function save() { throw new RuntimeException( 'Locale capture must not save the order.' ); }
+    public $saved_meta = 0;
+    public function save() { throw new RuntimeException( 'Locale capture must not run a full order save.' ); }
+    public function save_meta_data() { ++$this->saved_meta; }
 }
 class WC_Product { public function get_rating_count() { return 999; } }
 
@@ -89,18 +91,25 @@ require __DIR__ . '/../src/Integration/WooCommerce.php';
 require __DIR__ . '/../src/Integration/StarRatingDisplay.php';
 
 $integration = new reviewbird\Integration\WooCommerce();
-check( isset( $hooks['woocommerce_before_order_object_save'] ) && ! isset( $hooks['woocommerce_new_order'], $hooks['woocommerce_checkout_order_created'] ), 'Capture locale before saving, without extra checkout hooks.' );
+check( isset( $hooks['woocommerce_new_order'] ) && ! isset( $hooks['woocommerce_before_order_object_save'], $hooks['woocommerce_checkout_order_created'] ), 'Capture locale only when an order is created.' );
 $order = new WC_Order();
-$integration->save_order_locale( $order );
-check( 'fr_FR' === $order->get_meta( '_reviewbird_locale' ), 'Capture the order locale without another save.' );
+$integration->save_order_locale( 1, $order );
+check( 'fr_FR' === $order->get_meta( '_reviewbird_locale' ) && 1 === $order->saved_meta, 'Capture the order locale with a meta-only save.' );
 $order->meta['_reviewbird_locale'] = 'en_US';
-$integration->save_order_locale( $order );
-check( 'en_US' === $order->get_meta( '_reviewbird_locale' ), 'Preserve the locale on later saves.' );
+$integration->save_order_locale( 1, $order );
+check( 'en_US' === $order->get_meta( '_reviewbird_locale' ) && 1 === $order->saved_meta, 'Keep the first locale when a draft becomes an order.' );
 $GLOBALS['product'] = new WC_Product();
 $stars = ( new ReflectionClass( reviewbird\Integration\StarRatingDisplay::class ) )->newInstanceWithoutConstructor();
 $html = $stars->filter_rating_html( '', 4.5, 0 );
 check( ! str_contains( $html, 'rb-wc-rating-count' ) && str_contains( $html, 'rb-wc-star' ), 'Unknown counts must not use the main product count.' );
 check( str_contains( $stars->filter_rating_html( '', 4.5, 12 ), '(12)' ), 'Keep an explicit rating count.' );
+$rated = new class extends WC_Product {
+    public function get_average_rating() { return 4.5; }
+    public function get_rating_count() { return 7; }
+};
+$stars->remember_rated_product( 4.5, $rated );
+check( str_contains( $stars->filter_rating_html( '', 4.5, 0 ), '(7)' ), 'Loop ratings use the count of the product just rated.' );
+check( ! str_contains( $stars->filter_rating_html( '', 3.0, 0 ), 'rb-wc-rating-count' ), 'A different rating must not borrow that count.' );
 
 $ratings = new reviewbird\Integration\RatingOverride();
 $product = new class { public function get_id() { return 11; } };
@@ -143,6 +152,8 @@ check( 3 === $calls[0][1]['timeout'], 'Preview requests must use a three-second 
 check( 300 === $transients['reviewbird_preview_failed_' . hash( 'sha256', $_GET['reviewbird_setup'] )][1], 'Cache rejected tokens.' );
 $_GET['reviewbird_setup'] = str_repeat( 'b', 64 );
 check( ! reviewbird_is_onboarding_preview() && 1 === count( $calls ), 'Random tokens must share the site request limit.' );
+check( ! reviewbird_is_onboarding_preview(), 'A lock miss is remembered for the request.' );
+$_GET['reviewbird_setup'] = str_repeat( 'c', 64 );
 $options['reviewbird_preview_check_lock'] = time() - 1;
 $response = array( 'response' => array( 'code' => 200 ), 'body' => '{"onboarding_preview_allowed":true}' );
 check( reviewbird_is_onboarding_preview(), 'An approved token must work after the request limit expires.' );

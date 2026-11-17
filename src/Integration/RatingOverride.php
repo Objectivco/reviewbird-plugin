@@ -113,10 +113,18 @@ class RatingOverride {
 			return $value;
 		}
 
+		// Each rating getter lands here, so check the queue once per product per request.
+		static $checked = array();
+		if ( isset( $checked[ $product_id ] ) ) {
+			return $value;
+		}
+		$checked[ $product_id ] = true;
+
 		if ( ! get_transient( 'reviewbird_rating_sync_' . $product_id )
 			&& class_exists( '\ActionScheduler' ) && \ActionScheduler::is_initialized()
 			&& ! as_next_scheduled_action( 'reviewbird_sync_product_rating', array( $product_id ) ) ) {
-			as_enqueue_async_action( 'reviewbird_sync_product_rating', array( $product_id ), 'reviewbird-rating-' . $product_id, true );
+			// Check args explicitly: older AS versions apply $unique to the whole hook and group.
+			as_enqueue_async_action( 'reviewbird_sync_product_rating', array( $product_id ), 'reviewbird' );
 		}
 
 		return $value;

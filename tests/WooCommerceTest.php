@@ -56,6 +56,10 @@ namespace reviewbird\Integration {
 
 	function get_queried_object_id() { return 21; }
 
+	function wp_parse_list( $list ) {
+		return is_array( $list ) ? $list : preg_split( '/[\s,]+/', $list, -1, PREG_SPLIT_NO_EMPTY );
+	}
+
 	function wc_get_product() {
 		return $GLOBALS['reviewbird_test_review_product'];
 	}
@@ -159,7 +163,8 @@ namespace reviewbird\Tests {
 
 		public function test_suppresses_default_woocommerce_review_output_and_query(): void {
 			$integration  = new WooCommerce();
-			$query = (object) array( 'query_vars' => array( 'post_id' => 21, 'type' => 'review' ), 'found_comments' => 8, 'max_num_pages' => 2 );
+			// WP_Comment_Query defaults the type vars to ''.
+			$query = (object) array( 'query_vars' => array( 'post_id' => 21, 'type' => '', 'type__in' => '', 'type__not_in' => '', 'count' => false ), 'found_comments' => 8, 'max_num_pages' => 2 );
 			$reviews_block = array( 'blockName' => 'woocommerce/product-reviews' );
 			$other_block   = array( 'blockName' => 'core/paragraph' );
 			self::assertSame( array( $integration, 'suppress_product_reviews_block' ), $GLOBALS['reviewbird_test_filters']['pre_render_block'][0] );
@@ -179,6 +184,14 @@ namespace reviewbird\Tests {
 			$query->query_vars['post_id'] = 99;
 			self::assertNull( $integration->suppress_product_review_queries( null, $query ) );
 			$query->query_vars['post_id'] = 21;
+			$query->query_vars['type__in'] = array( 'review' );
+			self::assertSame( 0, $integration->suppress_product_review_queries( null, $query ) );
+			$query->query_vars['type__in'] = 'review,note';
+			self::assertNull( $integration->suppress_product_review_queries( null, $query ) );
+			$query->query_vars['type__in'] = '';
+			$query->query_vars['type__not_in'] = 'pings';
+			self::assertNull( $integration->suppress_product_review_queries( null, $query ) );
+			$query->query_vars['type__not_in'] = '';
 
 			$GLOBALS['reviewbird_test_can_show_widget'] = false;
 
