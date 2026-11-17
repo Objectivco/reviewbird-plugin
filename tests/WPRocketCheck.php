@@ -10,7 +10,7 @@
 define( 'ABSPATH', __DIR__ );
 
 $filters = array();
-function add_filter( $hook, $callback ) {
+function add_filter( $hook, $callback, $priority = 10, $args = 1 ) {
 	$GLOBALS['filters'][ $hook ] = $callback;
 }
 function check( $condition, $message ) {
@@ -19,13 +19,13 @@ function check( $condition, $message ) {
 	}
 }
 
-require dirname( __DIR__ ) . '/src/Integration/WPRocket.php';
+require dirname( __DIR__ ) . '/src/hooks.php';
 
-new reviewbird\Integration\WPRocket();
+reviewbird_register_compatibility();
 check( array() === $filters, 'Filters were registered without WP Rocket.' );
 
 define( 'WP_ROCKET_VERSION', 'test' );
-new reviewbird\Integration\WPRocket();
+reviewbird_register_compatibility();
 check(
 	array( 'rocket_minify_excluded_external_js', 'rocket_exclude_css' ) === array_keys( $filters ),
 	'Only local asset processing should be excluded. Keep delay and defer unchanged.'

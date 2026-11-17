@@ -4,7 +4,7 @@ const preset = require.resolve( '@wordpress/babel-preset-default', {
 
 module.exports = ( api ) => ( {
 	presets: [ preset ],
-	// WordPress 5.9 has wp.element, but no react-jsx-runtime script.
+	// WordPress before 6.6 has wp.element, but no react-jsx-runtime script.
 	plugins: api.env( 'test' )
 		? []
 		: [

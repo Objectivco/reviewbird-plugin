@@ -69,6 +69,10 @@ namespace reviewbird\Api {
 	function is_wp_error( $value ) { return $value instanceof \WP_Error; }
 	function update_post_meta( $id, $key, $value ) { $GLOBALS['ratings_test_meta'][ $key ] = $value; }
 	function do_action( ...$args ) { $GLOBALS['ratings_test_actions'][] = $args; }
+	function wp_json_encode( $data ) { return json_encode( $data ); }
+	function wc_get_logger() {
+		return new class { public function __call( $level, $args ) {} };
+	}
 	function function_exists( $name ) {
 		return 'pll_get_post_translations' === $name ? ( $GLOBALS['ratings_test_polylang'] ?? false ) : \function_exists( $name );
 	}

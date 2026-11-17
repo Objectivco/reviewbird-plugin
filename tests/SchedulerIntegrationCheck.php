@@ -2,7 +2,7 @@
 /**
  * Run: php tests/SchedulerIntegrationCheck.php /path/to/disposable/wordpress
  *
- * Load Action Scheduler and Reviewbird's HealthScheduler and SchemaScheduler on the test site.
+ * Load Action Scheduler and Reviewbird's background jobs on the test site.
  * Use a reviewbird_scheduler_test_ database. Disable WP-Cron, the AS async runner, and external HTTP.
  *
  * @package reviewbird
@@ -10,8 +10,6 @@
 
 // phpcs:ignoreFile -- This check resets an isolated WordPress test database.
 
-use reviewbird\Integration\HealthScheduler;
-use reviewbird\Integration\SchemaScheduler;
 
 $test_site = $argv[1] ?? '';
 $config = is_file( $test_site . '/wp-config.php' ) ? file_get_contents( $test_site . '/wp-config.php' ) : '';
@@ -43,17 +41,15 @@ update_option( 'reviewbird_store_id', 7 );
 update_option( 'reviewbird_store_status', array( 'status' => 'healthy', 'has_active_subscription' => true, 'store_id' => 7 ) );
 $product_id = wp_insert_post( array( 'post_type' => 'product', 'post_status' => 'publish', 'post_title' => 'Schema scheduler test' ) );
 $other_product_id = wp_insert_post( array( 'post_type' => 'product', 'post_status' => 'publish', 'post_title' => 'Other schema scheduler test' ) );
-$health = new HealthScheduler();
-$schema = new SchemaScheduler();
 $store = ActionScheduler::store();
 $runner = ActionScheduler_QueueRunner::instance();
 $health_hook = 'reviewbird_refresh_health_status';
 $schema_hook = 'reviewbird_refresh_schema_reviews';
 
 // A fresh store starts its normal check without upgrade work.
-$health->schedule_recurring_check();
+reviewbird_schedule_health_check();
 check( 1 === count( ids( $health_hook ) ), 'A fresh store did not get one health job.' );
-check( ! ids( HealthScheduler::CLEANUP_HOOK ), 'A fresh store scheduled upgrade cleanup.' );
+check( ! ids( 'reviewbird_cleanup_health_actions' ), 'A fresh store scheduled upgrade cleanup.' );
 check( 'complete' === get_option( 'reviewbird_health_cleanup_status' ), 'A fresh store did not skip cleanup.' );
 $store->delete_action( ids( $health_hook )[0] );
 delete_option( 'reviewbird_health_cleanup_status' );
@@ -68,38 +64,38 @@ for ( $i = 0; $i < 1005; ++$i ) {
 }
 $old_schema = as_enqueue_async_action( $schema_hook, array( $product_id ), 'reviewbird-v2' );
 $unrelated = as_enqueue_async_action( 'another_plugin_job', array(), 'reviewbird' );
-wp_schedule_single_event( time(), HealthScheduler::CLEANUP_HOOK );
-for ( $i = 0; $i < 100; ++$i ) { $health->schedule_recurring_check(); }
+wp_schedule_single_event( time(), 'reviewbird_cleanup_health_actions' );
+for ( $i = 0; $i < 100; ++$i ) { reviewbird_schedule_health_check(); }
 check( ! ids( $health_hook, array( 'periodic' ) ), 'An upgrade scheduled health before old jobs were canceled.' );
-check( 1 === count( ids( HealthScheduler::CLEANUP_HOOK ) ), 'Initialization duplicated cleanup jobs.' );
-check( ! wp_next_scheduled( HealthScheduler::CLEANUP_HOOK ), 'The old WP-Cron event remains.' );
+check( 1 === count( ids( 'reviewbird_cleanup_health_actions' ) ), 'Initialization duplicated cleanup jobs.' );
+check( ! wp_next_scheduled( 'reviewbird_cleanup_health_actions' ), 'The old WP-Cron event remains.' );
 check( 'pending' === $store->get_status( $legacy[0] ), 'A page request canceled the old queue.' );
 $before = count( ids( $health_hook, null, '' ) );
-$runner->process_action( ids( HealthScheduler::CLEANUP_HOOK )[0], 'Reviewbird upgrade test' );
+$runner->process_action( ids( 'reviewbird_cleanup_health_actions' )[0], 'Reviewbird upgrade test' );
 $removed = $before + 1 - count( ids( $health_hook, null, '' ) ); // The upgrade also creates the new health job.
 check( $removed > 0 && $removed <= 1000, 'Upgrade cleanup did not respect its batch size.' );
 check( 'pending' === get_option( 'reviewbird_health_cleanup_status' ), 'Upgrade cleanup stopped before the next batch.' );
-check( 1 === count( ids( HealthScheduler::CLEANUP_HOOK ) ), 'Upgrade cleanup lost or duplicated its next batch.' );
+check( 1 === count( ids( 'reviewbird_cleanup_health_actions' ) ), 'Upgrade cleanup lost or duplicated its next batch.' );
 check( 1 === count( ids( $health_hook ) ), 'The background upgrade did not leave exactly one health job.' );
 $periodic = $store->fetch_action( ids( $health_hook )[0] )->get_schedule();
 check( $periodic->is_recurring() && 300 === $periodic->get_recurrence(), 'Health must use AS recurrence every five minutes.' );
 
 for ( $i = 0; $i < 50; ++$i ) {
-	$health->schedule_immediate_refresh();
-	$schema->schedule_schema_refresh( (string) $product_id );
-	$schema->schedule_schema_refresh( $other_product_id );
+	reviewbird_schedule_immediate_health_check();
+	reviewbird_schedule_schema_refresh( (string) $product_id );
+	reviewbird_schedule_schema_refresh( $other_product_id );
 }
 check( 1 === count( ids( $health_hook, array( 'immediate' ) ) ), 'Connection notifications duplicated immediate checks.' );
 check( 1 === count( ids( $schema_hook, array( $product_id ) ) ), 'Existing schema work was duplicated.' );
 check( 1 === count( ids( $schema_hook, array( $other_product_id ) ) ), 'A different product lost its schema job.' );
-$schema->schedule_schema_refresh( array( 702 ) );
-$schema->schedule_schema_refresh( 0 );
+reviewbird_schedule_schema_refresh( array( 702 ) );
+reviewbird_schedule_schema_refresh( 0 );
 update_option( 'reviewbird_enable_schema', 'no' );
-$schema->schedule_schema_refresh( 702 );
+reviewbird_schedule_schema_refresh( 702 );
 check( ! ids( $schema_hook ), 'Disabled schema requests left pending work.' );
 update_option( 'reviewbird_enable_schema', 'yes' );
-$schema->schedule_schema_refresh( $product_id );
-$schema->schedule_schema_refresh( $other_product_id );
+reviewbird_schedule_schema_refresh( $product_id );
+reviewbird_schedule_schema_refresh( $other_product_id );
 
 // Failed API responses preserve cached data and leave recurrence to AS.
 $good_cache = array( 'status' => 'healthy', 'has_active_subscription' => true, 'store_id' => 7 );
@@ -112,45 +108,45 @@ foreach ( array( new WP_Error( 'test_outage', 'API unavailable' ), array( 'respo
 	check( 1 === count( ids( $health_hook, array( 'periodic' ) ) ), 'AS did not retain one recurring health job.' );
 	check( $good_cache === get_option( 'reviewbird_store_status' ), 'A failed response erased the health cache.' );
 }
-$health->run_scheduled_check();
+reviewbird_run_health_check();
 check( 2 === $calls, 'An old health callback made an API request.' );
-update_post_meta( $product_id, SchemaScheduler::META_KEY, array( 'last good schema' ) );
-$schema->refresh_schema_reviews( $product_id );
-check( array( 'last good schema' ) === get_post_meta( $product_id, SchemaScheduler::META_KEY, true ), 'A failed response erased the schema cache.' );
+update_post_meta( $product_id, '_reviewbird_schema_reviews', array( 'last good schema' ) );
+reviewbird_refresh_schema_reviews( $product_id );
+check( array( 'last good schema' ) === get_post_meta( $product_id, '_reviewbird_schema_reviews', true ), 'A failed response erased the schema cache.' );
 $response = array( 'response' => array( 'code' => 200 ), 'body' => '{"reviews":[]}' );
-$schema->refresh_schema_reviews( $product_id );
-check( '' === get_post_meta( $product_id, SchemaScheduler::META_KEY, true ), 'A valid empty response did not clear obsolete schema.' );
+reviewbird_refresh_schema_reviews( $product_id );
+check( '' === get_post_meta( $product_id, '_reviewbird_schema_reviews', true ), 'A valid empty response did not clear obsolete schema.' );
 
 // Finish the next cleanup batch and verify action and log deletion.
-$runner->process_action( ids( HealthScheduler::CLEANUP_HOOK )[0], 'Reviewbird test' );
+$runner->process_action( ids( 'reviewbird_cleanup_health_actions' )[0], 'Reviewbird test' );
 check( 'complete' === get_option( 'reviewbird_health_cleanup_status' ), 'Cleanup did not finish.' );
 $legacy_ids = implode( ',', array_map( 'intval', $legacy ) );
 check( 0 === (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->actionscheduler_actions} WHERE action_id IN ({$legacy_ids})" ), 'Old health actions remain.' );
 check( 0 === (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->actionscheduler_logs} WHERE action_id IN ({$legacy_ids})" ), 'Old health logs remain.' );
 check( 2 === count( ids( $health_hook ) ), 'Cleanup removed current health jobs.' );
 check( 'canceled' === $store->get_status( $old_schema ) && 'pending' === $store->get_status( $unrelated ), 'Disabled schema cleanup removed unrelated work.' );
-$health->schedule_recurring_check();
-check( ! ids( HealthScheduler::CLEANUP_HOOK ), 'Completed cleanup started again.' );
+reviewbird_schedule_health_check();
+check( ! ids( 'reviewbird_cleanup_health_actions' ), 'Completed cleanup started again.' );
 
 // Product removal cancels both jobs; a queued callback cannot recreate deleted metadata.
 $deleted_product_id = wp_insert_post( array( 'post_type' => 'product', 'post_status' => 'publish', 'post_title' => 'Deleted scheduler product' ) );
-$schema->schedule_schema_refresh( $deleted_product_id );
+reviewbird_schedule_schema_refresh( $deleted_product_id );
 reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', $deleted_product_id );
 wp_delete_post( $deleted_product_id, true );
 check( ! ids( $schema_hook, array( $deleted_product_id ) ) && ! ids( 'reviewbird_sync_product_rating', array( $deleted_product_id ) ), 'Deletion left product jobs pending.' );
 $before = $calls;
-$schema->refresh_schema_reviews( $deleted_product_id );
+reviewbird_refresh_schema_reviews( $deleted_product_id );
 reviewbird_sync_product_rating( $deleted_product_id );
 check( $before === $calls, 'A deleted product caused an API request.' );
 
 // Moving a product to trash must cancel work before permanent deletion.
 $trashed_product_id = wp_insert_post( array( 'post_type' => 'product', 'post_status' => 'publish', 'post_title' => 'Trashed scheduler product' ) );
-$schema->schedule_schema_refresh( $trashed_product_id );
+reviewbird_schedule_schema_refresh( $trashed_product_id );
 reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', $trashed_product_id );
 wp_trash_post( $trashed_product_id );
 check( ! ids( $schema_hook, array( $trashed_product_id ) ) && ! ids( 'reviewbird_sync_product_rating', array( $trashed_product_id ) ), 'Moving a product to trash left its jobs pending.' );
 $before = $calls;
-$schema->refresh_schema_reviews( $trashed_product_id );
+reviewbird_refresh_schema_reviews( $trashed_product_id );
 reviewbird_sync_product_rating( $trashed_product_id );
 check( $before === $calls, 'A trashed product caused an API request.' );
 
@@ -163,15 +159,15 @@ $translations = static function ( $ids, $id ) use ( $original_id, $translation_i
     return in_array( $id, array( $original_id, $translation_id ), true ) ? array( $original_id, $translation_id ) : $ids;
 };
 add_filter( 'reviewbird_product_translation_ids', $translations, 10, 2 );
-$schema->schedule_schema_refresh( $original_id );
+reviewbird_schedule_schema_refresh( $original_id );
 wp_trash_post( $original_id );
 check( 1 === count( ids( $schema_hook, array( $original_id ) ) ), 'Moving a product to trash removed work needed by a surviving translation.' );
 wp_delete_post( $original_id, true );
 check( 1 === count( ids( $schema_hook, array( $original_id ) ) ), 'Deletion removed work needed by a surviving translation.' );
 $response = array( 'response' => array( 'code' => 200 ), 'body' => '{"reviews":[{"rating":5,"author":{"name":"Buyer"},"body":"Shared review"}]}' );
-$schema->refresh_schema_reviews( $original_id );
-check( 'Shared review' === get_post_meta( $translation_id, SchemaScheduler::META_KEY, true )[0]['reviewBody'], 'Queued work did not use the surviving translation.' );
-check( '' === get_post_meta( $original_id, SchemaScheduler::META_KEY, true ), 'Queued work recreated deleted product metadata.' );
+reviewbird_refresh_schema_reviews( $original_id );
+check( 'Shared review' === get_post_meta( $translation_id, '_reviewbird_schema_reviews', true )[0]['reviewBody'], 'Queued work did not use the surviving translation.' );
+check( '' === get_post_meta( $original_id, '_reviewbird_schema_reviews', true ), 'Queued work recreated deleted product metadata.' );
 remove_filter( 'reviewbird_product_translation_ids', $translations, 10 );
 
 // Jobs from an earlier metadata owner must move to the stable identity before deletion.
@@ -185,8 +181,8 @@ as_unschedule_all_actions( $schema_hook, array( $original_id ) );
 as_enqueue_async_action( $schema_hook, array( $translation_id ), 'reviewbird' );
 wp_delete_post( $translation_id, true );
 check( ! ids( $schema_hook, array( $translation_id ) ) && 1 === count( ids( $schema_hook, array( $original_id ) ) ), 'Deletion did not move an intermediate translation job to the stable identity.' );
-$schema->refresh_schema_reviews( $original_id );
-check( 'Shared review' === get_post_meta( $third_translation_id, SchemaScheduler::META_KEY, true )[0]['reviewBody'], 'The remaining translation did not receive the schema cache.' );
+reviewbird_refresh_schema_reviews( $original_id );
+check( 'Shared review' === get_post_meta( $third_translation_id, '_reviewbird_schema_reviews', true )[0]['reviewBody'], 'The remaining translation did not receive the schema cache.' );
 remove_filter( 'reviewbird_product_translation_ids', $translations, 10 );
 
 // A trashed translation cannot use queued results after the last live product is deleted.
@@ -229,15 +225,15 @@ as_unschedule_all_actions( 'reviewbird_sync_product_rating', array( $product_id 
 reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', $product_id );
 check( 1 === count( ids( 'reviewbird_sync_product_rating', array( $product_id ) ) ), 'A completed action could not be replaced immediately.' );
 
-as_schedule_single_action( time(), HealthScheduler::CLEANUP_HOOK );
-wp_schedule_single_event( time(), HealthScheduler::CLEANUP_HOOK );
-reviewbird\Core\Deactivator::deactivate();
-foreach ( array( $health_hook, $schema_hook, 'reviewbird_sync_product_rating', HealthScheduler::CLEANUP_HOOK ) as $hook ) {
+as_schedule_single_action( time(), 'reviewbird_cleanup_health_actions' );
+wp_schedule_single_event( time(), 'reviewbird_cleanup_health_actions' );
+reviewbird_deactivate();
+foreach ( array( $health_hook, $schema_hook, 'reviewbird_sync_product_rating', 'reviewbird_cleanup_health_actions' ) as $hook ) {
 	check( ! ids( $hook ), 'Deactivation left plugin jobs pending.' );
 }
-check( ! wp_next_scheduled( HealthScheduler::CLEANUP_HOOK ), 'Deactivation left the WP-Cron event.' );
-reviewbird\Core\Activator::activate();
-$health->schedule_recurring_check();
+check( ! wp_next_scheduled( 'reviewbird_cleanup_health_actions' ), 'Deactivation left the WP-Cron event.' );
+reviewbird_activate();
+reviewbird_schedule_health_check();
 check( 1 === count( ids( $health_hook ) ), 'Reactivation did not restore one health job.' );
 
 if ( is_multisite() ) {
@@ -248,7 +244,7 @@ if ( is_multisite() ) {
 	check( ! empty( $admins ), 'The disposable network needs an administrator.' );
 	$child_site_id = wpmu_create_blog( $network->domain, trailingslashit( $network->path ) . 'reviewbird-deactivation-' . strtolower( wp_generate_password( 8, false ) ) . '/', 'Reviewbird deactivation test', (int) $admins[0], array(), $network->id );
 	check( ! is_wp_error( $child_site_id ), 'The disposable child site could not be created.' );
-	$plugin_hooks = array( $health_hook, $schema_hook, 'reviewbird_sync_product_rating', HealthScheduler::CLEANUP_HOOK );
+	$plugin_hooks = array( $health_hook, $schema_hook, 'reviewbird_sync_product_rating', 'reviewbird_cleanup_health_actions' );
 	$unrelated_actions = array();
 	try {
 		foreach ( array( $main_site_id, $child_site_id ) as $site_id ) {
@@ -261,13 +257,13 @@ if ( is_multisite() ) {
 					check( as_schedule_single_action( time() + 3600, $hook, array( $site_id ), 'reviewbird' ) > 0, 'Could not create a child-site plugin job.' );
 				}
 				$unrelated_actions[ $site_id ] = as_schedule_single_action( time() + 3600, 'another_plugin_job', array( $site_id ), 'reviewbird' );
-				wp_schedule_single_event( time() + 3600, HealthScheduler::CLEANUP_HOOK );
+				wp_schedule_single_event( time() + 3600, 'reviewbird_cleanup_health_actions' );
 				wp_schedule_single_event( time() + 3600, 'another_plugin_cron' );
 			} finally {
 				restore_current_blog();
 			}
 		}
-		reviewbird\Core\Deactivator::deactivate( true );
+		reviewbird_deactivate( true );
 		check( $main_site_id === get_current_blog_id(), 'Network deactivation did not restore the current site.' );
 		foreach ( array( $main_site_id, $child_site_id ) as $site_id ) {
 			switch_to_blog( $site_id );
@@ -275,7 +271,7 @@ if ( is_multisite() ) {
 				foreach ( $plugin_hooks as $hook ) {
 					check( ! ids( $hook ), 'Network deactivation left a plugin job on site ' . $site_id );
 				}
-				check( ! wp_next_scheduled( HealthScheduler::CLEANUP_HOOK ), 'Network deactivation left plugin WP-Cron work.' );
+				check( ! wp_next_scheduled( 'reviewbird_cleanup_health_actions' ), 'Network deactivation left plugin WP-Cron work.' );
 				check( 'pending' === ActionScheduler::store()->get_status( $unrelated_actions[ $site_id ] ), 'Network deactivation removed another plugin action.' );
 				check( (bool) wp_next_scheduled( 'another_plugin_cron' ), 'Network deactivation removed another plugin WP-Cron event.' );
 			} finally {

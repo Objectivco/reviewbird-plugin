@@ -10,7 +10,6 @@
 namespace {
 
 	use PHPUnit\Framework\TestCase;
-	use reviewbird\Integration\StarRatingDisplay;
 
 	if ( ! defined( 'ABSPATH' ) ) {
 		define( 'ABSPATH', __DIR__ );
@@ -50,6 +49,14 @@ namespace {
 
 	function home_url() {
 		return 'https://store.test';
+	}
+
+	if ( ! function_exists( 'get_post_type' ) ) {
+		function get_post_type( $id ) { return 'product'; }
+	}
+
+	function wp_get_environment_type() {
+		return 'production';
 	}
 
 	function wp_remote_request( $url, $args ) {
@@ -121,7 +128,7 @@ namespace {
 	}
 
 	require_once dirname( __DIR__ ) . '/src/functions.php';
-	require_once dirname( __DIR__ ) . '/src/Integration/StarRatingDisplay.php';
+	require_once dirname( __DIR__ ) . '/src/scheduler.php';
 
 	final class StarRatingDisplayTest extends TestCase {
 
@@ -145,11 +152,11 @@ namespace {
 		}
 
 		public function test_fetches_star_color_from_current_widget_config(): void {
-			self::assertSame( '#123456', StarRatingDisplay::fetch_and_cache_star_color() );
+			reviewbird_refresh_star_color();
 			self::assertSame( 'https://api.reviewbird.test/api/widget/148/config', $GLOBALS['reviewbird_test_request'][0] );
 			self::assertSame( 'https://store.test', $GLOBALS['reviewbird_test_request'][1]['headers']['Origin'] );
 			self::assertSame(
-				array( 'reviewbird_star_color', '#123456', DAY_IN_SECONDS ),
+				array( 'reviewbird_star_color', 1, DAY_IN_SECONDS ),
 				$GLOBALS['reviewbird_test_transient']
 			);
 			self::assertSame( '#123456', get_option( 'reviewbird_star_color' ) );
@@ -159,9 +166,9 @@ namespace {
 			$GLOBALS['reviewbird_test_options']['reviewbird_star_color'] = '#abcdef';
 			foreach ( array( '{}', '{"widget_settings":{"star_color":"red;display:none"}}', '{"widget_settings":{"star_color":[]}}' ) as $body ) {
 				$GLOBALS['reviewbird_test_response'] = $body;
-				self::assertNull( StarRatingDisplay::fetch_and_cache_star_color() );
+				reviewbird_refresh_star_color();
 				self::assertSame( '#abcdef', get_option( 'reviewbird_star_color' ) );
-				self::assertSame( array( 'reviewbird_star_color', '#abcdef', HOUR_IN_SECONDS ), $GLOBALS['reviewbird_test_transient'] );
+				self::assertSame( array( 'reviewbird_star_color', 1, HOUR_IN_SECONDS ), $GLOBALS['reviewbird_test_transient'] );
 			}
 			unset( $GLOBALS['reviewbird_test_response'] );
 		}

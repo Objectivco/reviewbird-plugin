@@ -13,9 +13,6 @@
 use reviewbird\Api\CouponController;
 use reviewbird\Api\ProductsController;
 use reviewbird\Api\RatingsController;
-use reviewbird\Core\Plugin;
-use reviewbird\Integration\SchemaMarkup;
-use reviewbird\Integration\SchemaScheduler;
 use reviewbird\Integration\StarRatingDisplay;
 use reviewbird\Integration\WooCommerce;
 
@@ -46,11 +43,20 @@ update_option( 'reviewbird_store_id', 7 );
 update_option( 'reviewbird_store_status', array( 'status' => 'healthy', 'has_active_subscription' => true ) );
 update_option( 'reviewbird_enable_widget', 'yes' );
 update_option( 'reviewbird_enable_schema', 'yes' );
-$plugin = new Plugin();
+// Make a published product with reviews open. Each one renders its widget once per request.
+function make_product( $name ) {
+	$product = new WC_Product_Simple();
+	$product->set_name( $name );
+	$product->set_status( 'publish' );
+	$product->set_reviews_allowed( true );
+	$product->save();
+	$GLOBALS['made_products'][] = $product;
+	return $product;
+}
 
 // Use WordPress's real script queue, including scripts queued or removed by other code.
 foreach ( array( 'reviewbird-widget', 'reviewbird-carousel' ) as $handle ) {
-	$enqueue = 'reviewbird-widget' === $handle ? 'reviewbird_enqueue_widget_script' : function () use ( $plugin ) { return $plugin->carousel_shortcode( array( 'id' => 'showcase' ) ); };
+	$enqueue = 'reviewbird-widget' === $handle ? 'reviewbird_enqueue_widget_script' : function () { return reviewbird_carousel_shortcode( array( 'id' => 'showcase' ) ); };
 	$GLOBALS['wp_scripts'] = new WP_Scripts();
 	$enqueue();
 	$data = wp_scripts()->get_data( $handle, 'data' );
@@ -169,7 +175,11 @@ foreach ( array( 'avg_stars' => 6, 'review_count' => -1, 'rating_counts' => 'inv
 	$params[ $field ] = $value;
 	check( is_wp_error( $ratings->update_ratings( request( $params ) ) ), 'Invalid rating data was accepted: ' . $field );
 }
-$overrides = new \reviewbird\Integration\RatingOverride();
+// The plugin registers these at boot only when the widget was already enabled.
+foreach ( array( 'average_rating', 'review_count', 'rating_counts' ) as $property ) {
+	add_filter( "woocommerce_product_get_{$property}", "reviewbird_override_{$property}", 10, 2 );
+	add_filter( "woocommerce_product_variation_get_{$property}", "reviewbird_override_{$property}", 10, 2 );
+}
 foreach ( array( array( 0, 1, array_fill( 1, 5, 0 ) ), array( 0.83, 6, array( 5 => 1 ) ) ) as list( $average, $total, $buckets ) ) {
 	$result = $ratings->update_ratings( request( array( 'product_id' => $product->get_id(), 'avg_stars' => $average, 'review_count' => $total, 'rating_counts' => $buckets ) ) );
 	check( $result instanceof WP_REST_Response && 200 === $result->get_status(), 'Imported unrated reviews must be accepted.' );
@@ -196,28 +206,26 @@ $purchase = $ratings->check_verified_purchase( request( array( 'product_id' => $
 check( true === $purchase['verified_purchase'] && 'Nigeria' === $purchase['location'], 'Guest purchase country was not read from the order.' );
 check( array( array( 'name' => 'Size', 'value' => 'Large' ) ) === $purchase['purchased_attributes'], 'Selected order attributes were lost.' );
 
-$schema = new SchemaMarkup();
 $original = array( 'review' => array( 'native review' ) );
 foreach ( array( '', 'bad metadata', array() ) as $reviews ) {
-	update_post_meta( $product->get_id(), SchemaScheduler::META_KEY, $reviews );
-	check( $original['review'] === $schema->filter_woocommerce_structured_data( $original, $product )['review'], 'Invalid schema metadata replaced native reviews.' );
+	update_post_meta( $product->get_id(), '_reviewbird_schema_reviews', $reviews );
+	check( $original['review'] === reviewbird_filter_structured_data( $original, $product )['review'], 'Invalid schema metadata replaced native reviews.' );
 }
-update_post_meta( $product->get_id(), SchemaScheduler::META_KEY, array( 'cached review' ) );
-$markup = $schema->filter_woocommerce_structured_data( $original, $product );
+update_post_meta( $product->get_id(), '_reviewbird_schema_reviews', array( 'cached review' ) );
+$markup = reviewbird_filter_structured_data( $original, $product );
 check( array( 'cached review' ) === $markup['review'] && 4.5 === $markup['aggregateRating']['ratingValue'], 'Cached schema changed.' );
 // A zero total must also hide old cached reviews before the background refresh runs.
 set_transient( 'reviewbird_ssr_' . $product->get_id(), array( 'reviews' => array( 'old review' ) ), HOUR_IN_SECONDS );
 $result = $ratings->update_ratings( request( array( 'product_id' => $product->get_id(), 'avg_stars' => 0, 'review_count' => 0 ) ) );
 check( 200 === $result->get_status(), 'Zero ratings were rejected.' );
-$overrides = new \reviewbird\Integration\RatingOverride();
-check( 0.0 === $overrides->override_average_rating( 4.5, $product ), 'Zero average restored old ratings.' );
-check( 0 === $overrides->override_rating_count( 2, $product ), 'Zero count restored old ratings.' );
-check( array_fill( 1, 5, 0 ) === $overrides->override_rating_counts( array( 5 => 2 ), $product ), 'Zero total left a rating distribution.' );
+check( 0.0 === reviewbird_override_average_rating( 4.5, $product ), 'Zero average restored old ratings.' );
+check( 0 === reviewbird_override_review_count( 2, $product ), 'Zero count restored old ratings.' );
+check( array_fill( 1, 5, 0 ) === reviewbird_override_rating_counts( array( 5 => 2 ), $product ), 'Zero total left a rating distribution.' );
 $markup['name'] = 'Keep product fields';
-check( array( 'name' => 'Keep product fields' ) === $schema->filter_woocommerce_structured_data( $markup, $product ), 'Zero ratings retained old review schema.' );
+check( array( 'name' => 'Keep product fields' ) === reviewbird_filter_structured_data( $markup, $product ), 'Zero ratings retained old review schema.' );
 check( array() === reviewbird_get_cached_product_reviews( $product->get_id() ), 'Zero ratings retained old review HTML.' );
 update_option( 'reviewbird_enable_schema', 'no' );
-check( $original === $schema->filter_woocommerce_structured_data( $original, $product ), 'Disabled schema changed native markup.' );
+check( $original === reviewbird_filter_structured_data( $original, $product ), 'Disabled schema changed native markup.' );
 
 $integration = new WooCommerce();
 $order = wc_create_order();
@@ -264,7 +272,7 @@ update_option( 'reviewbird_enable_widget', 'yes' );
 delete_option( 'reviewbird_star_color' );
 $saved_product = $product;
 foreach ( array( 'product-slug', new stdClass() ) as $product ) {
-	check( '' === $plugin->widget_shortcode( array() ), 'A product slug must not reach the widget renderer.' );
+	check( '' === reviewbird_widget_shortcode( array() ), 'A product slug must not reach the widget renderer.' );
 	check( '' === reviewbird_render_widget(), 'The shared widget renderer must reject a non-product global.' );
 	ob_start();
 	reviewbird_display_single_rating();
@@ -273,7 +281,7 @@ foreach ( array( 'product-slug', new stdClass() ) as $product ) {
 $product = $saved_product;
 $stars = new StarRatingDisplay();
 foreach ( array( '' => '#ffa500', '#123456' => '#123456' ) as $value => $expected ) {
-	set_transient( 'reviewbird_star_color', $value );
+	update_option( 'reviewbird_star_color', $value );
 	check( false !== strpos( $stars->filter_rating_html( '', 4.5, 2 ), 'color: ' . $expected ), 'Star color fallback changed.' );
 }
 
@@ -285,10 +293,11 @@ $GLOBALS['wp_query'] = new WP_Query( array( 'page_id' => $page_id ) );
 $GLOBALS['post'] = get_post( $page_id );
 check( ! is_product(), 'The embedded block check must run on a normal page.' );
 $GLOBALS['wp_styles'] = new WP_Styles();
-$plugin->enqueue_star_styles();
+reviewbird_enqueue_star_styles();
 check( wp_style_is( 'reviewbird-stars' ), 'Product ratings on a normal page need the star stylesheet.' );
-$widget_id = 'id="reviewbird-widget-container-' . $product->get_id() . '"';
-$block = '<!-- wp:woocommerce/single-product {"productId":' . $product->get_id() . '} --><div class="wp-block-woocommerce-single-product"><!-- wp:group --><div class="wp-block-group"><!-- wp:group --><div class="wp-block-group"><!-- wp:woocommerce/product-reviews /--></div><!-- /wp:group --></div><!-- /wp:group --></div><!-- /wp:woocommerce/single-product -->';
+$embedded = make_product( 'Embedded product' );
+$widget_id = 'id="reviewbird-widget-container-' . $embedded->get_id() . '"';
+$block = '<!-- wp:woocommerce/single-product {"productId":' . $embedded->get_id() . '} --><div class="wp-block-woocommerce-single-product"><!-- wp:group --><div class="wp-block-group"><!-- wp:group --><div class="wp-block-group"><!-- wp:woocommerce/product-reviews /--></div><!-- /wp:group --></div><!-- /wp:group --></div><!-- /wp:woocommerce/single-product -->';
 $suppressed = false;
 $observe_reviews = function ( $content, $parsed, $parent ) use ( &$suppressed ) {
 	if ( 'woocommerce/product-reviews' === $parsed['blockName'] ) {
@@ -303,7 +312,8 @@ remove_filter( 'pre_render_block', $observe_reviews, 99 );
 check( 1 === substr_count( $html, $widget_id ), 'Repeated Single Product blocks must render one review widget.' );
 check( false === strpos( $html, 'id="reviews"' ), 'Embedded product widgets must not claim a page-wide reviews anchor.' );
 check( $suppressed, 'Embedded product blocks must suppress native reviews before their queries run.' );
-$plugin->register_product_widget_hook();
+reviewbird_register_product_widget_hook();
+$widget_id = 'id="reviewbird-widget-container-' . $product->get_id() . '"';
 $GLOBALS['wp_query'] = new WP_Query( array( 'p' => $product->get_id(), 'post_type' => 'product' ) );
 $GLOBALS['post'] = get_post( $product->get_id() );
 check( is_product(), 'The fallback check must use a product query.' );
@@ -327,18 +337,21 @@ do_action( 'woocommerce_after_single_product' );
 check( false === strpos( ob_get_clean(), $widget_id ), 'The final product hook must not repeat a rendered widget.' );
 // The filtered widget HTML is sanitized once at each output boundary.
 $kses_passes = 0;
-$count_kses = function ( $html ) use ( &$kses_passes, $widget_id ) { if ( false !== strpos( $html, $widget_id ) ) { ++$kses_passes; } return $html; };
+$count_kses = function ( $html ) use ( &$kses_passes, &$widget_id ) { if ( false !== strpos( $html, $widget_id ) ) { ++$kses_passes; } return $html; };
 $unsafe_widget = function ( $html ) { return $html . '<script>unsafe()</script><img src="x" onerror="unsafe()">'; };
 add_filter( 'pre_kses', $count_kses );
 add_filter( 'reviewbird_widget_html', $unsafe_widget );
+$main_product = $GLOBALS['product'] ?? null;
 foreach ( array( 'hook', 'shortcode', 'block' ) as $path ) {
-	$instance = new Plugin();
+	$GLOBALS['product'] = make_product( 'Sanitized ' . $path );
+	$widget_id = 'id="reviewbird-widget-container-' . $GLOBALS['product']->get_id() . '"';
 	$kses_passes = 0;
-	if ( 'hook' === $path ) { ob_start(); $instance->render_product_widget(); $html = ob_get_clean(); }
-	elseif ( 'shortcode' === $path ) { $html = $instance->widget_shortcode( array() ); }
-	else { $html = $instance->render_block_product_widget( 'Product', array( 'attrs' => array( 'productId' => $product->get_id() ) ), (object) array( 'context' => array() ) ); }
+	if ( 'hook' === $path ) { ob_start(); reviewbird_render_product_widget(); $html = ob_get_clean(); }
+	elseif ( 'shortcode' === $path ) { $html = reviewbird_widget_shortcode( array() ); }
+	else { $html = reviewbird_render_block_product_widget( 'Product', array( 'attrs' => array( 'productId' => $GLOBALS['product']->get_id() ) ), (object) array( 'context' => array() ) ); }
 	check( 1 === $kses_passes && false === strpos( $html, '<script' ) && false === strpos( $html, 'onerror' ), 'Sanitize widget HTML once at the output boundary: ' . $path );
 }
+$GLOBALS['product'] = $main_product;
 remove_filter( 'pre_kses', $count_kses );
 remove_filter( 'reviewbird_widget_html', $unsafe_widget );
 $GLOBALS['wp_query'] = $previous_query;
@@ -353,7 +366,7 @@ check( 6 === has_action( 'woocommerce_single_product_summary', 'reviewbird_displ
 update_option( 'reviewbird_enable_widget', 'no' );
 $html = wc_get_rating_html( 4.5, 2 );
 check( false !== strpos( $html, 'star-rating' ) && false === strpos( $html, 'rb-wc-rating' ), 'A disabled widget must retain native rating HTML.' );
-check( isset( $plugin->remove_reviews_tab( array( 'reviews' => array() ) )['reviews'] ), 'A disabled widget must retain its native reviews tab.' );
+check( isset( reviewbird_remove_reviews_tab( array( 'reviews' => array() ) )['reviews'] ), 'A disabled widget must retain its native reviews tab.' );
 add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating', 20 );
 $stars->replace_single_product_rating();
 check( 20 === has_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating' ), 'Disabling the widget after construction must preserve the native rating callback.' );
@@ -397,6 +410,7 @@ $purchase_order->delete( true );
 $order->delete( true );
 $variation->delete( true );
 $product->delete( true );
+foreach ( $made_products as $made ) { $made->delete( true ); }
 $clone->delete( true );
 $template->delete( true );
 foreach ( $images as $id ) { wp_delete_post( $id, true ); }

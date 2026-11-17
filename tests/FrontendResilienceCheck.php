@@ -114,13 +114,15 @@ function is_product() { return true; }
 function doing_action( $hook ) { return false; }
 function get_queried_object_id() { return 5; }
 function get_posts( $args ) { return array(); }
+function wp_get_environment_type() { return 'production'; }
+function get_post_type( $id ) { return 'product'; }
+function wc_get_logger() { return new class { public function __call( $level, $args ) {} }; }
 
 require __DIR__ . '/../src/functions.php';
-require __DIR__ . '/../src/Integration/RatingOverride.php';
+require __DIR__ . '/../src/hooks.php';
+require __DIR__ . '/../src/scheduler.php';
 require __DIR__ . '/../src/Integration/WooCommerce.php';
 require __DIR__ . '/../src/Integration/StarRatingDisplay.php';
-require __DIR__ . '/../src/Integration/SchemaScheduler.php';
-require __DIR__ . '/../src/Integration/SchemaMarkup.php';
 
 $integration = new reviewbird\Integration\WooCommerce();
 check( isset( $hooks['woocommerce_new_order'] ) && ! isset( $hooks['woocommerce_before_order_object_save'], $hooks['woocommerce_checkout_order_created'] ), 'Capture locale only when an order is created.' );
@@ -147,21 +149,20 @@ check( 'x' === $stars->clear_rating_product( 'x' ) && ! str_contains( $stars->fi
 $stars->set_rating_block_product( array( 'postId' => 5 ), array( 'blockName' => 'core/paragraph' ) );
 check( ! str_contains( $stars->filter_rating_html( '', 5.0, 0 ), 'rb-wc-rating-count' ), 'Other blocks set no rating product.' );
 
-$ratings = new reviewbird\Integration\RatingOverride();
 $product = new class {
     public function get_id() { return 11; }
     public function is_type( $type ) { return false; }
 };
-check( 0 === $ratings->override_rating_count( 0, $product ), 'Missing ratings use the native value.' );
-$ratings->override_average_rating( 0, $product );
+check( 0 === reviewbird_override_review_count( 0, $product ), 'Missing ratings use the native value.' );
+reviewbird_override_average_rating( 0, $product );
 check( 0 === count( $calls ) && 1 === count( $queued ), 'A page must queue one job and make no HTTP call.' );
 $product_reads = array();
-$hooks['reviewbird_sync_product_rating']( 11 );
+reviewbird_sync_product_rating( 11 );
 check( array( 11, 11 ) === $product_reads, 'Rating sync resolves one product before HTTP and checks it again afterward.' );
 check( 0 === get_post_meta( 11, '_reviewbird_reviews_count' ) && 0.0 === get_post_meta( 11, '_reviewbird_avg_stars' ), 'Save explicit zero ratings.' );
 check( array_fill( 1, 5, 0 ) === get_post_meta( 11, '_reviewbird_rating_counts' ), 'Save the empty distribution.' );
 $queued = array();
-$ratings->override_rating_count( 0, $product );
+reviewbird_override_review_count( 0, $product );
 check( ! $queued && 1 === count( $calls ), 'Known zero ratings must not trigger another job.' );
 $meta[40] = array( '_reviewbird_reviews_count' => 5, '_reviewbird_avg_stars' => 4.2 );
 $variation_product = new class {
@@ -169,7 +170,7 @@ $variation_product = new class {
     public function get_parent_id() { return 40; }
     public function is_type( $type ) { return 'variation' === $type; }
 };
-check( 5 === $ratings->override_rating_count( 0, $variation_product ) && 4.2 === $ratings->override_average_rating( 0, $variation_product ), 'Variations show the parent product rating.' );
+check( 5 === reviewbird_override_review_count( 0, $variation_product ) && 4.2 === reviewbird_override_average_rating( 0, $variation_product ), 'Variations show the parent product rating.' );
 check( ! $queued, 'Variations must not queue their own rating job.' );
 
 foreach ( array( '{}', '{"statistics":{"total_reviews":2,"average_rating":0}}', '{"statistics":{"total_reviews":-1,"average_rating":0}}' ) as $index => $body ) {
@@ -190,12 +191,12 @@ check( array_fill( 1, 5, 0 ) === reviewbird_normalize_rating_counts( array_fill(
 check( null === reviewbird_normalize_rating_counts( array( 4 => PHP_INT_MAX, 5 => 1 ), PHP_INT_MAX ), 'Bucket totals must not overflow the review count.' );
 $options['reviewbird_enable_widget'] = 'no';
 $queued[77] = 'reviewbird_sync_product_rating';
-$hooks['update_option_reviewbird_enable_widget']( 'yes', 'no' );
+reviewbird_cancel_disabled_jobs( 'yes', 'no', 'reviewbird_enable_widget' );
 check( ! $queued, 'Disabling the widget must cancel queued rating work.' );
-check( 2 === $ratings->override_rating_count( 2, $variation_product ), 'Disabled widgets must keep native counts.' );
+check( 2 === reviewbird_override_review_count( 2, $variation_product ), 'Disabled widgets must keep native counts.' );
 $options['reviewbird_enable_widget'] = 'yes';
 $options['reviewbird_store_status']['status'] = 'not_connected';
-check( 1.5 === $ratings->override_average_rating( 1.5, $variation_product ), 'Disconnected stores must keep native ratings.' );
+check( 1.5 === reviewbird_override_average_rating( 1.5, $variation_product ), 'Disconnected stores must keep native ratings.' );
 $options['reviewbird_store_status']['status'] = 'healthy';
 
 check( reviewbird_acquire_lock( 'reviewbird_lock_test', time() + 60 ), 'The first request must acquire an absent lock.' );
@@ -230,8 +231,8 @@ $rated_product = new class {
     public function get_id() { return 94; }
     public function is_type( $type ) { return false; }
 };
-$aggregate = ( new reviewbird\Integration\SchemaMarkup() )->filter_woocommerce_structured_data( array(), $rated_product )['aggregateRating'];
-check( 4.7 === $ratings->override_average_rating( 0, $rated_product ) && 4.7 === $aggregate['ratingValue'] && 3 === $aggregate['ratingCount'] && 6 === $aggregate['reviewCount'], 'Schema and visible stars must show the service average.' );
+$aggregate = reviewbird_filter_structured_data( array(), $rated_product )['aggregateRating'];
+check( 4.7 === reviewbird_override_average_rating( 0, $rated_product ) && 4.7 === $aggregate['ratingValue'] && 3 === $aggregate['ratingCount'] && 6 === $aggregate['reviewCount'], 'Schema and visible stars must show the service average.' );
 unset( $options['reviewbird_enable_schema'] );
 $queued = $saved_queue;
 $response['body'] = '{"statistics":{"total_reviews":3,"average_rating":0,"rating_distribution":{"1":0,"2":0,"3":0,"4":0,"5":0}}}';

@@ -12,19 +12,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Pressmodo\AdminNotices\Notices;
-use reviewbird\Integration\StarRatingDisplay;
 use reviewbird\Integration\GoogleCustomerReviews;
-use reviewbird\Integration\HealthScheduler;
 
 /**
  * Admin settings page.
  */
 class Settings {
-
-	/**
-	 * Help Scout beacon ID for Reviewbird admin screens.
-	 */
-	private const HELP_SCOUT_BEACON_ID = '7486def8-6289-41b2-961f-81c68743d2b5';
 
 	/**
 	 * Menu slug for the Reviewbird get started page.
@@ -42,22 +35,6 @@ class Settings {
 	private const REGISTRATION_INTENT_ACTION = 'reviewbird_create_registration_intent';
 
 	/**
-	 * Reviewbird endpoint that creates a short-lived registration intent.
-	 */
-	private const REGISTRATION_INTENT_ENDPOINT = '/api/registration-intents';
-
-	/**
-	 * Allowed settings that can be updated via AJAX.
-	 *
-	 * @var array
-	 */
-	private const ALLOWED_SETTINGS = array(
-		'enable_schema',
-		'enable_widget',
-		'force_reviews_open',
-	);
-
-	/**
 	 * Review request notices.
 	 *
 	 * @var Notices|null
@@ -73,7 +50,6 @@ class Settings {
 		add_action( 'wp_ajax_reviewbird_clear_health_cache', array( $this, 'handle_clear_health_cache' ) );
 		add_action( 'admin_post_' . self::REGISTRATION_INTENT_ACTION, array( $this, 'handle_registration_intent' ) );
 		add_action( 'admin_init', array( $this, 'register_review_notice' ) );
-		add_action( 'admin_notices', array( $this, 'display_oauth_notices' ) );
 	}
 
 	/**
@@ -129,56 +105,6 @@ class Settings {
 	}
 
 	/**
-	 * Display OAuth success/error notices from transients.
-	 */
-	public function display_oauth_notices(): void {
-		$screen = get_current_screen();
-		if ( ! $screen || ! $this->is_reviewbird_screen( $screen->id ) ) {
-			return;
-		}
-
-		$this->display_oauth_error_notice();
-		$this->display_oauth_success_notice();
-	}
-
-	/**
-	 * Display OAuth error notice if present.
-	 */
-	private function display_oauth_error_notice(): void {
-		$error = get_transient( 'reviewbird_oauth_error' );
-		if ( ! $error ) {
-			return;
-		}
-
-		?>
-		<div class="notice notice-error is-dismissible">
-			<p>
-				<strong><?php esc_html_e( 'Reviewbird Connection Error:', 'reviewbird' ); ?></strong>
-				<?php echo esc_html( $error ); ?>
-			</p>
-		</div>
-		<?php
-		delete_transient( 'reviewbird_oauth_error' );
-	}
-
-	/**
-	 * Display OAuth success notice if present.
-	 */
-	private function display_oauth_success_notice(): void {
-		$success = get_transient( 'reviewbird_oauth_success' );
-		if ( ! $success ) {
-			return;
-		}
-
-		?>
-		<div class="notice notice-success is-dismissible">
-			<p><?php esc_html_e( 'Successfully connected to Reviewbird!', 'reviewbird' ); ?></p>
-		</div>
-		<?php
-		delete_transient( 'reviewbird_oauth_success' );
-	}
-
-	/**
 	 * Add admin menu.
 	 */
 	public function add_admin_menu(): void {
@@ -190,7 +116,7 @@ class Settings {
 			__( 'Reviewbird', 'reviewbird' ),
 			'manage_options',
 			self::GET_STARTED_SLUG,
-			array( $this, 'render_get_started_page' ),
+			array( $this, 'render_page' ),
 			$icon_svg,
 			58
 		);
@@ -203,7 +129,7 @@ class Settings {
 			__( 'Get Started', 'reviewbird' ),
 			'manage_options',
 			self::GET_STARTED_SLUG,
-			array( $this, 'render_get_started_page' )
+			array( $this, 'render_page' )
 		);
 
 		add_submenu_page(
@@ -212,7 +138,7 @@ class Settings {
 			__( 'Settings', 'reviewbird' ),
 			'manage_options',
 			self::SETTINGS_SLUG,
-			array( $this, 'render_settings_page' )
+			array( $this, 'render_page' )
 		);
 	}
 
@@ -223,7 +149,6 @@ class Settings {
 		remove_all_actions( 'admin_notices' );
 		remove_all_actions( 'all_admin_notices' );
 		add_action( 'admin_notices', array( $this, 'display_review_notice' ) );
-		add_action( 'admin_notices', array( $this, 'display_oauth_notices' ) );
 	}
 
 	/**
@@ -250,7 +175,7 @@ JS
 			);
 		}
 
-		if ( ! $this->is_reviewbird_screen( $hook ) ) {
+		if ( ! str_contains( $hook, self::GET_STARTED_SLUG ) && ! str_contains( $hook, self::SETTINGS_SLUG ) ) {
 			return;
 		}
 
@@ -276,7 +201,29 @@ JS
 			REVIEWBIRD_PLUGIN_DIR . 'languages'
 		);
 
-		$this->enqueue_help_scout_beacon();
+		wp_add_inline_script(
+			'reviewbird-admin',
+			<<<'JS'
+(function (window, document, beacon) {
+	function loadBeaconScript() {
+		var script = document.createElement('script');
+		script.async = true;
+		script.src = 'https://beacon-v2.helpscout.net';
+		document.head.appendChild(script);
+	}
+	window.Beacon = beacon = function (method, options, data) {
+		window.Beacon.readyQueue.push({ method: method, options: options, data: data });
+	};
+	beacon.readyQueue = [];
+	if ('complete' === document.readyState) {
+		loadBeaconScript();
+	} else {
+		window.addEventListener('load', loadBeaconScript, false);
+	}
+}(window, document, window.Beacon || function () {}));
+window.Beacon('init', '7486def8-6289-41b2-961f-81c68743d2b5');
+JS
+		);
 
 		wp_enqueue_style(
 			'reviewbird-admin',
@@ -295,7 +242,6 @@ JS
 	 */
 	private function get_script_localization_data( string $hook ): array {
 		return array(
-			'restUrl'               => rest_url( 'reviewbird/v1' ),
 			'nonce'                 => wp_create_nonce( 'reviewbird_admin_nonce' ),
 			'apiUrl'                => reviewbird_get_api_url(),
 			'ajaxUrl'               => admin_url( 'admin-ajax.php' ),
@@ -309,7 +255,6 @@ JS
 			),
 			'dashboardUrl'          => reviewbird_get_api_url() . '/dashboard',
 			'settingsUrl'           => admin_url( 'admin.php?page=' . self::SETTINGS_SLUG ),
-			'siteDomain'            => wp_parse_url( home_url(), PHP_URL_HOST ),
 			'locale'                => str_replace( '_', '-', implode( '_', array_slice( explode( '_', get_user_locale() ), 0, 2 ) ) ),
 			'enableSchema'          => reviewbird_is_schema_enabled(),
 			'enableWidget'          => reviewbird_is_widget_enabled(),
@@ -339,91 +284,10 @@ JS
 	}
 
 	/**
-	 * Load the Help Scout beacon on Reviewbird admin screens.
+	 * Render the admin app root. The script picks the screen from pageType.
 	 */
-	private function enqueue_help_scout_beacon(): void {
-		$beacon_id = wp_json_encode( self::HELP_SCOUT_BEACON_ID );
-		$script    = implode(
-			"\n",
-			array(
-				'(function(window, document, beacon) {',
-				"\tfunction loadBeaconScript() {",
-				"\t\tvar firstScript = document.getElementsByTagName('script')[0];",
-				"\t\tvar script = document.createElement('script');",
-				'',
-				"\t\tscript.type = 'text/javascript';",
-				"\t\tscript.async = true;",
-				"\t\tscript.src = 'https://beacon-v2.helpscout.net';",
-				'',
-				"\t\tfirstScript.parentNode.insertBefore(script, firstScript);",
-				"\t}",
-				'',
-				"\twindow.Beacon = beacon = function(method, options, data) {",
-				"\t\twindow.Beacon.readyQueue.push({",
-				"\t\t\tmethod: method,",
-				"\t\t\toptions: options,",
-				"\t\t\tdata: data",
-				"\t\t});",
-				"\t};",
-				'',
-				"\tbeacon.readyQueue = [];",
-				'',
-				"\tif ('complete' === document.readyState) {",
-				"\t\tloadBeaconScript();",
-				"\t\treturn;",
-				"\t}",
-				'',
-				"\tif (window.attachEvent) {",
-				"\t\twindow.attachEvent('onload', loadBeaconScript);",
-				"\t\treturn;",
-				"\t}",
-				'',
-				"\twindow.addEventListener('load', loadBeaconScript, false);",
-				'}(window, document, window.Beacon || function() {}));',
-				'',
-				"window.Beacon('init', {$beacon_id});",
-			)
-		);
-
-		wp_add_inline_script( 'reviewbird-admin', $script, 'after' );
-	}
-
-	/**
-	 * Render the get started page.
-	 */
-	public function render_get_started_page(): void {
-		?>
-		<div class="wrap">
-			<div id="reviewbird-settings-root"></div>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render the settings page.
-	 */
-	public function render_settings_page(): void {
-		// Refresh star color cache when admin visits settings page.
-		if ( false === get_transient( 'reviewbird_star_color' ) ) {
-			StarRatingDisplay::fetch_and_cache_star_color();
-		}
-
-		?>
-		<div class="wrap">
-			<div id="reviewbird-settings-root"></div>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Determine if the given hook suffix belongs to a Reviewbird admin screen.
-	 *
-	 * @param string $hook_suffix Screen hook suffix.
-	 * @return bool
-	 */
-	private function is_reviewbird_screen( string $hook_suffix ): bool {
-		return false !== strpos( $hook_suffix, self::GET_STARTED_SLUG )
-			|| false !== strpos( $hook_suffix, self::SETTINGS_SLUG );
+	public function render_page(): void {
+		echo '<div class="wrap"><div id="reviewbird-settings-root"></div></div>';
 	}
 
 	/**
@@ -432,7 +296,7 @@ JS
 	 * Sends JSON error response and terminates if validation fails.
 	 */
 	private function verify_ajax_request(): void {
-		if ( ! isset( $_POST['nonce'] ) || ! is_string( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'reviewbird_admin_nonce' ) ) {
+		if ( ! check_ajax_referer( 'reviewbird_admin_nonce', 'nonce', false ) ) {
 			wp_send_json_error( __( 'Invalid security token', 'reviewbird' ), 403 );
 		}
 
@@ -450,7 +314,7 @@ JS
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_request() above.
 		$setting = isset( $_POST['setting'] ) && is_string( $_POST['setting'] ) ? sanitize_key( wp_unslash( $_POST['setting'] ) ) : '';
 
-		if ( ! in_array( $setting, self::ALLOWED_SETTINGS, true ) ) {
+		if ( ! in_array( $setting, array( 'enable_schema', 'enable_widget', 'force_reviews_open' ), true ) ) {
 			wp_send_json_error( __( 'Invalid setting', 'reviewbird' ), 400 );
 		}
 
@@ -493,7 +357,7 @@ JS
 
 		$status = $force_refresh ? false : get_transient( 'reviewbird_admin_health_status' );
 		if ( false === $status ) {
-			$status = ( new HealthScheduler() )->refresh_health_status();
+			$status = reviewbird_refresh_health_status();
 		}
 		if ( is_wp_error( $status ) ) {
 			wp_send_json_error( __( 'The connection status could not be refreshed. Please try again.', 'reviewbird' ), 502 );
@@ -520,7 +384,7 @@ JS
 
 		$current_user = wp_get_current_user();
 		$response     = reviewbird_api_request(
-			self::REGISTRATION_INTENT_ENDPOINT,
+			'/api/registration-intents',
 			array(
 				'email'      => sanitize_email( $current_user->user_email ),
 				'name'       => sanitize_text_field( $current_user->display_name ),

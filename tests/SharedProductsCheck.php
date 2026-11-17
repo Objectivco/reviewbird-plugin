@@ -50,7 +50,7 @@ class WP_REST_Request {
 class WP_REST_Response {
     public $data;
     public $headers = array();
-    public function __construct( $data, $status = 200 ) { $this->data = $data; }
+    public function __construct( $data, $status = 200, $headers = array() ) { $this->data = $data; $this->headers = $headers; }
     public function header( $key, $value ) { $this->headers[$key] = $value; }
 }
 class SharedTestProduct {
@@ -156,15 +156,16 @@ function wc_get_orders( $args ) { $GLOBALS['last_order_query'] = $args; return a
 function wc_get_is_paid_statuses() { return array( 'processing', 'completed' ); }
 function switch_to_locale( $locale ) { return false; }
 function wp_strip_all_tags( $text ) { return strip_tags( $text ); }
+function wp_json_encode( $data ) { return json_encode( $data ); }
+function wc_get_logger() { return new class { public function __call( $level, $args ) {} }; }
 
 require dirname( __DIR__ ) . '/src/functions.php';
 require dirname( __DIR__ ) . '/src/Api/ProductsController.php';
 require dirname( __DIR__ ) . '/src/Api/RatingsController.php';
 require dirname( __DIR__ ) . '/src/Integration/WooCommerce.php';
-require dirname( __DIR__ ) . '/src/Integration/Polylang.php';
 require dirname( __DIR__ ) . '/src/Integration/WPML.php';
-require dirname( __DIR__ ) . '/src/Core/Plugin.php';
-new reviewbird\Integration\Polylang();
+require dirname( __DIR__ ) . '/src/hooks.php';
+reviewbird_register_compatibility();
 new reviewbird\Integration\WPML();
 
 function group( array $members ): void { foreach ( $members as $id ) { $GLOBALS['groups'][$id] = $members; } }
@@ -339,6 +340,5 @@ $products[90] = new SharedTestProduct( 90 );
 group( array( 'en' => 80, 'fi' => 90 ) );
 add_filter( 'reviewbird_original_product_id', static function () { return 99999; }, 20, 2 );
 check( 80 === reviewbird_product_id( 90 ), 'A custom original ID outside the translation group must use the valid fallback.' );
-$plugin = ( new ReflectionClass( reviewbird\Core\Plugin::class ) )->newInstanceWithoutConstructor();
-check( in_array( '_reviewbird_product_id', $plugin->exclude_reviewbird_meta_from_product_duplicates( array() ), true ), 'Independent product copies must not retain the saved identity.' );
+check( in_array( '_reviewbird_product_id', reviewbird_exclude_duplicate_meta( array() ), true ), 'Independent product copies must not retain the saved identity.' );
 echo $checks . ' shared-product checks passed (' . $mode . ').' . PHP_EOL;

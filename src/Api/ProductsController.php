@@ -80,10 +80,6 @@ class ProductsController {
 	 * @return WP_REST_Response|WP_Error Response or error.
 	 */
 	public function get_products( WP_REST_Request $request ) {
-		if ( ! class_exists( 'WooCommerce' ) ) {
-			return new WP_Error( 'woocommerce_not_active', __( 'WooCommerce is not active', 'reviewbird' ), array( 'status' => 503 ) );
-		}
-
 		$args = array(
 			'status'   => $request->get_param( 'status' ),
 			'limit'    => $request->get_param( 'per_page' ),
@@ -109,15 +105,14 @@ class ProductsController {
 			}
 		}
 
-		$response = new WP_REST_Response( array_values( $products ), 200 );
-		$response->header( 'X-Reviewbird-Version', REVIEWBIRD_VERSION );
-		$response->header( 'X-Reviewbird-Shared-Products', '1' );
-		$response->header( 'X-Reviewbird-Product-Identities', '1' );
 		// Page counts describe the complete native catalog traversal.
-		$response->header( 'X-WP-Total', (int) $results->total );
-		$response->header( 'X-WP-TotalPages', (int) $results->max_num_pages );
-
-		return $response;
+		return $this->response(
+			array_values( $products ),
+			array(
+				'X-WP-Total'      => (int) $results->total,
+				'X-WP-TotalPages' => (int) $results->max_num_pages,
+			)
+		);
 	}
 
 	/**
@@ -130,10 +125,6 @@ class ProductsController {
 	 * @return WP_REST_Response|WP_Error Response or error.
 	 */
 	public function get_product( WP_REST_Request $request ) {
-		if ( ! class_exists( 'WooCommerce' ) ) {
-			return new WP_Error( 'woocommerce_not_active', __( 'WooCommerce is not active', 'reviewbird' ), array( 'status' => 503 ) );
-		}
-
 		$requested_id = reviewbird_product_id( absint( $request->get_param( 'id' ) ) );
 		$product      = $this->get_export_product( $requested_id );
 
@@ -149,13 +140,26 @@ class ProductsController {
 			}
 		}
 
-		$response = new WP_REST_Response( $this->format_product_with_variations( $product ), 200 );
-		$response->header( 'X-Reviewbird-Version', REVIEWBIRD_VERSION );
-		$response->header( 'X-Reviewbird-Shared-Products', '1' );
-		$response->header( 'X-Reviewbird-Product-Identities', '1' );
-		$response->header( 'X-Reviewbird-Product-ID', (string) $requested_id );
+		return $this->response( $this->format_product_with_variations( $product ), array( 'X-Reviewbird-Product-ID' => (string) $requested_id ) );
+	}
 
-		return $response;
+	/**
+	 * Build a response with the headers that tell Reviewbird which features this plugin supports.
+	 *
+	 * @param array $data    Response data.
+	 * @param array $headers Extra headers.
+	 * @return WP_REST_Response
+	 */
+	private function response( array $data, array $headers ): WP_REST_Response {
+		return new WP_REST_Response(
+			$data,
+			200,
+			array(
+				'X-Reviewbird-Version'            => REVIEWBIRD_VERSION,
+				'X-Reviewbird-Shared-Products'    => '1',
+				'X-Reviewbird-Product-Identities' => '1',
+			) + $headers
+		);
 	}
 
 	/**
@@ -225,21 +229,16 @@ class ProductsController {
 	private function get_product_tags( $product ): array {
 		$terms = get_the_terms( $product->get_id(), 'product_tag' );
 
-		if ( is_wp_error( $terms ) || empty( $terms ) ) {
-			return array();
-		}
-
-		$tags = array();
-
-		foreach ( $terms as $term ) {
-			$tags[] = array(
-				'id'   => $term->term_id,
-				'name' => $term->name,
-				'slug' => $term->slug,
-			);
-		}
-
-		return $tags;
+		return is_array( $terms ) ? array_map(
+			static function ( $term ) {
+				return array(
+					'id'   => $term->term_id,
+					'name' => $term->name,
+					'slug' => $term->slug,
+				);
+			},
+			$terms
+		) : array();
 	}
 
 	/**
@@ -251,11 +250,10 @@ class ProductsController {
 	private function get_product_categories( $product ): array {
 		$terms = get_the_terms( $product->get_id(), 'product_cat' );
 
-		if ( is_wp_error( $terms ) || empty( $terms ) ) {
-			return array();
-		}
-
 		$categories = array();
+		if ( ! is_array( $terms ) ) {
+			return $categories;
+		}
 
 		foreach ( $terms as $term ) {
 			$ancestors      = array();

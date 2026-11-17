@@ -130,7 +130,8 @@ namespace {
 	check( true === get_option( $key ), 'The library did not save dismissal for the site.' );
 	$_POST = array();
 	$screen = (object) array( 'id' => 'dashboard' );
-	\reviewbird\Core\Activator::activate();
+	require_once dirname( __DIR__ ) . '/src/hooks.php';
+	reviewbird_activate();
 	$notice_time += 30 * DAY_IN_SECONDS;
 	boot_notice();
 	check( '' === render_notice(), 'The dismissed notice returned after reactivation.' );

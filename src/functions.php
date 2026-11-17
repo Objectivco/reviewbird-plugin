@@ -85,7 +85,7 @@ function reviewbird_product_id( int $product_id ): int {
 		if ( $saved_id > 0 ) {
 			return $saved_id;
 		}
-		if ( $product_id > 0 && ( ! function_exists( 'get_post_type' ) || in_array( get_post_type( $product_id ), array( 'product', 'product_variation' ), true ) ) ) {
+		if ( $product_id > 0 && in_array( get_post_type( $product_id ), array( 'product', 'product_variation' ), true ) ) {
 			update_post_meta( $product_id, '_reviewbird_product_id', $product_id );
 		}
 		return $product_id;
@@ -133,151 +133,101 @@ function reviewbird_product_id( int $product_id ): int {
  */
 function reviewbird_product_meta_id( int $product_id ): int {
 	$shared_id = reviewbird_product_id( $product_id );
-	if ( ! function_exists( 'wc_get_product' ) ) {
-		return $shared_id;
-	}
-	$product = reviewbird_find_product( $shared_id );
+	$product   = reviewbird_find_product( $shared_id );
 	return $product ? $product->get_id() : $shared_id;
 }
 
-// =============================================================================
-// ENVIRONMENT FUNCTIONS
-// =============================================================================
-
 /**
- * Determine the current environment.
+ * Get the Reviewbird environment. REVIEWBIRD_ENVIRONMENT overrides WordPress's type.
  *
- * @return string 'production', 'staging', or 'development'
+ * @return string 'production', 'staging', or a custom REVIEWBIRD_ENVIRONMENT value.
  */
 function reviewbird_get_environment(): string {
 	if ( defined( 'REVIEWBIRD_ENVIRONMENT' ) ) {
 		return REVIEWBIRD_ENVIRONMENT;
 	}
 
-	if ( ! defined( 'WP_ENVIRONMENT_TYPE' ) ) {
-		return 'production';
-	}
-
-	$environment_map = array(
-		'production' => 'production',
-		'staging'    => 'staging',
-	);
-
-	return $environment_map[ WP_ENVIRONMENT_TYPE ] ?? 'production';
+	return 'staging' === wp_get_environment_type() ? 'staging' : 'production';
 }
 
 /**
- * Get the appropriate API URL based on environment.
+ * Get the Reviewbird app URL for the current environment.
  *
- * @return string The API URL for the current environment.
+ * @return string
  */
 function reviewbird_get_api_url(): string {
-	$api_urls = array(
+	$urls = array(
 		'production'  => REVIEWBIRD_API_URL_PRODUCTION,
 		'staging'     => REVIEWBIRD_API_URL_STAGING,
 		'development' => REVIEWBIRD_API_URL_DEVELOPMENT,
 	);
 
-	return $api_urls[ reviewbird_get_environment() ] ?? REVIEWBIRD_API_URL_DEVELOPMENT;
+	return $urls[ reviewbird_get_environment() ] ?? REVIEWBIRD_API_URL_DEVELOPMENT;
 }
 
 /**
- * Determine if SSL verification should be disabled for HTTP requests.
+ * Whether to skip SSL verification, for local development only.
  *
- * @return bool True to disable SSL verification, false to enable it.
+ * @return bool
  */
 function reviewbird_should_disable_ssl_verify(): bool {
-	if ( 'development' === reviewbird_get_environment() ) {
-		return true;
-	}
-
-	if ( defined( 'REVIEWBIRD_DISABLE_SSL_VERIFY' ) ) {
-		return (bool) REVIEWBIRD_DISABLE_SSL_VERIFY;
-	}
-
-	return false;
+	return 'development' === reviewbird_get_environment() || ( defined( 'REVIEWBIRD_DISABLE_SSL_VERIFY' ) && REVIEWBIRD_DISABLE_SSL_VERIFY );
 }
 
-// =============================================================================
-// API FUNCTIONS (replacing Client class)
-// =============================================================================
-
 /**
- * Make API requests to reviewbird backend.
+ * Call the Reviewbird API and decode its JSON response.
  *
- * @param string $endpoint The API endpoint to call.
- * @param array  $data     Optional. Data to send with the request.
- * @param string $method   Optional. HTTP method. Default 'GET'.
- * @param int    $timeout  Request timeout in seconds.
- * @return array|\WP_Error The API response or WP_Error on failure.
+ * @param string     $endpoint Path, including any query string.
+ * @param array|null $data     Body for POST, PUT, and PATCH requests.
+ * @param string     $method   HTTP method.
+ * @param int        $timeout  Request timeout in seconds.
+ * @param array      $headers  Extra request headers.
+ * @return array|null|\WP_Error Decoded response, or an error for HTTP and API failures.
  */
-function reviewbird_api_request( $endpoint, $data = null, $method = 'GET', int $timeout = 30 ) {
-	$api_url = reviewbird_get_api_url();
-
-	$args = array(
-		'headers'   => array(
+function reviewbird_api_request( $endpoint, $data = null, $method = 'GET', int $timeout = 30, array $headers = array() ) {
+	$method = strtoupper( $method );
+	$args   = array(
+		'headers'   => $headers + array(
+			'Accept'       => 'application/json',
 			'Content-Type' => 'application/json',
 			'Origin'       => home_url(),
 			'User-Agent'   => 'reviewbird WordPress Plugin/' . REVIEWBIRD_VERSION,
 		),
 		'timeout'   => $timeout,
-		'method'    => strtoupper( $method ),
+		'method'    => $method,
 		'sslverify' => ! reviewbird_should_disable_ssl_verify(),
 	);
-
-	$methods_with_body = array( 'POST', 'PUT', 'PATCH' );
-	if ( $data && in_array( $method, $methods_with_body, true ) ) {
+	if ( $data && in_array( $method, array( 'POST', 'PUT', 'PATCH' ), true ) ) {
 		$args['body'] = wp_json_encode( $data );
 	}
 
-	$url      = $api_url . $endpoint;
-	$response = wp_remote_request( $url, $args );
-
+	$response = wp_remote_request( reviewbird_get_api_url() . $endpoint, $args );
 	if ( is_wp_error( $response ) ) {
 		reviewbird_log_api_error( 'HTTP Error', $response->get_error_message(), $endpoint );
 		return $response;
 	}
 
-	$response_code = wp_remote_retrieve_response_code( $response );
-	$body          = wp_remote_retrieve_body( $response );
-	$decoded       = json_decode( $body, true );
-
-	if ( $response_code >= 400 ) {
-		$error_message = $decoded['message'] ?? __( 'API request failed', 'reviewbird' );
-
+	$code    = wp_remote_retrieve_response_code( $response );
+	$body    = wp_remote_retrieve_body( $response );
+	$decoded = json_decode( $body, true );
+	if ( $code >= 400 ) {
+		$message = $decoded['message'] ?? __( 'API request failed', 'reviewbird' );
 		reviewbird_log_api_error(
 			'API Error',
-			$error_message,
+			$message,
 			$endpoint,
-			$response_code,
+			$code,
 			array(
 				'response_body'    => $body,
 				'decoded_response' => $decoded,
 			)
 		);
-
 		return new \WP_Error(
 			'reviewbird_api_error',
-			$error_message,
+			$message,
 			array(
-				'status'   => $response_code,
+				'status'   => $code,
 				'response' => $decoded,
-			)
-		);
-	}
-
-	// Log any errors in successful responses (partial failures).
-	if ( ! empty( $decoded['errors'] ) && function_exists( 'wc_get_logger' ) ) {
-		$logger = wc_get_logger();
-		$logger->warning(
-			sprintf(
-				'API request to %s returned %d errors in response',
-				$endpoint,
-				count( $decoded['errors'] )
-			),
-			array(
-				'source' => 'reviewbird',
-				'errors' => $decoded['errors'],
 			)
 		);
 	}
@@ -292,185 +242,15 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET', int $
  */
 function reviewbird_get_store_id(): ?int {
 	$store_id = absint( get_option( 'reviewbird_store_id' ) );
-
-	if ( $store_id ) {
-		return $store_id;
+	if ( ! $store_id ) {
+		$store_id = absint( reviewbird_get_store_status()['store_id'] ?? 0 );
 	}
-
-	$status   = reviewbird_get_store_status();
-	$store_id = absint( $status['store_id'] ?? 0 );
 
 	return $store_id ? $store_id : null;
 }
 
 /**
- * Get MD5 hash of store ID for API authentication.
- *
- * @return string|null Hash or null if store ID not available.
- */
-function reviewbird_get_store_hash(): ?string {
-	$store_id = reviewbird_get_store_id();
-	return $store_id ? md5( (string) $store_id ) : null;
-}
-
-/**
- * Fetch product reviews from the reviewbird API.
- *
- * @param array $product_ids Array of product IDs to fetch reviews for (max 50). Default empty array returns all store reviews.
- * @param int   $per_page    Number of reviews per page (1-20). Default 5.
- * @param array $args        Optional arguments:
- *                           - 'sort'   string Sort order: newest, oldest, rating_high, rating_low, most_helpful.
- *                           - 'rating' int    Filter by star rating (1-5).
- *                           - 'page'   int    Page number for pagination (1+).
- * @return array|\WP_Error The API response array on success, or WP_Error on failure.
- */
-function reviewbird_get_product_reviews( array $product_ids = array(), int $per_page = 5, array $args = array() ) {
-	$endpoint = '/api/v1/stores/{store_id}/products/reviews';
-
-	// Validate store connection.
-	$store_id = reviewbird_get_store_id();
-	if ( ! $store_id ) {
-		reviewbird_log_api_error( 'Validation Error', 'Store not connected', $endpoint );
-		return new \WP_Error(
-			'reviewbird_not_connected',
-			__( 'Store is not connected to Reviewbird.', 'reviewbird' )
-		);
-	}
-
-	// Get API key.
-	$store_hash = reviewbird_get_store_hash();
-	if ( ! $store_hash ) {
-		reviewbird_log_api_error( 'Validation Error', 'Missing Store Hash', $endpoint );
-		return new \WP_Error(
-			'reviewbird_missing_api_key',
-			__( 'Unable to generate API key for authentication.', 'reviewbird' )
-		);
-	}
-
-	// Validate and sanitize product IDs.
-	$product_ids = array_map( 'reviewbird_product_id', array_map( 'absint', $product_ids ) );
-	$product_ids = array_filter( $product_ids );
-	$product_ids = array_unique( $product_ids );
-	$product_ids = array_values( $product_ids );
-
-	if ( ! empty( $product_ids ) && count( $product_ids ) > 50 ) {
-		reviewbird_log_api_error( 'Validation Error', 'Too many product IDs (max 50)', $endpoint );
-		return new \WP_Error(
-			'reviewbird_too_many_products',
-			__( 'Maximum of 50 product IDs allowed per request.', 'reviewbird' )
-		);
-	}
-
-	// Validate per_page (clamp to 1-20).
-	$per_page = max( 1, min( 20, $per_page ) );
-
-	// Build query parameters.
-	$query_params = array(
-		'per_page' => $per_page,
-	);
-
-	if ( ! empty( $product_ids ) ) {
-		$query_params['product_ids'] = implode( ',', $product_ids );
-	}
-
-	// Validate and add optional sort parameter.
-	if ( ! empty( $args['sort'] ) ) {
-		$valid_sorts = array( 'newest', 'oldest', 'rating_high', 'rating_low', 'most_helpful' );
-		if ( in_array( $args['sort'], $valid_sorts, true ) ) {
-			$query_params['sort'] = $args['sort'];
-		}
-	}
-
-	// Validate and add optional rating parameter.
-	if ( isset( $args['rating'] ) ) {
-		$rating                     = absint( $args['rating'] );
-		$rating                     = max( 1, min( 5, $rating ) );
-		$query_params['min_rating'] = $rating;
-	}
-
-	// Validate and add optional page parameter.
-	if ( isset( $args['page'] ) ) {
-		$page = absint( $args['page'] );
-		if ( $page >= 1 ) {
-			$query_params['page'] = $page;
-		}
-	}
-
-	// Build the full URL.
-	$api_url  = reviewbird_get_api_url();
-	$endpoint = '/api/v1/stores/' . $store_id . '/products/reviews';
-	$url      = $api_url . $endpoint . '?' . http_build_query( $query_params );
-
-	// Make the request.
-	$response = wp_remote_get(
-		$url,
-		array(
-			'headers'   => array(
-				'X-Store-Hash' => $store_hash,
-				'User-Agent'   => 'reviewbird WordPress Plugin/' . REVIEWBIRD_VERSION,
-			),
-			'timeout'   => 3,
-			'sslverify' => ! reviewbird_should_disable_ssl_verify(),
-		)
-	);
-
-	// Handle connection errors.
-	if ( is_wp_error( $response ) ) {
-		reviewbird_log_api_error( 'HTTP Error', $response->get_error_message(), $endpoint );
-		return $response;
-	}
-
-	// Handle HTTP error responses.
-	$response_code = wp_remote_retrieve_response_code( $response );
-	$body          = wp_remote_retrieve_body( $response );
-
-	if ( $response_code >= 400 ) {
-		$decoded       = json_decode( $body, true );
-		$error_message = $decoded['message'] ?? __( 'API request failed', 'reviewbird' );
-
-		reviewbird_log_api_error(
-			'API Error',
-			$error_message,
-			$endpoint,
-			$response_code,
-			array(
-				'response_body'    => $body,
-				'decoded_response' => $decoded,
-			)
-		);
-
-		return new \WP_Error(
-			'reviewbird_api_error',
-			$error_message,
-			array(
-				'status'   => $response_code,
-				'response' => $decoded,
-			)
-		);
-	}
-
-	// Decode JSON response.
-	$decoded = json_decode( $body, true );
-	if ( null === $decoded && json_last_error() !== JSON_ERROR_NONE ) {
-		reviewbird_log_api_error(
-			'JSON Error',
-			json_last_error_msg(),
-			$endpoint,
-			$response_code,
-			array( 'response_body' => $body )
-		);
-
-		return new \WP_Error(
-			'reviewbird_json_error',
-			__( 'Failed to decode API response.', 'reviewbird' )
-		);
-	}
-
-	return $decoded;
-}
-
-/**
- * Log API errors for debugging.
+ * Log an API error to the WooCommerce log.
  *
  * @param string   $type     Error type.
  * @param string   $message  Error message.
@@ -480,55 +260,21 @@ function reviewbird_get_product_reviews( array $product_ids = array(), int $per_
  * @return void
  */
 function reviewbird_log_api_error( string $type, string $message, string $endpoint, ?int $code = null, array $context = array() ): void {
-	$log_message = sprintf(
-		'%s: %s [Endpoint: %s]',
-		$type,
-		$message,
-		$endpoint
+	wc_get_logger()->error(
+		sprintf( '%s: %s [Endpoint: %s]', $type, $message, $endpoint ) . ( $code ? sprintf( ' [Code: %d]', $code ) : '' ),
+		array( 'source' => 'reviewbird' ) + $context
 	);
-
-	if ( $code ) {
-		$log_message .= sprintf( ' [Code: %d]', $code );
-	}
-
-	// Use WooCommerce logger if available.
-	if ( function_exists( 'wc_get_logger' ) ) {
-		$logger = wc_get_logger();
-		$logger->error(
-			$log_message,
-			array_merge( array( 'source' => 'reviewbird' ), $context )
-		);
-	}
 }
 
-// =============================================================================
-// HEALTH CHECK FUNCTIONS (replacing HealthChecker class)
-// =============================================================================
-
 /**
- * Get store status from cached option.
+ * Get the store status saved by the background health check.
  *
- * This reads from an option that is populated by the HealthScheduler
- * running via Action Scheduler in the background. No API calls are
- * made during page loads.
- *
- * @param bool $skip_cache Deprecated. Kept for backward compatibility.
  * @return array|null Status array or null if not yet populated.
  */
-function reviewbird_get_store_status( bool $skip_cache = false ): ?array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Keep the deprecated public argument for existing integrations.
+function reviewbird_get_store_status(): ?array {
 	$status = get_option( 'reviewbird_store_status' );
 
 	return is_array( $status ) ? $status : null;
-}
-
-/**
- * Clear cached store status.
- *
- * @return void
- */
-function reviewbird_clear_status_cache(): void {
-	delete_option( 'reviewbird_store_status' );
-	delete_transient( 'reviewbird_admin_health_status' );
 }
 
 /**
@@ -545,15 +291,7 @@ function reviewbird_is_store_connected(): bool {
 
 	$status = reviewbird_get_store_status();
 
-	if ( ! $status ) {
-		return false;
-	}
-
-	$valid_statuses          = array( 'healthy', 'syncing' );
-	$current_status          = $status['status'] ?? '';
-	$has_active_subscription = $status['has_active_subscription'] ?? false;
-
-	return in_array( $current_status, $valid_statuses, true ) && $has_active_subscription;
+	return in_array( $status['status'] ?? '', array( 'healthy', 'syncing' ), true ) && ! empty( $status['has_active_subscription'] );
 }
 
 /**
@@ -681,21 +419,6 @@ function reviewbird_acquire_lock( string $lock_key, int $expires ): bool {
 }
 
 /**
- * Enqueue one product action, including on older Action Scheduler versions.
- *
- * @param string $hook Action hook.
- * @param int    $product_id Product ID.
- */
-function reviewbird_enqueue_product_action( string $hook, int $product_id ): void {
-	$product_id = reviewbird_product_id( $product_id );
-	if ( ! as_next_scheduled_action( $hook, array( $product_id ) ) ) {
-		// Check arguments here: older AS versions apply $unique to the whole hook and group.
-		// ponytail: Concurrent requests can add a duplicate refresh; use native uniqueness when old AS support ends.
-		as_enqueue_async_action( $hook, array( $product_id ), 'reviewbird' );
-	}
-}
-
-/**
  * Validate rating buckets and fill omitted zero buckets.
  *
  * @param mixed $counts Rating counts indexed by stars.
@@ -765,23 +488,7 @@ function reviewbird_sync_product_rating( int $product_id ): void {
 
 	set_transient( $lock_key, 1, HOUR_IN_SECONDS );
 
-	$response = wp_remote_get(
-		reviewbird_get_api_url() . '/api/public/' . $store_id . '/' . $shared_id . '?context=widget&page=1',
-		array(
-			'timeout'   => 5,
-			'sslverify' => ! reviewbird_should_disable_ssl_verify(),
-			'headers'   => array(
-				'Accept' => 'application/json',
-				'Origin' => home_url(),
-			),
-		)
-	);
-
-	if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) < 200 || wp_remote_retrieve_response_code( $response ) >= 300 ) {
-		return;
-	}
-
-	$data  = json_decode( wp_remote_retrieve_body( $response ), true );
+	$data  = reviewbird_api_request( '/api/public/' . $store_id . '/' . $shared_id . '?context=widget&page=1', null, 'GET', 5 );
 	$stats = is_array( $data ) ? ( $data['statistics'] ?? array() ) : array();
 	if ( ! is_array( $stats ) || ! isset( $stats['total_reviews'], $stats['average_rating'] )
 		|| ! is_numeric( $stats['total_reviews'] ) || ! is_numeric( $stats['average_rating'] ) ) {
@@ -828,11 +535,8 @@ function reviewbird_page_should_enqueue_widget(): bool {
 		return false;
 	}
 
-	if ( has_shortcode( $post->post_content, 'reviewbird_widget' ) || has_shortcode( $post->post_content, 'product_page' ) ) {
-		return true;
-	}
-
-	return function_exists( 'has_block' ) && has_block( 'woocommerce/single-product', $post );
+	return has_shortcode( $post->post_content, 'reviewbird_widget' ) || has_shortcode( $post->post_content, 'product_page' )
+		|| has_block( 'woocommerce/single-product', $post );
 }
 
 /**
@@ -843,17 +547,9 @@ function reviewbird_page_should_enqueue_widget(): bool {
  * @return void
  */
 function reviewbird_enqueue_widget_script(): void {
-	if ( wp_script_is( 'reviewbird-widget' ) || wp_script_is( 'reviewbird-widget', 'done' ) || ! reviewbird_can_show_widget() ) {
+	if ( ! reviewbird_can_show_widget() || ! reviewbird_enqueue_remote_script( 'reviewbird-widget', 'review-widget-v2.js' ) ) {
 		return;
 	}
-
-	wp_enqueue_script(
-		'reviewbird-widget',
-		reviewbird_get_api_url() . '/build/review-widget-v2.js',
-		array(),
-		null, // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- The service updates this remote widget independently of plugin releases.
-		true
-	);
 
 	$config = array(
 		'apiUrl'       => reviewbird_get_api_url(),
@@ -861,7 +557,7 @@ function reviewbird_enqueue_widget_script(): void {
 		'widgetPrefix' => 'reviewbird-widget-container-',
 	);
 
-	$customer = function_exists( 'WC' ) && is_user_logged_in() ? WC()->customer : null;
+	$customer = is_user_logged_in() ? WC()->customer : null;
 	$email    = $customer ? $customer->get_billing_email() : '';
 
 	if ( $email ) {
@@ -872,11 +568,23 @@ function reviewbird_enqueue_widget_script(): void {
 		);
 	}
 
-	wp_localize_script(
-		'reviewbird-widget',
-		'reviewbirdConfig',
-		$config
-	);
+	wp_localize_script( 'reviewbird-widget', 'reviewbirdConfig', $config );
+}
+
+/**
+ * Enqueue a Reviewbird-hosted footer script once.
+ *
+ * @param string $handle Script handle.
+ * @param string $file   File in the app's build directory.
+ * @return bool Whether this call enqueued it.
+ */
+function reviewbird_enqueue_remote_script( string $handle, string $file ): bool {
+	if ( wp_script_is( $handle ) || wp_script_is( $handle, 'done' ) ) {
+		return false;
+	}
+	// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- The service updates its scripts independently of plugin releases.
+	wp_enqueue_script( $handle, reviewbird_get_api_url() . '/build/' . $file, array(), null, true );
+	return true;
 }
 
 /**
@@ -886,9 +594,12 @@ function reviewbird_enqueue_widget_script(): void {
  * @return array API response array (with 'reviews' key) or empty array on failure.
  */
 function reviewbird_get_cached_product_reviews( int $product_id ): array {
-	$product_id = reviewbird_product_meta_id( $product_id );
 	// Setup reads reviews in the browser with its temporary token.
-	if ( reviewbird_is_onboarding_preview() || '0' === (string) get_post_meta( $product_id, '_reviewbird_reviews_count', true ) ) {
+	if ( reviewbird_is_onboarding_preview() ) {
+		return array();
+	}
+	$product_id = reviewbird_product_meta_id( $product_id );
+	if ( '0' === (string) get_post_meta( $product_id, '_reviewbird_reviews_count', true ) ) {
 		return array();
 	}
 
@@ -904,7 +615,19 @@ function reviewbird_get_cached_product_reviews( int $product_id ): array {
 	}
 
 	set_transient( $transient_key, array(), 5 * MINUTE_IN_SECONDS );
-	$response = reviewbird_get_product_reviews( array( $product_id ), 10 );
+	$store_id = reviewbird_get_store_id();
+	$response = $store_id ? reviewbird_api_request(
+		'/api/v1/stores/' . $store_id . '/products/reviews?' . http_build_query(
+			array(
+				'per_page'    => 10,
+				'product_ids' => reviewbird_product_id( $product_id ),
+			)
+		),
+		null,
+		'GET',
+		3,
+		array( 'X-Store-Hash' => md5( (string) $store_id ) )
+	) : null;
 
 	if ( is_wp_error( $response ) || ! is_array( $response['reviews'] ?? null ) ) {
 		set_transient( 'reviewbird_ssr_api_failed', 1, 5 * MINUTE_IN_SECONDS );

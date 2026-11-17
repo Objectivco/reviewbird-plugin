@@ -43,7 +43,7 @@ namespace reviewbird\Admin {
 	function wp_unslash( $value ) { return is_string( $value ) ? stripslashes( $value ) : $value; }
 	function sanitize_text_field( $value ) { return trim( strip_tags( $value ) ); }
 	function sanitize_key( $value ) { return preg_replace( '/[^a-z0-9_]/', '', strtolower( $value ) ); }
-	function wp_verify_nonce( $value ) { return 'valid-nonce' === $value; }
+	function check_ajax_referer( $action, $query_arg, $stop ) { return 'reviewbird_admin_nonce' === $action && 'valid-nonce' === ( $_POST[ $query_arg ] ?? null ); }
 	function current_user_can( $capability ) { return $GLOBALS['gcr_test_admin'] && 'manage_options' === $capability; }
 	function update_option( $key, $value ) {
 		if ( $GLOBALS['gcr_test_write_fails'] ) { return false; }
@@ -124,7 +124,7 @@ namespace reviewbird\Tests {
 				$GLOBALS['reviewbird_settings_test_removed_actions']
 			);
 			self::assertSame(
-				array( $settings, 'display_oauth_notices' ),
+				array( $settings, 'display_review_notice' ),
 				$GLOBALS['reviewbird_settings_test_actions']['admin_notices']
 			);
 		}

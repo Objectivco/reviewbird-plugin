@@ -88,16 +88,12 @@ class CouponController {
 	}
 
 	/**
-	 * Create a WooCommerce coupon.
+	 * Create a single-use WooCommerce coupon, optionally copying a template coupon.
 	 *
 	 * @param WP_REST_Request $request The REST API request.
 	 * @return WP_REST_Response|WP_Error Response or error.
 	 */
 	public function create_coupon( WP_REST_Request $request ) {
-		if ( ! class_exists( 'WooCommerce' ) ) {
-			return new WP_Error( 'woocommerce_not_active', __( 'WooCommerce is not active', 'reviewbird' ), array( 'status' => 400 ) );
-		}
-
 		$code           = wc_format_coupon_code( $request->get_param( 'code' ) ?? '' );
 		$expiry_date    = $request->get_param( 'expiry_date' );
 		$template_code  = $request->get_param( 'template_code' );
@@ -117,113 +113,47 @@ class CouponController {
 			return new WP_Error( 'duplicate_coupon', __( 'This coupon code already exists.', 'reviewbird' ), array( 'status' => 409 ) );
 		}
 
+		$coupon = new \WC_Coupon();
 		try {
-			$coupon_id = ! empty( $template_code )
-				? $this->clone_template_coupon( $template_code, $code, $expiry_date, $reviewer_email )
-				: $this->create_new_coupon( $code, $discount_type, $amount, $expiry_date, $reviewer_email );
-
-			if ( is_wp_error( $coupon_id ) ) {
-				return $coupon_id;
+			if ( ! empty( $template_code ) ) {
+				$template_id = wc_get_coupon_id_by_code( $template_code );
+				if ( ! $template_id ) {
+					// translators: %s: Template coupon code.
+					return new WP_Error( 'template_not_found', sprintf( __( "Template coupon '%s' not found", 'reviewbird' ), $template_code ), array( 'status' => 404 ) );
+				}
+				$template = new \WC_Coupon( $template_id );
+				foreach ( self::CLONEABLE_PROPERTIES as $property ) {
+					$coupon->{"set_{$property}"}( $template->{"get_{$property}"}() );
+				}
+				$coupon->add_meta_data( '_reviewbird_template', $template_code );
+			} elseif ( empty( $discount_type ) || empty( $amount ) ) {
+				return new WP_Error( 'missing_parameters', __( 'discount_type and amount are required when not using template', 'reviewbird' ), array( 'status' => 400 ) );
+			} else {
+				$coupon->set_discount_type( $discount_type );
+				$coupon->set_amount( $amount );
 			}
 
-			return new WP_REST_Response(
-				array(
-					'coupon_id' => $coupon_id,
-					'code'      => $code,
-				),
-				200
-			);
+			$coupon->set_code( $code );
+			$coupon->set_usage_limit( 1 );
+			$coupon->set_usage_limit_per_user( 1 );
+			$coupon->set_email_restrictions( $reviewer_email ? array( $reviewer_email ) : array() );
+			if ( ! empty( $expiry_date ) ) {
+				$coupon->set_date_expires( $expiry_date );
+			}
+			$coupon->add_meta_data( '_reviewbird_generated', true );
+			$coupon->save();
 		} catch ( \WC_Data_Exception $e ) {
 			return new WP_Error( $e->getErrorCode(), $e->getMessage(), array( 'status' => 400 ) );
 		} catch ( \Exception $e ) {
 			return new WP_Error( 'coupon_creation_failed', $e->getMessage(), array( 'status' => 500 ) );
 		}
-	}
 
-	/**
-	 * Clone a template coupon with new code and expiry.
-	 *
-	 * @param string      $template_code Template coupon code to clone.
-	 * @param string      $new_code      New coupon code.
-	 * @param string|null $expiry_date   Expiry date for the new coupon.
-	 * @param string|null $reviewer_email Reviewer email.
-	 * @return int|WP_Error Coupon ID or error.
-	 */
-	private function clone_template_coupon( $template_code, $new_code, $expiry_date, $reviewer_email ) {
-		$template_id = wc_get_coupon_id_by_code( $template_code );
-
-		if ( ! $template_id ) {
-			// translators: %s: Template coupon code.
-			return new WP_Error( 'template_not_found', sprintf( __( "Template coupon '%s' not found", 'reviewbird' ), $template_code ), array( 'status' => 404 ) );
-		}
-
-		$template_coupon = new \WC_Coupon( $template_id );
-		$coupon          = new \WC_Coupon();
-		$coupon->set_code( $new_code );
-
-		foreach ( self::CLONEABLE_PROPERTIES as $property ) {
-			$getter = "get_{$property}";
-			$setter = "set_{$property}";
-			$coupon->$setter( $template_coupon->$getter() );
-		}
-		$coupon->set_usage_limit( 1 );
-		$coupon->set_usage_limit_per_user( 1 );
-		$coupon->set_email_restrictions( $reviewer_email ? array( $reviewer_email ) : array() );
-
-		if ( ! empty( $expiry_date ) ) {
-			$coupon->set_date_expires( $expiry_date );
-		}
-
-		$this->add_reviewbird_metadata( $coupon, $template_code );
-		$coupon->save();
-
-		return $coupon->get_id();
-	}
-
-	/**
-	 * Create a new coupon with specified parameters.
-	 *
-	 * @param string      $code          Coupon code.
-	 * @param string      $discount_type Discount type ('percent' or 'fixed_cart').
-	 * @param float       $amount        Discount amount.
-	 * @param string|null $expiry_date   Expiry date for the coupon.
-	 * @param string|null $reviewer_email Reviewer email.
-	 * @return int|WP_Error Coupon ID or error.
-	 */
-	private function create_new_coupon( $code, $discount_type, $amount, $expiry_date, $reviewer_email ) {
-		if ( empty( $discount_type ) || empty( $amount ) ) {
-			return new WP_Error( 'missing_parameters', __( 'discount_type and amount are required when not using template', 'reviewbird' ), array( 'status' => 400 ) );
-		}
-
-		$coupon = new \WC_Coupon();
-		$coupon->set_code( $code );
-		$coupon->set_discount_type( $discount_type );
-		$coupon->set_amount( $amount );
-		$coupon->set_usage_limit( 1 );
-		$coupon->set_usage_limit_per_user( 1 );
-		$coupon->set_email_restrictions( $reviewer_email ? array( $reviewer_email ) : array() );
-
-		if ( ! empty( $expiry_date ) ) {
-			$coupon->set_date_expires( $expiry_date );
-		}
-
-		$this->add_reviewbird_metadata( $coupon );
-		$coupon->save();
-
-		return $coupon->get_id();
-	}
-
-	/**
-	 * Add reviewbird metadata to a coupon.
-	 *
-	 * @param \WC_Coupon  $coupon        Coupon object.
-	 * @param string|null $template_code Template code if cloned from template.
-	 */
-	private function add_reviewbird_metadata( $coupon, $template_code = null ) {
-		$coupon->add_meta_data( '_reviewbird_generated', true );
-
-		if ( $template_code ) {
-			$coupon->add_meta_data( '_reviewbird_template', $template_code );
-		}
+		return new WP_REST_Response(
+			array(
+				'coupon_id' => $coupon->get_id(),
+				'code'      => $code,
+			),
+			200
+		);
 	}
 }

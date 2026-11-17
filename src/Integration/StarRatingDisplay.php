@@ -20,20 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class StarRatingDisplay {
 
 	/**
-	 * Default star color fallback.
-	 *
-	 * @var string
-	 */
-	private const DEFAULT_STAR_COLOR = '#ffa500';
-
-	/**
-	 * Transient key for cached star color.
-	 *
-	 * @var string
-	 */
-	private const STAR_COLOR_TRANSIENT = 'reviewbird_star_color';
-
-	/**
 	 * Product being rendered by a WooCommerce product rating that omits its count.
 	 *
 	 * @var \WC_Product|null
@@ -123,29 +109,31 @@ class StarRatingDisplay {
 			return '';
 		}
 
-		$star_color = get_transient( self::STAR_COLOR_TRANSIENT );
-		$star_color = $star_color ? $star_color : get_option( self::STAR_COLOR_TRANSIENT );
-		$stars_html = $this->generate_stars_html( $rating, $star_color ? $star_color : self::DEFAULT_STAR_COLOR );
-
-		// Check if rating should be non-interactive (e.g., shop loop context).
+		// Ratings outside the main product, such as shop loops, do not open the widget.
 		$is_static = ! is_product() || doing_action( 'woocommerce_after_shop_loop_item_title' )
 			|| ( $this->rating_product && $this->rating_product->get_id() !== get_queried_object_id() );
 		$is_static = apply_filters( 'reviewbird_rating_is_static', $is_static );
-
-		// Build class and attributes based on context.
-		$class             = 'rb-wc-rating' . ( $is_static ? ' rb-wc-rating--static' : '' );
-		$interactive_attrs = $is_static ? '' : ' role="button" tabindex="0"';
-
-		if ( $is_static ) {
+		$label     = $is_static
 			// translators: %s is the average rating.
-			$aria_label = sprintf( __( 'Rated %s out of 5', 'reviewbird' ), number_format_i18n( $rating, 2 ) );
-		} else {
+			? __( 'Rated %s out of 5', 'reviewbird' )
 			// translators: %s is the average rating.
-			$aria_label = sprintf( __( 'Rated %s out of 5, click to view reviews', 'reviewbird' ), number_format_i18n( $rating, 2 ) );
+			: __( 'Rated %s out of 5, click to view reviews', 'reviewbird' );
+
+		$output = sprintf(
+			'<div class="rb-wc-rating%s"%s aria-label="%s">',
+			$is_static ? ' rb-wc-rating--static' : '',
+			$is_static ? '' : ' role="button" tabindex="0"',
+			esc_attr( sprintf( $label, number_format_i18n( $rating, 2 ) ) )
+		);
+
+		// Round to the nearest half star.
+		$halves = (int) round( $rating * 2 );
+		$color  = get_option( 'reviewbird_star_color' );
+		$color  = $color ? $color : '#ffa500';
+		for ( $star = 1; $star <= 5; $star++ ) {
+			$fill    = $halves >= 2 * $star ? 'fill' : ( 2 * $star - 1 === $halves ? 'half' : 'empty' );
+			$output .= sprintf( '<span class="rb-wc-star rb-wc-star-%s" style="color: %s;"></span>', $fill, esc_attr( 'empty' === $fill ? '#ddd' : $color ) );
 		}
-
-		$output  = '<div class="' . esc_attr( $class ) . '"' . $interactive_attrs . ' aria-label="' . esc_attr( $aria_label ) . '">';
-		$output .= $stars_html;
 
 		if ( $count > 0 ) {
 			$output .= sprintf( '<span class="rb-wc-rating-count">(%s)</span>', esc_html( number_format_i18n( $count ) ) );
@@ -191,56 +179,6 @@ class StarRatingDisplay {
 	}
 
 	/**
-	 * Generate HTML for star icons.
-	 *
-	 * @param float  $rating     The average rating (0-5).
-	 * @param string $star_color The star color hex code.
-	 * @return string HTML for star icons.
-	 */
-	private function generate_stars_html( float $rating, string $star_color ): string {
-		$full_stars  = (int) floor( $rating );
-		$remainder   = $rating - $full_stars;
-		$has_half    = $remainder >= 0.25 && $remainder < 0.75;
-		$round_up    = $remainder >= 0.75;
-		$empty_color = '#ddd';
-
-		if ( $round_up ) {
-			++$full_stars;
-		}
-
-		$half_stars  = $has_half ? 1 : 0;
-		$empty_stars = 5 - $full_stars - $half_stars;
-
-		$html = '';
-
-		// Full stars.
-		for ( $i = 0; $i < $full_stars; $i++ ) {
-			$html .= sprintf(
-				'<span class="rb-wc-star rb-wc-star-fill" style="color: %s;"></span>',
-				esc_attr( $star_color )
-			);
-		}
-
-		// Half star.
-		if ( $has_half ) {
-			$html .= sprintf(
-				'<span class="rb-wc-star rb-wc-star-half" style="color: %s;"></span>',
-				esc_attr( $star_color )
-			);
-		}
-
-		// Empty stars.
-		for ( $i = 0; $i < $empty_stars; $i++ ) {
-			$html .= sprintf(
-				'<span class="rb-wc-star rb-wc-star-empty" style="color: %s;"></span>',
-				esc_attr( $empty_color )
-			);
-		}
-
-		return $html;
-	}
-
-	/**
 	 * Allowed HTML tags and attributes for rating output.
 	 *
 	 * Covers both our custom filter_rating_html() output and the
@@ -265,36 +203,5 @@ class StarRatingDisplay {
 				'class' => true,
 			),
 		);
-	}
-
-	/**
-	 * Fetch and cache star color from widget config API.
-	 *
-	 * Called from the settings page and the background health check.
-	 *
-	 * @return string|null The star color or null on failure.
-	 */
-	public static function fetch_and_cache_star_color(): ?string {
-		$store_id = reviewbird_get_store_id();
-
-		if ( ! $store_id ) {
-			return null;
-		}
-
-		$endpoint = sprintf( '/api/widget/%d/config', $store_id );
-		$response = reviewbird_api_request( $endpoint, null, 'GET' );
-
-		$star_color = is_wp_error( $response ) ? null : ( $response['widget_settings']['star_color'] ?? null );
-		$star_color = is_string( $star_color ) ? sanitize_hex_color( $star_color ) : null;
-
-		if ( $star_color ) {
-			update_option( self::STAR_COLOR_TRANSIENT, $star_color, false );
-			set_transient( self::STAR_COLOR_TRANSIENT, $star_color, DAY_IN_SECONDS );
-			return $star_color;
-		}
-
-		// Keep the last valid color and wait before another request.
-		set_transient( self::STAR_COLOR_TRANSIENT, get_option( self::STAR_COLOR_TRANSIENT, self::DEFAULT_STAR_COLOR ), HOUR_IN_SECONDS );
-		return null;
 	}
 }

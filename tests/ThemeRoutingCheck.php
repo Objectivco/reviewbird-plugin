@@ -21,7 +21,7 @@ class WC_Product {
     public function get_id() { return $this->id; }
     public function get_rating_count() { return 4; }
 }
-foreach ( array( 21, 22 ) as $id ) {
+foreach ( array( 21, 22, 23, 24 ) as $id ) {
     $products[$id] = new WC_Product( $id );
 }
 $product = $products[21];
@@ -48,48 +48,51 @@ function get_transient( $key ) { return false; }
 function get_option( $key, $default = false ) { return $GLOBALS['options'][$key] ?? $default; }
 function is_product() { return $GLOBALS['is_product']; }
 function doing_action( $hook ) { return $GLOBALS['loop_rating']; }
-function get_queried_object_id() { return 21; }
+function get_queried_object_id() { return $GLOBALS['queried']; }
+$queried = 21;
 function __( $value ) { return $value; }
 function esc_attr( $value ) { return htmlspecialchars( (string) $value, ENT_QUOTES ); }
 function esc_html( $value ) { return esc_attr( $value ); }
 function number_format_i18n( $value, $decimals = 0 ) { return number_format( $value, $decimals ); }
 
-require __DIR__ . '/../src/Core/Plugin.php';
+require __DIR__ . '/../src/hooks.php';
 require __DIR__ . '/../src/Integration/StarRatingDisplay.php';
 
-$plugin = new reviewbird\Core\Plugin();
-$plugin->enqueue_star_styles();
+reviewbird_enqueue_star_styles();
 check( array( 'reviewbird-stars' ) === $styles, 'A normal page with products needs star styles.' );
-$plugin->register_product_widget_hook();
-check( 14 === has_action( 'woocommerce_after_single_product_summary', array( $plugin, 'render_product_widget' ) ), 'Keep the default widget position.' );
-check( 10 === has_action( 'woocommerce_after_single_product', array( $plugin, 'render_product_widget' ) ), 'Templates without Product Details need the final product hook.' );
+reviewbird_register_product_widget_hook();
+check( 14 === has_action( 'woocommerce_after_single_product_summary', 'reviewbird_render_product_widget' ), 'Keep the default widget position.' );
+check( 10 === has_action( 'woocommerce_after_single_product', 'reviewbird_render_product_widget' ), 'Templates without Product Details need the final product hook.' );
 $instance = (object) array( 'context' => array( 'postId' => 21 ) );
 $block = array( 'attrs' => array( 'productId' => 21 ) );
-$html = $plugin->render_block_product_widget( '<div>Embedded product</div>', $block, $instance );
+$html = reviewbird_render_block_product_widget( '<div>Embedded product</div>', $block, $instance );
 check( false !== strpos( $html, 'reviewbird-widget-container-21' ), 'An embedded product needs a widget container.' );
 check( false === strpos( $html, 'id="reviews"' ), 'An embedded product must not claim the main product review anchor.' );
 ob_start();
-$plugin->render_product_widget();
+reviewbird_render_product_widget();
 check( '' === ob_get_clean(), 'The classic fallback must not duplicate a block widget.' );
-check( '' === $plugin->widget_shortcode( array( 'product_id' => 21 ) ), 'A shortcode must not duplicate the product widget.' );
-check( false !== strpos( $plugin->widget_shortcode( array( 'product_id' => 22 ) ), 'reviewbird-widget-container-22' ), 'Another product needs its own widget.' );
-$plugin = new reviewbird\Core\Plugin();
+check( '' === reviewbird_widget_shortcode( array( 'product_id' => 21 ) ), 'A shortcode must not duplicate the product widget.' );
+check( false !== strpos( reviewbird_widget_shortcode( array( 'product_id' => 22 ) ), 'reviewbird-widget-container-22' ), 'Another product needs its own widget.' );
 foreach ( array( 'product-slug', new stdClass() ) as $product ) {
-    check( '' === $plugin->widget_shortcode( array() ), 'Ignore a non-product global before the product loop starts.' );
+    check( '' === reviewbird_widget_shortcode( array() ), 'Ignore a non-product global before the product loop starts.' );
 }
 $product = $products[21];
-check( '' === $plugin->render_block_product_widget( '', $block, $instance ), 'A hidden product block must stay hidden.' );
+check( '' === reviewbird_render_block_product_widget( '', $block, $instance ), 'A hidden product block must stay hidden.' );
 $password_required = true;
-check( 'Password form' === $plugin->render_block_product_widget( 'Password form', $block, $instance ), 'A protected product must not expose its widget.' );
+check( 'Password form' === reviewbird_render_block_product_widget( 'Password form', $block, $instance ), 'A protected product must not expose its widget.' );
 $password_required = false;
+// Products 21 and 22 have rendered; the main product page below uses 23.
+$queried = 23;
+$product = $products[23];
 $is_product = true;
 ob_start();
-$plugin->render_product_widget();
-$plugin->render_product_widget();
+reviewbird_render_product_widget();
+reviewbird_render_product_widget();
 $html = ob_get_clean();
-check( 1 === substr_count( $html, 'reviewbird-widget-container-21' ), 'The two native hooks must output one widget.' );
+check( 1 === substr_count( $html, 'reviewbird-widget-container-23' ), 'The two native hooks must output one widget.' );
 check( 1 === substr_count( $html, 'id="reviews"' ), 'The main product needs one native review link target.' );
-check( false === strpos( $plugin->widget_shortcode( array( 'product_id' => 22 ) ), 'id="reviews"' ), 'Another product on the main product page must not repeat the review anchor.' );
+$html = reviewbird_widget_shortcode( array( 'product_id' => 24 ) );
+check( false !== strpos( $html, 'reviewbird-widget-container-24' ) && false === strpos( $html, 'id="reviews"' ), 'Another product on the main product page must not repeat the review anchor.' );
 $is_product = false;
 
 $stars = ( new ReflectionClass( reviewbird\Integration\StarRatingDisplay::class ) )->newInstanceWithoutConstructor();
@@ -110,9 +113,9 @@ check( false !== strpos( $stars->filter_rating_html( 'native', 4.5, 4 ), 'color:
 $enabled = false;
 check( 'native' === $stars->filter_rating_html( 'native', 4.5, 4 ), 'A disabled widget must keep native rating HTML.' );
 $styles = array();
-$plugin->enqueue_star_styles();
+reviewbird_enqueue_star_styles();
 check( ! $styles, 'A disabled widget must not load replacement styles.' );
-check( array( 'reviews' => array() ) === $plugin->remove_reviews_tab( array( 'reviews' => array() ) ), 'Keep native review navigation when the widget is disabled.' );
+check( array( 'reviews' => array() ) === reviewbird_remove_reviews_tab( array( 'reviews' => array() ) ), 'Keep native review navigation when the widget is disabled.' );
 $native_priority = 20;
 $hooks['woocommerce_single_product_summary'] = array( $native_priority => array( 'woocommerce_template_single_rating' ) );
 $stars->replace_single_product_rating();
@@ -120,7 +123,7 @@ check( $native_priority === has_action( 'woocommerce_single_product_summary', 'w
 
 $wp = (object) array( 'query_vars' => array( 'rest_route' => '/reviewbird/v1/products' ) );
 $_SERVER['REQUEST_URI'] = '/wp-json/reviewbird/v1/products';
-check( ! $plugin->enable_wc_auth_for_reviewbird_api( false ), 'Do not grant API-key access before REST dispatch.' );
+check( ! reviewbird_enable_wc_auth( false ), 'Do not grant API-key access before REST dispatch.' );
 define( 'REST_REQUEST', true );
 foreach ( array(
     array( '/wp-json/reviewbird/v1/products', '/reviewbird/v1/products', true ),
@@ -133,7 +136,7 @@ foreach ( array(
 ) as list( $uri, $route, $expected ) ) {
     $_SERVER['REQUEST_URI'] = $uri;
     $wp->query_vars['rest_route'] = $route;
-    check( $expected === $plugin->enable_wc_auth_for_reviewbird_api( false ), 'Authenticate only the route WordPress resolved: ' . $uri );
+    check( $expected === reviewbird_enable_wc_auth( false ), 'Authenticate only the route WordPress resolved: ' . $uri );
 }
-check( $plugin->enable_wc_auth_for_reviewbird_api( true ), 'Preserve native WooCommerce authentication.' );
+check( reviewbird_enable_wc_auth( true ), 'Preserve native WooCommerce authentication.' );
 echo "Theme and REST routing: {$checks} checks passed.\n";

@@ -135,27 +135,44 @@ namespace {
 		}
 	}
 
-	if ( ! function_exists( 'wp_remote_get' ) ) {
-		function wp_remote_get( $url, $args = array() ) {
-			$GLOBALS['reviewbird_test_remote_get'] = array( $url, $args );
+	if ( ! function_exists( 'wp_remote_request' ) ) {
+		function wp_remote_request( $url, $args ) {
+			$GLOBALS['reviewbird_test_request'] = array( $url, $args );
 
 			return array(
 				'response' => array( 'code' => 200 ),
-				'body'     => '{"statistics":{"total_reviews":259,"average_rating":4.8,"rating_distribution":{"5":228,"4":19,"3":6,"2":3,"1":3}}}',
+				'body'     => $GLOBALS['reviewbird_test_response'],
 			);
 		}
 	}
 
+	if ( ! function_exists( 'home_url' ) ) {
+		function home_url() { return 'https://store.test'; }
+	}
+
+	if ( ! function_exists( 'wp_get_environment_type' ) ) {
+		function wp_get_environment_type() { return 'production'; }
+	}
+
+	if ( ! function_exists( 'get_post_type' ) ) {
+		function get_post_type( $id ) { return 'product'; }
+	}
+
+	if ( ! function_exists( 'get_locale' ) ) {
+		function get_locale() {
+			return $GLOBALS['reviewbird_test_showcase_locale'] ?? 'en_US';
+		}
+	}
+
 	require_once dirname( __DIR__ ) . '/src/functions.php';
+	require_once dirname( __DIR__ ) . '/src/hooks.php';
 
 	final class WidgetEnqueueTest extends TestCase {
 
 		public function test_showcase_locale_keeps_regional_language_variants(): void {
-			require_once dirname( __DIR__ ) . '/src/Core/Plugin.php';
-			$plugin = ( new \ReflectionClass( \reviewbird\Core\Plugin::class ) )->newInstanceWithoutConstructor();
 			foreach ( array( 'pt_BR' => 'pt-BR', 'pt_PT' => 'pt-PT', 'zh_TW' => 'zh-TW', 'de_DE_formal' => 'de-DE', 'pt_PT_ao90' => 'pt-PT', 'ja' => 'ja' ) as $locale => $expected ) {
 				$GLOBALS['reviewbird_test_showcase_locale'] = $locale;
-				self::assertStringContainsString( 'data-locale="' . $expected . '"', $plugin->carousel_shortcode( array( 'id' => 'showcase' ) ) );
+				self::assertStringContainsString( 'data-locale="' . $expected . '"', reviewbird_carousel_shortcode( array( 'id' => 'showcase' ) ) );
 			}
 			unset( $GLOBALS['reviewbird_test_showcase_locale'] );
 		}
@@ -171,7 +188,8 @@ namespace {
 			$GLOBALS['reviewbird_test_is_product'] = false;
 			$GLOBALS['reviewbird_test_has_block']  = array();
 			$GLOBALS['reviewbird_test_post_meta']   = array();
-			$GLOBALS['reviewbird_test_remote_get']  = null;
+			$GLOBALS['reviewbird_test_request']     = null;
+			$GLOBALS['reviewbird_test_response']    = '{"statistics":{"total_reviews":259,"average_rating":4.8,"rating_distribution":{"5":228,"4":19,"3":6,"2":3,"1":3}}}';
 			$GLOBALS['reviewbird_test_transients']  = array();
 			$GLOBALS['reviewbird_test_enqueued_scripts'] = array();
 			$GLOBALS['reviewbird_test_enqueue_calls'] = array();
@@ -190,13 +208,11 @@ namespace {
 		}
 
 		public function test_badge_uses_connected_store_and_enqueues_once_for_multiple_placements(): void {
-			require_once dirname( __DIR__ ) . '/src/Core/Plugin.php';
-			$plugin = new \reviewbird\Core\Plugin();
 			$GLOBALS['reviewbird_test_options']['reviewbird_store_id'] = 37;
 			self::assertSame( array(), $GLOBALS['reviewbird_test_enqueue_calls'] );
 			$expected = '<div data-reviewbird-store-badge data-store-id="37" data-layout="horizontal" data-theme="light" data-alignment="left"></div>';
-			self::assertSame( $expected, $plugin->badge_shortcode( array() ) );
-			self::assertSame( $expected, $plugin->badge_shortcode( array( 'store_id' => '999' ) ) );
+			self::assertSame( $expected, reviewbird_badge_shortcode( array() ) );
+			self::assertSame( $expected, reviewbird_badge_shortcode( array( 'store_id' => '999' ) ) );
 			self::assertSame( array( 'reviewbird-badge' ), $GLOBALS['reviewbird_test_enqueue_calls'] );
 			self::assertSame(
 				array( 'https://api.reviewbird.test/build/review-badge.js', true ),
@@ -205,39 +221,33 @@ namespace {
 
 			// A removed script can be queued again, but a printed script cannot.
 			unset( $GLOBALS['reviewbird_test_enqueued_scripts']['reviewbird-badge'] );
-			$plugin->badge_shortcode( array() );
+			reviewbird_badge_shortcode( array() );
 			self::assertCount( 2, $GLOBALS['reviewbird_test_enqueue_calls'] );
 			unset( $GLOBALS['reviewbird_test_enqueued_scripts']['reviewbird-badge'] );
 			$GLOBALS['reviewbird_test_printed_scripts']['reviewbird-badge'] = true;
-			self::assertSame( $expected, $plugin->badge_shortcode( array() ) );
+			self::assertSame( $expected, reviewbird_badge_shortcode( array() ) );
 			self::assertCount( 2, $GLOBALS['reviewbird_test_enqueue_calls'] );
 		}
 
 		public function test_badge_accepts_supported_appearance_attributes(): void {
-			require_once dirname( __DIR__ ) . '/src/Core/Plugin.php';
-			$plugin = new \reviewbird\Core\Plugin();
 			foreach ( array( 'left', 'center', 'right' ) as $alignment ) {
 				self::assertSame(
 					'<div data-reviewbird-store-badge data-store-id="148" data-layout="seal" data-theme="dark" data-alignment="' . $alignment . '"></div>',
-					$plugin->badge_shortcode( array( 'layout' => 'seal', 'theme' => 'dark', 'alignment' => $alignment ) )
+					reviewbird_badge_shortcode( array( 'layout' => 'seal', 'theme' => 'dark', 'alignment' => $alignment ) )
 				);
 			}
 		}
 
 		public function test_badge_replaces_invalid_attributes_with_defaults(): void {
-			require_once dirname( __DIR__ ) . '/src/Core/Plugin.php';
-			$plugin = new \reviewbird\Core\Plugin();
 			self::assertSame(
 				'<div data-reviewbird-store-badge data-store-id="148" data-layout="horizontal" data-theme="light" data-alignment="left"></div>',
-				$plugin->badge_shortcode( array( 'layout' => '"><script>alert(1)</script>', 'theme' => 'unknown', 'alignment' => array( 'center' ), 'onclick' => 'alert(1)' ) )
+				reviewbird_badge_shortcode( array( 'layout' => '"><script>alert(1)</script>', 'theme' => 'unknown', 'alignment' => array( 'center' ), 'onclick' => 'alert(1)' ) )
 			);
 		}
 
 		public function test_badge_does_not_render_or_load_script_without_a_connected_store(): void {
-			require_once dirname( __DIR__ ) . '/src/Core/Plugin.php';
-			$plugin = new \reviewbird\Core\Plugin();
 			$GLOBALS['reviewbird_test_options']['reviewbird_store_id'] = '';
-			self::assertSame( '<!-- Reviewbird Badge: Store not connected -->', $plugin->badge_shortcode( array( 'store_id' => '999' ) ) );
+			self::assertSame( '<!-- Reviewbird Badge: Store not connected -->', reviewbird_badge_shortcode( array( 'store_id' => '999' ) ) );
 			self::assertSame( array(), $GLOBALS['reviewbird_test_enqueued_scripts'] );
 			self::assertSame( array(), $GLOBALS['reviewbird_test_enqueue_calls'] );
 		}
@@ -290,7 +300,7 @@ namespace {
 
 			reviewbird_sync_product_rating( 3932 );
 
-			self::assertNull( $GLOBALS['reviewbird_test_remote_get'] );
+			self::assertNull( $GLOBALS['reviewbird_test_request'] );
 		}
 
 		public function test_sync_writes_rating_meta_when_missing(): void {
@@ -314,14 +324,8 @@ namespace {
 				'_reviewbird_rating_counts' => array_fill( 1, 5, 0 ),
 			);
 			reviewbird_sync_product_rating( 4101 );
-			self::assertNull( $GLOBALS['reviewbird_test_remote_get'] );
+			self::assertNull( $GLOBALS['reviewbird_test_request'] );
 			self::assertSame( '0', get_post_meta( 4101, '_reviewbird_reviews_count', true ) );
 		}
-	}
-}
-
-namespace reviewbird\Core {
-	function get_locale() {
-		return $GLOBALS['reviewbird_test_showcase_locale'] ?? 'en_US';
 	}
 }

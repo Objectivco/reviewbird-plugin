@@ -67,8 +67,7 @@ class RatingsController {
 			return $product_id;
 		}
 
-		if ( ! is_numeric( $review_count ) || ! is_finite( (float) $review_count )
-			|| false === filter_var( $review_count, FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0 ) ) ) ) {
+		if ( ! is_numeric( $review_count ) || false === filter_var( $review_count, FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0 ) ) ) ) {
 			return new WP_Error( 'invalid_count', __( 'Review count must be a whole number of 0 or more', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 		$review_count = (int) $review_count;
@@ -90,32 +89,27 @@ class RatingsController {
 		$shared_id  = reviewbird_product_id( $product_id );
 		$product_id = reviewbird_product_meta_id( $product_id );
 		update_post_meta( $product_id, '_reviewbird_avg_stars', $avg_stars );
-		update_post_meta( $product_id, '_reviewbird_reviews_count', intval( $review_count ) );
+		update_post_meta( $product_id, '_reviewbird_reviews_count', $review_count );
 
 		if ( ! empty( $rating_counts ) ) {
 			update_post_meta( $product_id, '_reviewbird_rating_counts', $rating_counts );
 		}
 
-		if ( function_exists( 'wc_delete_product_transients' ) ) {
-			wc_delete_product_transients( $product_id );
-		}
-
+		wc_delete_product_transients( $product_id );
 		delete_transient( 'reviewbird_ssr_' . $product_id );
 		do_action( 'reviewbird_rating_updated', $product_id, $avg_stars, $review_count );
 
-		if ( function_exists( 'wc_get_logger' ) ) {
-			wc_get_logger()->info(
-				sprintf( 'Rating updated for product %d: %.2f stars (%d reviews)', $product_id, $avg_stars, $review_count ),
-				array( 'source' => 'reviewbird' )
-			);
-		}
+		wc_get_logger()->info(
+			sprintf( 'Rating updated for product %d: %.2f stars (%d reviews)', $product_id, $avg_stars, $review_count ),
+			array( 'source' => 'reviewbird' )
+		);
 
 		return new WP_REST_Response(
 			array(
 				'success'      => true,
 				'product_id'   => $shared_id,
 				'avg_stars'    => $avg_stars,
-				'review_count' => intval( $review_count ),
+				'review_count' => $review_count,
 			),
 			200
 		);
@@ -195,24 +189,22 @@ class RatingsController {
 		$purchased_attributes = $purchase['purchased_attributes'] ?? array();
 		$location             = $purchase['location'] ?? null;
 
-		if ( function_exists( 'wc_get_logger' ) ) {
-			wc_get_logger()->debug(
-				sprintf(
-					'Verified purchase check for product %d, email %s: %s, location: %s, attributes: %s',
-					$product_id,
-					$customer_email,
-					$verified_purchase ? 'true' : 'false',
-					$location ? $location : 'none',
-					! empty( $purchased_attributes ) ? wp_json_encode( $purchased_attributes ) : 'none'
-				),
-				array( 'source' => 'reviewbird' )
-			);
-		}
+		wc_get_logger()->debug(
+			sprintf(
+				'Verified purchase check for product %d, email %s: %s, location: %s, attributes: %s',
+				$product_id,
+				$customer_email,
+				$verified_purchase ? 'true' : 'false',
+				$location ? $location : 'none',
+				$purchased_attributes ? wp_json_encode( $purchased_attributes ) : 'none'
+			),
+			array( 'source' => 'reviewbird' )
+		);
 
 		$response = array(
 			'product_id'        => $product_id,
 			'customer_email'    => $customer_email,
-			'verified_purchase' => (bool) $verified_purchase,
+			'verified_purchase' => $verified_purchase,
 		);
 
 		if ( ! empty( $location ) ) {
