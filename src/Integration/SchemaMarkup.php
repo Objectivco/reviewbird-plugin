@@ -51,7 +51,8 @@ class SchemaMarkup {
 
 		if ( is_array( $reviews ) && ! empty( $reviews ) ) {
 			$markup['review'] = $reviews;
-		} elseif ( $aggregate_rating ) {
+		}
+		if ( $aggregate_rating ) {
 			( new SchemaScheduler() )->schedule_schema_refresh( $product_id );
 		}
 

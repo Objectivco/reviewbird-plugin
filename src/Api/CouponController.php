@@ -60,6 +60,18 @@ class CouponController {
 						'type'   => array( 'string', 'null' ),
 						'format' => 'email',
 					),
+					'template_code'  => array( 'type' => array( 'string', 'null' ) ),
+					'discount_type'  => array(
+						'type' => 'string',
+						'enum' => array_keys( wc_get_coupon_types() ),
+					),
+					'amount'         => array(
+						'type'             => 'number',
+						'minimum'          => 0,
+						'exclusiveMinimum' => true,
+						'maximum'          => PHP_FLOAT_MAX,
+					),
+					'expiry_date'    => array( 'type' => array( 'string', 'null' ) ),
 				),
 			)
 		);
@@ -71,7 +83,7 @@ class CouponController {
 	 * @param WP_REST_Request $request The REST API request.
 	 * @return bool Whether the request has permission.
 	 */
-	public function permission_callback( WP_REST_Request $request ): bool {
+	public function permission_callback( WP_REST_Request $request ): bool { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Keep the REST permission callback signature.
 		return wc_rest_check_post_permissions( 'shop_coupon', 'create', 0 );
 	}
 
@@ -86,7 +98,7 @@ class CouponController {
 			return new WP_Error( 'woocommerce_not_active', __( 'WooCommerce is not active', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
-		$code           = $request->get_param( 'code' );
+		$code           = wc_format_coupon_code( $request->get_param( 'code' ) ?? '' );
 		$expiry_date    = $request->get_param( 'expiry_date' );
 		$template_code  = $request->get_param( 'template_code' );
 		$discount_type  = $request->get_param( 'discount_type' );
@@ -96,6 +108,10 @@ class CouponController {
 		// The route schema validates types and the reviewer email format.
 		if ( '' === trim( $code ) ) {
 			return new WP_Error( 'missing_code', __( 'Coupon code is required', 'reviewbird' ), array( 'status' => 400 ) );
+		}
+		if ( $expiry_date && ( false === rest_parse_date( 10 === strlen( $expiry_date ) ? $expiry_date . 'T00:00:00' : $expiry_date )
+			|| ! checkdate( (int) substr( $expiry_date, 5, 2 ), (int) substr( $expiry_date, 8, 2 ), (int) substr( $expiry_date, 0, 4 ) ) ) ) {
+			return new WP_Error( 'invalid_expiry_date', __( 'Use a valid date or ISO 8601 date and time for coupon expiry.', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 		if ( wc_get_coupon_id_by_code( $code ) ) {
 			return new WP_Error( 'duplicate_coupon', __( 'This coupon code already exists.', 'reviewbird' ), array( 'status' => 409 ) );
@@ -117,6 +133,8 @@ class CouponController {
 				),
 				200
 			);
+		} catch ( \WC_Data_Exception $e ) {
+			return new WP_Error( $e->getErrorCode(), $e->getMessage(), array( 'status' => 400 ) );
 		} catch ( \Exception $e ) {
 			return new WP_Error( 'coupon_creation_failed', $e->getMessage(), array( 'status' => 500 ) );
 		}
@@ -141,7 +159,7 @@ class CouponController {
 
 		$template_coupon = new \WC_Coupon( $template_id );
 		$coupon          = new \WC_Coupon();
-		$coupon->set_code( strtoupper( $new_code ) );
+		$coupon->set_code( $new_code );
 
 		foreach ( self::CLONEABLE_PROPERTIES as $property ) {
 			$getter = "get_{$property}";
@@ -159,7 +177,7 @@ class CouponController {
 		$this->add_reviewbird_metadata( $coupon, $template_code );
 		$coupon->save();
 
-		return $this->force_uppercase_code( $coupon->get_id(), $new_code );
+		return $coupon->get_id();
 	}
 
 	/**
@@ -178,9 +196,9 @@ class CouponController {
 		}
 
 		$coupon = new \WC_Coupon();
-		$coupon->set_code( strtoupper( $code ) );
+		$coupon->set_code( $code );
 		$coupon->set_discount_type( $discount_type );
-		$coupon->set_amount( floatval( $amount ) );
+		$coupon->set_amount( $amount );
 		$coupon->set_usage_limit( 1 );
 		$coupon->set_usage_limit_per_user( 1 );
 		$coupon->set_email_restrictions( $reviewer_email ? array( $reviewer_email ) : array() );
@@ -192,28 +210,7 @@ class CouponController {
 		$this->add_reviewbird_metadata( $coupon );
 		$coupon->save();
 
-		return $this->force_uppercase_code( $coupon->get_id(), $code );
-	}
-
-	/**
-	 * Force coupon code to uppercase by directly updating post_title.
-	 *
-	 * WooCommerce's set_code() uses sanitize_title() which converts to lowercase.
-	 * This bypasses that sanitization to preserve uppercase codes.
-	 *
-	 * @param int    $coupon_id Coupon post ID.
-	 * @param string $code      Coupon code.
-	 * @return int Coupon ID.
-	 */
-	private function force_uppercase_code( $coupon_id, $code ) {
-		wp_update_post(
-			array(
-				'ID'         => $coupon_id,
-				'post_title' => strtoupper( $code ),
-			)
-		);
-
-		return $coupon_id;
+		return $coupon->get_id();
 	}
 
 	/**

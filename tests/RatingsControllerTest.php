@@ -30,6 +30,9 @@ namespace {
 		public $data;
 		public function __construct( $code, $message, $data ) { $this->code = $code; $this->data = $data; }
 	}
+	class WC_Countries {
+		public function get_countries() { return array( 'NG' => 'Nigeria' ); }
+	}
 
 	function wc_delete_product_transients( $product_id ) { $GLOBALS['ratings_test_transients'][] = $product_id; }
 }
@@ -69,10 +72,13 @@ namespace reviewbird\Api {
 	function wc_get_is_paid_statuses() { return array( 'processing', 'completed' ); }
 	function wc_get_orders( $args ) {
 		$GLOBALS['ratings_test_order_queries'][] = $args;
-		return $GLOBALS['ratings_test_orders'];
+		return array_slice( $GLOBALS['ratings_test_orders'], ( $args['page'] - 1 ) * $args['limit'], $args['limit'] );
 	}
-	function wc_attribute_label( $name ) { return $name; }
+	function switch_to_locale( $locale ) { $GLOBALS['ratings_test_locale'] = $locale; return true; }
+	function restore_previous_locale() { $GLOBALS['ratings_test_locale'] = 'fi'; }
+	function wp_strip_all_tags( $text ) { return strip_tags( $text ); }
 
+	require_once dirname( __DIR__ ) . '/src/functions.php';
 	require_once dirname( __DIR__ ) . '/src/Api/RatingsController.php';
 }
 
@@ -131,30 +137,33 @@ namespace reviewbird\Tests {
 			}
 		}
 
-		public function test_reads_attributes_from_the_translated_purchase_without_a_language_filter(): void {
+		public function test_reads_saved_purchase_details_after_the_first_page_of_orders(): void {
 			$GLOBALS['ratings_test_polylang'] = true;
 			$GLOBALS['ratings_test_translations'][7] = array( 'en' => 7, 'fi' => 17 );
 			$GLOBALS['ratings_test_purchases']['buyer@example.com'] = array( 17 );
-			$variation = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_variation_attributes' ) )->getMock();
-			$variation->method( 'get_variation_attributes' )->willReturn( array( 'attribute_size' => 'large' ) );
-			$GLOBALS['ratings_test_products'][18] = $variation;
-
 			$items = array();
 			foreach ( array( 99, 17 ) as $parent_id ) {
-				$item = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_product_id', 'get_variation_id' ) )->getMock();
+				$item = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_product_id', 'get_variation_id', 'get_formatted_meta_data' ) )->getMock();
 				$item->method( 'get_product_id' )->willReturn( $parent_id );
 				$item->method( 'get_variation_id' )->willReturn( 99 === $parent_id ? 98 : 18 );
+				$item->method( 'get_formatted_meta_data' )->with( '_', true )->willReturn( array( (object) array( 'display_key' => 'Size', 'display_value' => '<p>Large</p>' ) ) );
 				$items[] = $item;
 			}
-			$order = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_items' ) )->getMock();
+			$order = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_items', 'get_billing_country' ) )->getMock();
 			$order->method( 'get_items' )->willReturn( $items );
-			$GLOBALS['ratings_test_orders'] = array( $order );
+			$order->method( 'get_billing_country' )->willReturn( 'NG' );
+			$unrelated = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_items' ) )->getMock();
+			$unrelated->method( 'get_items' )->willReturn( array( $items[0] ) );
+			$GLOBALS['ratings_test_orders'] = array_merge( array_fill( 0, 100, $unrelated ), array( $order ) );
 
 			$result = ( new RatingsController() )->check_verified_purchase( new \WP_REST_Request( array(
 				'product_id' => 7, 'customer_email' => 'buyer@example.com',
 			) ) );
 			self::assertTrue( $result->data['verified_purchase'] );
 			self::assertSame( array( array( 'name' => 'Size', 'value' => 'Large' ) ), $result->data['purchased_attributes'] );
+			self::assertSame( 'Nigeria', $result->data['location'] );
+			self::assertSame( 'fi', $GLOBALS['ratings_test_locale'] );
+			self::assertSame( array( 1, 2 ), array_column( $GLOBALS['ratings_test_order_queries'], 'page' ) );
 			self::assertSame( 'buyer@example.com', $GLOBALS['ratings_test_order_queries'][0]['billing_email'] );
 			self::assertSame( array( 'processing', 'completed' ), $GLOBALS['ratings_test_order_queries'][0]['status'] );
 			self::assertSame( '', $GLOBALS['ratings_test_order_queries'][0]['lang'] );
@@ -201,9 +210,14 @@ namespace reviewbird\Tests {
 			}
 
 			foreach ( array( 1, 5 ) as $average ) {
-				self::assertInstanceOf( \WP_REST_Response::class, $update( $average, 1 ) );
+				self::assertInstanceOf( \WP_REST_Response::class, $update( $average, 1, array( 'rating_counts' => array( $average => '1' ) ) ) );
 			}
 			$before = array( $GLOBALS['ratings_test_meta'], $GLOBALS['ratings_test_actions'], $GLOBALS['ratings_test_transients'] );
+			foreach ( array( null, array(), array( 5 => -1 ), array( 5 => 1.5 ), array( 5 => true ), array( 5 => array( 1 ) ), array( 0 => 1 ), array( 6 => 1 ), array( 5 => 2 ) ) as $counts ) {
+				$result = $update( 5, 1, array( 'rating_counts' => $counts ) );
+				self::assertSame( 'invalid_rating_counts', $result->code );
+				self::assertSame( $before, array( $GLOBALS['ratings_test_meta'], $GLOBALS['ratings_test_actions'], $GLOBALS['ratings_test_transients'] ) );
+			}
 			foreach ( array(
 				array( 0, 1 ), array( 0.5, 1 ), array( 5.1, 1 ), array( -1, 0 ), array( 1, 0 ),
 				array( NAN, 2 ), array( INF, 2 ), array( '1e999', 2 ), array( 'invalid', 2 ),

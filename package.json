@@ -29,8 +29,8 @@
 		"plugin-zip": "pnpm run build && composer install --no-dev && wp-scripts plugin-zip && composer install",
 		"lint:js": "wp-scripts lint-js",
 		"lint:css": "wp-scripts lint-style",
-		"lint:php": "phpcs --standard=WordPress .",
-		"format:php": "phpcbf --standard=WordPress .",
+		"lint:php": "composer lint",
+		"format:php": "composer lint-fix",
 		"test": "wp-scripts test-unit-js",
 		"make:pot": "wp i18n make-pot . languages/reviewbird.pot --exclude=\".*,.*/**,node_modules/**,vendor/**,tests/**,assets/build/**\" --domain=\"reviewbird\" --slug=\"reviewbird\"",
 		"make:json": "rm -f languages/*.json && wp i18n make-json languages '--use-map=[\"assets/build/map-admin.json\"]' --no-purge"
@@ -46,18 +46,11 @@
 	"devDependencies": {
 		"@svgr/webpack": "^8.1.0",
 		"@wordpress/scripts": "^30.26.0",
-		"autoprefixer": "^10.4.16",
-		"postcss": "^8.4.31",
-		"tailwindcss": "^3.4.0",
 		"url-loader": "^4.1.1",
 		"webpack-bundle-output": "^1.1.0"
 	},
 	"dependencies": {
-		"@wordpress/components": "^25.0.0",
-		"@wordpress/data": "^9.0.0",
 		"@wordpress/element": "^5.0.0",
-		"@wordpress/i18n": "^4.0.0",
-		"@wordpress/notices": "^4.0.0",
-		"classnames": "^2.3.2"
+		"@wordpress/i18n": "^4.0.0"
 	}
 }

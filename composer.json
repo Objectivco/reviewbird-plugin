@@ -43,9 +43,12 @@
         }
     },
     "scripts": {
-        "lint": "phpcs --standard=WordPress src/",
-        "lint-fix": "phpcbf --standard=WordPress src/",
-        "test": "phpunit tests"
+        "lint": "phpcs",
+        "lint-fix": "phpcbf",
+        "test": [
+            "phpunit tests",
+            "@php tests/run-checks.php"
+        ]
     },
     "config": {
         "allow-plugins": {

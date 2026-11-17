@@ -28,6 +28,7 @@ $filter_callbacks = array();
 
 class WP_Error { public function __construct( ...$args ) {} }
 class WooCommerce {}
+class WC_Countries { public function get_countries() { return array( 'FI' => 'Finland' ); } }
 class WC_Order_Item_Product {
     private $parent;
     private $variation;
@@ -35,6 +36,7 @@ class WC_Order_Item_Product {
     public function get_product_id( $context = 'view' ) { return $this->parent; }
     public function get_variation_id( $context = 'view' ) { return $this->variation; }
     public function get_name( $context = 'view' ) { return 'Finnish name'; }
+    public function get_formatted_meta_data( $hideprefix, $include_all ) { return array( (object) array( 'display_key' => 'Size', 'display_value' => 22 === $this->variation ? 'Small' : 'Large' ) ); }
 }
 class WP_REST_Request {
     private $params;
@@ -148,9 +150,10 @@ function absint( $id ) { return abs( (int) $id ); }
 function __( $text ) { return $text; }
 function is_email( $email ) { return filter_var( $email, FILTER_VALIDATE_EMAIL ); }
 function wc_customer_bought_product( $email, $user, $id ) { $GLOBALS['purchase_checks'][] = $id; return in_array( $id, $GLOBALS['purchases'], true ); }
-function wc_get_orders( $args ) { $GLOBALS['last_order_query'] = $args; return $GLOBALS['orders']; }
+function wc_get_orders( $args ) { $GLOBALS['last_order_query'] = $args; return array_slice( $GLOBALS['orders'], ( $args['page'] - 1 ) * $args['limit'], $args['limit'] ); }
 function wc_get_is_paid_statuses() { return array( 'processing', 'completed' ); }
-function wc_attribute_label( $value ) { return $value; }
+function switch_to_locale( $locale ) { return false; }
+function wp_strip_all_tags( $text ) { return strip_tags( $text ); }
 
 require dirname( __DIR__ ) . '/src/functions.php';
 require dirname( __DIR__ ) . '/src/Api/ProductsController.php';
@@ -301,6 +304,7 @@ $products[22] = new SharedTestProduct( 22, 'product_variation', 20 );
 $products[22]->attributes = array( 'attribute_size' => 'small' );
 $orders = array( new class {
     public function get_items() { return array( new WC_Order_Item_Product( 20, 22 ), new WC_Order_Item_Product( 20, 21 ) ); }
+    public function get_billing_country() { return 'FI'; }
 } );
 $purchases = array( 21 );
 $purchase_checks = array();

@@ -53,6 +53,10 @@ class ConnectionController {
 	public function store_connected( WP_REST_Request $request ): WP_REST_Response {
 		$store_id = $request->get_param( 'store_id' );
 
+		if ( (int) get_option( 'reviewbird_store_id' ) !== $store_id ) {
+			delete_option( 'reviewbird_star_color' );
+			delete_transient( 'reviewbird_star_color' );
+		}
 		update_option( 'reviewbird_store_id', $store_id );
 
 		reviewbird_clear_status_cache();
@@ -83,7 +87,7 @@ class ConnectionController {
 	 * @param WP_REST_Request $request The REST API request.
 	 * @return bool Whether the request has permission.
 	 */
-	public function permission_callback( WP_REST_Request $request ): bool {
+	public function permission_callback( WP_REST_Request $request ): bool { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Keep the REST permission callback signature.
 		return current_user_can( 'manage_woocommerce' );
 	}
 }

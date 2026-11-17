@@ -66,6 +66,16 @@ namespace {
 }
 
 namespace reviewbird\Integration {
+	class StarRatingDisplay {
+		public static function fetch_and_cache_star_color() { set_transient( 'reviewbird_star_color', '#ff8800', 86400 ); }
+	}
+	function reviewbird_is_store_connected() {
+		$status = reviewbird_get_store_status();
+		return in_array( $status['status'] ?? '', array( 'healthy', 'syncing' ), true ) && ! empty( $status['has_active_subscription'] );
+	}
+	function get_transient( $key ) { return \reviewbird\Admin\get_transient( $key ); }
+	function delete_transient( $key ) { unset( $GLOBALS['gcr_transients'][ $key ] ); }
+	function delete_option( $key ) { unset( $GLOBALS['gcr_options'][ $key ] ); }
 	function add_action( $hook, $callback, $priority, $args ) { $GLOBALS['gcr_hooks'][ $hook ] = array( $callback, $priority, $args ); }
 	function add_filter( $hook, $callback, $priority, $args ) { add_action( $hook, $callback, $priority, $args ); }
 	function doing_action( $hook ) { return $hook === $GLOBALS['gcr_current_action']; }
@@ -82,6 +92,7 @@ namespace reviewbird\Integration {
 	function wp_json_encode( $data ) { return json_encode( $data ); }
 	function get_option( $name, $default = false ) { return $GLOBALS['gcr_options'][ $name ] ?? $default; }
 	function reviewbird_get_store_status() { return get_option( 'reviewbird_store_status' ); }
+	function reviewbird_get_store_id() { return get_option( 'reviewbird_store_id' ); }
 	function is_wp_error( $value ) { return $value instanceof \WP_Error; }
 	function wp_parse_url( $url, $component ) { return parse_url( $url, $component ); }
 	function absint( $value ) { return abs( (int) $value ); }
@@ -441,6 +452,10 @@ namespace {
 		check( 'enabled' === $response->data['googleCustomerReviews']['status'] && true === $response->data['googleCustomerReviews']['enabled'], 'Refresh did not restore enabled feature state.' );
 	}
 	check( $initial_status === ( new \reviewbird\Integration\HealthScheduler() )->refresh_health_status(), 'Unchanged valid cache is treated as a write failure.' );
+	$GLOBALS['gcr_api_response'] = $initial_status;
+	unset( $GLOBALS['gcr_api_response']['store_id'], $GLOBALS['gcr_transients']['reviewbird_star_color'] );
+	( new \reviewbird\Integration\HealthScheduler() )->refresh_health_status();
+	check( '#ff8800' === \reviewbird\Admin\get_transient( 'reviewbird_star_color' ), 'A health response without store_id did not refresh color for the saved store.' );
 	$disconnected = array( 'status' => 'not_connected', 'message' => 'No store is connected.' );
 	$GLOBALS['gcr_api_response'] = new WP_Error( 'http', 'Not connected', array( 'status' => 404, 'response' => $disconnected ) );
 	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {

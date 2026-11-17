@@ -219,7 +219,7 @@ export default function WelcomeScreen( {
 										rel="noopener noreferrer"
 									>
 										{ message.label }
-										<span className="sr-only">
+										<span className="screen-reader-text">
 											{ __(
 												'(opens in a new tab)',
 												'reviewbird'
@@ -241,7 +241,7 @@ export default function WelcomeScreen( {
 								) }
 							</div>
 							{ state === 'ready' && (
-								<div className="mt-8">
+								<div className="reviewbird-status-health">
 									<ConnectionHealth />
 								</div>
 							) }
@@ -306,7 +306,7 @@ export default function WelcomeScreen( {
 											'Get started free',
 											'reviewbird'
 										) }
-										<span className="sr-only">
+										<span className="screen-reader-text">
 											{ __(
 												'(opens in a new tab)',
 												'reviewbird'

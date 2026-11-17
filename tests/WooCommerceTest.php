@@ -168,10 +168,14 @@ namespace reviewbird\Tests {
 			$reviews_block = array( 'blockName' => 'woocommerce/product-reviews' );
 			$other_block   = array( 'blockName' => 'core/paragraph' );
 			self::assertSame( array( $integration, 'suppress_product_reviews_block' ), $GLOBALS['reviewbird_test_filters']['pre_render_block'][0] );
-			self::assertSame( 2, $GLOBALS['reviewbird_test_filters']['pre_render_block'][2] );
+			self::assertSame( 3, $GLOBALS['reviewbird_test_filters']['pre_render_block'][2] );
 			self::assertSame( array( $integration, 'suppress_product_review_queries' ), $GLOBALS['reviewbird_test_filters']['comments_pre_query'][0] );
 			self::assertSame( 2, $GLOBALS['reviewbird_test_filters']['comments_pre_query'][2] );
 			self::assertSame( '', $integration->suppress_product_reviews_block( null, $reviews_block ) );
+			$GLOBALS['reviewbird_test_is_product'] = false;
+			self::assertSame( '', $integration->suppress_product_reviews_block( null, $reviews_block, (object) array( 'context' => array( 'singleProduct' => true ) ) ) );
+			self::assertNull( $integration->suppress_product_reviews_block( null, $reviews_block ) );
+			$GLOBALS['reviewbird_test_is_product'] = true;
 			self::assertNull( $integration->suppress_product_reviews_block( null, $other_block ) );
 			self::assertSame( array(), $integration->suppress_product_review_queries( null, $query ) );
 			self::assertSame( 0, $query->found_comments );

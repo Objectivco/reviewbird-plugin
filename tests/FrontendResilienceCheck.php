@@ -14,7 +14,7 @@ define( 'REVIEWBIRD_API_URL_STAGING', 'https://api.test' );
 define( 'REVIEWBIRD_API_URL_DEVELOPMENT', 'https://api.test' );
 define( 'MINUTE_IN_SECONDS', 60 );
 define( 'HOUR_IN_SECONDS', 3600 );
-$options = array( 'reviewbird_store_id' => 7 );
+$options = array( 'reviewbird_store_id' => 7, 'reviewbird_enable_widget' => 'yes', 'reviewbird_store_status' => array( 'status' => 'healthy', 'has_active_subscription' => true ) );
 $transients = $meta = $queued = $hooks = $calls = array();
 $checks = 0;
 $response = array( 'response' => array( 'code' => 200 ), 'body' => '{"statistics":{"total_reviews":0,"average_rating":0}}' );
@@ -25,10 +25,23 @@ class WP_Error {
 class ActionScheduler { public static function is_initialized() { return true; } }
 $wpdb = new class {
     public $options = 'wp_options';
-    public function prepare( $query, ...$args ) { return $args; }
-    public function query( $args ) {
+    public function prepare( $query, ...$args ) { return array( $query, $args ); }
+    public function query( $prepared ) {
+        list( $query, $args ) = $prepared;
+        if ( 0 === strpos( $query, 'INSERT IGNORE' ) ) {
+            list( $key, $expires ) = $args;
+            if ( isset( $GLOBALS['options'][$key] ) ) { return 0; }
+            $GLOBALS['options'][$key] = $expires;
+            return 1;
+        }
+        if ( 0 === strpos( $query, 'DELETE' ) ) {
+            list( $key, $expires ) = $args;
+            if ( (string) ( $GLOBALS['options'][$key] ?? '' ) !== (string) $expires ) { return 0; }
+            unset( $GLOBALS['options'][$key] );
+            return 1;
+        }
         list( $expires, $key, $now ) = $args;
-        if ( $GLOBALS['options'][$key] > $now ) { return 0; }
+        if ( ! isset( $GLOBALS['options'][$key] ) || $GLOBALS['options'][$key] > $now ) { return 0; }
         $GLOBALS['options'][$key] = $expires;
         return 1;
     }
@@ -50,9 +63,19 @@ function update_post_meta( $id, $key, $value ) { $GLOBALS['meta'][$id][$key] = $
 function has_filter( $hook ) { return false; }
 function add_filter( ...$args ) {}
 function add_action( $hook, $callback, ...$args ) { $GLOBALS['hooks'][$hook] = $callback; }
-function as_next_scheduled_action( $hook, $args ) { return isset( $GLOBALS['queued'][$args[0]] ); }
-function as_enqueue_async_action( $hook, $args, $group ) {
-    check( 'reviewbird' === $group, 'Rating jobs use the shared reviewbird group.' );
+function as_next_scheduled_action( $hook, $args ) {
+    $seen = isset( $GLOBALS['queued'][$args[0]] );
+    if ( $GLOBALS['interleave'] ?? false ) {
+        $GLOBALS['interleave'] = false;
+        reviewbird_enqueue_product_action( $hook, $args[0] );
+    }
+    return $seen;
+}
+function as_unschedule_all_actions( $hook ) { $GLOBALS['queued'] = array_filter( $GLOBALS['queued'], static fn( $value ) => $value !== $hook ); }
+function as_enqueue_async_action( $hook, $args, $group, $unique = false ) {
+    check( 'reviewbird-product-' . $args[0] === $group && $unique, 'Product jobs use native uniqueness per product.' );
+    if ( $GLOBALS['fail_enqueue'] ?? false ) { throw new RuntimeException( 'Queue unavailable' ); }
+    $GLOBALS['enqueue_calls'] = ( $GLOBALS['enqueue_calls'] ?? 0 ) + 1;
     $GLOBALS['queued'][$args[0]] = $hook;
 }
 function home_url() { return 'https://store.test'; }
@@ -83,8 +106,16 @@ class WC_Order {
     public function save() { throw new RuntimeException( 'Locale capture must not run a full order save.' ); }
     public function save_meta_data() { ++$this->saved_meta; }
 }
-class WC_Product { public function get_rating_count() { return 999; } }
-function wc_get_product( $id ) { return 5 === $id ? $GLOBALS['block_product'] : false; }
+class WC_Product {
+    public function __construct( private $id = 5 ) {}
+    public function get_id() { return $this->id; }
+    public function get_status() { return 'publish'; }
+    public function get_rating_count() { return 999; }
+}
+function wc_get_product( $id ) { return 5 === $id ? $GLOBALS['block_product'] : ( 999 === $id ? false : new WC_Product( $id ) ); }
+function is_product() { return true; }
+function doing_action( $hook ) { return false; }
+function get_queried_object_id() { return 5; }
 function get_posts( $args ) { return array(); }
 
 require __DIR__ . '/../src/functions.php';
@@ -145,6 +176,46 @@ foreach ( array( '{}', '{"statistics":{"total_reviews":2,"average_rating":0}}', 
     reviewbird_sync_product_rating( 20 + $index );
     check( '' === get_post_meta( 20 + $index, '_reviewbird_reviews_count' ), 'Malformed ratings must not become saved zeros.' );
 }
+
+$before = count( $calls );
+reviewbird_sync_product_rating( 999 );
+check( $before === count( $calls ), 'Deleted products must make no rating API request.' );
+check( array( 1 => 0, 2 => 0, 3 => 0, 4 => 1, 5 => 1 ) === reviewbird_normalize_rating_counts( array( 4 => '1', 5 => 1 ), 2 ), 'Normalize valid sparse rating counts.' );
+foreach ( array( null, array(), array( 5 => 1 ), array( 5 => 2.5 ), array( 5 => true ), array( 0 => 2 ), array( 6 => 2 ), array( 5 => -2 ) ) as $counts ) {
+    check( null === reviewbird_normalize_rating_counts( $counts, 2 ), 'Reject invalid or inconsistent rating distributions.' );
+}
+$options['reviewbird_enable_widget'] = 'no';
+$queued[77] = 'reviewbird_sync_product_rating';
+$hooks['update_option_reviewbird_enable_widget']( 'yes', 'no' );
+check( ! $queued, 'Disabling the widget must cancel queued rating work.' );
+check( 2 === $ratings->override_rating_count( 2, $variation_product ), 'Disabled widgets must keep native counts.' );
+$options['reviewbird_enable_widget'] = 'yes';
+$options['reviewbird_store_status']['status'] = 'not_connected';
+check( 1.5 === $ratings->override_average_rating( 1.5, $variation_product ), 'Disconnected stores must keep native ratings.' );
+$options['reviewbird_store_status']['status'] = 'healthy';
+
+check( reviewbird_acquire_lock( 'reviewbird_lock_test', time() + 60 ), 'The first request must acquire an absent lock.' );
+$first_expiry = $options['reviewbird_lock_test'];
+check( ! reviewbird_acquire_lock( 'reviewbird_lock_test', time() + 61 ) && $first_expiry === $options['reviewbird_lock_test'], 'A second request must not overwrite a live lock with a different expiry.' );
+unset( $options['reviewbird_lock_test'] );
+$queued = array();
+$enqueue_calls = 0;
+$interleave = true;
+reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', 88 );
+check( 1 === $enqueue_calls, 'An overlapping queue request must add one action.' );
+$queued = array();
+reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', 88 );
+check( 2 === $enqueue_calls, 'A completed action can be replaced without waiting for the lock timeout.' );
+$queued = array();
+$enqueue_lock = 'reviewbird_enqueue_' . md5( 'reviewbird_sync_product_rating:88' );
+$options[$enqueue_lock] = time() - 1;
+reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', 88 );
+check( 3 === $enqueue_calls && ! isset( $options[$enqueue_lock] ), 'Recover and release an abandoned lock.' );
+$queued = array();
+$fail_enqueue = true;
+try { reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', 88 ); } catch ( RuntimeException $error ) {}
+check( ! isset( $options[$enqueue_lock] ), 'An enqueue failure must release its lock.' );
+$fail_enqueue = false;
 
 $calls = array();
 $response = new WP_Error();

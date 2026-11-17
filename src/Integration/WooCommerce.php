@@ -28,7 +28,7 @@ class WooCommerce {
 		add_action( 'rest_api_init', array( $this, 'register_system_status_field' ), 10, 0 );
 
 		// Suppress WooCommerce review output and queries when Reviewbird replaces them.
-		add_filter( 'pre_render_block', array( $this, 'suppress_product_reviews_block' ), 10, 2 );
+		add_filter( 'pre_render_block', array( $this, 'suppress_product_reviews_block' ), 10, 3 );
 		add_filter( 'comments_pre_query', array( $this, 'suppress_product_review_queries' ), 10, 2 );
 
 		add_filter(
@@ -76,15 +76,16 @@ class WooCommerce {
 	/**
 	 * Stop the WooCommerce product reviews block before its child queries run.
 	 *
-	 * @param string|null $pre_render   Pre-rendered block content.
-	 * @param array       $parsed_block Parsed block data.
+	 * @param string|null    $pre_render   Pre-rendered block content.
+	 * @param array          $parsed_block Parsed block data.
+	 * @param \WP_Block|null $parent_block Parent block, if present.
 	 * @return string|null Pre-rendered block content.
 	 */
-	public function suppress_product_reviews_block( $pre_render, array $parsed_block ) {
+	public function suppress_product_reviews_block( $pre_render, array $parsed_block, $parent_block = null ) {
 		if (
 			null === $pre_render
 			&& 'woocommerce/product-reviews' === ( $parsed_block['blockName'] ?? '' )
-			&& is_product()
+			&& ( is_product() || ! empty( $parent_block->context['singleProduct'] ) )
 			&& reviewbird_can_show_widget()
 		) {
 			return '';

@@ -200,6 +200,10 @@ You can send bulk review requests for past orders. Select the cutoff date in the
 
 Yes, this plugin requires WooCommerce 5.0 or higher to function.
 
+= What happens when I deactivate or delete the plugin? =
+
+Deactivation cancels Reviewbird background jobs on the affected sites. Settings, connection details, and cached product ratings remain in WordPress so you can reinstall the plugin without losing them. Deleting the plugin does not delete reviews from your Reviewbird account.
+
 = How do I display reviews on my product pages? =
 
 Once connected, enable the widget in **Reviewbird** in your admin menu. Reviews will automatically appear on your product pages.

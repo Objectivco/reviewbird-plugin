@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-17T02:40:30+00:00\n"
+"POT-Creation-Date: 2026-11-17T17:59:04+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
@@ -67,7 +67,7 @@ msgid "Reviewbird Settings"
 msgstr ""
 
 #: src/Admin/Settings.php:212
-#: src/Core/Plugin.php:502
+#: src/Core/Plugin.php:519
 msgid "Settings"
 msgstr ""
 
@@ -106,32 +106,40 @@ msgid "Connection status refreshed"
 msgstr ""
 
 #. translators: %d: Store ID number.
-#: src/Api/ConnectionController.php:74
+#: src/Api/ConnectionController.php:78
 #, php-format
 msgid "Store ID %d has been saved successfully"
 msgstr ""
 
-#: src/Api/CouponController.php:79
-#: src/Api/ProductsController.php:81
-#: src/Api/ProductsController.php:131
+#: src/Api/CouponController.php:98
+#: src/Api/ProductsController.php:84
+#: src/Api/ProductsController.php:134
 msgid "WooCommerce is not active"
 msgstr ""
 
-#: src/Api/CouponController.php:89
+#: src/Api/CouponController.php:110
 msgid "Coupon code is required"
 msgstr ""
 
+#: src/Api/CouponController.php:114
+msgid "Use a valid date or ISO 8601 date and time for coupon expiry."
+msgstr ""
+
+#: src/Api/CouponController.php:117
+msgid "This coupon code already exists."
+msgstr ""
+
 #. translators: %s: Template coupon code.
-#: src/Api/CouponController.php:126
+#: src/Api/CouponController.php:157
 #, php-format
 msgid "Template coupon '%s' not found"
 msgstr ""
 
-#: src/Api/CouponController.php:160
+#: src/Api/CouponController.php:195
 msgid "discount_type and amount are required when not using template"
 msgstr ""
 
-#: src/Api/ProductsController.php:138
+#: src/Api/ProductsController.php:141
 #: src/Api/RatingsController.php:46
 msgid "Product not found"
 msgstr ""
@@ -152,49 +160,49 @@ msgstr ""
 msgid "Average stars must be 0 when there are no reviews, or a number between 1 and 5"
 msgstr ""
 
-#: src/Api/RatingsController.php:82
-msgid "Rating counts must be an array"
+#: src/Api/RatingsController.php:83
+msgid "Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and match the review count."
 msgstr ""
 
-#: src/Api/RatingsController.php:170
+#: src/Api/RatingsController.php:166
 msgid "Customer email is required"
 msgstr ""
 
-#: src/Api/RatingsController.php:174
+#: src/Api/RatingsController.php:170
 msgid "Invalid email address"
 msgstr ""
 
-#: src/Core/Plugin.php:508
+#: src/Core/Plugin.php:525
 msgid "Documentation"
 msgstr ""
 
-#: src/functions.php:245
-#: src/functions.php:428
+#: src/functions.php:246
+#: src/functions.php:429
 msgid "API request failed"
 msgstr ""
 
-#: src/functions.php:335
+#: src/functions.php:336
 msgid "Store is not connected to Reviewbird."
 msgstr ""
 
-#: src/functions.php:345
+#: src/functions.php:346
 msgid "Unable to generate API key for authentication."
 msgstr ""
 
-#: src/functions.php:359
+#: src/functions.php:360
 msgid "Maximum of 50 product IDs allowed per request."
 msgstr ""
 
-#: src/functions.php:464
+#: src/functions.php:465
 msgid "Failed to decode API response."
 msgstr ""
 
-#: src/functions.php:818
+#: src/functions.php:945
 msgid "Anonymous"
 msgstr ""
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:839
+#: src/functions.php:966
 #, php-format
 msgid "Rated %d out of 5"
 msgstr ""
@@ -231,31 +239,31 @@ msgstr ""
 msgid "Enable JavaScript to use Google Customer Reviews."
 msgstr ""
 
-#: src/Integration/HealthScheduler.php:171
+#: src/Integration/HealthScheduler.php:177
 msgid "The connection response is invalid. Please try again."
 msgstr ""
 
-#: src/Integration/HealthScheduler.php:176
+#: src/Integration/HealthScheduler.php:182
 msgid "The connection status could not be saved. Please try again."
 msgstr ""
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:122
+#: src/Integration/StarRatingDisplay.php:141
 #, php-format
 msgid "Rated %s out of 5"
 msgstr ""
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:125
+#: src/Integration/StarRatingDisplay.php:144
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr ""
 
-#: src/Integration/WooCommerce.php:68
+#: src/Integration/WooCommerce.php:67
 msgid "Whether the Reviewbird widget is enabled."
 msgstr ""
 
-#: src/Integration/WooCommerce.php:154
+#: src/Integration/WooCommerce.php:169
 msgid "Leave a review"
 msgstr ""
 
@@ -394,10 +402,6 @@ msgstr ""
 
 #: assets/src/js/components/GoogleCustomerReviews.jsx:127
 msgid "Refresh status"
-msgstr ""
-
-#: assets/src/js/components/LoadingSpinner.jsx:8
-msgid "Loading..."
 msgstr ""
 
 #: assets/src/js/components/SettingsApp.jsx:102

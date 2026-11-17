@@ -34,6 +34,17 @@ jobs:
       - name: Configure Composer GitHub auth
         run: composer config -g github-oauth.github.com ${{ secrets.COMPOSER_AUTH_TOKEN }}
 
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Check code and tests
+        run: |
+          composer lint
+          composer test
+          pnpm run lint:js
+          pnpm run lint:css
+          pnpm test --runInBand --watch=false
+
       - name: Build plugin zip
         run: pnpm run plugin-zip
 

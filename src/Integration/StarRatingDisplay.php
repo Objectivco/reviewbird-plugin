@@ -44,7 +44,7 @@ class StarRatingDisplay {
 	 * Initialize star rating display overrides.
 	 */
 	public function __construct() {
-		if ( ! reviewbird_get_store_id() ) {
+		if ( ! reviewbird_can_show_widget() ) {
 			return;
 		}
 
@@ -74,11 +74,12 @@ class StarRatingDisplay {
 	 * filtered rating HTML. We remove it and add our own implementation.
 	 */
 	public function replace_single_product_rating(): void {
-		if ( ! has_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating' ) ) {
+		$native_priority = has_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating' );
+		if ( false === $native_priority || ! reviewbird_can_show_widget() ) {
 			return;
 		}
 
-		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating', 10 );
+		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating', $native_priority );
 
 		/**
 		 * Filters the priority at which the reviewbird star rating is output in
@@ -110,6 +111,10 @@ class StarRatingDisplay {
 	 * @return string The filtered HTML string.
 	 */
 	public function filter_rating_html( string $html, float $rating, int $count ): string {
+		if ( ! reviewbird_can_show_widget() ) {
+			return $html;
+		}
+
 		if ( $count < 1 && $this->rating_product ) {
 			$count = (int) $this->rating_product->get_rating_count();
 		}
@@ -119,10 +124,13 @@ class StarRatingDisplay {
 		}
 
 		$star_color = get_transient( self::STAR_COLOR_TRANSIENT );
+		$star_color = $star_color ? $star_color : get_option( self::STAR_COLOR_TRANSIENT );
 		$stars_html = $this->generate_stars_html( $rating, $star_color ? $star_color : self::DEFAULT_STAR_COLOR );
 
 		// Check if rating should be non-interactive (e.g., shop loop context).
-		$is_static = apply_filters( 'reviewbird_rating_is_static', false );
+		$is_static = ! is_product() || doing_action( 'woocommerce_after_shop_loop_item_title' )
+			|| ( $this->rating_product && $this->rating_product->get_id() !== get_queried_object_id() );
+		$is_static = apply_filters( 'reviewbird_rating_is_static', $is_static );
 
 		// Build class and attributes based on context.
 		$class             = 'rb-wc-rating' . ( $is_static ? ' rb-wc-rating--static' : '' );
@@ -262,7 +270,7 @@ class StarRatingDisplay {
 	/**
 	 * Fetch and cache star color from widget config API.
 	 *
-	 * Called from admin settings page load.
+	 * Called from the settings page and the background health check.
 	 *
 	 * @return string|null The star color or null on failure.
 	 */
@@ -276,18 +284,17 @@ class StarRatingDisplay {
 		$endpoint = sprintf( '/api/widget/%d/config', $store_id );
 		$response = reviewbird_api_request( $endpoint, null, 'GET' );
 
-		if ( is_wp_error( $response ) ) {
-			return null;
-		}
-
-		$star_color = $response['widget_settings']['star_color'] ?? null;
+		$star_color = is_wp_error( $response ) ? null : ( $response['widget_settings']['star_color'] ?? null );
+		$star_color = is_string( $star_color ) ? sanitize_hex_color( $star_color ) : null;
 
 		if ( $star_color ) {
-			// Cache for 24 hours.
+			update_option( self::STAR_COLOR_TRANSIENT, $star_color, false );
 			set_transient( self::STAR_COLOR_TRANSIENT, $star_color, DAY_IN_SECONDS );
 			return $star_color;
 		}
 
+		// Keep the last valid color and wait before another request.
+		set_transient( self::STAR_COLOR_TRANSIENT, get_option( self::STAR_COLOR_TRANSIENT, self::DEFAULT_STAR_COLOR ), HOUR_IN_SECONDS );
 		return null;
 	}
 }

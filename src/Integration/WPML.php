@@ -97,7 +97,7 @@ class WPML {
 	 */
 	public function exclude_duplicate_review_imports( array $args, WP_REST_Request $request ): array {
 		if ( '1' === $request->get_header( 'X-Reviewbird-Request' ) ) {
-			$args['meta_query'] = array(
+			$args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Exclude WPML copies through the native comment query.
 				'relation' => 'AND',
 				$args['meta_query'] ?? array(),
 				array(

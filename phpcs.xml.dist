@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<ruleset name="Reviewbird">
+	<description>WordPress standards with Composer PSR-4 class filenames.</description>
+	<file>src</file>
+	<file>templates</file>
+	<file>reviewbird-plugin.php</file>
+	<arg name="extensions" value="php"/>
+	<rule ref="WordPress">
+		<exclude name="WordPress.Files.FileName"/>
+	</rule>
+	<rule ref="WordPress.WP.Capabilities">
+		<properties>
+			<property name="custom_capabilities" type="array">
+				<element value="manage_woocommerce"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>
