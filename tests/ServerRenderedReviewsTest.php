@@ -40,7 +40,7 @@ namespace reviewbird\Tests {
 
 	final class ServerRenderedReviewsTest extends TestCase {
 
-		public function test_reviews_remain_in_html_without_painting(): void {
+		public function test_reviews_are_visible_before_the_widget_loads(): void {
 			$html = \reviewbird_render_ssr_reviews(
 				array(
 					'reviews' => array(
@@ -55,7 +55,7 @@ namespace reviewbird\Tests {
 			);
 
 			self::assertStringStartsWith(
-				'<div class="reviewbird-ssr-reviews" hidden style="display:none">',
+				'<div class="reviewbird-ssr-reviews">',
 				$html
 			);
 			self::assertStringContainsString( 'Ada', $html );

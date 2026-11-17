@@ -95,14 +95,6 @@ class StarRatingDisplay {
 	 * @return string The filtered HTML string.
 	 */
 	public function filter_rating_html( string $html, float $rating, int $count ): string {
-		// If count not provided, try to get it from the global product.
-		if ( $count < 1 ) {
-			global $product;
-			if ( $product instanceof \WC_Product ) {
-				$count = $product->get_rating_count();
-			}
-		}
-
 		if ( $rating <= 0 && $count < 1 ) {
 			return '';
 		}

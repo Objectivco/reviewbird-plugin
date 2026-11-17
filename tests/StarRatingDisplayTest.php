@@ -75,6 +75,11 @@ namespace {
 		$GLOBALS['reviewbird_test_transient'] = array( $key, $value, $expiration );
 	}
 
+	function add_option( $key, $value, $deprecated = '', $autoload = false ) {
+		$GLOBALS['reviewbird_test_options'][ $key ] = $value;
+		return true;
+	}
+
 	require_once dirname( __DIR__ ) . '/src/functions.php';
 	require_once dirname( __DIR__ ) . '/src/Integration/StarRatingDisplay.php';
 

@@ -31,8 +31,6 @@ class CouponController {
 		'individual_use',
 		'product_ids',
 		'excluded_product_ids',
-		'usage_limit',
-		'usage_limit_per_user',
 		'limit_usage_to_x_items',
 		'free_shipping',
 		'product_categories',
@@ -40,7 +38,6 @@ class CouponController {
 		'exclude_sale_items',
 		'minimum_amount',
 		'maximum_amount',
-		'email_restrictions',
 	);
 
 	/**
@@ -79,20 +76,27 @@ class CouponController {
 			return new WP_Error( 'woocommerce_not_active', __( 'WooCommerce is not active', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
-		$code          = $request->get_param( 'code' );
-		$expiry_date   = $request->get_param( 'expiry_date' );
-		$template_code = $request->get_param( 'template_code' );
-		$discount_type = $request->get_param( 'discount_type' );
-		$amount        = $request->get_param( 'amount' );
+		$code           = $request->get_param( 'code' );
+		$expiry_date    = $request->get_param( 'expiry_date' );
+		$template_code  = $request->get_param( 'template_code' );
+		$discount_type  = $request->get_param( 'discount_type' );
+		$amount         = $request->get_param( 'amount' );
+		$reviewer_email = $request->get_param( 'reviewer_email' );
 
-		if ( empty( $code ) ) {
+		if ( ! is_string( $code ) || '' === trim( $code ) ) {
 			return new WP_Error( 'missing_code', __( 'Coupon code is required', 'reviewbird' ), array( 'status' => 400 ) );
+		}
+		if ( null !== $reviewer_email && ( ! is_string( $reviewer_email ) || ! is_email( $reviewer_email ) ) ) {
+			return new WP_Error( 'invalid_reviewer_email', __( 'A valid reviewer email is required.', 'reviewbird' ), array( 'status' => 400 ) );
+		}
+		if ( wc_get_coupon_id_by_code( $code ) ) {
+			return new WP_Error( 'duplicate_coupon', __( 'This coupon code already exists.', 'reviewbird' ), array( 'status' => 409 ) );
 		}
 
 		try {
 			$coupon_id = ! empty( $template_code )
-				? $this->clone_template_coupon( $template_code, $code, $expiry_date )
-				: $this->create_new_coupon( $code, $discount_type, $amount, $expiry_date );
+				? $this->clone_template_coupon( $template_code, $code, $expiry_date, $reviewer_email )
+				: $this->create_new_coupon( $code, $discount_type, $amount, $expiry_date, $reviewer_email );
 
 			if ( is_wp_error( $coupon_id ) ) {
 				return $coupon_id;
@@ -116,9 +120,10 @@ class CouponController {
 	 * @param string      $template_code Template coupon code to clone.
 	 * @param string      $new_code      New coupon code.
 	 * @param string|null $expiry_date   Expiry date for the new coupon.
+	 * @param string|null $reviewer_email Reviewer email.
 	 * @return int|WP_Error Coupon ID or error.
 	 */
-	private function clone_template_coupon( $template_code, $new_code, $expiry_date ) {
+	private function clone_template_coupon( $template_code, $new_code, $expiry_date, $reviewer_email ) {
 		$template_id = wc_get_coupon_id_by_code( $template_code );
 
 		if ( ! $template_id ) {
@@ -135,6 +140,9 @@ class CouponController {
 			$setter = "set_{$property}";
 			$coupon->$setter( $template_coupon->$getter() );
 		}
+		$coupon->set_usage_limit( 1 );
+		$coupon->set_usage_limit_per_user( 1 );
+		$coupon->set_email_restrictions( $reviewer_email ? array( $reviewer_email ) : array() );
 
 		if ( ! empty( $expiry_date ) ) {
 			$coupon->set_date_expires( $expiry_date );
@@ -153,9 +161,10 @@ class CouponController {
 	 * @param string      $discount_type Discount type ('percent' or 'fixed_cart').
 	 * @param float       $amount        Discount amount.
 	 * @param string|null $expiry_date   Expiry date for the coupon.
+	 * @param string|null $reviewer_email Reviewer email.
 	 * @return int|WP_Error Coupon ID or error.
 	 */
-	private function create_new_coupon( $code, $discount_type, $amount, $expiry_date ) {
+	private function create_new_coupon( $code, $discount_type, $amount, $expiry_date, $reviewer_email ) {
 		if ( empty( $discount_type ) || empty( $amount ) ) {
 			return new WP_Error( 'missing_parameters', __( 'discount_type and amount are required when not using template', 'reviewbird' ), array( 'status' => 400 ) );
 		}
@@ -166,6 +175,7 @@ class CouponController {
 		$coupon->set_amount( floatval( $amount ) );
 		$coupon->set_usage_limit( 1 );
 		$coupon->set_usage_limit_per_user( 1 );
+		$coupon->set_email_restrictions( $reviewer_email ? array( $reviewer_email ) : array() );
 
 		if ( ! empty( $expiry_date ) ) {
 			$coupon->set_date_expires( $expiry_date );

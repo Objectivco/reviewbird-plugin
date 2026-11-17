@@ -24,6 +24,7 @@ class Deactivator {
 		if ( class_exists( '\ActionScheduler' ) && \ActionScheduler::is_initialized() ) {
 			as_unschedule_all_actions( 'reviewbird_refresh_health_status' );
 			as_unschedule_all_actions( 'reviewbird_refresh_schema_reviews' );
+			as_unschedule_all_actions( 'reviewbird_sync_product_rating' );
 			as_unschedule_all_actions( \reviewbird\Integration\HealthScheduler::CLEANUP_HOOK );
 		}
 		delete_transient( 'reviewbird_oauth_error' );

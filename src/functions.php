@@ -208,9 +208,10 @@ function reviewbird_should_disable_ssl_verify(): bool {
  * @param string $endpoint The API endpoint to call.
  * @param array  $data     Optional. Data to send with the request.
  * @param string $method   Optional. HTTP method. Default 'GET'.
+ * @param int    $timeout  Request timeout in seconds.
  * @return array|\WP_Error The API response or WP_Error on failure.
  */
-function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
+function reviewbird_api_request( $endpoint, $data = null, $method = 'GET', int $timeout = 30 ) {
 	$api_url = reviewbird_get_api_url();
 
 	$args = array(
@@ -219,7 +220,7 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
 			'Origin'       => home_url(),
 			'User-Agent'   => 'reviewbird WordPress Plugin/' . REVIEWBIRD_VERSION,
 		),
-		'timeout'   => 30,
+		'timeout'   => $timeout,
 		'method'    => strtoupper( $method ),
 		'sslverify' => ! reviewbird_should_disable_ssl_verify(),
 	);
@@ -408,7 +409,7 @@ function reviewbird_get_product_reviews( array $product_ids = array(), int $per_
 				'X-Store-Hash'  => $store_hash,
 				'User-Agent' => 'reviewbird WordPress Plugin/' . REVIEWBIRD_VERSION,
 			),
-			'timeout'   => 30,
+			'timeout'   => 3,
 			'sslverify' => ! reviewbird_should_disable_ssl_verify(),
 		)
 	);
@@ -568,10 +569,49 @@ function reviewbird_is_onboarding_preview(): bool {
 		return false;
 	}
 
-	static $allowed = null;
-	if ( null !== $allowed ) {
-		return $allowed;
+	static $results = array();
+	if ( isset( $results[ $token ] ) ) {
+		return $results[ $token ];
 	}
+
+	$failure_key = 'reviewbird_preview_failed_' . hash( 'sha256', $token );
+	if ( get_transient( $failure_key ) ) {
+		return false;
+	}
+
+	$allowed_key = 'reviewbird_preview_allowed_' . hash( 'sha256', $token );
+	$allowed     = (bool) get_transient( $allowed_key );
+	if ( ! $allowed ) {
+		// ponytail: one new token check per site every 10 seconds; use signed local tokens if setup traffic grows.
+		$lock_key = 'reviewbird_preview_check_lock';
+		$expires  = time() + 10;
+		if ( ! add_option( $lock_key, $expires, '', false ) ) {
+			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- The conditional update acquires an expired lock atomically.
+			$acquired = $wpdb->query(
+				$wpdb->prepare(
+					"UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND CAST(option_value AS UNSIGNED) <= %d",
+					(string) $expires,
+					$lock_key,
+					time()
+				)
+			);
+			if ( ! $acquired ) {
+				return false;
+			}
+			wp_cache_delete( $lock_key, 'options' );
+		}
+
+		$domain   = wp_parse_url( home_url(), PHP_URL_HOST ) ?? '';
+		$response = reviewbird_api_request( '/api/woocommerce/health?domain=' . rawurlencode( $domain ) . '&onboarding_preview=' . rawurlencode( $token ), null, 'GET', 3 );
+		$allowed  = ! is_wp_error( $response ) && true === ( $response['onboarding_preview_allowed'] ?? false );
+		if ( ! $allowed ) {
+			set_transient( $failure_key, 1, 5 * MINUTE_IN_SECONDS );
+			return false;
+		}
+		set_transient( $allowed_key, 1, 10 );
+	}
+	$results[ $token ] = true;
 
 	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 		define( 'DONOTCACHEPAGE', true );
@@ -580,10 +620,6 @@ function reviewbird_is_onboarding_preview(): bool {
 	if ( ! headers_sent() ) {
 		header( 'Referrer-Policy: no-referrer' );
 	}
-
-	$domain   = wp_parse_url( home_url(), PHP_URL_HOST ) ?? '';
-	$response = reviewbird_api_request( '/api/woocommerce/health?domain=' . rawurlencode( $domain ) . '&onboarding_preview=' . rawurlencode( $token ) );
-	$allowed  = ! is_wp_error( $response ) && true === ( $response['onboarding_preview_allowed'] ?? false );
 
 	return $allowed;
 }
@@ -657,6 +693,8 @@ function reviewbird_sync_product_rating( int $product_id ): void {
 		return;
 	}
 
+	set_transient( $lock_key, 1, HOUR_IN_SECONDS );
+
 	$response = wp_remote_get(
 		reviewbird_get_api_url() . '/api/public/' . $store_id . '/' . $shared_id . '?context=widget&page=1',
 		array(
@@ -669,25 +707,28 @@ function reviewbird_sync_product_rating( int $product_id ): void {
 		)
 	);
 
-	set_transient( $lock_key, 1, HOUR_IN_SECONDS );
-
-	if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) >= 400 ) {
+	if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) < 200 || wp_remote_retrieve_response_code( $response ) >= 300 ) {
 		return;
 	}
 
-	$data    = json_decode( wp_remote_retrieve_body( $response ), true );
-	$stats   = is_array( $data ) ? ( $data['statistics'] ?? array() ) : array();
-	$count   = absint( $stats['total_reviews'] ?? 0 );
-	$average = (float) ( $stats['average_rating'] ?? 0 );
-
-	if ( $count < 1 || $average <= 0 ) {
+	$data  = json_decode( wp_remote_retrieve_body( $response ), true );
+	$stats = is_array( $data ) ? ( $data['statistics'] ?? array() ) : array();
+	if ( ! is_array( $stats ) || ! isset( $stats['total_reviews'], $stats['average_rating'] )
+		|| ! is_numeric( $stats['total_reviews'] ) || ! is_numeric( $stats['average_rating'] ) ) {
+		return;
+	}
+	$count   = (int) $stats['total_reviews'];
+	$average = (float) $stats['average_rating'];
+	if ( $count < 0 || $average < 0 || $average > 5 || ( $count > 0 && $average <= 0 ) || ( 0 === $count && 0.0 !== $average ) ) {
 		return;
 	}
 
 	update_post_meta( $product_id, '_reviewbird_avg_stars', $average );
 	update_post_meta( $product_id, '_reviewbird_reviews_count', $count );
 
-	if ( ! empty( $stats['rating_distribution'] ) ) {
+	if ( 0 === $count ) {
+		update_post_meta( $product_id, '_reviewbird_rating_counts', array_fill( 1, 5, 0 ) );
+	} elseif ( ! empty( $stats['rating_distribution'] ) ) {
 		update_post_meta( $product_id, '_reviewbird_rating_counts', $stats['rating_distribution'] );
 	}
 }
@@ -783,9 +824,15 @@ function reviewbird_get_cached_product_reviews( int $product_id ): array {
 		return $cached;
 	}
 
+	if ( get_transient( 'reviewbird_ssr_api_failed' ) ) {
+		return array();
+	}
+
+	set_transient( $transient_key, array(), 5 * MINUTE_IN_SECONDS );
 	$response = reviewbird_get_product_reviews( array( $product_id ), 10 );
 
-	if ( is_wp_error( $response ) ) {
+	if ( is_wp_error( $response ) || ! is_array( $response['reviews'] ?? null ) ) {
+		set_transient( 'reviewbird_ssr_api_failed', 1, 5 * MINUTE_IN_SECONDS );
 		return array();
 	}
 
@@ -827,7 +874,7 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 			$date = date_create( $created_at );
 			if ( $date ) {
 				$datetime_attr = $date->format( 'Y-m-d' );
-				$date_display  = wp_date( get_option( 'date_format' ), $date->getTimestamp() );
+				$date_display  = wp_date( get_option( 'date_format' ), $date->getTimestamp(), new \DateTimeZone( 'UTC' ) );
 			}
 		}
 
@@ -867,7 +914,7 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 		return '';
 	}
 
-	return '<div class="reviewbird-ssr-reviews" hidden style="display:none">' . $html . '</div>';
+	return '<div class="reviewbird-ssr-reviews">' . $html . '</div>';
 }
 
 /**

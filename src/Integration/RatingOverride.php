@@ -24,6 +24,7 @@ class RatingOverride {
 	 * Initialize rating overrides.
 	 */
 	public function __construct() {
+		add_action( 'reviewbird_sync_product_rating', 'reviewbird_sync_product_rating', 10, 1 );
 		if ( ! reviewbird_get_store_id() ) {
 			return;
 		}
@@ -112,7 +113,12 @@ class RatingOverride {
 			return $value;
 		}
 
-		reviewbird_sync_product_rating( $product_id );
-		return get_post_meta( $product_id, $meta_key, true );
+		if ( ! get_transient( 'reviewbird_rating_sync_' . $product_id )
+			&& class_exists( '\ActionScheduler' ) && \ActionScheduler::is_initialized()
+			&& ! as_next_scheduled_action( 'reviewbird_sync_product_rating', array( $product_id ) ) ) {
+			as_enqueue_async_action( 'reviewbird_sync_product_rating', array( $product_id ), 'reviewbird-rating-' . $product_id, true );
+		}
+
+		return $value;
 	}
 }
