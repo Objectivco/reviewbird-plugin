@@ -82,10 +82,11 @@ class RatingsController {
 		if ( null === $rating_counts ) {
 			return new WP_Error( 'invalid_rating_counts', __( 'Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and must not exceed the review count.', 'reviewbird' ), array( 'status' => 400 ) );
 		}
+		$avg_stars = reviewbird_rated_average( $rating_counts );
 
 		$shared_id  = reviewbird_product_id( $product_id );
 		$product_id = reviewbird_product_meta_id( $product_id );
-		update_post_meta( $product_id, '_reviewbird_avg_stars', floatval( $avg_stars ) );
+		update_post_meta( $product_id, '_reviewbird_avg_stars', $avg_stars );
 		update_post_meta( $product_id, '_reviewbird_reviews_count', intval( $review_count ) );
 
 		update_post_meta( $product_id, '_reviewbird_rating_counts', $rating_counts );
@@ -108,7 +109,7 @@ class RatingsController {
 			array(
 				'success'      => true,
 				'product_id'   => $shared_id,
-				'avg_stars'    => floatval( $avg_stars ),
+				'avg_stars'    => $avg_stars,
 				'review_count' => intval( $review_count ),
 			),
 			200

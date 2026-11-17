@@ -66,21 +66,14 @@ class SchemaMarkup {
 	 * @return array|null Aggregate rating schema or null if no data.
 	 */
 	private function build_aggregate_rating( $product_id ) {
+		// Use the stored average that the visible stars show; it covers rated reviews only.
+		$rating_value = (float) get_post_meta( $product_id, '_reviewbird_avg_stars', true );
 		$review_count = (int) get_post_meta( $product_id, '_reviewbird_reviews_count', true );
 		$counts       = get_post_meta( $product_id, '_reviewbird_rating_counts', true );
-		$counts       = is_array( $counts ) ? array_map( fn( $stars ) => (int) ( $counts[ $stars ] ?? 0 ), range( 1, 5 ) ) : array_fill( 0, 5, 0 );
-		$rating_count = array_sum( $counts );
+		// Meta saved before rating counts were stored rated every review.
+		$rating_count = is_array( $counts ) ? array_sum( array_map( fn( $stars ) => (int) ( $counts[ $stars ] ?? 0 ), range( 1, 5 ) ) ) : $review_count;
 
-		// Unrated reviews count toward reviewCount but not toward the average.
-		if ( $rating_count > 0 ) {
-			$rating_value = round( array_sum( array_map( fn( $stars, $count ) => $stars * $count, range( 1, 5 ), $counts ) ) / $rating_count, 2 );
-		} else {
-			// Meta saved before rating counts were stored.
-			$rating_count = $review_count;
-			$rating_value = (float) get_post_meta( $product_id, '_reviewbird_avg_stars', true );
-		}
-
-		if ( $review_count <= 0 || $rating_value < 1 ) {
+		if ( $review_count <= 0 || $rating_count <= 0 || $rating_value < 1 ) {
 			return null;
 		}
 

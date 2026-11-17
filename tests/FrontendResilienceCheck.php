@@ -119,6 +119,8 @@ require __DIR__ . '/../src/functions.php';
 require __DIR__ . '/../src/Integration/RatingOverride.php';
 require __DIR__ . '/../src/Integration/WooCommerce.php';
 require __DIR__ . '/../src/Integration/StarRatingDisplay.php';
+require __DIR__ . '/../src/Integration/SchemaScheduler.php';
+require __DIR__ . '/../src/Integration/SchemaMarkup.php';
 
 $integration = new reviewbird\Integration\WooCommerce();
 check( isset( $hooks['woocommerce_new_order'] ) && ! isset( $hooks['woocommerce_before_order_object_save'], $hooks['woocommerce_checkout_order_created'] ), 'Capture locale only when an order is created.' );
@@ -219,7 +221,18 @@ unset( $during_http );
 check( '' === get_post_meta( 93, '_reviewbird_reviews_count' ), 'A product deleted during HTTP must not receive rating metadata.' );
 $response['body'] = '{"statistics":{"total_reviews":6,"average_rating":0.83,"rating_distribution":{"1":0,"2":0,"3":0,"4":0,"5":1}}}';
 reviewbird_sync_product_rating( 94 );
-check( 6 === get_post_meta( 94, '_reviewbird_reviews_count' ) && 0.83 === get_post_meta( 94, '_reviewbird_avg_stars' ) && 1 === array_sum( get_post_meta( 94, '_reviewbird_rating_counts' ) ), 'Public sync must preserve totals that include unrated reviews.' );
+check( 6 === get_post_meta( 94, '_reviewbird_reviews_count' ) && 5.0 === get_post_meta( 94, '_reviewbird_avg_stars' ) && 1 === array_sum( get_post_meta( 94, '_reviewbird_rating_counts' ) ), 'Public sync must keep unrated reviews in the total but out of the average.' );
+// Google requires the schema rating to match the stars shown on the page.
+$saved_queue = $queued;
+$options['reviewbird_enable_schema'] = 'yes';
+$rated_product = new class {
+    public function get_id() { return 94; }
+    public function is_type( $type ) { return false; }
+};
+$aggregate = ( new reviewbird\Integration\SchemaMarkup() )->filter_woocommerce_structured_data( array(), $rated_product )['aggregateRating'];
+check( $ratings->override_average_rating( 0, $rated_product ) === $aggregate['ratingValue'] && 1 === $aggregate['ratingCount'] && 6 === $aggregate['reviewCount'], 'Schema and visible stars must show the same rating.' );
+unset( $options['reviewbird_enable_schema'] );
+$queued = $saved_queue;
 $response['body'] = '{"statistics":{"total_reviews":3,"average_rating":0,"rating_distribution":{"1":0,"2":0,"3":0,"4":0,"5":0}}}';
 reviewbird_sync_product_rating( 95 );
 check( 3 === get_post_meta( 95, '_reviewbird_reviews_count' ) && 0.0 === get_post_meta( 95, '_reviewbird_avg_stars' ) && array_fill( 1, 5, 0 ) === get_post_meta( 95, '_reviewbird_rating_counts' ), 'Public sync must accept all-unrated reviews without inventing ratings.' );

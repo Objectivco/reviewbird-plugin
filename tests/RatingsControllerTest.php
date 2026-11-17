@@ -228,20 +228,22 @@ namespace reviewbird\Tests {
 					'_reviewbird_reviews_count' => 0,
 					'_reviewbird_rating_counts' => array_fill( 1, 5, 0 ),
 				), $GLOBALS['ratings_test_meta'] );
-				self::assertSame( array( 'reviewbird_rating_updated', 7, '0', 0 ), end( $GLOBALS['ratings_test_actions'] ) );
+				self::assertSame( array( 'reviewbird_rating_updated', 7, 0.0, 0 ), end( $GLOBALS['ratings_test_actions'] ) );
 				self::assertSame( 7, end( $GLOBALS['ratings_test_transients'] ) );
 			}
 
 			foreach ( array( 1, 5 ) as $average ) {
 				self::assertInstanceOf( \WP_REST_Response::class, $update( $average, 1, array( 'rating_counts' => array( $average => '1' ) ) ) );
 			}
-			foreach ( array( array( 0, 1, 0 ), array( 0.83, 6, 1 ) ) as [ $average, $count, $five_star_count ] ) {
+			// The stored average covers rated reviews only, whatever average the service sends.
+			foreach ( array( array( 0, 1, 0, 0.0 ), array( 0.83, 6, 1, 5.0 ) ) as [ $average, $count, $five_star_count, $stored_average ] ) {
 				$distribution = array_fill( 1, 5, 0 );
 				$distribution[5] = $five_star_count;
 				$result = $update( $average, $count, array( 'rating_counts' => $distribution ) );
 				self::assertInstanceOf( \WP_REST_Response::class, $result );
 				self::assertSame( $count, $GLOBALS['ratings_test_meta']['_reviewbird_reviews_count'] );
-				self::assertSame( (float) $average, $GLOBALS['ratings_test_meta']['_reviewbird_avg_stars'] );
+				self::assertSame( $stored_average, $GLOBALS['ratings_test_meta']['_reviewbird_avg_stars'] );
+				self::assertSame( $stored_average, $result->data['avg_stars'] );
 				self::assertSame( $distribution, $GLOBALS['ratings_test_meta']['_reviewbird_rating_counts'] );
 			}
 			$before = array( $GLOBALS['ratings_test_meta'], $GLOBALS['ratings_test_actions'], $GLOBALS['ratings_test_transients'] );

@@ -91,8 +91,8 @@ foreach ( array( '', 'invalid', array(), array( array( '@type' => 'Review' ) ) )
     check( ( is_array( $cached ) && $cached ? $cached : $original['review'] ) === $markup['review'] );
     check( 12 === $markup['aggregateRating']['ratingCount'] && 12 === $markup['aggregateRating']['reviewCount'] );
 }
-// Unrated reviews raise reviewCount but must not drag ratingValue below worstRating.
-$GLOBALS['meta'] = array( '_reviewbird_avg_stars' => 0.83, '_reviewbird_reviews_count' => 6, '_reviewbird_rating_counts' => array( 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 1 ) );
+// Unrated reviews raise reviewCount but not ratingCount.
+$GLOBALS['meta'] = array( '_reviewbird_avg_stars' => 5.0, '_reviewbird_reviews_count' => 6, '_reviewbird_rating_counts' => array( 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 1 ) );
 $markup = $schema->filter_woocommerce_structured_data( $original, $product );
 check( 5.0 === $markup['aggregateRating']['ratingValue'] && 1 === $markup['aggregateRating']['ratingCount'] && 6 === $markup['aggregateRating']['reviewCount'] );
 $GLOBALS['meta'] = array( '_reviewbird_avg_stars' => 0.0, '_reviewbird_reviews_count' => 3, '_reviewbird_rating_counts' => array_fill( 1, 5, 0 ) );
