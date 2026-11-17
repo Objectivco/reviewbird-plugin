@@ -96,9 +96,9 @@ test( 'checks the cached WordPress endpoint and accepts a confirmed new store', 
 		} ),
 	} );
 	const controller = new AbortController();
-	expect( ( await fetchHealthStatus( controller.signal ) ).status ).toBe(
-		'not_connected'
-	);
+	expect(
+		( await fetchHealthStatus( controller.signal ) ).status.status
+	).toBe( 'not_connected' );
 	const [ url, request ] = fetch.mock.calls[ 0 ];
 	expect( url ).toBe( '/admin-ajax.php' );
 	expect( request.method ).toBe( 'POST' );
@@ -107,6 +107,7 @@ test( 'checks the cached WordPress endpoint and accepts a confirmed new store', 
 		'reviewbird_get_health_status'
 	);
 	expect( request.body.get( 'nonce' ) ).toBe( 'admin-token' );
+	expect( request.body.get( 'refresh' ) ).toBeNull();
 } );
 
 test.each( [

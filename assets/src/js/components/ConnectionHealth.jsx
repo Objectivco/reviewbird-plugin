@@ -58,113 +58,20 @@ const STATUS_CONFIG = {
 	},
 };
 
-function CheckIcon( { className } ) {
-	return (
-		<svg
-			className={ className }
-			width="20"
-			height="20"
-			fill="currentColor"
-			viewBox="0 0 20 20"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<path
-				fillRule="evenodd"
-				d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-				clipRule="evenodd"
-			/>
-		</svg>
-	);
-}
+const ERROR_ICON =
+	'M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z';
 
-function InfoIcon( { className } ) {
-	return (
-		<svg
-			className={ className }
-			width="20"
-			height="20"
-			fill="currentColor"
-			viewBox="0 0 20 20"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<path
-				fillRule="evenodd"
-				d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-				clipRule="evenodd"
-			/>
-		</svg>
-	);
-}
-
-function SpinnerIcon( { className } ) {
-	return (
-		<svg
-			className={ `${ className } reviewbird-connection__icon--spinning` }
-			width="20"
-			height="20"
-			fill="none"
-			viewBox="0 0 24 24"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<circle
-				opacity="0.25"
-				cx="12"
-				cy="12"
-				r="10"
-				stroke="currentColor"
-				strokeWidth="4"
-			></circle>
-			<path
-				opacity="0.75"
-				fill="currentColor"
-				d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-			></path>
-		</svg>
-	);
-}
-
-function WarningIcon( { className } ) {
-	return (
-		<svg
-			className={ className }
-			width="20"
-			height="20"
-			fill="currentColor"
-			viewBox="0 0 20 20"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<path
-				fillRule="evenodd"
-				d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-				clipRule="evenodd"
-			/>
-		</svg>
-	);
-}
-
-function ErrorIcon( { className } ) {
-	return (
-		<svg
-			className={ className }
-			width="20"
-			height="20"
-			fill="currentColor"
-			viewBox="0 0 20 20"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<path
-				fillRule="evenodd"
-				d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-				clipRule="evenodd"
-			/>
-		</svg>
-	);
-}
+// Solid 20px icons by status. Other states show the spinner.
+const STATUS_ICONS = {
+	healthy:
+		'M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z',
+	not_connected:
+		'M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z',
+	billing_required:
+		'M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z',
+	unhealthy: ERROR_ICON,
+	error: ERROR_ICON,
+};
 
 export function ExternalLinkIcon() {
 	return (
@@ -189,55 +96,84 @@ export function ExternalLinkIcon() {
 }
 
 function StatusIcon( { status } ) {
-	const iconClass = 'reviewbird-connection__icon';
-
-	switch ( status ) {
-		case 'healthy':
-			return <CheckIcon className={ iconClass } />;
-		case 'not_connected':
-			return <InfoIcon className={ iconClass } />;
-		case 'syncing':
-			return <SpinnerIcon className={ iconClass } />;
-		case 'billing_required':
-			return <WarningIcon className={ iconClass } />;
-		case 'unhealthy':
-		case 'error':
-			return <ErrorIcon className={ iconClass } />;
-		default:
-			return <SpinnerIcon className={ iconClass } />;
+	const path = STATUS_ICONS[ status ];
+	if ( ! path ) {
+		return (
+			<svg
+				className="reviewbird-connection__icon reviewbird-connection__icon--spinning"
+				width="20"
+				height="20"
+				fill="none"
+				viewBox="0 0 24 24"
+				aria-hidden="true"
+				focusable="false"
+			>
+				<circle
+					opacity="0.25"
+					cx="12"
+					cy="12"
+					r="10"
+					stroke="currentColor"
+					strokeWidth="4"
+				></circle>
+				<path
+					opacity="0.75"
+					fill="currentColor"
+					d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+				></path>
+			</svg>
+		);
 	}
+	return (
+		<svg
+			className="reviewbird-connection__icon"
+			width="20"
+			height="20"
+			fill="currentColor"
+			viewBox="0 0 20 20"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<path fillRule="evenodd" d={ path } clipRule="evenodd" />
+		</svg>
+	);
 }
 
-export async function fetchHealthStatus( signal, forceRefresh = false ) {
-	const formData = new FormData();
-	formData.append(
-		'action',
-		forceRefresh
-			? 'reviewbird_clear_health_cache'
-			: 'reviewbird_get_health_status'
-	);
-	formData.append( 'nonce', window.reviewbirdAdmin.nonce );
+/**
+ * Load the store status. Refresh skips the five-minute server cache.
+ *
+ * @param {AbortSignal} [signal]  Abort signal.
+ * @param {boolean}     [refresh] Whether to request a new status.
+ * @return {Promise<Object>} Response data with `status` and `googleCustomerReviews`.
+ */
+export async function fetchHealthStatus( signal, refresh = false ) {
+	const body = new FormData();
+	body.append( 'action', 'reviewbird_get_health_status' );
+	body.append( 'nonce', window.reviewbirdAdmin.nonce );
+	if ( refresh ) {
+		body.append( 'refresh', '1' );
+	}
 
 	const response = await fetch( window.reviewbirdAdmin.ajaxUrl, {
 		method: 'POST',
-		body: formData,
+		body,
 		signal,
 	} );
 	const result = await response.json().catch( () => null );
 	if ( ! response.ok || ! result?.success ) {
-		throw new Error( 'Unable to check the store connection' );
+		// Failed refreshes return a translated message.
+		throw new Error( typeof result?.data === 'string' ? result.data : '' );
 	}
-	const data = result.data?.status;
-	if ( typeof data?.status !== 'string' || ! data.status ) {
-		throw new Error( 'Invalid store status' );
+	const status = result.data?.status?.status;
+	if ( typeof status !== 'string' || ! status ) {
+		throw new Error( '' );
 	}
-	const status = data.status;
 
-	return { data, status };
+	return result.data;
 }
 
 function getActionUrl( status, healthData ) {
-	const storeId = healthData?.store_id || window.reviewbirdConfig?.storeId;
+	const storeId = healthData?.store_id;
 	const baseUrl = window.reviewbirdAdmin.apiUrl;
 	const orgSlug = healthData?.org_slug
 		? encodeURIComponent( healthData.org_slug )
@@ -274,12 +210,12 @@ export default function ConnectionHealth() {
 		setRefreshing( true );
 		setRefreshError( '' );
 		try {
-			const { data, status } = await fetchHealthStatus(
+			const { status } = await fetchHealthStatus(
 				undefined,
 				forceRefresh
 			);
-			setHealthData( data );
-			setHealthStatus( status );
+			setHealthData( status );
+			setHealthStatus( status.status );
 			setLastChecked( new Date() );
 		} catch {
 			if ( forceRefresh ) {

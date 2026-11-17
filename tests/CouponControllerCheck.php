@@ -38,14 +38,14 @@ function wc_get_coupon_types() { return array( 'percent' => 'Percentage', 'fixed
 function rest_parse_date( $date ) { return strtotime( $date ); }
 function wc_get_coupon_id_by_code( $code ) { return in_array( strtolower( $code ), array( 'template', 'duplicate' ), true ) ? 5 : 0; }
 function wp_update_post( $post ) { throw new RuntimeException( 'Do not bypass coupon setters.' ); }
-function register_rest_route( $namespace, $route, $args ) { $GLOBALS['route_args'] = $args['args']; }
+function register_rest_route( $namespace, $route, $args ) { $GLOBALS['routes'][ $route ] = $args['args'] ?? array(); }
+function register_rest_field() {}
 function check( $condition, $message ) { if ( ! $condition ) { throw new RuntimeException( $message ); } ++$GLOBALS['checks']; }
-require __DIR__ . '/../src/Api/CouponController.php';
+require __DIR__ . '/../src/api.php';
 $saved = array();
 $checks = 0;
-$controller = new reviewbird\Api\CouponController();
 foreach ( array( null, 'TEMPLATE' ) as $template ) {
-    $result = $controller->create_coupon( new WP_REST_Request( array(
+    $result = reviewbird_rest_create_coupon( new WP_REST_Request( array(
         'code' => ' REVIEW-123 ', 'template_code' => $template, 'reviewer_email' => 'buyer@example.com',
         'discount_type' => 'percent', 'amount' => 10, 'expiry_date' => '2027-01-01',
     ) ) );
@@ -64,10 +64,11 @@ foreach ( array(
     array( 'code' => 'NEW', 'expiry_date' => 'invalid', 'expected' => 'invalid_expiry_date' ),
 ) as $params ) {
     $before = count( $saved );
-    $result = $controller->create_coupon( new WP_REST_Request( $params ) );
+    $result = reviewbird_rest_create_coupon( new WP_REST_Request( $params ) );
     check( $result instanceof WP_Error && $params['expected'] === $result->code && $before === count( $saved ), 'Reject duplicate codes before saving.' );
 }
-$controller->register_routes();
+reviewbird_register_rest_routes();
+$route_args = $routes['/coupons/create'];
 check( true === $route_args['code']['required'] && 'string' === $route_args['code']['type'], 'Require a string coupon code in the route schema.' );
 check( 'email' === $route_args['reviewer_email']['format'] && array( 'string', 'null' ) === $route_args['reviewer_email']['type'], 'Validate the reviewer email in the route schema.' );
 check( 'number' === $route_args['amount']['type'] && 0 === $route_args['amount']['minimum'] && true === $route_args['amount']['exclusiveMinimum'], 'Require a positive number before the coupon setter.' );

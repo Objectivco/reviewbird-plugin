@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:189
-#: src/Admin/Settings.php:190
+#: src/Admin/Settings.php:114
+#: src/Admin/Settings.php:115
 msgid "Reviewbird"
 msgstr "ريفيوبيرد"
 
@@ -31,232 +31,209 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "جمع المراجعات الآلي لـ WooCommerce الذي يمنع الرسائل المزعجة، يلتقط الشكاوى، ويعرض أفضل تعليقاتك."
 
-#: src/Admin/Settings.php:99
+#: src/Admin/Settings.php:74
 msgid "Hey, there! It looks like you enjoy collecting product reviews with Reviewbird. Would you do us a favor and take a few seconds to give us a review? We’d love to hear from you."
 msgstr "مرحبًا! يبدو أنك تستمتع بجمع تقييمات المنتجات مع Reviewbird. هل تود أن تقدم لنا خدمة وتأخذ بضع ثوانٍ لتكتب لنا تقييمًا؟ نود أن نسمع منك."
 
-#: src/Admin/Settings.php:101
+#: src/Admin/Settings.php:76
 msgid "Ok, you deserve it"
 msgstr "حسنًا، أنت تستحق ذلك"
 
-#: src/Admin/Settings.php:103
+#: src/Admin/Settings.php:78
 msgid "Nope, maybe later"
 msgstr "لا، ربما لاحقًا"
 
-#: src/Admin/Settings.php:105
+#: src/Admin/Settings.php:80
 msgid "I already did"
 msgstr "لقد فعلت ذلك بالفعل"
 
-#: src/Admin/Settings.php:156
-msgid "Reviewbird Connection Error:"
-msgstr "خطأ في اتصال ريفيوبيرد:"
-
-#: src/Admin/Settings.php:175
-msgid "Successfully connected to Reviewbird!"
-msgstr "تم الاتصال بريفيوبيرد بنجاح!"
-
-#: src/Admin/Settings.php:202
-#: src/Admin/Settings.php:203
+#: src/Admin/Settings.php:127
+#: src/Admin/Settings.php:128
 msgid "Get Started"
 msgstr "ابدأ الآن"
 
-#: src/Admin/Settings.php:211
+#: src/Admin/Settings.php:136
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "إعدادات ريفيوبيرد"
 
-#: src/Admin/Settings.php:212
-#: src/Core/Plugin.php:502
+#: src/Admin/Settings.php:137
+#: src/hooks.php:315
 msgid "Settings"
 msgstr "الإعدادات"
 
-#: src/Admin/Settings.php:436
+#: src/Admin/Settings.php:274
 msgid "Invalid security token"
 msgstr "رمز الأمان غير صالح"
 
-#: src/Admin/Settings.php:440
-#: src/Admin/Settings.php:516
+#: src/Admin/Settings.php:278
+#: src/Admin/Settings.php:346
 msgid "Insufficient permissions"
 msgstr "صلاحيات غير كافية"
 
-#: src/Admin/Settings.php:454
+#: src/Admin/Settings.php:292
 msgid "Invalid setting"
 msgstr "إعداد غير صالح"
 
-#: src/Admin/Settings.php:460
+#: src/Admin/Settings.php:298
 msgid "Invalid setting value"
 msgstr "قيمة الإعداد غير صالحة"
 
-#: src/Admin/Settings.php:467
+#: src/Admin/Settings.php:305
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr "تعذر حفظ الإعداد. يرجى المحاولة مرة أخرى."
 
-#: src/Admin/Settings.php:474
+#: src/Admin/Settings.php:312
 msgid "Setting updated successfully"
 msgstr "تم تحديث الإعداد بنجاح"
 
-#: src/Admin/Settings.php:499
+#: src/Admin/Settings.php:329
 msgid "The connection status could not be refreshed. Please try again."
 msgstr "تعذر تحديث حالة الاتصال. يرجى المحاولة مرة أخرى."
 
-#: src/Admin/Settings.php:506
+#: src/Admin/Settings.php:336
 msgid "Connection status refreshed"
 msgstr "تم تحديث حالة الاتصال"
 
+#: src/api.php:121
+msgid "Whether the Reviewbird widget is enabled."
+msgstr "ما إذا كان عنصر واجهة Reviewbird ممكّنًا."
+
 #. translators: %d: Store ID number.
-#: src/Api/ConnectionController.php:74
+#: src/api.php:171
 #, php-format
 msgid "Store ID %d has been saved successfully"
 msgstr "تم حفظ معرف المتجر %d بنجاح"
 
-#: src/Api/CouponController.php:79
-#: src/Api/ProductsController.php:81
-#: src/Api/ProductsController.php:131
-msgid "WooCommerce is not active"
-msgstr "WooCommerce غير نشط"
+#: src/api.php:185
+msgid "Product ID is required"
+msgstr "معرف المنتج مطلوب"
 
-#: src/Api/CouponController.php:89
+#: src/api.php:188
+msgid "Invalid product ID"
+msgstr "معرف المنتج غير صالح"
+
+#: src/api.php:201
+#: src/api.php:544
+msgid "Product not found"
+msgstr "المنتج غير موجود"
+
+#: src/api.php:238
+msgid "Review count must be a whole number of 0 or more"
+msgstr "يجب أن يكون عدد التقييمات عددًا صحيحًا صفر أو أكثر"
+
+#: src/api.php:244
+msgid "Average stars must be between 0 and 5, and 0 when there are no reviews"
+msgstr "يجب أن يكون متوسط النجوم بين 0 و 5، و0 عندما لا توجد تقييمات"
+
+#: src/api.php:252
+msgid "Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and must not exceed the review count."
+msgstr "يجب أن تحتوي عدد التقييمات على أعداد صحيحة من 0 أو أكثر للنجوم من 1 إلى 5 ويجب ألا تتجاوز عدد التقييمات."
+
+#: src/api.php:296
+msgid "Customer email is required"
+msgstr "البريد الإلكتروني للعميل مطلوب"
+
+#: src/api.php:299
+msgid "Invalid email address"
+msgstr "عنوان البريد الإلكتروني غير صالح"
+
+#: src/api.php:432
 msgid "Coupon code is required"
 msgstr "رمز القسيمة مطلوب"
 
+#: src/api.php:436
+msgid "Use a valid date or ISO 8601 date and time for coupon expiry."
+msgstr "استخدم تاريخًا صالحًا أو تاريخ ووقت بتنسيق ISO 8601 لانتهاء صلاحية القسيمة."
+
+#: src/api.php:439
+msgid "This coupon code already exists."
+msgstr "رمز القسيمة هذا موجود بالفعل."
+
 #. translators: %s: Template coupon code.
-#: src/Api/CouponController.php:126
+#: src/api.php:448
 #, php-format
 msgid "Template coupon '%s' not found"
 msgstr "القالب القسيمة '%s' غير موجود"
 
-#: src/Api/CouponController.php:160
+#: src/api.php:456
 msgid "discount_type and amount are required when not using template"
 msgstr "نوع الخصم والمبلغ مطلوبان عند عدم استخدام القالب"
 
-#: src/Api/ProductsController.php:138
-#: src/Api/RatingsController.php:46
-msgid "Product not found"
-msgstr "المنتج غير موجود"
-
-#: src/Api/RatingsController.php:32
-msgid "Product ID is required"
-msgstr "معرف المنتج مطلوب"
-
-#: src/Api/RatingsController.php:36
-msgid "Invalid product ID"
-msgstr "معرف المنتج غير صالح"
-
-#: src/Api/RatingsController.php:72
-msgid "Review count must be a whole number of 0 or more"
-msgstr "يجب أن يكون عدد التقييمات عددًا صحيحًا صفر أو أكثر"
-
-#: src/Api/RatingsController.php:78
-msgid "Average stars must be 0 when there are no reviews, or a number between 1 and 5"
-msgstr "يجب أن يكون متوسط النجوم 0 عندما لا توجد تقييمات، أو رقمًا بين 1 و 5"
-
-#: src/Api/RatingsController.php:82
-msgid "Rating counts must be an array"
-msgstr "يجب أن يكون عدد التقييمات مصفوفة"
-
-#: src/Api/RatingsController.php:170
-msgid "Customer email is required"
-msgstr "البريد الإلكتروني للعميل مطلوب"
-
-#: src/Api/RatingsController.php:174
-msgid "Invalid email address"
-msgstr "عنوان البريد الإلكتروني غير صالح"
-
-#: src/Core/Plugin.php:508
-msgid "Documentation"
-msgstr "الوثائق"
-
-#: src/functions.php:245
-#: src/functions.php:428
+#: src/functions.php:214
 msgid "API request failed"
 msgstr "فشل طلب API"
 
-#: src/functions.php:335
-msgid "Store is not connected to Reviewbird."
-msgstr "المتجر غير متصل بريفيوبيرد."
-
-#: src/functions.php:345
-msgid "Unable to generate API key for authentication."
-msgstr "غير قادر على إنشاء مفتاح API للمصادقة."
-
-#: src/functions.php:359
-msgid "Maximum of 50 product IDs allowed per request."
-msgstr "الحد الأقصى 50 معرف منتج لكل طلب."
-
-#: src/functions.php:464
-msgid "Failed to decode API response."
-msgstr "فشل في فك ترميز استجابة API."
-
-#: src/functions.php:818
+#: src/functions.php:665
 msgid "Anonymous"
 msgstr "مجهول"
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:839
+#: src/functions.php:686
 #, php-format
 msgid "Rated %d out of 5"
 msgstr "تم التقييم %d من 5"
+
+#: src/hooks.php:319
+msgid "Documentation"
+msgstr "الوثائق"
+
+#: src/hooks.php:518
+msgid "Leave a review"
+msgstr "اترك تقييماً"
 
 #: src/Integration/GoogleCustomerReviews.php:243
 msgid "This review request is not available."
 msgstr "طلب المراجعة هذا غير متوفر."
 
 #: src/Integration/GoogleCustomerReviews.php:243
-#: src/Integration/GoogleCustomerReviews.php:283
-#: src/Integration/GoogleCustomerReviews.php:284
+#: src/Integration/GoogleCustomerReviews.php:270
+#: src/Integration/GoogleCustomerReviews.php:271
 #: templates/google-customer-reviews.php:19
-#: assets/src/js/components/GoogleCustomerReviews.jsx:65
+#: assets/src/js/components/GoogleCustomerReviews.jsx:56
 msgid "Google Customer Reviews"
 msgstr "مراجعات عملاء Google"
 
-#: src/Integration/GoogleCustomerReviews.php:276
+#: src/Integration/GoogleCustomerReviews.php:263
 msgid "Loading Google Customer Reviews…"
 msgstr "جارٍ تحميل مراجعات عملاء Google…"
 
-#: src/Integration/GoogleCustomerReviews.php:277
+#: src/Integration/GoogleCustomerReviews.php:264
 msgid "Google Customer Reviews could not load. Please try again."
 msgstr "تعذر تحميل مراجعات عملاء Google. يرجى المحاولة مرة أخرى."
 
-#: src/Integration/GoogleCustomerReviews.php:278
+#: src/Integration/GoogleCustomerReviews.php:265
 msgid "Try again"
 msgstr "حاول مرة أخرى"
 
-#: src/Integration/GoogleCustomerReviews.php:279
+#: src/Integration/GoogleCustomerReviews.php:266
 msgid "You can close this page when you finish."
 msgstr "يمكنك إغلاق هذه الصفحة عند الانتهاء."
 
-#: src/Integration/GoogleCustomerReviews.php:287
+#: src/Integration/GoogleCustomerReviews.php:274
 msgid "Enable JavaScript to use Google Customer Reviews."
 msgstr "قم بتمكين JavaScript لاستخدام مراجعات عملاء Google."
 
-#: src/Integration/HealthScheduler.php:171
-msgid "The connection response is invalid. Please try again."
-msgstr "استجابة الاتصال غير صالحة. يرجى المحاولة مرة أخرى."
-
-#: src/Integration/HealthScheduler.php:176
-msgid "The connection status could not be saved. Please try again."
-msgstr "تعذر حفظ حالة الاتصال. يرجى المحاولة مرة أخرى."
-
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:122
+#: src/Integration/StarRatingDisplay.php:118
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "تم التقييم %s من 5"
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:125
+#: src/Integration/StarRatingDisplay.php:120
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "تم التقييم %s من 5، انقر لعرض المراجعات"
 
-#: src/Integration/WooCommerce.php:68
-msgid "Whether the Reviewbird widget is enabled."
-msgstr "ما إذا كان عنصر واجهة Reviewbird ممكّنًا."
+#: src/scheduler.php:176
+msgid "The connection response is invalid. Please try again."
+msgstr "استجابة الاتصال غير صالحة. يرجى المحاولة مرة أخرى."
 
-#: src/Integration/WooCommerce.php:154
-msgid "Leave a review"
-msgstr "اترك تقييماً"
+#: src/scheduler.php:180
+msgid "The connection status could not be saved. Please try again."
+msgstr "تعذر حفظ حالة الاتصال. يرجى المحاولة مرة أخرى."
 
 #: assets/src/js/components/ConnectionHealth.jsx:6
 msgid "Connected to Reviewbird"
@@ -275,6 +252,7 @@ msgid "Reviewbird is disabled until you connect your WooCommerce store."
 msgstr "تم تعطيل Reviewbird حتى تقوم بتوصيل متجر WooCommerce الخاص بك."
 
 #: assets/src/js/components/ConnectionHealth.jsx:17
+#: assets/src/js/components/WelcomeScreen.jsx:177
 msgid "Connect store"
 msgstr "توصيل المتجر"
 
@@ -334,27 +312,27 @@ msgstr "جارٍ التحقق من الاتصال…"
 msgid "Open Reviewbird"
 msgstr "فتح ريفيوبيرد"
 
-#: assets/src/js/components/ConnectionHealth.jsx:285
-#: assets/src/js/components/GoogleCustomerReviews.jsx:48
+#: assets/src/js/components/ConnectionHealth.jsx:223
+#: assets/src/js/components/GoogleCustomerReviews.jsx:39
 msgid "The connection could not be refreshed. Please try again."
 msgstr "تعذر تحديث الاتصال. يرجى المحاولة مرة أخرى."
 
 #. translators: %s: time of the last connection check.
-#: assets/src/js/components/ConnectionHealth.jsx:321
+#: assets/src/js/components/ConnectionHealth.jsx:259
 #, js-format
 msgid "Last checked: %s"
 msgstr "آخر فحص: %s"
 
-#: assets/src/js/components/ConnectionHealth.jsx:346
+#: assets/src/js/components/ConnectionHealth.jsx:284
 msgid "Refresh connection status"
 msgstr "تحديث حالة الاتصال"
 
-#: assets/src/js/components/ConnectionHealth.jsx:352
-#: assets/src/js/components/GoogleCustomerReviews.jsx:126
+#: assets/src/js/components/ConnectionHealth.jsx:290
+#: assets/src/js/components/GoogleCustomerReviews.jsx:117
 msgid "Refreshing…"
 msgstr "جارٍ التحديث…"
 
-#: assets/src/js/components/ConnectionHealth.jsx:353
+#: assets/src/js/components/ConnectionHealth.jsx:291
 msgid "Refresh"
 msgstr "تحديث"
 
@@ -370,33 +348,29 @@ msgstr "التكامل معطل حاليًا."
 msgid "Integration status is unknown."
 msgstr "حالة التكامل غير معروفة."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:44
+#: assets/src/js/components/GoogleCustomerReviews.jsx:35
 msgid "Status updated."
 msgstr "تم تحديث الحالة."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:70
+#: assets/src/js/components/GoogleCustomerReviews.jsx:61
 msgid "When the integration is enabled, Google's consent window opens automatically for every order on the thank you page."
 msgstr "عند تمكين التكامل، تفتح نافذة موافقة Google تلقائيًا لكل طلب في صفحة الشكر."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:78
+#: assets/src/js/components/GoogleCustomerReviews.jsx:69
 msgid "Use Configure integration to enable or disable Google Customer Reviews. Then select Refresh status."
 msgstr "استخدم تكوين التكامل لتمكين أو تعطيل مراجعات عملاء Google. ثم اختر تحديث الحالة."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:96
+#: assets/src/js/components/GoogleCustomerReviews.jsx:87
 msgid "Configure integration"
 msgstr "تكوين التكامل"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:105
+#: assets/src/js/components/GoogleCustomerReviews.jsx:96
 msgid "Refresh integration status"
 msgstr "تحديث حالة التكامل"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:127
+#: assets/src/js/components/GoogleCustomerReviews.jsx:118
 msgid "Refresh status"
 msgstr "تحديث الحالة"
-
-#: assets/src/js/components/LoadingSpinner.jsx:8
-msgid "Loading..."
-msgstr "جارٍ التحميل..."
 
 #: assets/src/js/components/SettingsApp.jsx:102
 msgid "Reviewbird Widget"
@@ -493,10 +467,6 @@ msgstr "خصص رسائل البريد الإلكتروني، وعناصر ال�
 #: assets/src/js/components/WelcomeScreen.jsx:170
 msgid "Already use Reviewbird?"
 msgstr "هل تستخدم Reviewbird بالفعل؟"
-
-#: assets/src/js/components/WelcomeScreen.jsx:177
-msgid "Sign in"
-msgstr "تسجيل الدخول"
 
 #: assets/src/js/components/WelcomeScreen.jsx:194
 msgid "Loading Reviewbird…"

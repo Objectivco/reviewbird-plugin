@@ -3,7 +3,6 @@
 	"version": "1.3.3",
 	"packageManager": "pnpm@11.0.1",
 	"description": "WordPress plugin for reviewbird integration",
-	"main": "index.js",
 	"files": [
 		"reviewbird-plugin.php",
 		"readme.txt",

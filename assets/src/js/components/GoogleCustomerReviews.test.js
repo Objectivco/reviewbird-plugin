@@ -9,9 +9,13 @@ const { act } = require(
 let container;
 let root;
 
+// The status endpoint always returns the store status with the integration state.
 const response = ( data ) => ( {
 	ok: true,
-	json: async () => ( { success: true, data } ),
+	json: async () => ( {
+		success: true,
+		data: { status: { status: 'healthy' }, ...data },
+	} ),
 } );
 const mount = () => act( async () => root.render( <GoogleCustomerReviews /> ) );
 const refreshButton = () => container.querySelector( 'button' );
@@ -89,8 +93,9 @@ test( 'Refresh updates integration status and prevents a second request while pe
 	expect( url ).toBe( window.reviewbirdAdmin.ajaxUrl );
 	expect( options.method ).toBe( 'POST' );
 	expect( options.body.get( 'action' ) ).toBe(
-		'reviewbird_clear_health_cache'
+		'reviewbird_get_health_status'
 	);
+	expect( options.body.get( 'refresh' ) ).toBe( '1' );
 	expect( options.body.get( 'nonce' ) ).toBe( 'admin-token' );
 	await act( async () =>
 		resolve(

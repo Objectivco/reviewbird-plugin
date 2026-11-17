@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:189
-#: src/Admin/Settings.php:190
+#: src/Admin/Settings.php:114
+#: src/Admin/Settings.php:115
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -31,232 +31,209 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "Automatiserad insamling av recensioner för WooCommerce som blockerar skräppost, fångar klagomål och visar upp dina bästa omdömen."
 
-#: src/Admin/Settings.php:99
+#: src/Admin/Settings.php:74
 msgid "Hey, there! It looks like you enjoy collecting product reviews with Reviewbird. Would you do us a favor and take a few seconds to give us a review? We’d love to hear from you."
 msgstr "Hej där! Det verkar som att du gillar att samla in produktrecensioner med Reviewbird. Skulle du kunna göra oss en tjänst och ta några sekunder för att ge oss en recension? Vi skulle gärna vilja höra från dig."
 
-#: src/Admin/Settings.php:101
+#: src/Admin/Settings.php:76
 msgid "Ok, you deserve it"
 msgstr "Okej, det förtjänar du"
 
-#: src/Admin/Settings.php:103
+#: src/Admin/Settings.php:78
 msgid "Nope, maybe later"
 msgstr "Nej, kanske senare"
 
-#: src/Admin/Settings.php:105
+#: src/Admin/Settings.php:80
 msgid "I already did"
 msgstr "Jag har redan gjort det"
 
-#: src/Admin/Settings.php:156
-msgid "Reviewbird Connection Error:"
-msgstr "Reviewbird anslutningsfel:"
-
-#: src/Admin/Settings.php:175
-msgid "Successfully connected to Reviewbird!"
-msgstr "Ansluten till Reviewbird!"
-
-#: src/Admin/Settings.php:202
-#: src/Admin/Settings.php:203
+#: src/Admin/Settings.php:127
+#: src/Admin/Settings.php:128
 msgid "Get Started"
 msgstr "Kom igång"
 
-#: src/Admin/Settings.php:211
+#: src/Admin/Settings.php:136
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "Reviewbird-inställningar"
 
-#: src/Admin/Settings.php:212
-#: src/Core/Plugin.php:502
+#: src/Admin/Settings.php:137
+#: src/hooks.php:315
 msgid "Settings"
 msgstr "Inställningar"
 
-#: src/Admin/Settings.php:436
+#: src/Admin/Settings.php:274
 msgid "Invalid security token"
 msgstr "Ogiltig säkerhetstoken"
 
-#: src/Admin/Settings.php:440
-#: src/Admin/Settings.php:516
+#: src/Admin/Settings.php:278
+#: src/Admin/Settings.php:346
 msgid "Insufficient permissions"
 msgstr "Otillräckliga behörigheter"
 
-#: src/Admin/Settings.php:454
+#: src/Admin/Settings.php:292
 msgid "Invalid setting"
 msgstr "Ogiltig inställning"
 
-#: src/Admin/Settings.php:460
+#: src/Admin/Settings.php:298
 msgid "Invalid setting value"
 msgstr "Ogiltigt inställningsvärde"
 
-#: src/Admin/Settings.php:467
+#: src/Admin/Settings.php:305
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr "Inställningen kunde inte sparas. Försök igen."
 
-#: src/Admin/Settings.php:474
+#: src/Admin/Settings.php:312
 msgid "Setting updated successfully"
 msgstr "Inställning uppdaterad"
 
-#: src/Admin/Settings.php:499
+#: src/Admin/Settings.php:329
 msgid "The connection status could not be refreshed. Please try again."
 msgstr "Anslutningsstatus kunde inte uppdateras. Försök igen."
 
-#: src/Admin/Settings.php:506
+#: src/Admin/Settings.php:336
 msgid "Connection status refreshed"
 msgstr "Anslutningsstatus uppdaterad"
 
+#: src/api.php:121
+msgid "Whether the Reviewbird widget is enabled."
+msgstr "Om Reviewbird-widgeten är aktiverad."
+
 #. translators: %d: Store ID number.
-#: src/Api/ConnectionController.php:74
+#: src/api.php:171
 #, php-format
 msgid "Store ID %d has been saved successfully"
 msgstr "Butiks-ID %d har sparats"
 
-#: src/Api/CouponController.php:79
-#: src/Api/ProductsController.php:81
-#: src/Api/ProductsController.php:131
-msgid "WooCommerce is not active"
-msgstr "WooCommerce är inte aktivt"
+#: src/api.php:185
+msgid "Product ID is required"
+msgstr "Produkt-ID krävs"
 
-#: src/Api/CouponController.php:89
+#: src/api.php:188
+msgid "Invalid product ID"
+msgstr "Ogiltigt produkt-ID"
+
+#: src/api.php:201
+#: src/api.php:544
+msgid "Product not found"
+msgstr "Produkten hittades inte"
+
+#: src/api.php:238
+msgid "Review count must be a whole number of 0 or more"
+msgstr "Antal recensioner måste vara ett heltal 0 eller mer"
+
+#: src/api.php:244
+msgid "Average stars must be between 0 and 5, and 0 when there are no reviews"
+msgstr "Genomsnittliga stjärnor måste vara mellan 0 och 5, och 0 när det inte finns några recensioner"
+
+#: src/api.php:252
+msgid "Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and must not exceed the review count."
+msgstr "Antal betyg måste innehålla heltal från 0 eller mer för stjärnor 1 till 5 och får inte överstiga antalet recensioner."
+
+#: src/api.php:296
+msgid "Customer email is required"
+msgstr "Kundens e-post krävs"
+
+#: src/api.php:299
+msgid "Invalid email address"
+msgstr "Ogiltig e-postadress"
+
+#: src/api.php:432
 msgid "Coupon code is required"
 msgstr "Kupongkod krävs"
 
+#: src/api.php:436
+msgid "Use a valid date or ISO 8601 date and time for coupon expiry."
+msgstr "Använd ett giltigt datum eller ISO 8601 datum och tid för kupongens utgång."
+
+#: src/api.php:439
+msgid "This coupon code already exists."
+msgstr "Den här kupongkoden finns redan."
+
 #. translators: %s: Template coupon code.
-#: src/Api/CouponController.php:126
+#: src/api.php:448
 #, php-format
 msgid "Template coupon '%s' not found"
 msgstr "Mallkupong '%s' hittades inte"
 
-#: src/Api/CouponController.php:160
+#: src/api.php:456
 msgid "discount_type and amount are required when not using template"
 msgstr "discount_type och amount krävs när mall inte används"
 
-#: src/Api/ProductsController.php:138
-#: src/Api/RatingsController.php:46
-msgid "Product not found"
-msgstr "Produkten hittades inte"
-
-#: src/Api/RatingsController.php:32
-msgid "Product ID is required"
-msgstr "Produkt-ID krävs"
-
-#: src/Api/RatingsController.php:36
-msgid "Invalid product ID"
-msgstr "Ogiltigt produkt-ID"
-
-#: src/Api/RatingsController.php:72
-msgid "Review count must be a whole number of 0 or more"
-msgstr "Antal recensioner måste vara ett heltal 0 eller mer"
-
-#: src/Api/RatingsController.php:78
-msgid "Average stars must be 0 when there are no reviews, or a number between 1 and 5"
-msgstr "Genomsnittliga stjärnor måste vara 0 när det inte finns några recensioner, eller ett tal mellan 1 och 5"
-
-#: src/Api/RatingsController.php:82
-msgid "Rating counts must be an array"
-msgstr "Betygsantal måste vara en array"
-
-#: src/Api/RatingsController.php:170
-msgid "Customer email is required"
-msgstr "Kundens e-post krävs"
-
-#: src/Api/RatingsController.php:174
-msgid "Invalid email address"
-msgstr "Ogiltig e-postadress"
-
-#: src/Core/Plugin.php:508
-msgid "Documentation"
-msgstr "Dokumentation"
-
-#: src/functions.php:245
-#: src/functions.php:428
+#: src/functions.php:214
 msgid "API request failed"
 msgstr "API-förfrågan misslyckades"
 
-#: src/functions.php:335
-msgid "Store is not connected to Reviewbird."
-msgstr "Butiken är inte ansluten till Reviewbird."
-
-#: src/functions.php:345
-msgid "Unable to generate API key for authentication."
-msgstr "Kan inte generera API-nyckel för autentisering."
-
-#: src/functions.php:359
-msgid "Maximum of 50 product IDs allowed per request."
-msgstr "Max 50 produkt-ID:n tillåts per förfrågan."
-
-#: src/functions.php:464
-msgid "Failed to decode API response."
-msgstr "Misslyckades med att avkoda API-svar."
-
-#: src/functions.php:818
+#: src/functions.php:665
 msgid "Anonymous"
 msgstr "Anonym"
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:839
+#: src/functions.php:686
 #, php-format
 msgid "Rated %d out of 5"
 msgstr "Betygsatt %d av 5"
+
+#: src/hooks.php:319
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: src/hooks.php:518
+msgid "Leave a review"
+msgstr "Lämna en recension"
 
 #: src/Integration/GoogleCustomerReviews.php:243
 msgid "This review request is not available."
 msgstr "Denna recensionsförfrågan är inte tillgänglig."
 
 #: src/Integration/GoogleCustomerReviews.php:243
-#: src/Integration/GoogleCustomerReviews.php:283
-#: src/Integration/GoogleCustomerReviews.php:284
+#: src/Integration/GoogleCustomerReviews.php:270
+#: src/Integration/GoogleCustomerReviews.php:271
 #: templates/google-customer-reviews.php:19
-#: assets/src/js/components/GoogleCustomerReviews.jsx:65
+#: assets/src/js/components/GoogleCustomerReviews.jsx:56
 msgid "Google Customer Reviews"
 msgstr "Google Customer Reviews"
 
-#: src/Integration/GoogleCustomerReviews.php:276
+#: src/Integration/GoogleCustomerReviews.php:263
 msgid "Loading Google Customer Reviews…"
 msgstr "Laddar Google Customer Reviews…"
 
-#: src/Integration/GoogleCustomerReviews.php:277
+#: src/Integration/GoogleCustomerReviews.php:264
 msgid "Google Customer Reviews could not load. Please try again."
 msgstr "Google Customer Reviews kunde inte laddas. Försök igen."
 
-#: src/Integration/GoogleCustomerReviews.php:278
+#: src/Integration/GoogleCustomerReviews.php:265
 msgid "Try again"
 msgstr "Försök igen"
 
-#: src/Integration/GoogleCustomerReviews.php:279
+#: src/Integration/GoogleCustomerReviews.php:266
 msgid "You can close this page when you finish."
 msgstr "Du kan stänga denna sida när du är klar."
 
-#: src/Integration/GoogleCustomerReviews.php:287
+#: src/Integration/GoogleCustomerReviews.php:274
 msgid "Enable JavaScript to use Google Customer Reviews."
 msgstr "Aktivera JavaScript för att använda Google Customer Reviews."
 
-#: src/Integration/HealthScheduler.php:171
-msgid "The connection response is invalid. Please try again."
-msgstr "Anslutningssvaret är ogiltigt. Försök igen."
-
-#: src/Integration/HealthScheduler.php:176
-msgid "The connection status could not be saved. Please try again."
-msgstr "Anslutningsstatus kunde inte sparas. Försök igen."
-
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:122
+#: src/Integration/StarRatingDisplay.php:118
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "Betygsatt %s av 5"
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:125
+#: src/Integration/StarRatingDisplay.php:120
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "Betygsatt %s av 5, klicka för att se recensioner"
 
-#: src/Integration/WooCommerce.php:68
-msgid "Whether the Reviewbird widget is enabled."
-msgstr "Om Reviewbird-widgeten är aktiverad."
+#: src/scheduler.php:176
+msgid "The connection response is invalid. Please try again."
+msgstr "Anslutningssvaret är ogiltigt. Försök igen."
 
-#: src/Integration/WooCommerce.php:154
-msgid "Leave a review"
-msgstr "Lämna en recension"
+#: src/scheduler.php:180
+msgid "The connection status could not be saved. Please try again."
+msgstr "Anslutningsstatus kunde inte sparas. Försök igen."
 
 #: assets/src/js/components/ConnectionHealth.jsx:6
 msgid "Connected to Reviewbird"
@@ -275,6 +252,7 @@ msgid "Reviewbird is disabled until you connect your WooCommerce store."
 msgstr "Reviewbird är inaktiverat tills du ansluter din WooCommerce-butik."
 
 #: assets/src/js/components/ConnectionHealth.jsx:17
+#: assets/src/js/components/WelcomeScreen.jsx:177
 msgid "Connect store"
 msgstr "Anslut butik"
 
@@ -334,27 +312,27 @@ msgstr "Kontrollerar anslutning…"
 msgid "Open Reviewbird"
 msgstr "Öppna Reviewbird"
 
-#: assets/src/js/components/ConnectionHealth.jsx:285
-#: assets/src/js/components/GoogleCustomerReviews.jsx:48
+#: assets/src/js/components/ConnectionHealth.jsx:223
+#: assets/src/js/components/GoogleCustomerReviews.jsx:39
 msgid "The connection could not be refreshed. Please try again."
 msgstr "Anslutningen kunde inte uppdateras. Försök igen."
 
 #. translators: %s: time of the last connection check.
-#: assets/src/js/components/ConnectionHealth.jsx:321
+#: assets/src/js/components/ConnectionHealth.jsx:259
 #, js-format
 msgid "Last checked: %s"
 msgstr "Senast kontrollerad: %s"
 
-#: assets/src/js/components/ConnectionHealth.jsx:346
+#: assets/src/js/components/ConnectionHealth.jsx:284
 msgid "Refresh connection status"
 msgstr "Uppdatera anslutningsstatus"
 
-#: assets/src/js/components/ConnectionHealth.jsx:352
-#: assets/src/js/components/GoogleCustomerReviews.jsx:126
+#: assets/src/js/components/ConnectionHealth.jsx:290
+#: assets/src/js/components/GoogleCustomerReviews.jsx:117
 msgid "Refreshing…"
 msgstr "Uppdaterar…"
 
-#: assets/src/js/components/ConnectionHealth.jsx:353
+#: assets/src/js/components/ConnectionHealth.jsx:291
 msgid "Refresh"
 msgstr "Uppdatera"
 
@@ -370,33 +348,29 @@ msgstr "Integrationen är för närvarande inaktiverad."
 msgid "Integration status is unknown."
 msgstr "Integrationsstatus är okänd."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:44
+#: assets/src/js/components/GoogleCustomerReviews.jsx:35
 msgid "Status updated."
 msgstr "Status uppdaterad."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:70
+#: assets/src/js/components/GoogleCustomerReviews.jsx:61
 msgid "When the integration is enabled, Google's consent window opens automatically for every order on the thank you page."
 msgstr "När integrationen är aktiverad öppnas Googles samtyckesfönster automatiskt för varje beställning på tack-sidan."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:78
+#: assets/src/js/components/GoogleCustomerReviews.jsx:69
 msgid "Use Configure integration to enable or disable Google Customer Reviews. Then select Refresh status."
 msgstr "Använd Konfigurera integration för att aktivera eller inaktivera Google Kundrecensioner. Välj sedan Uppdatera status."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:96
+#: assets/src/js/components/GoogleCustomerReviews.jsx:87
 msgid "Configure integration"
 msgstr "Konfigurera integration"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:105
+#: assets/src/js/components/GoogleCustomerReviews.jsx:96
 msgid "Refresh integration status"
 msgstr "Uppdatera integrationsstatus"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:127
+#: assets/src/js/components/GoogleCustomerReviews.jsx:118
 msgid "Refresh status"
 msgstr "Uppdatera status"
-
-#: assets/src/js/components/LoadingSpinner.jsx:8
-msgid "Loading..."
-msgstr "Laddar..."
 
 #: assets/src/js/components/SettingsApp.jsx:102
 msgid "Reviewbird Widget"
@@ -493,10 +467,6 @@ msgstr "Anpassa dina e-postmeddelanden, widgets och utställningar för att matc
 #: assets/src/js/components/WelcomeScreen.jsx:170
 msgid "Already use Reviewbird?"
 msgstr "Använder du redan Reviewbird?"
-
-#: assets/src/js/components/WelcomeScreen.jsx:177
-msgid "Sign in"
-msgstr "Logga in"
 
 #: assets/src/js/components/WelcomeScreen.jsx:194
 msgid "Loading Reviewbird…"
