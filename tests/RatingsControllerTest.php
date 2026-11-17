@@ -31,7 +31,16 @@ namespace {
 		public function __construct( $code, $message, $data ) { $this->code = $code; $this->data = $data; }
 	}
 	class WC_Countries {
-		public function get_countries() { return array( 'NG' => 'Nigeria' ); }
+		public function get_countries() {
+			return array(
+				'NG' => 'Nigeria',
+				'US' => 'United States (US)',
+				'GB' => 'United Kingdom (UK)',
+				'UM' => 'United States (US) Minor Outlying Islands',
+				'VI' => 'Virgin Islands (US)',
+				'CW' => 'Cura&ccedil;ao',
+			);
+		}
 	}
 
 	function wc_delete_product_transients( $product_id ) { $GLOBALS['ratings_test_transients'][] = $product_id; }
@@ -167,7 +176,7 @@ namespace reviewbird\Tests {
 			}
 			$order = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_items', 'get_billing_country' ) )->getMock();
 			$order->method( 'get_items' )->willReturn( $items );
-			$order->method( 'get_billing_country' )->willReturn( 'NG' );
+			$order->method( 'get_billing_country' )->willReturnCallback( static fn() => $GLOBALS['ratings_test_billing_country'] ?? 'NG' );
 			$unrelated = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_items' ) )->getMock();
 			$unrelated->method( 'get_items' )->willReturn( array( $items[0] ) );
 			$GLOBALS['ratings_test_orders'] = array_merge( array_fill( 0, 100, $unrelated ), array( $order ) );
@@ -183,6 +192,22 @@ namespace reviewbird\Tests {
 			self::assertSame( 'buyer@example.com', $GLOBALS['ratings_test_order_queries'][0]['billing_email'] );
 			self::assertSame( array( 'processing', 'completed' ), $GLOBALS['ratings_test_order_queries'][0]['status'] );
 			self::assertSame( '', $GLOBALS['ratings_test_order_queries'][0]['lang'] );
+
+			// Send plain English names, not WooCommerce's dropdown labels.
+			foreach ( array(
+				'US' => 'United States',
+				'GB' => 'United Kingdom',
+				'UM' => 'United States Minor Outlying Islands',
+				'VI' => 'Virgin Islands (US)',
+				'CW' => 'Curaçao',
+			) as $code => $name ) {
+				$GLOBALS['ratings_test_billing_country'] = $code;
+				$result = ( new RatingsController() )->check_verified_purchase( new \WP_REST_Request( array(
+					'product_id' => 7, 'customer_email' => 'buyer@example.com',
+				) ) );
+				self::assertSame( $name, $result->data['location'] );
+			}
+			unset( $GLOBALS['ratings_test_billing_country'] );
 
 			unset( $GLOBALS['ratings_test_products'][17] );
 			$result = ( new RatingsController() )->check_verified_purchase( new \WP_REST_Request( array(

@@ -281,8 +281,11 @@ class RatingsController {
 							restore_previous_locale();
 						}
 					}
+					// WooCommerce labels are for its checkout dropdown: they contain HTML entities and
+					// "United States (US)"-style codes. Send plain names, keeping "Virgin Islands (US)".
+					$country = $countries[ $order->get_billing_country() ] ?? null;
 					return array(
-						'location'             => $countries[ $order->get_billing_country() ] ?? null,
+						'location'             => $country ? preg_replace( '/^(United (?:States|Kingdom)) \((?:US|UK)\)/', '$1', html_entity_decode( $country, ENT_QUOTES, 'UTF-8' ) ) : null,
 						'purchased_attributes' => $attributes,
 					);
 				}
