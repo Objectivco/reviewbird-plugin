@@ -121,16 +121,13 @@ function wc_get_logger() { return new class { public function __call( $level, $a
 require __DIR__ . '/../src/functions.php';
 require __DIR__ . '/../src/hooks.php';
 require __DIR__ . '/../src/scheduler.php';
-require __DIR__ . '/../src/Integration/WooCommerce.php';
 require __DIR__ . '/../src/Integration/StarRatingDisplay.php';
 
-$integration = new reviewbird\Integration\WooCommerce();
-check( isset( $hooks['woocommerce_new_order'] ) && ! isset( $hooks['woocommerce_before_order_object_save'], $hooks['woocommerce_checkout_order_created'] ), 'Capture locale only when an order is created.' );
 $order = new WC_Order();
-$integration->save_order_locale( 1, $order );
+reviewbird_save_order_locale( 1, $order );
 check( 'fr_FR' === $order->get_meta( '_reviewbird_locale' ) && 1 === $order->saved_meta, 'Capture the order locale with a meta-only save.' );
 $order->meta['_reviewbird_locale'] = 'en_US';
-$integration->save_order_locale( 1, $order );
+reviewbird_save_order_locale( 1, $order );
 check( 'en_US' === $order->get_meta( '_reviewbird_locale' ) && 1 === $order->saved_meta, 'Keep the first locale when a draft becomes an order.' );
 $GLOBALS['product'] = new WC_Product();
 $stars = ( new ReflectionClass( reviewbird\Integration\StarRatingDisplay::class ) )->newInstanceWithoutConstructor();

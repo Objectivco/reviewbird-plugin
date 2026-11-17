@@ -23,7 +23,6 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use reviewbird\Admin\Settings;
 use reviewbird\Integration\GoogleCustomerReviews;
 use reviewbird\Integration\StarRatingDisplay;
-use reviewbird\Integration\WooCommerce;
 use reviewbird\Integration\WPML;
 
 if ( ! defined( 'WPINC' ) ) {
@@ -41,6 +40,7 @@ define( 'REVIEWBIRD_API_URL_DEVELOPMENT', 'https://reviewapp.test' );
 require_once REVIEWBIRD_PLUGIN_DIR . 'vendor/autoload.php';
 require_once REVIEWBIRD_PLUGIN_DIR . 'src/functions.php';
 require_once REVIEWBIRD_PLUGIN_DIR . 'src/hooks.php';
+require_once REVIEWBIRD_PLUGIN_DIR . 'src/api.php';
 require_once REVIEWBIRD_PLUGIN_DIR . 'src/scheduler.php';
 
 add_action(
@@ -70,9 +70,14 @@ function reviewbird_run(): void {
 		}
 	);
 
-	// REST API.
+	// REST API and the WooCommerce API data Reviewbird imports.
 	add_action( 'rest_api_init', 'reviewbird_register_rest_routes' );
 	add_filter( 'woocommerce_rest_is_request_to_rest_api', 'reviewbird_enable_wc_auth' );
+	add_filter( 'woocommerce_rest_prepare_product_review', 'reviewbird_add_review_data_to_rest_response', 100, 3 );
+	add_filter( 'woocommerce_rest_prepare_shop_order_object', 'reviewbird_add_locale_to_order_response', 100, 3 );
+	add_filter( 'woocommerce_rest_shop_order_object_query', 'reviewbird_query_all_languages', 10, 2 );
+	add_filter( 'woocommerce_rest_product_review_query', 'reviewbird_query_all_languages', 10, 2 );
+	add_action( 'woocommerce_new_order', 'reviewbird_save_order_locale', 10, 2 );
 
 	// Admin.
 	if ( is_admin() ) {
@@ -85,7 +90,6 @@ function reviewbird_run(): void {
 
 	// Storefront.
 	add_action( 'template_redirect', 'reviewbird_is_onboarding_preview', 0 );
-	add_action( 'wp_enqueue_scripts', 'reviewbird_enqueue_public_scripts' );
 	add_action( 'wp_enqueue_scripts', 'reviewbird_enqueue_star_styles' );
 	add_shortcode( 'reviewbird_widget', 'reviewbird_widget_shortcode' );
 	add_shortcode( 'reviewbird_showcase', 'reviewbird_carousel_shortcode' );
@@ -99,6 +103,13 @@ function reviewbird_run(): void {
 	add_filter( 'woocommerce_product_get_reviews_allowed', 'reviewbird_force_reviews_allowed' );
 	add_filter( 'woocommerce_structured_data_product', 'reviewbird_filter_structured_data', 10, 2 );
 	add_filter( 'woocommerce_duplicate_product_exclude_meta', 'reviewbird_exclude_duplicate_meta' );
+
+	// The widget replaces WooCommerce's reviews, so skip their output and queries.
+	add_filter( 'pre_render_block', 'reviewbird_suppress_product_reviews_block', 10, 3 );
+	add_filter( 'render_block_data', 'reviewbird_remove_embedded_product_reviews' );
+	add_filter( 'comments_pre_query', 'reviewbird_suppress_product_review_queries', 10, 2 );
+	add_action( 'woocommerce_order_item_meta_end', 'reviewbird_add_account_review_link', 10, 4 );
+	add_action( 'cfw_order_item_after_data', 'reviewbird_add_checkoutwc_account_review_link' );
 
 	// Ratings from Reviewbird replace WooCommerce's.
 	add_action( 'reviewbird_sync_product_rating', 'reviewbird_sync_product_rating' );
@@ -123,7 +134,6 @@ function reviewbird_run(): void {
 	reviewbird_register_compatibility();
 	new StarRatingDisplay();
 	new GoogleCustomerReviews();
-	new WooCommerce();
 	new WPML();
 }
 add_action( 'plugins_loaded', 'reviewbird_run' );

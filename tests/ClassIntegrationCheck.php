@@ -10,11 +10,7 @@
 
 // phpcs:ignoreFile -- This check uses a disposable WordPress and WooCommerce database.
 
-use reviewbird\Api\CouponController;
-use reviewbird\Api\ProductsController;
-use reviewbird\Api\RatingsController;
 use reviewbird\Integration\StarRatingDisplay;
-use reviewbird\Integration\WooCommerce;
 
 $site = $argv[1] ?? '';
 $config = is_file( $site . '/wp-config.php' ) ? file_get_contents( $site . '/wp-config.php' ) : '';
@@ -88,9 +84,8 @@ $template->set_minimum_amount( 20 );
 $template->save();
 $lookup = function ( $id, $code ) use ( $template ) { return 'test-template-alias' === $code ? $template->get_id() : $id; };
 add_filter( 'woocommerce_get_coupon_id_from_code', $lookup, 10, 2 );
-$coupons = new CouponController();
 $new_code = 'REVIEW-' . strtoupper( wp_generate_password( 10, false ) );
-$result = $coupons->create_coupon( request( array( 'code' => $new_code, 'template_code' => 'test-template-alias', 'expiry_date' => '2030-01-01' ) ) );
+$result = reviewbird_rest_create_coupon( request( array( 'code' => $new_code, 'template_code' => 'test-template-alias', 'expiry_date' => '2030-01-01' ) ) );
 check( $result instanceof WP_REST_Response && 200 === $result->get_status(), 'Template clone failed.' );
 $clone = new WC_Coupon( $result->get_data()['coupon_id'] );
 foreach ( array( 'discount_type', 'amount', 'individual_use', 'minimum_amount' ) as $property ) {
@@ -102,9 +97,9 @@ check( wc_format_coupon_code( $new_code ) === $clone->get_code(), 'Coupon code d
 check( '2030-01-01' === $clone->get_date_expires()->date( 'Y-m-d' ), 'Coupon expiry changed.' );
 check( 'test-template-alias' === $clone->get_meta( '_reviewbird_template' ) && (bool) $clone->get_meta( '_reviewbird_generated' ), 'Coupon metadata changed.' );
 remove_filter( 'woocommerce_get_coupon_id_from_code', $lookup, 10 );
-check_error( $coupons->create_coupon( request( array() ) ), 'missing_code', 400 );
-check_error( $coupons->create_coupon( request( array( 'code' => 'new', 'amount' => 0, 'discount_type' => 'percent' ) ) ), 'missing_parameters', 400 );
-check_error( $coupons->create_coupon( request( array( 'code' => 'new', 'template_code' => 'no-such-template' ) ) ), 'template_not_found', 404 );
+check_error( reviewbird_rest_create_coupon( request( array() ) ), 'missing_code', 400 );
+check_error( reviewbird_rest_create_coupon( request( array( 'code' => 'new', 'amount' => 0, 'discount_type' => 'percent' ) ) ), 'missing_parameters', 400 );
+check_error( reviewbird_rest_create_coupon( request( array( 'code' => 'new', 'template_code' => 'no-such-template' ) ) ), 'template_not_found', 404 );
 
 // Use WordPress's route validation before WooCommerce coupon setters.
 $previous_user = get_current_user_id();
@@ -154,12 +149,11 @@ if ( method_exists( $variation, 'set_global_unique_id' ) ) { $variation->set_glo
 $variation->save();
 $attachment_url = function ( $url, $id ) use ( $images ) { return $images[1] === $id ? false : 'https://example.test/' . $id . '.jpg'; };
 add_filter( 'wp_get_attachment_url', $attachment_url, 10, 2 );
-$products = new ProductsController();
 $filtered_tags = static function ( $terms, $id, $taxonomy ) {
 	return 'product_tag' === $taxonomy ? array( 4 => (object) array( 'term_id' => 4, 'name' => 'Filtered tag', 'slug' => 'filtered-tag' ) ) : $terms;
 };
 add_filter( 'get_the_terms', $filtered_tags, 10, 3 );
-$result = $products->get_product( request( array( 'id' => $variation->get_id() ) ) );
+$result = reviewbird_rest_get_product( request( array( 'id' => $variation->get_id() ) ) );
 $data = $result->get_data();
 remove_filter( 'get_the_terms', $filtered_tags, 10 );
 check( array( 0 ) === array_keys( $data['tags'] ), 'Filtered product tags must remain a JSON array.' );
@@ -170,16 +164,15 @@ check( array( 0, 1 ) === array_keys( $data['images'] ), 'Gallery images must rem
 check( array( 'id', 'legacy_external_ids', 'name', 'slug', 'permalink', 'type', 'status', 'sku', 'global_unique_id', 'brand', 'price', 'image', 'images', 'stock_status', 'in_stock', 'tags', 'categories', 'variations' ) === array_keys( $data ), 'Product response fields changed.' );
 check( REVIEWBIRD_VERSION === $result->get_headers()['X-Reviewbird-Version'], 'Version header changed.' );
 remove_filter( 'wp_get_attachment_url', $attachment_url, 10 );
-check_error( $products->get_product( request( array( 'id' => 9999999 ) ) ), 'product_not_found', 404 );
+check_error( reviewbird_rest_get_product( request( array( 'id' => 9999999 ) ) ), 'product_not_found', 404 );
 
-$ratings = new RatingsController();
-check_error( $ratings->update_ratings( request( array() ) ), 'missing_product_id', 400 );
-check_error( $ratings->update_ratings( request( array( 'product_id' => 'invalid' ) ) ), 'invalid_product_id', 400 );
-check_error( $ratings->update_ratings( request( array( 'product_id' => 9999999 ) ) ), 'product_not_found', 404 );
+check_error( reviewbird_rest_update_ratings( request( array() ) ), 'missing_product_id', 400 );
+check_error( reviewbird_rest_update_ratings( request( array( 'product_id' => 'invalid' ) ) ), 'invalid_product_id', 400 );
+check_error( reviewbird_rest_update_ratings( request( array( 'product_id' => 9999999 ) ) ), 'product_not_found', 404 );
 foreach ( array( 'avg_stars' => 6, 'review_count' => -1, 'rating_counts' => 'invalid' ) as $field => $value ) {
 	$params = array( 'product_id' => $product->get_id(), 'avg_stars' => 4.5, 'review_count' => 2 );
 	$params[ $field ] = $value;
-	check( is_wp_error( $ratings->update_ratings( request( $params ) ) ), 'Invalid rating data was accepted: ' . $field );
+	check( is_wp_error( reviewbird_rest_update_ratings( request( $params ) ) ), 'Invalid rating data was accepted: ' . $field );
 }
 // The plugin registers these at boot only when the widget was already enabled.
 foreach ( array( 'average_rating', 'review_count', 'rating_counts' ) as $property ) {
@@ -187,11 +180,11 @@ foreach ( array( 'average_rating', 'review_count', 'rating_counts' ) as $propert
 	add_filter( "woocommerce_product_variation_get_{$property}", "reviewbird_override_{$property}", 10, 2 );
 }
 foreach ( array( array( 0, 1, array_fill( 1, 5, 0 ) ), array( 0.83, 6, array( 5 => 1 ) ) ) as list( $average, $total, $buckets ) ) {
-	$result = $ratings->update_ratings( request( array( 'product_id' => $product->get_id(), 'avg_stars' => $average, 'review_count' => $total, 'rating_counts' => $buckets ) ) );
+	$result = reviewbird_rest_update_ratings( request( array( 'product_id' => $product->get_id(), 'avg_stars' => $average, 'review_count' => $total, 'rating_counts' => $buckets ) ) );
 	check( $result instanceof WP_REST_Response && 200 === $result->get_status(), 'Imported unrated reviews must be accepted.' );
 	check( $total === $product->get_review_count() && array_sum( $buckets ) === $product->get_rating_count(), 'Native review and rating totals must remain distinct.' );
 }
-$result = $ratings->update_ratings( request( array( 'product_id' => $product->get_id(), 'avg_stars' => '4.5', 'review_count' => '2', 'rating_counts' => array( 4 => 1, 5 => 1 ) ) ) );
+$result = reviewbird_rest_update_ratings( request( array( 'product_id' => $product->get_id(), 'avg_stars' => '4.5', 'review_count' => '2', 'rating_counts' => array( 4 => 1, 5 => 1 ) ) ) );
 check( array( 'success' => true, 'product_id' => $product->get_id(), 'avg_stars' => 4.5, 'review_count' => 2 ) === $result->get_data(), 'Rating response changed.' );
 check( 2 === $product->get_rating_count(), 'Native rating count must use the saved distribution.' );
 
@@ -208,7 +201,7 @@ $purchase_item->add_meta_data( 'Gift message', 'Keep this private' );
 $purchase_item->add_meta_data( 'Engraving', 'Private text' );
 $purchase_order->add_item( $purchase_item );
 $purchase_order->save();
-$purchase = $ratings->check_verified_purchase( request( array( 'product_id' => $product->get_id(), 'customer_email' => $purchase_email ) ) )->get_data();
+$purchase = reviewbird_rest_check_verified_purchase( request( array( 'product_id' => $product->get_id(), 'customer_email' => $purchase_email ) ) )->get_data();
 check( true === $purchase['verified_purchase'] && 'Nigeria' === $purchase['location'], 'Guest purchase country was not read from the order.' );
 check( array( array( 'name' => 'Size', 'value' => 'Large' ) ) === $purchase['purchased_attributes'], 'Selected order attributes were lost.' );
 
@@ -222,7 +215,7 @@ $markup = reviewbird_filter_structured_data( $original, $product );
 check( array( 'cached review' ) === $markup['review'] && 4.5 === $markup['aggregateRating']['ratingValue'], 'Cached schema changed.' );
 // A zero total must also hide old cached reviews before the background refresh runs.
 set_transient( 'reviewbird_ssr_' . $product->get_id(), array( 'reviews' => array( 'old review' ) ), HOUR_IN_SECONDS );
-$result = $ratings->update_ratings( request( array( 'product_id' => $product->get_id(), 'avg_stars' => 0, 'review_count' => 0 ) ) );
+$result = reviewbird_rest_update_ratings( request( array( 'product_id' => $product->get_id(), 'avg_stars' => 0, 'review_count' => 0 ) ) );
 check( 200 === $result->get_status(), 'Zero ratings were rejected.' );
 check( 0.0 === reviewbird_override_average_rating( 4.5, $product ), 'Zero average restored old ratings.' );
 check( 0 === reviewbird_override_review_count( 2, $product ), 'Zero count restored old ratings.' );
@@ -233,13 +226,12 @@ check( array() === reviewbird_get_cached_product_reviews( $product->get_id() ), 
 update_option( 'reviewbird_enable_schema', 'no' );
 check( $original === reviewbird_filter_structured_data( $original, $product ), 'Disabled schema changed native markup.' );
 
-$integration = new WooCommerce();
 $order = wc_create_order();
 foreach ( array( array( $order ), array( $order->get_id(), $order ), array( $order->get_id() ) ) as $args ) {
-	$integration->save_order_locale( ...$args );
+	reviewbird_save_order_locale( ...$args );
 	check( get_locale() === wc_get_order( $order->get_id() )->get_meta( '_reviewbird_locale' ), 'Order hook lost the locale.' );
 }
-$integration->register_system_status_field();
+rest_get_server(); // Fires rest_api_init, which registers the field.
 $field = $GLOBALS['wp_rest_additional_fields']['system_status']['reviewbird_widget_enabled'];
 foreach ( array( 'yes' => true, 'no' => false ) as $value => $expected ) {
 	update_option( 'reviewbird_enable_widget', $value );
@@ -327,7 +319,7 @@ $widget_id = 'id="reviewbird-widget-container-' . $product->get_id() . '"';
 $GLOBALS['wp_query'] = new WP_Query( array( 'p' => $product->get_id(), 'post_type' => 'product' ) );
 $GLOBALS['post'] = get_post( $product->get_id() );
 check( is_product(), 'The fallback check must use a product query.' );
-$ratings->update_ratings( request( array( 'product_id' => $product->get_id(), 'avg_stars' => 4.5, 'review_count' => 2, 'rating_counts' => array( 4 => 1, 5 => 1 ) ) ) );
+reviewbird_rest_update_ratings( request( array( 'product_id' => $product->get_id(), 'avg_stars' => 4.5, 'review_count' => 2, 'rating_counts' => array( 4 => 1, 5 => 1 ) ) ) );
 foreach ( array( 'product-rating', 'product-rating-counter' ) as $rating_block ) {
 	$html = do_blocks( '<!-- wp:woocommerce/' . $rating_block . ' {"isDescendentOfSingleProductTemplate":true} /-->' );
 	check( false !== strpos( $html, 'rb-wc-rating' ), 'The real rating block must use the replacement: ' . $rating_block );

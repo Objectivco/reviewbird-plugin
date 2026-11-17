@@ -191,6 +191,19 @@ namespace {
 	function sanitize_hex_color( $color ) { return $color; }
 	function wc_get_logger() { return new class { public function __call( $level, $args ) {} }; }
 	require_once dirname( __DIR__ ) . '/src/scheduler.php';
+	function reviewbird_enqueue_build( $name ) {
+		\reviewbird\Integration\wp_enqueue_script( 'reviewbird-' . $name );
+		\reviewbird\Integration\wp_enqueue_style( 'reviewbird-' . $name );
+	}
+	// A manual refresh is the status request with refresh set.
+	function refresh_health( $settings ) {
+		$_POST['refresh'] = '1';
+		try {
+			$settings->handle_get_health_status();
+		} finally {
+			unset( $_POST['refresh'] );
+		}
+	}
 	require_once dirname( __DIR__ ) . '/src/Admin/Settings.php';
 	use reviewbird\Integration\GoogleCustomerReviews;
 
@@ -420,12 +433,12 @@ namespace {
 		check( $fresh === $response->data['status'] && $before_calls + 2 === $GLOBALS['gcr_api_calls'], 'Page load did not refresh the expired cache.' );
 	}
 	$GLOBALS['gcr_api_response'] = $initial_status;
-	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+	try { refresh_health( $settings ); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 		check( $initial_status === $response->data['status'] && $before_calls + 3 === $GLOBALS['gcr_api_calls'], 'Manual refresh did not bypass the cache.' );
 		check( $initial_status === \reviewbird\Admin\get_transient( 'reviewbird_admin_health_status' ), 'Manual refresh did not replace the transient.' );
 	}
 	$GLOBALS['gcr_api_response'] = $fresh;
-	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+	try { refresh_health( $settings ); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 		check( 200 === $response->getCode() && $response->data['status'] === $fresh, 'Refresh did not return the fresh response.' );
 		check( 'disabled' === $response->data['googleCustomerReviews']['status'] && false === $response->data['googleCustomerReviews']['enabled'], 'Fresh disabled feature state is wrong.' );
 		check( ! array_intersect( array( 'promptEnabled', 'standardModal', 'prompt' ), array_keys( $response->data['googleCustomerReviews'] ) ), 'Refresh still exposes obsolete prompt settings.' );
@@ -446,12 +459,12 @@ namespace {
 	try { $settings->handle_get_health_status(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 		check( 403 === $response->getCode() && $before_calls === $GLOBALS['gcr_api_calls'], 'Invalid nonce read the admin cache.' );
 	}
-	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+	try { refresh_health( $settings ); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 		check( 403 === $response->getCode() && $before_calls === $GLOBALS['gcr_api_calls'], 'Invalid nonce refreshed the cache.' );
 	}
 	$_POST['nonce'] = 'valid-nonce';
 	$GLOBALS['gcr_admin'] = false;
-	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+	try { refresh_health( $settings ); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 		check( 403 === $response->getCode() && $before_calls === $GLOBALS['gcr_api_calls'], 'Unprivileged user refreshed the cache.' );
 	}
 	try { $settings->handle_get_health_status(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
@@ -460,7 +473,7 @@ namespace {
 	$GLOBALS['gcr_admin'] = true;
 	foreach ( array( new WP_Error( 'network', 'Offline' ), new WP_Error( 'http', 'Server error', array( 'status' => 500, 'response' => array( 'status' => 'not_connected' ) ) ), null, array(), array( 'status' => array() ) ) as $bad_response ) {
 		$GLOBALS['gcr_api_response'] = $bad_response;
-		try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+		try { refresh_health( $settings ); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 			check( 502 === $response->getCode(), 'Failed refresh returned success.' );
 			check( $GLOBALS['gcr_options']['reviewbird_store_status'] === $fresh, 'Failed refresh deleted the last good cache.' );
 			check( $fresh === \reviewbird\Admin\get_transient( 'reviewbird_admin_health_status' ), 'Failed refresh replaced the transient.' );
@@ -468,11 +481,11 @@ namespace {
 	}
 	$GLOBALS['gcr_api_response'] = $initial_status;
 	$GLOBALS['gcr_option_write_fail'] = true;
-	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+	try { refresh_health( $settings ); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 		check( 502 === $response->getCode() && $GLOBALS['gcr_options']['reviewbird_store_status'] === $fresh, 'Cache write failure returned success.' );
 	}
 	$GLOBALS['gcr_option_write_fail'] = false;
-	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+	try { refresh_health( $settings ); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 		check( 'enabled' === $response->data['googleCustomerReviews']['status'] && true === $response->data['googleCustomerReviews']['enabled'], 'Refresh did not restore enabled feature state.' );
 	}
 	check( $initial_status === reviewbird_refresh_health_status(), 'Unchanged valid cache is treated as a write failure.' );
@@ -482,7 +495,7 @@ namespace {
 	check( '#ff8800' === get_option( 'reviewbird_star_color' ) && \reviewbird\Admin\get_transient( 'reviewbird_star_color' ), 'A health response without store_id did not refresh color for the saved store.' );
 	$disconnected = array( 'status' => 'not_connected', 'message' => 'No store is connected.' );
 	$GLOBALS['gcr_api_response'] = new WP_Error( 'http', 'Not connected', array( 'status' => 404, 'response' => $disconnected ) );
-	try { $settings->handle_clear_health_cache(); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
+	try { refresh_health( $settings ); } catch ( \reviewbird\Admin\GcrAdminResponse $response ) {
 		check( 200 === $response->getCode() && 'disabled' === $response->data['googleCustomerReviews']['status'], 'Known 404 disconnect was not applied.' );
 	}
 	check( $disconnected === $GLOBALS['gcr_options']['reviewbird_store_status'] && null === GoogleCustomerReviews::configuration(), 'Disconnect left stale enabled config.' );

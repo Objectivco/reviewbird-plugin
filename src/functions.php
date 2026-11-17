@@ -516,30 +516,6 @@ function reviewbird_sync_product_rating( int $product_id ): void {
 }
 
 /**
- * Whether the current request should enqueue the review widget script early.
- *
- * Covers native product pages plus WordPress pages that embed a product via
- * the Reviewbird shortcode, WooCommerce [product_page] (WPBakery Product Page),
- * or the WooCommerce Single Product block.
- *
- * @return bool True if the widget script should be enqueued.
- */
-function reviewbird_page_should_enqueue_widget(): bool {
-	if ( is_product() ) {
-		return true;
-	}
-
-	global $post;
-
-	if ( empty( $post ) ) {
-		return false;
-	}
-
-	return has_shortcode( $post->post_content, 'reviewbird_widget' ) || has_shortcode( $post->post_content, 'product_page' )
-		|| has_block( 'woocommerce/single-product', $post );
-}
-
-/**
  * Enqueue the review widget script and configuration.
  *
  * Safe to call while rendering content because the script prints in the footer.
@@ -569,6 +545,23 @@ function reviewbird_enqueue_widget_script(): void {
 	}
 
 	wp_localize_script( 'reviewbird-widget', 'reviewbirdConfig', $config );
+}
+
+/**
+ * Enqueue a script built by wp-scripts and its stylesheet, as handle reviewbird-{$name}.
+ *
+ * @param string $name Entry name in assets/build.
+ */
+function reviewbird_enqueue_build( string $name ): void {
+	$file   = REVIEWBIRD_PLUGIN_DIR . "assets/build/{$name}.asset.php";
+	$asset  = file_exists( $file ) ? include $file : array(
+		'dependencies' => array(),
+		'version'      => REVIEWBIRD_VERSION,
+	);
+	$handle = 'reviewbird-' . $name;
+	wp_enqueue_script( $handle, REVIEWBIRD_PLUGIN_URL . "assets/build/{$name}.js", $asset['dependencies'], $asset['version'], true );
+	wp_enqueue_style( $handle, REVIEWBIRD_PLUGIN_URL . "assets/build/{$name}.css", array(), $asset['version'] );
+	wp_style_add_data( $handle, 'rtl', 'replace' );
 }
 
 /**
@@ -716,78 +709,68 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 }
 
 /**
- * Render the reviewbird widget for a product.
+ * Render the Reviewbird widget for a product, once per product per request.
  *
  * @param int|null $product_id Optional product ID. If not provided, uses global $product.
  * @return string HTML output for the widget, or empty string if conditions not met.
  */
 function reviewbird_render_widget( $product_id = null ): string {
-	$product = $product_id ? wc_get_product( $product_id ) : $GLOBALS['product'] ?? null;
+	static $rendered = array();
 
-	if ( ! $product instanceof \WC_Product || ! reviewbird_is_store_connected() ) {
+	$product = $product_id ? wc_get_product( $product_id ) : ( $GLOBALS['product'] ?? null );
+	if ( ! $product instanceof \WC_Product || ! reviewbird_is_store_connected() || isset( $rendered[ $product->get_id() ] ) ) {
 		return '';
 	}
 
-	$store_id = reviewbird_get_store_id();
-
+	$product_id = $product->get_id();
+	$store_id   = reviewbird_get_store_id();
 	if ( ! $store_id ) {
-		return '<!-- Reviewbird: Widget not displayed. Store ID not configured. Please connect your Reviewbird account in WP Admin > Reviewbird > Settings -->';
-	}
-
-	if ( ! apply_filters( 'reviewbird_show_widget_for_product', true, $product ) ) {
+		$html = '<!-- Reviewbird: Widget not displayed. Store ID not configured. Please connect your Reviewbird account in WP Admin > Reviewbird > Settings -->';
+	} elseif ( ! apply_filters( 'reviewbird_show_widget_for_product', true, $product ) || ! comments_open( $product_id ) ) {
 		return '';
+	} else {
+		$widget_id    = 'reviewbird-widget-container-' . $product_id;
+		$widget_attrs = apply_filters(
+			'reviewbird_widget_attributes',
+			array(
+				'store-id'    => $store_id,
+				'product-key' => reviewbird_product_id( $product_id ),
+				'locale'      => get_locale(),
+			),
+			$product
+		);
+		$attrs_html   = '';
+		foreach ( $widget_attrs as $key => $value ) {
+			$attrs_html .= sprintf( ' data-%s="%s"', esc_attr( $key ), esc_attr( $value ) );
+		}
+
+		// The script prints in the footer, so enqueueing while content renders works on any page.
+		reviewbird_enqueue_widget_script();
+		static $inline_script_added = false;
+		if ( ! $inline_script_added ) {
+			wp_add_inline_script( 'reviewbird-widget', 'if(typeof reviewbird !== "undefined") reviewbird.init();' );
+			$inline_script_added = true;
+		}
+
+		// Server-rendered reviews for search engines.
+		$html = apply_filters(
+			'reviewbird_widget_html',
+			sprintf( '<div id="%s"%s>%s</div>', esc_attr( $widget_id ), $attrs_html, reviewbird_render_ssr_reviews( reviewbird_get_cached_product_reviews( $product_id ) ) ),
+			$product,
+			$widget_id,
+			$widget_attrs
+		);
 	}
 
-	// Don't show widget if reviews are disabled for this product.
-	if ( ! comments_open( $product->get_id() ) ) {
-		return '';
+	if ( $html ) {
+		$rendered[ $product_id ] = true;
+		// Keep native review links valid after the widget replaces the main product's reviews tab.
+		if ( reviewbird_can_show_widget() && is_product() && get_queried_object_id() === $product_id ) {
+			$html = '<div id="reviews">' . $html . '</div>';
+		}
 	}
 
-	$actual_product_id = $product->get_id();
-	$widget_id         = 'reviewbird-widget-container-' . $actual_product_id;
-
-	$widget_attrs = apply_filters(
-		'reviewbird_widget_attributes',
-		array(
-			'store-id'    => $store_id,
-			'product-key' => reviewbird_product_id( $actual_product_id ),
-			'locale'      => get_locale(),
-		),
-		$product
-	);
-
-	$attrs_html = '';
-	foreach ( $widget_attrs as $key => $value ) {
-		$attrs_html .= sprintf( ' data-%s="%s"', esc_attr( $key ), esc_attr( $value ) );
-	}
-
-	// Build SSR review HTML for SEO.
-	$cached_reviews = reviewbird_get_cached_product_reviews( $actual_product_id );
-	$ssr_html       = reviewbird_render_ssr_reviews( $cached_reviews );
-
-	// Enqueue here so pages that embed a product (WPBakery, shortcode, block)
-	// still get the footer script even when is_product() is false.
-	reviewbird_enqueue_widget_script();
-
-	// Add the init call via wp_add_inline_script (once, even if multiple widgets render).
-	static $inline_script_added = false;
-	if ( ! $inline_script_added ) {
-		wp_add_inline_script( 'reviewbird-widget', 'if(typeof reviewbird !== "undefined") reviewbird.init();' );
-		$inline_script_added = true;
-	}
-
-	return apply_filters(
-		'reviewbird_widget_html',
-		sprintf(
-			'<div id="%s"%s>%s</div>',
-			esc_attr( $widget_id ),
-			$attrs_html,
-			$ssr_html
-		),
-		$product,
-		$widget_id,
-		$widget_attrs
-	);
+	return $html;
 }
 
 /**

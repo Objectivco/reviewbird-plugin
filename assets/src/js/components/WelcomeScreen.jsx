@@ -42,9 +42,9 @@ export default function WelcomeScreen( {
 			controller = new AbortController();
 			const timeout = setTimeout( () => controller?.abort(), 10000 );
 			try {
-				const { data } = await fetchHealthStatus( controller.signal );
+				const { status } = await fetchHealthStatus( controller.signal );
 				if ( ! disposed ) {
-					setHealth( data );
+					setHealth( status );
 				}
 			} catch {
 				if ( ! disposed ) {

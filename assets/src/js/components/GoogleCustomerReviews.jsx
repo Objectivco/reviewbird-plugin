@@ -1,6 +1,6 @@
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { ExternalLinkIcon } from './ConnectionHealth.jsx';
+import { ExternalLinkIcon, fetchHealthStatus } from './ConnectionHealth.jsx';
 
 export default function GoogleCustomerReviews() {
 	const [ settings, setSettings ] = useState(
@@ -24,23 +24,14 @@ export default function GoogleCustomerReviews() {
 		setMessage( '' );
 		setError( '' );
 		try {
-			const body = new FormData();
-			body.append( 'action', 'reviewbird_clear_health_cache' );
-			body.append( 'nonce', window.reviewbirdAdmin.nonce );
-			const response = await fetch( window.reviewbirdAdmin.ajaxUrl, {
-				method: 'POST',
-				body,
-			} );
-			const result = await response.json();
-			if ( ! response.ok || ! result.success ) {
-				throw new Error(
-					typeof result.data === 'string' ? result.data : ''
-				);
-			}
-			if ( ! result.data?.googleCustomerReviews ) {
+			const { googleCustomerReviews } = await fetchHealthStatus(
+				undefined,
+				true
+			);
+			if ( ! googleCustomerReviews ) {
 				throw new Error();
 			}
-			setSettings( result.data.googleCustomerReviews );
+			setSettings( googleCustomerReviews );
 			setMessage( __( 'Status updated.', 'reviewbird' ) );
 		} catch ( failure ) {
 			setError(

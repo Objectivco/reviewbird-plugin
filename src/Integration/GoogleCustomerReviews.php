@@ -206,7 +206,7 @@ class GoogleCustomerReviews {
 		}
 
 		$this->rendered = true;
-		$this->enqueue_assets();
+		reviewbird_enqueue_build( 'google-customer-reviews' );
 		$this->render_card( $order, 'standard' );
 	}
 
@@ -244,22 +244,9 @@ class GoogleCustomerReviews {
 		}
 
 		status_header( 200 );
-		$this->enqueue_assets();
+		reviewbird_enqueue_build( 'google-customer-reviews' );
 		require REVIEWBIRD_PLUGIN_DIR . 'templates/google-customer-reviews.php';
 		exit;
-	}
-
-	/**
-	 * Enqueue assets for checkout and the signed-link page.
-	 */
-	private function enqueue_assets(): void {
-		$asset_file = REVIEWBIRD_PLUGIN_DIR . 'assets/build/google-customer-reviews.asset.php';
-		$asset      = file_exists( $asset_file ) ? include $asset_file : array(
-			'dependencies' => array(),
-			'version'      => REVIEWBIRD_VERSION,
-		);
-		wp_enqueue_script( 'reviewbird-google-customer-reviews', REVIEWBIRD_PLUGIN_URL . 'assets/build/google-customer-reviews.js', $asset['dependencies'], $asset['version'], true );
-		wp_enqueue_style( 'reviewbird-google-customer-reviews', REVIEWBIRD_PLUGIN_URL . 'assets/build/google-customer-reviews.css', array(), $asset['version'] );
 	}
 
 	/**

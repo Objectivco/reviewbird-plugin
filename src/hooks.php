@@ -21,15 +21,6 @@ function reviewbird_enqueue_star_styles(): void {
 }
 
 /**
- * Enqueue the widget script on pages that show or embed a product.
- */
-function reviewbird_enqueue_public_scripts(): void {
-	if ( reviewbird_page_should_enqueue_widget() ) {
-		reviewbird_enqueue_widget_script();
-	}
-}
-
-/**
  * Handle the [reviewbird_widget] shortcode.
  *
  * @param array $atts Shortcode attributes.
@@ -203,29 +194,13 @@ function reviewbird_render_block_product_widget( $content, $block, $instance ): 
 }
 
 /**
- * Render each product's widget once across hooks, blocks, and shortcodes.
+ * Render a product's widget from the hooks, block, and shortcode when the widget setting is on.
  *
  * @param int|null $product_id Product ID, or the current product.
  * @return string
  */
 function reviewbird_product_widget( $product_id = null ): string {
-	static $rendered = array();
-
-	$product = $product_id ? wc_get_product( $product_id ) : ( $GLOBALS['product'] ?? null );
-	if ( ! $product instanceof \WC_Product || ! reviewbird_can_show_widget() || isset( $rendered[ $product->get_id() ] ) ) {
-		return '';
-	}
-
-	$output = reviewbird_render_widget( $product->get_id() );
-	if ( $output ) {
-		$rendered[ $product->get_id() ] = true;
-		// Keep native review links valid after removing the main product's reviews tab.
-		if ( is_product() && get_queried_object_id() === $product->get_id() ) {
-			$output = '<div id="reviews">' . $output . '</div>';
-		}
-	}
-
-	return $output;
+	return reviewbird_is_widget_enabled() ? reviewbird_render_widget( $product_id ) : '';
 }
 
 /**
@@ -329,97 +304,6 @@ function reviewbird_override_rating_counts( $native_counts, $product ): array {
 }
 
 /**
- * Register Reviewbird REST routes.
- */
-function reviewbird_register_rest_routes(): void {
-	$ratings = new \reviewbird\Api\RatingsController();
-	register_rest_route(
-		'reviewbird/v1',
-		'/ratings/update',
-		array(
-			'methods'             => 'POST',
-			'callback'            => array( $ratings, 'update_ratings' ),
-			'permission_callback' => array( \reviewbird\Api\RatingsController::class, 'permission_callback' ),
-		)
-	);
-	register_rest_route(
-		'reviewbird/v1',
-		'/verified-purchase/check',
-		array(
-			'methods'             => 'POST',
-			'callback'            => array( $ratings, 'check_verified_purchase' ),
-			'permission_callback' => array( \reviewbird\Api\RatingsController::class, 'verified_purchase_permission_callback' ),
-		)
-	);
-	register_rest_route(
-		'reviewbird/v1',
-		'/store-connected',
-		array(
-			'methods'             => 'POST',
-			'callback'            => 'reviewbird_store_connected',
-			'permission_callback' => static function () {
-				return current_user_can( 'manage_woocommerce' );
-			},
-			'args'                => array(
-				'store_id' => array(
-					'required' => true,
-					'type'     => 'integer',
-					'minimum'  => 1,
-				),
-			),
-		)
-	);
-	( new \reviewbird\Api\CouponController() )->register_routes();
-	( new \reviewbird\Api\ProductsController() )->register_routes();
-}
-
-/**
- * Save the store ID that Reviewbird sends after a store connects.
- *
- * @param \WP_REST_Request $request REST request.
- * @return \WP_REST_Response
- */
-function reviewbird_store_connected( $request ): \WP_REST_Response {
-	$store_id = (int) $request->get_param( 'store_id' );
-	if ( (int) get_option( 'reviewbird_store_id' ) !== $store_id ) {
-		delete_option( 'reviewbird_star_color' );
-		delete_transient( 'reviewbird_star_color' );
-	}
-	update_option( 'reviewbird_store_id', $store_id );
-	delete_option( 'reviewbird_store_status' );
-	delete_transient( 'reviewbird_admin_health_status' );
-	reviewbird_schedule_immediate_health_check();
-
-	wc_get_logger()->info( sprintf( 'Reviewbird store connected: Store ID %d saved', $store_id ), array( 'source' => 'reviewbird' ) );
-
-	return new \WP_REST_Response(
-		array(
-			'success'  => true,
-			'store_id' => $store_id,
-			// translators: %d: Store ID number.
-			'message'  => sprintf( __( 'Store ID %d has been saved successfully', 'reviewbird' ), $store_id ),
-		)
-	);
-}
-
-/**
- * Let WooCommerce API keys authenticate Reviewbird and ReviewX routes.
- *
- * @param bool $is_request_to_wc_api Whether this is a request to the WooCommerce API.
- * @return bool
- */
-function reviewbird_enable_wc_auth( $is_request_to_wc_api ) {
-	if ( $is_request_to_wc_api || ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) {
-		return $is_request_to_wc_api;
-	}
-
-	// WooCommerce retries authentication after WordPress resolves the REST route.
-	global $wp;
-	$route = $wp->query_vars['rest_route'] ?? '';
-	return is_string( $route ) && (bool) preg_match( '#^/(?:reviewbird|reviewx)/#i', $route );
-}
-
-/**
  * Add Settings and Documentation links on the Plugins screen.
  *
  * @param array $links Plugin action links.
@@ -511,4 +395,147 @@ function reviewbird_register_compatibility(): void {
 			2
 		);
 	}
+}
+
+/**
+ * Stop the WooCommerce product reviews block before its child queries run.
+ *
+ * @param string|null    $pre_render   Pre-rendered block content.
+ * @param array          $parsed_block Parsed block data.
+ * @param \WP_Block|null $parent_block Parent block, if present.
+ * @return string|null
+ */
+function reviewbird_suppress_product_reviews_block( $pre_render, array $parsed_block, $parent_block = null ) {
+	if (
+		null === $pre_render
+		&& 'woocommerce/product-reviews' === ( $parsed_block['blockName'] ?? '' )
+		&& ( is_product() || ! empty( $parent_block->context['singleProduct'] ) )
+		&& reviewbird_can_show_widget()
+	) {
+		return '';
+	}
+
+	return $pre_render;
+}
+
+/**
+ * Remove native review blocks from an embedded product before its children render.
+ *
+ * WooCommerce 11.3 no longer sets singleProduct context on Group blocks.
+ *
+ * @param array $block          Parsed block data.
+ * @param bool  $inside_product Whether this is a child of a Single Product block.
+ * @return array
+ */
+function reviewbird_remove_embedded_product_reviews( array $block, bool $inside_product = false ): array {
+	if ( ( ! $inside_product && 'woocommerce/single-product' !== $block['blockName'] ) || ! reviewbird_can_show_widget() ) {
+		return $block;
+	}
+	// A nested query renders other products without a replacement widget.
+	if ( in_array( $block['blockName'], array( 'core/query', 'woocommerce/product-collection' ), true ) ) {
+		return $block;
+	}
+	if ( 'woocommerce/product-reviews' === $block['blockName'] ) {
+		return array(
+			'blockName'    => null,
+			'attrs'        => array(),
+			'innerBlocks'  => array(),
+			'innerHTML'    => '',
+			'innerContent' => array(),
+		);
+	}
+	foreach ( $block['innerBlocks'] as $key => $child ) {
+		$block['innerBlocks'][ $key ] = reviewbird_remove_embedded_product_reviews( $child, true );
+	}
+
+	return $block;
+}
+
+/**
+ * Stop the main product's review queries when Reviewbird replaces them.
+ *
+ * @param array|int|null    $comments Comment query result.
+ * @param \WP_Comment_Query $query    Comment query.
+ * @return array|int|null
+ */
+function reviewbird_suppress_product_review_queries( $comments, $query ) {
+	if ( null !== $comments || ! is_product() || ! reviewbird_can_show_widget() ) {
+		return $comments;
+	}
+	$args = $query->query_vars;
+	// WP_Comment_Query defaults these to '' and accepts strings or arrays; it merges type and type__in the same way.
+	$types     = array_merge( wp_parse_list( $args['type'] ), wp_parse_list( $args['type__in'] ) );
+	$is_review = ! empty( $args['post_id'] ) && get_queried_object_id() === (int) $args['post_id']
+		&& ! array_diff( $types, array( 'comment', 'review' ) )
+		&& ! wp_parse_list( $args['type__not_in'] );
+	if ( ! $is_review ) {
+		return $comments;
+	}
+	$query->found_comments = 0;
+	$query->max_num_pages  = 0;
+
+	return ! empty( $args['count'] ) ? 0 : array();
+}
+
+/**
+ * Add a review link to a CheckoutWC account order item.
+ *
+ * @param \WC_Order_Item_Product $item Order item.
+ */
+function reviewbird_add_checkoutwc_account_review_link( $item ): void {
+	reviewbird_add_account_review_link( $item->get_id(), $item, $item->get_order() );
+}
+
+/**
+ * Add a review link after each product in a completed account order.
+ *
+ * @param int                    $item_id    Order item ID.
+ * @param \WC_Order_Item_Product $item       Order item.
+ * @param \WC_Order              $order      Order.
+ * @param bool                   $plain_text Whether the output is plain text.
+ */
+function reviewbird_add_account_review_link( $item_id, $item, $order, $plain_text = false ): void {
+	$is_account_order = is_wc_endpoint_url( 'view-order' )
+		|| ( is_order_received_page() && isset( $_GET['view'] ) && 'true' === $_GET['view'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( $plain_text || ! $is_account_order || ! $order || ! $order->has_status( 'completed' ) || ! reviewbird_can_show_widget() ) {
+		return;
+	}
+
+	$product = $item->get_product();
+	if ( ! $product || ! $product->is_visible() ) {
+		return;
+	}
+	$review_product = wc_get_product( $item->get_product_id() );
+	$permalink      = apply_filters( 'woocommerce_order_item_permalink', $product->get_permalink( $item ), $item, $order );
+	if ( ! $review_product || ! $permalink || ! comments_open( $review_product->get_id() )
+		|| ! apply_filters( 'reviewbird_show_widget_for_product', true, $review_product ) ) {
+		return;
+	}
+
+	printf(
+		'<p><a class="reviewbird-leave-review woocommerce-button button" href="%1$s">%2$s</a></p>',
+		esc_url( $permalink . '#write_review' ),
+		esc_html__( 'Leave a review', 'reviewbird' )
+	);
+}
+
+/**
+ * Save the site locale on new orders.
+ *
+ * Runs after the order is written, so only the meta is saved: a full save() would re-run
+ * every order save hook. Drafts that become orders fire this again, so the first locale wins.
+ *
+ * @param int            $order_id Order ID.
+ * @param \WC_Order|null $order    Order.
+ */
+function reviewbird_save_order_locale( $order_id, $order = null ): void {
+	if ( ! $order instanceof \WC_Order ) {
+		$order = wc_get_order( $order_id );
+	}
+	if ( ! $order instanceof \WC_Order || $order->get_meta( '_reviewbird_locale' ) ) {
+		return;
+	}
+
+	$order->update_meta_data( '_reviewbird_locale', get_locale() );
+	$order->save_meta_data();
 }

@@ -21,7 +21,7 @@ class WC_Product {
     public function get_id() { return $this->id; }
     public function get_rating_count() { return 4; }
 }
-foreach ( array( 21, 22, 23, 24 ) as $id ) {
+foreach ( array( 21, 22 ) as $id ) {
     $products[$id] = new WC_Product( $id );
 }
 $product = $products[21];
@@ -48,14 +48,14 @@ function get_transient( $key ) { return false; }
 function get_option( $key, $default = false ) { return $GLOBALS['options'][$key] ?? $default; }
 function is_product() { return $GLOBALS['is_product']; }
 function doing_action( $hook ) { return $GLOBALS['loop_rating']; }
-function get_queried_object_id() { return $GLOBALS['queried']; }
-$queried = 21;
+function get_queried_object_id() { return 21; }
 function __( $value ) { return $value; }
 function esc_attr( $value ) { return htmlspecialchars( (string) $value, ENT_QUOTES ); }
 function esc_html( $value ) { return esc_attr( $value ); }
 function number_format_i18n( $value, $decimals = 0 ) { return number_format( $value, $decimals ); }
 
 require __DIR__ . '/../src/hooks.php';
+require __DIR__ . '/../src/api.php';
 require __DIR__ . '/../src/Integration/StarRatingDisplay.php';
 
 reviewbird_enqueue_star_styles();
@@ -65,35 +65,12 @@ check( 14 === has_action( 'woocommerce_after_single_product_summary', 'reviewbir
 check( 10 === has_action( 'woocommerce_after_single_product', 'reviewbird_render_product_widget' ), 'Templates without Product Details need the final product hook.' );
 $instance = (object) array( 'context' => array( 'postId' => 21 ) );
 $block = array( 'attrs' => array( 'productId' => 21 ) );
-$html = reviewbird_render_block_product_widget( '<div>Embedded product</div>', $block, $instance );
-check( false !== strpos( $html, 'reviewbird-widget-container-21' ), 'An embedded product needs a widget container.' );
-check( false === strpos( $html, 'id="reviews"' ), 'An embedded product must not claim the main product review anchor.' );
-ob_start();
-reviewbird_render_product_widget();
-check( '' === ob_get_clean(), 'The classic fallback must not duplicate a block widget.' );
-check( '' === reviewbird_widget_shortcode( array( 'product_id' => 21 ) ), 'A shortcode must not duplicate the product widget.' );
-check( false !== strpos( reviewbird_widget_shortcode( array( 'product_id' => 22 ) ), 'reviewbird-widget-container-22' ), 'Another product needs its own widget.' );
-foreach ( array( 'product-slug', new stdClass() ) as $product ) {
-    check( '' === reviewbird_widget_shortcode( array() ), 'Ignore a non-product global before the product loop starts.' );
-}
+// One widget per product and the #reviews anchor are covered in WidgetEnqueueTest with the real renderer.
 $product = $products[21];
 check( '' === reviewbird_render_block_product_widget( '', $block, $instance ), 'A hidden product block must stay hidden.' );
 $password_required = true;
 check( 'Password form' === reviewbird_render_block_product_widget( 'Password form', $block, $instance ), 'A protected product must not expose its widget.' );
 $password_required = false;
-// Products 21 and 22 have rendered; the main product page below uses 23.
-$queried = 23;
-$product = $products[23];
-$is_product = true;
-ob_start();
-reviewbird_render_product_widget();
-reviewbird_render_product_widget();
-$html = ob_get_clean();
-check( 1 === substr_count( $html, 'reviewbird-widget-container-23' ), 'The two native hooks must output one widget.' );
-check( 1 === substr_count( $html, 'id="reviews"' ), 'The main product needs one native review link target.' );
-$html = reviewbird_widget_shortcode( array( 'product_id' => 24 ) );
-check( false !== strpos( $html, 'reviewbird-widget-container-24' ) && false === strpos( $html, 'id="reviews"' ), 'Another product on the main product page must not repeat the review anchor.' );
-$is_product = false;
 
 $stars = ( new ReflectionClass( reviewbird\Integration\StarRatingDisplay::class ) )->newInstanceWithoutConstructor();
 foreach ( array( 0, 20 ) as $priority ) {

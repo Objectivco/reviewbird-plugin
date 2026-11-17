@@ -37,16 +37,11 @@
             "reviewbird\\": "src/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "reviewbird\\Tests\\": "tests/"
-        }
-    },
     "scripts": {
         "lint": "phpcs",
         "lint-fix": "phpcbf",
         "test": [
-            "phpunit tests",
+            "phpunit --bootstrap tests/bootstrap.php tests",
             "@php tests/run-checks.php"
         ]
     },

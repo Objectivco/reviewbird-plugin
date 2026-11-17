@@ -47,7 +47,6 @@ class Settings {
 	public function __construct() {
 		add_action( 'wp_ajax_reviewbird_update_setting', array( $this, 'handle_setting_update' ) );
 		add_action( 'wp_ajax_reviewbird_get_health_status', array( $this, 'handle_get_health_status' ) );
-		add_action( 'wp_ajax_reviewbird_clear_health_cache', array( $this, 'handle_clear_health_cache' ) );
 		add_action( 'admin_post_' . self::REGISTRATION_INTENT_ACTION, array( $this, 'handle_registration_intent' ) );
 		add_action( 'admin_init', array( $this, 'register_review_notice' ) );
 	}
@@ -179,27 +178,10 @@ JS
 			return;
 		}
 
-		$asset_file = REVIEWBIRD_PLUGIN_DIR . 'assets/build/admin.asset.php';
-		$asset_data = file_exists( $asset_file ) ? include $asset_file : array(
-			'dependencies' => array(),
-			'version'      => REVIEWBIRD_VERSION,
-		);
-
-		wp_enqueue_script(
-			'reviewbird-admin',
-			REVIEWBIRD_PLUGIN_URL . 'assets/build/admin.js',
-			$asset_data['dependencies'],
-			$asset_data['version'],
-			true
-		);
-
+		reviewbird_enqueue_build( 'admin' );
 		wp_localize_script( 'reviewbird-admin', 'reviewbirdAdmin', $this->get_script_localization_data( $hook ) );
 
-		wp_set_script_translations(
-			'reviewbird-admin',
-			'reviewbird',
-			REVIEWBIRD_PLUGIN_DIR . 'languages'
-		);
+		wp_set_script_translations( 'reviewbird-admin', 'reviewbird', REVIEWBIRD_PLUGIN_DIR . 'languages' );
 
 		wp_add_inline_script(
 			'reviewbird-admin',
@@ -224,14 +206,6 @@ JS
 window.Beacon('init', '7486def8-6289-41b2-961f-81c68743d2b5');
 JS
 		);
-
-		wp_enqueue_style(
-			'reviewbird-admin',
-			REVIEWBIRD_PLUGIN_URL . 'assets/build/admin.css',
-			array(),
-			$asset_data['version']
-		);
-		wp_style_add_data( 'reviewbird-admin', 'rtl', 'replace' );
 	}
 
 	/**
@@ -341,21 +315,13 @@ JS
 	}
 
 	/**
-	 * Refresh the saved connection status without discarding the last good value.
+	 * Return the admin connection status with a five-minute cache. A refresh request bypasses it.
 	 */
-	public function handle_clear_health_cache(): void {
-		$this->handle_get_health_status( true );
-	}
-
-	/**
-	 * Return the admin connection status with a five-minute cache.
-	 *
-	 * @param bool $force_refresh Whether to bypass the transient cache.
-	 */
-	public function handle_get_health_status( bool $force_refresh = false ): void {
+	public function handle_get_health_status(): void {
 		$this->verify_ajax_request();
 
-		$status = $force_refresh ? false : get_transient( 'reviewbird_admin_health_status' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_request() above.
+		$status = empty( $_POST['refresh'] ) ? get_transient( 'reviewbird_admin_health_status' ) : false;
 		if ( false === $status ) {
 			$status = reviewbird_refresh_health_status();
 		}

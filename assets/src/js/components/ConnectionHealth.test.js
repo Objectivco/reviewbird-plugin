@@ -65,8 +65,9 @@ test( 'health status uses translations, checks once on load, and permits manual 
 		await act( async () => container.querySelector( 'button' ).click() );
 		expect( global.fetch ).toHaveBeenCalledTimes( 2 );
 		expect( fetch.mock.calls[ 1 ][ 1 ].body.get( 'action' ) ).toBe(
-			'reviewbird_clear_health_cache'
+			'reviewbird_get_health_status'
 		);
+		expect( fetch.mock.calls[ 1 ][ 1 ].body.get( 'refresh' ) ).toBe( '1' );
 	} finally {
 		act( () => root.unmount() );
 		time.mockRestore();

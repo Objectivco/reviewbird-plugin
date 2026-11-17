@@ -139,32 +139,37 @@ function StatusIcon( { status } ) {
 	);
 }
 
-export async function fetchHealthStatus( signal, forceRefresh = false ) {
-	const formData = new FormData();
-	formData.append(
-		'action',
-		forceRefresh
-			? 'reviewbird_clear_health_cache'
-			: 'reviewbird_get_health_status'
-	);
-	formData.append( 'nonce', window.reviewbirdAdmin.nonce );
+/**
+ * Load the store status. Refresh skips the five-minute server cache.
+ *
+ * @param {AbortSignal} [signal]  Abort signal.
+ * @param {boolean}     [refresh] Whether to request a new status.
+ * @return {Promise<Object>} Response data with `status` and `googleCustomerReviews`.
+ */
+export async function fetchHealthStatus( signal, refresh = false ) {
+	const body = new FormData();
+	body.append( 'action', 'reviewbird_get_health_status' );
+	body.append( 'nonce', window.reviewbirdAdmin.nonce );
+	if ( refresh ) {
+		body.append( 'refresh', '1' );
+	}
 
 	const response = await fetch( window.reviewbirdAdmin.ajaxUrl, {
 		method: 'POST',
-		body: formData,
+		body,
 		signal,
 	} );
 	const result = await response.json().catch( () => null );
 	if ( ! response.ok || ! result?.success ) {
-		throw new Error( 'Unable to check the store connection' );
+		// Failed refreshes return a translated message.
+		throw new Error( typeof result?.data === 'string' ? result.data : '' );
 	}
-	const data = result.data?.status;
-	if ( typeof data?.status !== 'string' || ! data.status ) {
-		throw new Error( 'Invalid store status' );
+	const status = result.data?.status?.status;
+	if ( typeof status !== 'string' || ! status ) {
+		throw new Error( '' );
 	}
-	const status = data.status;
 
-	return { data, status };
+	return result.data;
 }
 
 function getActionUrl( status, healthData ) {
@@ -205,12 +210,12 @@ export default function ConnectionHealth() {
 		setRefreshing( true );
 		setRefreshError( '' );
 		try {
-			const { data, status } = await fetchHealthStatus(
+			const { status } = await fetchHealthStatus(
 				undefined,
 				forceRefresh
 			);
-			setHealthData( data );
-			setHealthStatus( status );
+			setHealthData( status );
+			setHealthStatus( status.status );
 			setLastChecked( new Date() );
 		} catch {
 			if ( forceRefresh ) {
