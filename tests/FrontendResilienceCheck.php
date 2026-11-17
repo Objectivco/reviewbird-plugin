@@ -84,7 +84,7 @@ class WC_Order {
     public function save_meta_data() { ++$this->saved_meta; }
 }
 class WC_Product { public function get_rating_count() { return 999; } }
-function wc_get_product( $id ) { return 5 === $id ? $GLOBALS['variation'] : false; }
+function wc_get_product( $id ) { return 5 === $id ? $GLOBALS['block_product'] : false; }
 function get_posts( $args ) { return array(); }
 
 require __DIR__ . '/../src/functions.php';
@@ -106,19 +106,22 @@ $html = $stars->filter_rating_html( '', 4.5, 0 );
 check( ! str_contains( $html, 'rb-wc-rating-count' ) && str_contains( $html, 'rb-wc-star' ), 'Unknown counts must not use the main product count.' );
 check( str_contains( $stars->filter_rating_html( '', 4.5, 12 ), '(12)' ), 'Keep an explicit rating count.' );
 $GLOBALS['product'] = new class extends WC_Product { public function get_rating_count() { return 27; } };
-$variation = new class extends WC_Product { public function get_rating_count() { return 3; } };
+$block_product = new class extends WC_Product { public function get_rating_count() { return 3; } };
 $stars->set_loop_rating_product();
 check( str_contains( $stars->filter_rating_html( '', 5.0, 0 ), '(27)' ), 'Loop ratings use the loop product count.' );
 $stars->clear_rating_product();
 check( ! str_contains( $stars->filter_rating_html( '', 5.0, 0 ), 'rb-wc-rating-count' ), 'An individual review after the loop must not inherit the product count.' );
 $stars->set_rating_block_product( array( 'postId' => 5 ), array( 'blockName' => 'woocommerce/product-rating' ) );
-check( str_contains( $stars->filter_rating_html( '', 5.0, 0 ), '(3)' ), 'The rating block uses its own product, including a variation.' );
+check( str_contains( $stars->filter_rating_html( '', 5.0, 0 ), '(3)' ), 'The rating block uses its own product count.' );
 check( 'x' === $stars->clear_rating_product( 'x' ) && ! str_contains( $stars->filter_rating_html( '', 5.0, 0 ), 'rb-wc-rating-count' ), 'Clear the product after the rating block renders.' );
 $stars->set_rating_block_product( array( 'postId' => 5 ), array( 'blockName' => 'core/paragraph' ) );
 check( ! str_contains( $stars->filter_rating_html( '', 5.0, 0 ), 'rb-wc-rating-count' ), 'Other blocks set no rating product.' );
 
 $ratings = new reviewbird\Integration\RatingOverride();
-$product = new class { public function get_id() { return 11; } };
+$product = new class {
+    public function get_id() { return 11; }
+    public function is_type( $type ) { return false; }
+};
 check( 0 === $ratings->override_rating_count( 0, $product ), 'Missing ratings use the native value.' );
 $ratings->override_average_rating( 0, $product );
 check( 0 === count( $calls ) && 1 === count( $queued ), 'A page must queue one job and make no HTTP call.' );
@@ -128,6 +131,14 @@ check( array_fill( 1, 5, 0 ) === get_post_meta( 11, '_reviewbird_rating_counts' 
 $queued = array();
 $ratings->override_rating_count( 0, $product );
 check( ! $queued && 1 === count( $calls ), 'Known zero ratings must not trigger another job.' );
+$meta[40] = array( '_reviewbird_reviews_count' => 5, '_reviewbird_avg_stars' => 4.2 );
+$variation_product = new class {
+    public function get_id() { return 41; }
+    public function get_parent_id() { return 40; }
+    public function is_type( $type ) { return 'variation' === $type; }
+};
+check( 5 === $ratings->override_rating_count( 0, $variation_product ) && 4.2 === $ratings->override_average_rating( 0, $variation_product ), 'Variations show the parent product rating.' );
+check( ! $queued, 'Variations must not queue their own rating job.' );
 
 foreach ( array( '{}', '{"statistics":{"total_reviews":2,"average_rating":0}}', '{"statistics":{"total_reviews":-1,"average_rating":0}}' ) as $index => $body ) {
     $response['body'] = $body;

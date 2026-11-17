@@ -101,12 +101,15 @@ class RatingOverride {
 	/**
 	 * Get reviewbird meta value for a product.
 	 *
+	 * Reviewbird groups variation reviews under the parent product, so a
+	 * variation reads its parent's rating.
+	 *
 	 * @param WC_Product $product  Product object.
 	 * @param string     $meta_key Meta key to retrieve.
 	 * @return mixed Meta value or empty string if not set.
 	 */
 	private function get_product_meta( $product, string $meta_key ) {
-		$product_id = reviewbird_product_meta_id( $product->get_id() );
+		$product_id = reviewbird_product_meta_id( $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id() );
 		$value      = get_post_meta( $product_id, $meta_key, true );
 
 		if ( '' !== $value ) {
