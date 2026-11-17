@@ -78,18 +78,23 @@ class RatingsController {
 			return new WP_Error( 'invalid_rating', __( 'Average stars must be between 0 and 5, and 0 when there are no reviews', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
-		$rating_counts = reviewbird_normalize_rating_counts( $rating_counts, $review_count );
-		if ( null === $rating_counts ) {
-			return new WP_Error( 'invalid_rating_counts', __( 'Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and must not exceed the review count.', 'reviewbird' ), array( 'status' => 400 ) );
+		// The service owns the average. Rating counts are optional and only validated when sent.
+		$avg_stars = (float) $avg_stars;
+		if ( 0 === $review_count || ! empty( $rating_counts ) ) {
+			$rating_counts = reviewbird_normalize_rating_counts( $rating_counts, $review_count );
+			if ( null === $rating_counts ) {
+				return new WP_Error( 'invalid_rating_counts', __( 'Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and must not exceed the review count.', 'reviewbird' ), array( 'status' => 400 ) );
+			}
 		}
-		$avg_stars = reviewbird_rated_average( $rating_counts );
 
 		$shared_id  = reviewbird_product_id( $product_id );
 		$product_id = reviewbird_product_meta_id( $product_id );
 		update_post_meta( $product_id, '_reviewbird_avg_stars', $avg_stars );
 		update_post_meta( $product_id, '_reviewbird_reviews_count', intval( $review_count ) );
 
-		update_post_meta( $product_id, '_reviewbird_rating_counts', $rating_counts );
+		if ( ! empty( $rating_counts ) ) {
+			update_post_meta( $product_id, '_reviewbird_rating_counts', $rating_counts );
+		}
 
 		if ( function_exists( 'wc_delete_product_transients' ) ) {
 			wc_delete_product_transients( $product_id );

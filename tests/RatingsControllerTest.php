@@ -235,8 +235,8 @@ namespace reviewbird\Tests {
 			foreach ( array( 1, 5 ) as $average ) {
 				self::assertInstanceOf( \WP_REST_Response::class, $update( $average, 1, array( 'rating_counts' => array( $average => '1' ) ) ) );
 			}
-			// The stored average covers rated reviews only, whatever average the service sends.
-			foreach ( array( array( 0, 1, 0, 0.0 ), array( 0.83, 6, 1, 5.0 ) ) as [ $average, $count, $five_star_count, $stored_average ] ) {
+			// The service owns the average, so it is stored exactly as sent.
+			foreach ( array( array( 0, 1, 0, 0.0 ), array( 4.7, 6, 1, 4.7 ) ) as [ $average, $count, $five_star_count, $stored_average ] ) {
 				$distribution = array_fill( 1, 5, 0 );
 				$distribution[5] = $five_star_count;
 				$result = $update( $average, $count, array( 'rating_counts' => $distribution ) );
@@ -246,8 +246,15 @@ namespace reviewbird\Tests {
 				self::assertSame( $stored_average, $result->data['avg_stars'] );
 				self::assertSame( $distribution, $GLOBALS['ratings_test_meta']['_reviewbird_rating_counts'] );
 			}
+			// Rating counts are optional with a positive total; saved counts are kept.
+			foreach ( array( null, array() ) as $counts ) {
+				$result = $update( 4.5, 3, array( 'rating_counts' => $counts ) );
+				self::assertSame( 4.5, $result->data['avg_stars'] );
+				self::assertSame( 4.5, $GLOBALS['ratings_test_meta']['_reviewbird_avg_stars'] );
+				self::assertSame( $distribution, $GLOBALS['ratings_test_meta']['_reviewbird_rating_counts'] );
+			}
 			$before = array( $GLOBALS['ratings_test_meta'], $GLOBALS['ratings_test_actions'], $GLOBALS['ratings_test_transients'] );
-			foreach ( array( null, array(), array( 5 => -1 ), array( 5 => 1.5 ), array( 5 => true ), array( 5 => array( 1 ) ), array( 0 => 1 ), array( 6 => 1 ), array( 5 => 2 ) ) as $counts ) {
+			foreach ( array( array( 5 => -1 ), array( 5 => 1.5 ), array( 5 => true ), array( 5 => array( 1 ) ), array( 0 => 1 ), array( 6 => 1 ), array( 5 => 2 ) ) as $counts ) {
 				$result = $update( 5, 1, array( 'rating_counts' => $counts ) );
 				self::assertSame( 'invalid_rating_counts', $result->code );
 				self::assertSame( $before, array( $GLOBALS['ratings_test_meta'], $GLOBALS['ratings_test_actions'], $GLOBALS['ratings_test_transients'] ) );

@@ -65,7 +65,7 @@ class RatingOverride {
 			return (float) $native_rating;
 		}
 
-		return reviewbird_rated_average( $this->get_product_meta( $product, '_reviewbird_rating_counts' ), (float) $cached_value );
+		return (float) $cached_value;
 	}
 
 	/**

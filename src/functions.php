@@ -726,28 +726,6 @@ function reviewbird_normalize_rating_counts( $counts, int $review_count ): ?arra
 }
 
 /**
- * Average the rated reviews so stars and schema show the same value.
- *
- * Unrated reviews count toward the review total but have no stars to average.
- * Readers pass the saved average as the fallback, which also corrects
- * averages saved before this calculation existed.
- *
- * @param mixed $counts   Rating counts indexed by stars 1 to 5.
- * @param float $fallback Average to use when no review has stars.
- * @return float Average rating.
- */
-function reviewbird_rated_average( $counts, float $fallback = 0.0 ): float {
-	$rated = 0;
-	$stars = 0;
-	foreach ( range( 1, 5 ) as $rating ) {
-		$count  = is_array( $counts ) ? (int) ( $counts[ $rating ] ?? 0 ) : 0;
-		$rated += $count;
-		$stars += $rating * $count;
-	}
-	return $rated ? round( $stars / $rated, 2 ) : $fallback;
-}
-
-/**
  * Fill `_reviewbird_*` rating meta from the public API when it is missing.
  *
  * @param int $product_id WooCommerce product ID.
@@ -819,7 +797,6 @@ function reviewbird_sync_product_rating( int $product_id ): void {
 	if ( null === $counts ) {
 		return;
 	}
-	$average = reviewbird_rated_average( $counts );
 	$product = reviewbird_find_product( $shared_id );
 	if ( ! $product ) {
 		return;
