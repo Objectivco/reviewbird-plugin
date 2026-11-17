@@ -199,7 +199,7 @@ wp_delete_post( $third_translation_id, true );
 check( ! ids( $schema_hook, array( $original_id ) ), 'A trashed sibling kept the deleted product job.' );
 remove_filter( 'reviewbird_product_translation_ids', $translations, 10 );
 
-// The enqueue lock is released immediately and abandoned locks can be replaced.
+// The preview rate-limit lock must remain atomic and recover after expiry.
 $test_lock = 'reviewbird_scheduler_test_lock';
 delete_option( $test_lock );
 $first_expiry = time() + 60;
@@ -209,13 +209,25 @@ check( $first_expiry === (int) get_option( $test_lock ), 'A rejected request cha
 update_option( $test_lock, time() - 1, false );
 check( reviewbird_acquire_lock( $test_lock, $first_expiry + 2 ), 'An abandoned lock could not be replaced.' );
 delete_option( $test_lock );
-$lock_key = 'reviewbird_enqueue_' . md5( 'reviewbird_sync_product_rating:' . $product_id );
-update_option( $lock_key, time() - 1, false );
+// Repeated queue checks must not write options or create product-specific groups.
 reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', $product_id );
-check( 1 === count( ids( 'reviewbird_sync_product_rating', array( $product_id ) ) ) && false === get_option( $lock_key ), 'An abandoned enqueue lock blocked new work.' );
+$writes = 0;
+$count_writes = static function ( $query ) use ( &$writes ) {
+    if ( preg_match( '/^\s*(INSERT|UPDATE|DELETE|REPLACE)\b/i', $query ) ) { ++$writes; }
+    return $query;
+};
+add_filter( 'query', $count_writes );
+for ( $i = 0; $i < 24; ++$i ) { reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', $product_id ); }
+remove_filter( 'query', $count_writes );
+check( 0 === $writes && 1 === count( ids( 'reviewbird_sync_product_rating', array( $product_id ) ) ), 'A pending action caused extra database writes or duplicate work.' );
+reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', $other_product_id );
+foreach ( array( $product_id, $other_product_id ) as $id ) {
+    $jobs = ids( 'reviewbird_sync_product_rating', array( $id ) );
+    check( 1 === count( $jobs ) && 'reviewbird' === $store->fetch_action( $jobs[0] )->get_group(), 'Product actions must remain distinct within one shared group.' );
+}
 as_unschedule_all_actions( 'reviewbird_sync_product_rating', array( $product_id ) );
 reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', $product_id );
-check( 1 === count( ids( 'reviewbird_sync_product_rating', array( $product_id ) ) ), 'The lock blocked a second update within its timeout.' );
+check( 1 === count( ids( 'reviewbird_sync_product_rating', array( $product_id ) ) ), 'A completed action could not be replaced immediately.' );
 
 as_schedule_single_action( time(), HealthScheduler::CLEANUP_HOOK );
 wp_schedule_single_event( time(), HealthScheduler::CLEANUP_HOOK );

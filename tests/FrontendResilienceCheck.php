@@ -27,6 +27,7 @@ $wpdb = new class {
     public $options = 'wp_options';
     public function prepare( $query, ...$args ) { return array( $query, $args ); }
     public function query( $prepared ) {
+        $GLOBALS['lock_writes'] = ( $GLOBALS['lock_writes'] ?? 0 ) + 1;
         list( $query, $args ) = $prepared;
         if ( 0 === strpos( $query, 'INSERT IGNORE' ) ) {
             list( $key, $expires ) = $args;
@@ -63,18 +64,10 @@ function update_post_meta( $id, $key, $value ) { $GLOBALS['meta'][$id][$key] = $
 function has_filter( $hook ) { return false; }
 function add_filter( ...$args ) {}
 function add_action( $hook, $callback, ...$args ) { $GLOBALS['hooks'][$hook] = $callback; }
-function as_next_scheduled_action( $hook, $args ) {
-    $seen = isset( $GLOBALS['queued'][$args[0]] );
-    if ( $GLOBALS['interleave'] ?? false ) {
-        $GLOBALS['interleave'] = false;
-        reviewbird_enqueue_product_action( $hook, $args[0] );
-    }
-    return $seen;
-}
+function as_next_scheduled_action( $hook, $args ) { return isset( $GLOBALS['queued'][$args[0]] ); }
 function as_unschedule_all_actions( $hook ) { $GLOBALS['queued'] = array_filter( $GLOBALS['queued'], static fn( $value ) => $value !== $hook ); }
 function as_enqueue_async_action( $hook, $args, $group, $unique = false ) {
-    check( 'reviewbird-product-' . $args[0] === $group && $unique, 'Product jobs use native uniqueness per product.' );
-    if ( $GLOBALS['fail_enqueue'] ?? false ) { throw new RuntimeException( 'Queue unavailable' ); }
+    check( 'reviewbird' === $group && ! $unique, 'Product jobs share one group without suppressing other products on older AS.' );
     $GLOBALS['enqueue_calls'] = ( $GLOBALS['enqueue_calls'] ?? 0 ) + 1;
     $GLOBALS['queued'][$args[0]] = $hook;
 }
@@ -90,6 +83,7 @@ function wp_remote_get( $url, $args ) {
         preg_match( '~/api/public/7/(\d+)~', $url, $matches );
         check( (bool) get_transient( 'reviewbird_rating_sync_' . $matches[1] ), 'Set the rating lock before the HTTP call.' );
     }
+    if ( isset( $GLOBALS['during_http'] ) ) { $GLOBALS['during_http'](); }
     return $GLOBALS['response'];
 }
 function wp_remote_request( $url, $args ) { return wp_remote_get( $url, $args ); }
@@ -112,7 +106,10 @@ class WC_Product {
     public function get_status() { return 'publish'; }
     public function get_rating_count() { return 999; }
 }
-function wc_get_product( $id ) { return 5 === $id ? $GLOBALS['block_product'] : ( 999 === $id ? false : new WC_Product( $id ) ); }
+function wc_get_product( $id ) {
+    $GLOBALS['product_reads'][] = $id;
+    return 5 === $id ? $GLOBALS['block_product'] : ( 999 === $id || in_array( $id, $GLOBALS['missing_products'] ?? array(), true ) ? false : new WC_Product( $id ) );
+}
 function is_product() { return true; }
 function doing_action( $hook ) { return false; }
 function get_queried_object_id() { return 5; }
@@ -156,7 +153,9 @@ $product = new class {
 check( 0 === $ratings->override_rating_count( 0, $product ), 'Missing ratings use the native value.' );
 $ratings->override_average_rating( 0, $product );
 check( 0 === count( $calls ) && 1 === count( $queued ), 'A page must queue one job and make no HTTP call.' );
+$product_reads = array();
 $hooks['reviewbird_sync_product_rating']( 11 );
+check( array( 11, 11 ) === $product_reads, 'Rating sync resolves one product before HTTP and checks it again afterward.' );
 check( 0 === get_post_meta( 11, '_reviewbird_reviews_count' ) && 0.0 === get_post_meta( 11, '_reviewbird_avg_stars' ), 'Save explicit zero ratings.' );
 check( array_fill( 1, 5, 0 ) === get_post_meta( 11, '_reviewbird_rating_counts' ), 'Save the empty distribution.' );
 $queued = array();
@@ -181,9 +180,12 @@ $before = count( $calls );
 reviewbird_sync_product_rating( 999 );
 check( $before === count( $calls ), 'Deleted products must make no rating API request.' );
 check( array( 1 => 0, 2 => 0, 3 => 0, 4 => 1, 5 => 1 ) === reviewbird_normalize_rating_counts( array( 4 => '1', 5 => 1 ), 2 ), 'Normalize valid sparse rating counts.' );
-foreach ( array( null, array(), array( 5 => 1 ), array( 5 => 2.5 ), array( 5 => true ), array( 0 => 2 ), array( 6 => 2 ), array( 5 => -2 ) ) as $counts ) {
+foreach ( array( null, array(), array( 5 => 3 ), array( 5 => 2.5 ), array( 5 => true ), array( 0 => 2 ), array( 6 => 2 ), array( 5 => -2 ) ) as $counts ) {
     check( null === reviewbird_normalize_rating_counts( $counts, 2 ), 'Reject invalid or inconsistent rating distributions.' );
 }
+check( 1 === array_sum( reviewbird_normalize_rating_counts( array( 5 => 1 ), 6 ) ), 'Unrated reviews must not become invented rating buckets.' );
+check( array_fill( 1, 5, 0 ) === reviewbird_normalize_rating_counts( array_fill( 1, 5, 0 ), 6 ), 'All-unrated reviews must preserve zero rating counts.' );
+check( null === reviewbird_normalize_rating_counts( array( 4 => PHP_INT_MAX, 5 => 1 ), PHP_INT_MAX ), 'Bucket totals must not overflow the review count.' );
 $options['reviewbird_enable_widget'] = 'no';
 $queued[77] = 'reviewbird_sync_product_rating';
 $hooks['update_option_reviewbird_enable_widget']( 'yes', 'no' );
@@ -200,22 +202,27 @@ check( ! reviewbird_acquire_lock( 'reviewbird_lock_test', time() + 61 ) && $firs
 unset( $options['reviewbird_lock_test'] );
 $queued = array();
 $enqueue_calls = 0;
-$interleave = true;
 reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', 88 );
-check( 1 === $enqueue_calls, 'An overlapping queue request must add one action.' );
-$queued = array();
+$writes_before = $lock_writes;
+for ( $i = 0; $i < 24; ++$i ) { reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', 88 ); }
+check( 1 === $enqueue_calls && $writes_before === $lock_writes, 'Pending jobs must cause no enqueue or option-lock write.' );
+reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', 89 );
+check( 2 === $enqueue_calls && isset( $queued[88], $queued[89] ), 'Different products must retain their own queued actions.' );
+unset( $queued[88] );
 reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', 88 );
-check( 2 === $enqueue_calls, 'A completed action can be replaced without waiting for the lock timeout.' );
-$queued = array();
-$enqueue_lock = 'reviewbird_enqueue_' . md5( 'reviewbird_sync_product_rating:88' );
-$options[$enqueue_lock] = time() - 1;
-reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', 88 );
-check( 3 === $enqueue_calls && ! isset( $options[$enqueue_lock] ), 'Recover and release an abandoned lock.' );
-$queued = array();
-$fail_enqueue = true;
-try { reviewbird_enqueue_product_action( 'reviewbird_sync_product_rating', 88 ); } catch ( RuntimeException $error ) {}
-check( ! isset( $options[$enqueue_lock] ), 'An enqueue failure must release its lock.' );
-$fail_enqueue = false;
+check( 3 === $enqueue_calls, 'A completed action can be replaced immediately.' );
+
+$response = array( 'response' => array( 'code' => 200 ), 'body' => '{"statistics":{"total_reviews":2,"average_rating":4.5,"rating_distribution":{"4":1,"5":1}}}' );
+$during_http = static function () { $GLOBALS['missing_products'][] = 93; };
+reviewbird_sync_product_rating( 93 );
+unset( $during_http );
+check( '' === get_post_meta( 93, '_reviewbird_reviews_count' ), 'A product deleted during HTTP must not receive rating metadata.' );
+$response['body'] = '{"statistics":{"total_reviews":6,"average_rating":0.83,"rating_distribution":{"1":0,"2":0,"3":0,"4":0,"5":1}}}';
+reviewbird_sync_product_rating( 94 );
+check( 6 === get_post_meta( 94, '_reviewbird_reviews_count' ) && 0.83 === get_post_meta( 94, '_reviewbird_avg_stars' ) && 1 === array_sum( get_post_meta( 94, '_reviewbird_rating_counts' ) ), 'Public sync must preserve totals that include unrated reviews.' );
+$response['body'] = '{"statistics":{"total_reviews":3,"average_rating":0,"rating_distribution":{"1":0,"2":0,"3":0,"4":0,"5":0}}}';
+reviewbird_sync_product_rating( 95 );
+check( 3 === get_post_meta( 95, '_reviewbird_reviews_count' ) && 0.0 === get_post_meta( 95, '_reviewbird_avg_stars' ) && array_fill( 1, 5, 0 ) === get_post_meta( 95, '_reviewbird_rating_counts' ), 'Public sync must accept all-unrated reviews without inventing ratings.' );
 
 $calls = array();
 $response = new WP_Error();

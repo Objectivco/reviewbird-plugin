@@ -15,13 +15,14 @@ $is_product = false;
 $loop_rating = false;
 $hooks = $styles = $options = array();
 $products = array();
+class WC_Product {
+    private $id;
+    public function __construct( $id ) { $this->id = $id; }
+    public function get_id() { return $this->id; }
+    public function get_rating_count() { return 4; }
+}
 foreach ( array( 21, 22 ) as $id ) {
-    $products[$id] = new class( $id ) {
-        private $id;
-        public function __construct( $id ) { $this->id = $id; }
-        public function get_id() { return $this->id; }
-        public function get_rating_count() { return 4; }
-    };
+    $products[$id] = new WC_Product( $id );
 }
 $product = $products[21];
 function check( $condition, $message ) { if ( ! $condition ) { throw new RuntimeException( $message ); } ++$GLOBALS['checks']; }
@@ -66,20 +67,30 @@ $instance = (object) array( 'context' => array( 'postId' => 21 ) );
 $block = array( 'attrs' => array( 'productId' => 21 ) );
 $html = $plugin->render_block_product_widget( '<div>Embedded product</div>', $block, $instance );
 check( false !== strpos( $html, 'reviewbird-widget-container-21' ), 'An embedded product needs a widget container.' );
+check( false === strpos( $html, 'id="reviews"' ), 'An embedded product must not claim the main product review anchor.' );
 ob_start();
 $plugin->render_product_widget();
 check( '' === ob_get_clean(), 'The classic fallback must not duplicate a block widget.' );
 check( '' === $plugin->widget_shortcode( array( 'product_id' => 21 ) ), 'A shortcode must not duplicate the product widget.' );
 check( false !== strpos( $plugin->widget_shortcode( array( 'product_id' => 22 ) ), 'reviewbird-widget-container-22' ), 'Another product needs its own widget.' );
 $plugin = new reviewbird\Core\Plugin();
+foreach ( array( 'product-slug', new stdClass() ) as $product ) {
+    check( '' === $plugin->widget_shortcode( array() ), 'Ignore a non-product global before the product loop starts.' );
+}
+$product = $products[21];
 check( '' === $plugin->render_block_product_widget( '', $block, $instance ), 'A hidden product block must stay hidden.' );
 $password_required = true;
 check( 'Password form' === $plugin->render_block_product_widget( 'Password form', $block, $instance ), 'A protected product must not expose its widget.' );
 $password_required = false;
+$is_product = true;
 ob_start();
 $plugin->render_product_widget();
 $plugin->render_product_widget();
-check( 1 === substr_count( ob_get_clean(), 'reviewbird-widget-container-21' ), 'The two native hooks must output one widget.' );
+$html = ob_get_clean();
+check( 1 === substr_count( $html, 'reviewbird-widget-container-21' ), 'The two native hooks must output one widget.' );
+check( 1 === substr_count( $html, 'id="reviews"' ), 'The main product needs one native review link target.' );
+check( false === strpos( $plugin->widget_shortcode( array( 'product_id' => 22 ) ), 'id="reviews"' ), 'Another product on the main product page must not repeat the review anchor.' );
+$is_product = false;
 
 $stars = ( new ReflectionClass( reviewbird\Integration\StarRatingDisplay::class ) )->newInstanceWithoutConstructor();
 foreach ( array( 0, 20 ) as $priority ) {

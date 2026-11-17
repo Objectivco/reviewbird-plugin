@@ -142,20 +142,23 @@ class SchemaScheduler {
 			return;
 		}
 
-		$product_id = reviewbird_product_meta_id( $product_id );
-		if ( ! reviewbird_find_product( $product_id ) ) {
+		$shared_id = reviewbird_product_id( $product_id );
+		$product   = reviewbird_find_product( $shared_id );
+		if ( ! $product ) {
 			return;
 		}
+		$product_id = $product->get_id();
 		// Keep the last good data and limit retries during an API outage.
 		set_transient( 'reviewbird_schema_refresh_' . $product_id, true, 5 * MINUTE_IN_SECONDS );
-		$reviews = $this->fetch_reviews_from_api( $store_id, reviewbird_product_id( $product_id ) );
+		$reviews = $this->fetch_reviews_from_api( $store_id, $shared_id );
 		if ( is_wp_error( $reviews ) ) {
 			return;
 		}
-		$product_id = reviewbird_product_meta_id( $product_id );
-		if ( ! reviewbird_find_product( $product_id ) ) {
+		$product = reviewbird_find_product( $shared_id );
+		if ( ! $product ) {
 			return;
 		}
+		$product_id     = $product->get_id();
 		$review_schemas = $this->build_review_schemas( $reviews );
 		set_transient( 'reviewbird_schema_refresh_' . $product_id, true, DAY_IN_SECONDS );
 

@@ -200,7 +200,7 @@ class Plugin {
 			'reviewbird_widget'
 		);
 
-		return $this->product_widget( $atts['product_id'] );
+		return wp_kses_post( $this->product_widget( $atts['product_id'] ) );
 	}
 
 	/**
@@ -455,7 +455,7 @@ class Plugin {
 		if ( '' === $content || ! $product_id || post_password_required( $product_id ) ) {
 			return $content;
 		}
-		return $content . $this->product_widget( $product_id );
+		return $content . wp_kses_post( $this->product_widget( $product_id ) );
 	}
 
 	/**
@@ -466,14 +466,18 @@ class Plugin {
 	 */
 	private function product_widget( $product_id = null ): string {
 		$product = $product_id ? wc_get_product( $product_id ) : ( $GLOBALS['product'] ?? null );
-		if ( ! $product || ! reviewbird_can_show_widget() || isset( $this->rendered_products[ $product->get_id() ] ) ) {
+		if ( ! $product instanceof \WC_Product || ! reviewbird_can_show_widget() || isset( $this->rendered_products[ $product->get_id() ] ) ) {
 			return '';
 		}
 		$output = reviewbird_render_widget( $product->get_id() );
 		if ( $output ) {
 			$this->rendered_products[ $product->get_id() ] = true;
+			// Keep native review links valid after removing the main product's reviews tab.
+			if ( is_product() && get_queried_object_id() === $product->get_id() ) {
+				$output = '<div id="reviews">' . $output . '</div>';
+			}
 		}
-		return wp_kses_post( $output );
+		return $output;
 	}
 
 	/**

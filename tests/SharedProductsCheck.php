@@ -36,7 +36,7 @@ class WC_Order_Item_Product {
     public function get_product_id( $context = 'view' ) { return $this->parent; }
     public function get_variation_id( $context = 'view' ) { return $this->variation; }
     public function get_name( $context = 'view' ) { return 'Finnish name'; }
-    public function get_formatted_meta_data( $hideprefix, $include_all ) { return array( (object) array( 'display_key' => 'Size', 'display_value' => 22 === $this->variation ? 'Small' : 'Large' ) ); }
+    public function get_formatted_meta_data( $hideprefix, $include_all ) { return array( (object) array( 'key' => 'size', 'display_key' => 'Size', 'display_value' => 22 === $this->variation ? 'Small' : 'Large' ), (object) array( 'key' => 'gift_message', 'display_key' => 'Gift message', 'display_value' => 'Private gift note' ) ); }
 }
 class WP_REST_Request {
     private $params;
@@ -72,11 +72,13 @@ class SharedTestProduct {
     public function get_image_id() { return $this->id; }
     public function get_gallery_image_ids() { return array(); }
     public function get_variation_attributes() { return $this->attributes; }
+    public function get_attributes( $context = 'view' ) { return $this->children ? array( 'size' => new class { public function get_variation() { return true; } } ) : array(); }
     public function exists() { return true; }
     public function __call( $name, $args ) { return 'get_attributes' === $name ? array() : ''; }
 }
 function check( $condition, string $message ): void { if ( ! $condition ) { throw new RuntimeException( $message ); } ++$GLOBALS['checks']; }
 function wc_get_product( $id ) { return $GLOBALS['products'][$id] ?? false; }
+function wc_attributes_array_filter_variation( $attribute ) { return $attribute && $attribute->get_variation(); }
 function get_post_type( $id ) { return isset( $GLOBALS['products'][$id] ) ? $GLOBALS['products'][$id]->type : false; }
 function get_post_meta( $id, $key, $single = true ) { return $GLOBALS['meta'][$id][$key] ?? ''; }
 function update_post_meta( $id, $key, $value ) { $GLOBALS['meta'][$id][$key] = $value; }

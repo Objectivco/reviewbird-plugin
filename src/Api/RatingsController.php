@@ -74,13 +74,13 @@ class RatingsController {
 		$review_count = (int) $review_count;
 
 		if ( ! is_numeric( $avg_stars ) || ! is_finite( (float) $avg_stars )
-			|| ( 0 === $review_count ? 0.0 !== (float) $avg_stars : ( $avg_stars < 1 || $avg_stars > 5 ) ) ) {
-			return new WP_Error( 'invalid_rating', __( 'Average stars must be 0 when there are no reviews, or a number between 1 and 5', 'reviewbird' ), array( 'status' => 400 ) );
+			|| ( 0 === $review_count ? 0.0 !== (float) $avg_stars : ( $avg_stars < 0 || $avg_stars > 5 ) ) ) {
+			return new WP_Error( 'invalid_rating', __( 'Average stars must be between 0 and 5, and 0 when there are no reviews', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
 		$rating_counts = reviewbird_normalize_rating_counts( $rating_counts, $review_count );
 		if ( null === $rating_counts ) {
-			return new WP_Error( 'invalid_rating_counts', __( 'Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and match the review count.', 'reviewbird' ), array( 'status' => 400 ) );
+			return new WP_Error( 'invalid_rating_counts', __( 'Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and must not exceed the review count.', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
 		$shared_id  = reviewbird_product_id( $product_id );
@@ -253,7 +253,13 @@ class RatingsController {
 
 					$attributes = array();
 					if ( $variation_id ) {
+						$parent               = wc_get_product( $item->get_product_id( 'edit' ) );
+						$variation_attributes = $parent ? array_filter( $parent->get_attributes( 'edit' ), 'wc_attributes_array_filter_variation' ) : array();
+						$variation_keys       = array_map( 'rawurldecode', array_keys( $variation_attributes ) );
 						foreach ( $item->get_formatted_meta_data( '_', true ) as $meta ) {
+							if ( ! in_array( $meta->key, $variation_keys, true ) ) {
+								continue;
+							}
 							$attributes[] = array(
 								'name'  => wp_strip_all_tags( $meta->display_key ),
 								'value' => wp_strip_all_tags( $meta->display_value ),

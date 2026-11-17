@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-17T17:59:04+00:00\n"
+"POT-Creation-Date: 2026-11-17T18:21:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
@@ -67,7 +67,7 @@ msgid "Reviewbird Settings"
 msgstr ""
 
 #: src/Admin/Settings.php:212
-#: src/Core/Plugin.php:519
+#: src/Core/Plugin.php:523
 msgid "Settings"
 msgstr ""
 
@@ -157,11 +157,11 @@ msgid "Review count must be a whole number of 0 or more"
 msgstr ""
 
 #: src/Api/RatingsController.php:78
-msgid "Average stars must be 0 when there are no reviews, or a number between 1 and 5"
+msgid "Average stars must be between 0 and 5, and 0 when there are no reviews"
 msgstr ""
 
 #: src/Api/RatingsController.php:83
-msgid "Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and match the review count."
+msgid "Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and must not exceed the review count."
 msgstr ""
 
 #: src/Api/RatingsController.php:166
@@ -172,7 +172,7 @@ msgstr ""
 msgid "Invalid email address"
 msgstr ""
 
-#: src/Core/Plugin.php:525
+#: src/Core/Plugin.php:529
 msgid "Documentation"
 msgstr ""
 
@@ -197,12 +197,12 @@ msgstr ""
 msgid "Failed to decode API response."
 msgstr ""
 
-#: src/functions.php:945
+#: src/functions.php:940
 msgid "Anonymous"
 msgstr ""
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:966
+#: src/functions.php:961
 #, php-format
 msgid "Rated %d out of 5"
 msgstr ""

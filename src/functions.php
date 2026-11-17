@@ -688,21 +688,10 @@ function reviewbird_acquire_lock( string $lock_key, int $expires ): bool {
  */
 function reviewbird_enqueue_product_action( string $hook, int $product_id ): void {
 	$product_id = reviewbird_product_id( $product_id );
-	$lock_key   = 'reviewbird_enqueue_' . md5( $hook . ':' . $product_id );
-	$expires    = time() + MINUTE_IN_SECONDS;
-	global $wpdb;
-	if ( ! reviewbird_acquire_lock( $lock_key, $expires ) ) {
-		return;
-	}
-	try {
-		if ( ! as_next_scheduled_action( $hook, array( $product_id ) ) ) {
-			// Older AS versions compare only the hook and group for unique actions.
-			as_enqueue_async_action( $hook, array( $product_id ), 'reviewbird-product-' . $product_id, true );
-		}
-	} finally {
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Do not release a lock acquired by another request after expiry.
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name = %s AND option_value = %s", $lock_key, (string) $expires ) );
-		wp_cache_delete( $lock_key, 'options' );
+	if ( ! as_next_scheduled_action( $hook, array( $product_id ) ) ) {
+		// Check arguments here: older AS versions apply $unique to the whole hook and group.
+		// ponytail: Concurrent requests can add a duplicate refresh; use native uniqueness when old AS support ends.
+		as_enqueue_async_action( $hook, array( $product_id ), 'reviewbird' );
 	}
 }
 
@@ -718,20 +707,22 @@ function reviewbird_normalize_rating_counts( $counts, int $review_count ): ?arra
 	if ( 0 === $review_count ) {
 		return $normalized;
 	}
-	if ( ! is_array( $counts ) || $review_count < 0 ) {
+	if ( ! is_array( $counts ) || empty( $counts ) || $review_count < 0 ) {
 		return null;
 	}
+	$remaining = $review_count;
 	foreach ( $counts as $stars => $count ) {
 		if ( ! is_int( $stars ) || $stars < 1 || $stars > 5 || ( ! is_int( $count ) && ! is_string( $count ) ) ) {
 			return null;
 		}
 		$count = filter_var( $count, FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0 ) ) );
-		if ( false === $count ) {
+		if ( false === $count || $count > $remaining ) {
 			return null;
 		}
+		$remaining           -= $count;
 		$normalized[ $stars ] = $count;
 	}
-	return array_sum( $normalized ) === $review_count ? $normalized : null;
+	return $normalized;
 }
 
 /**
@@ -741,11 +732,15 @@ function reviewbird_normalize_rating_counts( $counts, int $review_count ): ?arra
  * @return void
  */
 function reviewbird_sync_product_rating( int $product_id ): void {
-	if ( ! reviewbird_can_show_widget() || ! reviewbird_find_product( $product_id ) ) {
+	if ( ! reviewbird_can_show_widget() ) {
 		return;
 	}
-	$shared_id     = reviewbird_product_id( $product_id );
-	$product_id    = reviewbird_product_meta_id( $product_id );
+	$shared_id = reviewbird_product_id( $product_id );
+	$product   = reviewbird_find_product( $shared_id );
+	if ( ! $product ) {
+		return;
+	}
+	$product_id    = $product->get_id();
 	static $synced = array();
 
 	if ( $product_id < 1 || isset( $synced[ $product_id ] ) ) {
@@ -795,7 +790,7 @@ function reviewbird_sync_product_rating( int $product_id ): void {
 	$count   = ( is_int( $stats['total_reviews'] ) || is_string( $stats['total_reviews'] ) )
 		? filter_var( $stats['total_reviews'], FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0 ) ) ) : false;
 	$average = (float) $stats['average_rating'];
-	if ( false === $count || ! is_finite( $average ) || $average < 0 || $average > 5 || ( $count > 0 && $average < 1 ) || ( 0 === $count && 0.0 !== $average ) ) {
+	if ( false === $count || ! is_finite( $average ) || $average < 0 || $average > 5 || ( 0 === $count && 0.0 !== $average ) ) {
 		return;
 	}
 	$counts = reviewbird_normalize_rating_counts( $stats['rating_distribution'] ?? null, $count );
@@ -1006,7 +1001,7 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 function reviewbird_render_widget( $product_id = null ): string {
 	$product = $product_id ? wc_get_product( $product_id ) : $GLOBALS['product'] ?? null;
 
-	if ( ! $product || ! reviewbird_is_store_connected() ) {
+	if ( ! $product instanceof \WC_Product || ! reviewbird_is_store_connected() ) {
 		return '';
 	}
 
@@ -1094,7 +1089,7 @@ function reviewbird_render_widget( $product_id = null ): string {
 function reviewbird_display_single_rating(): void {
 	global $product;
 
-	if ( ! $product || ! wc_review_ratings_enabled() ) {
+	if ( ! $product instanceof \WC_Product || ! wc_review_ratings_enabled() ) {
 		return;
 	}
 

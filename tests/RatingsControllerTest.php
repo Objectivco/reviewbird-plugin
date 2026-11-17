@@ -35,6 +35,7 @@ namespace {
 	}
 
 	function wc_delete_product_transients( $product_id ) { $GLOBALS['ratings_test_transients'][] = $product_id; }
+	function wc_attributes_array_filter_variation( $attribute ) { return $attribute && $attribute->get_variation(); }
 }
 
 namespace reviewbird\Api {
@@ -141,12 +142,27 @@ namespace reviewbird\Tests {
 			$GLOBALS['ratings_test_polylang'] = true;
 			$GLOBALS['ratings_test_translations'][7] = array( 'en' => 7, 'fi' => 17 );
 			$GLOBALS['ratings_test_purchases']['buyer@example.com'] = array( 17 );
+			$size = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_variation' ) )->getMock();
+			$size->method( 'get_variation' )->willReturn( true );
+			$material = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_variation' ) )->getMock();
+			$material->method( 'get_variation' )->willReturn( false );
+			$parent = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_attributes' ) )->getMock();
+			$parent->method( 'get_attributes' )->with( 'edit' )->willReturn( array( 'size' => $size, 'gr%c3%b6%c3%9fe' => $size, 'material' => $material ) );
+			$GLOBALS['ratings_test_products'][17] = $parent;
 			$items = array();
 			foreach ( array( 99, 17 ) as $parent_id ) {
 				$item = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_product_id', 'get_variation_id', 'get_formatted_meta_data' ) )->getMock();
 				$item->method( 'get_product_id' )->willReturn( $parent_id );
 				$item->method( 'get_variation_id' )->willReturn( 99 === $parent_id ? 98 : 18 );
-				$item->method( 'get_formatted_meta_data' )->with( '_', true )->willReturn( array( (object) array( 'display_key' => 'Size', 'display_value' => '<p>Large</p>' ) ) );
+				$item->method( 'get_formatted_meta_data' )->with( '_', true )->willReturn( array(
+					(object) array( 'key' => 'size', 'display_key' => 'Size', 'display_value' => '<p>Large</p>' ),
+					(object) array( 'key' => 'größe', 'display_key' => 'Größe', 'display_value' => '<p>Groß</p>' ),
+					(object) array( 'key' => 'material', 'display_key' => 'Material', 'display_value' => 'Cotton' ),
+					(object) array( 'key' => 'gift_message', 'display_key' => 'Gift message', 'display_value' => 'Private gift note' ),
+					(object) array( 'key' => 'engraving', 'display_key' => 'Engraving', 'display_value' => 'Private inscription' ),
+					(object) array( 'key' => 'custom_field', 'display_key' => 'Custom field', 'display_value' => 'Private data' ),
+					(object) array( 'key' => 'size!', 'display_key' => 'Size note', 'display_value' => 'Private size note' ),
+				) );
 				$items[] = $item;
 			}
 			$order = $this->getMockBuilder( \stdClass::class )->addMethods( array( 'get_items', 'get_billing_country' ) )->getMock();
@@ -160,13 +176,20 @@ namespace reviewbird\Tests {
 				'product_id' => 7, 'customer_email' => 'buyer@example.com',
 			) ) );
 			self::assertTrue( $result->data['verified_purchase'] );
-			self::assertSame( array( array( 'name' => 'Size', 'value' => 'Large' ) ), $result->data['purchased_attributes'] );
+			self::assertSame( array( array( 'name' => 'Size', 'value' => 'Large' ), array( 'name' => 'Größe', 'value' => 'Groß' ) ), $result->data['purchased_attributes'] );
 			self::assertSame( 'Nigeria', $result->data['location'] );
 			self::assertSame( 'fi', $GLOBALS['ratings_test_locale'] );
 			self::assertSame( array( 1, 2 ), array_column( $GLOBALS['ratings_test_order_queries'], 'page' ) );
 			self::assertSame( 'buyer@example.com', $GLOBALS['ratings_test_order_queries'][0]['billing_email'] );
 			self::assertSame( array( 'processing', 'completed' ), $GLOBALS['ratings_test_order_queries'][0]['status'] );
 			self::assertSame( '', $GLOBALS['ratings_test_order_queries'][0]['lang'] );
+
+			unset( $GLOBALS['ratings_test_products'][17] );
+			$result = ( new RatingsController() )->check_verified_purchase( new \WP_REST_Request( array(
+				'product_id' => 7, 'customer_email' => 'buyer@example.com',
+			) ) );
+			self::assertTrue( $result->data['verified_purchase'] );
+			self::assertArrayNotHasKey( 'purchased_attributes', $result->data );
 		}
 
 		public function test_invalid_product_ids_cannot_update_another_product(): void {
@@ -212,6 +235,15 @@ namespace reviewbird\Tests {
 			foreach ( array( 1, 5 ) as $average ) {
 				self::assertInstanceOf( \WP_REST_Response::class, $update( $average, 1, array( 'rating_counts' => array( $average => '1' ) ) ) );
 			}
+			foreach ( array( array( 0, 1, 0 ), array( 0.83, 6, 1 ) ) as [ $average, $count, $five_star_count ] ) {
+				$distribution = array_fill( 1, 5, 0 );
+				$distribution[5] = $five_star_count;
+				$result = $update( $average, $count, array( 'rating_counts' => $distribution ) );
+				self::assertInstanceOf( \WP_REST_Response::class, $result );
+				self::assertSame( $count, $GLOBALS['ratings_test_meta']['_reviewbird_reviews_count'] );
+				self::assertSame( (float) $average, $GLOBALS['ratings_test_meta']['_reviewbird_avg_stars'] );
+				self::assertSame( $distribution, $GLOBALS['ratings_test_meta']['_reviewbird_rating_counts'] );
+			}
 			$before = array( $GLOBALS['ratings_test_meta'], $GLOBALS['ratings_test_actions'], $GLOBALS['ratings_test_transients'] );
 			foreach ( array( null, array(), array( 5 => -1 ), array( 5 => 1.5 ), array( 5 => true ), array( 5 => array( 1 ) ), array( 0 => 1 ), array( 6 => 1 ), array( 5 => 2 ) ) as $counts ) {
 				$result = $update( 5, 1, array( 'rating_counts' => $counts ) );
@@ -219,7 +251,7 @@ namespace reviewbird\Tests {
 				self::assertSame( $before, array( $GLOBALS['ratings_test_meta'], $GLOBALS['ratings_test_actions'], $GLOBALS['ratings_test_transients'] ) );
 			}
 			foreach ( array(
-				array( 0, 1 ), array( 0.5, 1 ), array( 5.1, 1 ), array( -1, 0 ), array( 1, 0 ),
+				array( -0.1, 1 ), array( 5.1, 1 ), array( -1, 0 ), array( 1, 0 ),
 				array( NAN, 2 ), array( INF, 2 ), array( '1e999', 2 ), array( 'invalid', 2 ),
 				array( 4.5, -1 ), array( 4.5, 1.5 ), array( 4.5, NAN ), array( 4.5, INF ),
 				array( 4.5, '1e999' ), array( 4.5, (string) PHP_INT_MAX . '0' ), array( 4.5, true ), array( 4.5, null ),

@@ -21,12 +21,18 @@ function reviewbird_is_store_connected() { return $GLOBALS['connected']; }
 function reviewbird_product_meta_id( $id ) { return $GLOBALS['redirects'][ $id ] ?? $id; }
 function reviewbird_product_id( $id ) { return $GLOBALS['shared_ids'][ $id ] ?? $id; }
 function reviewbird_product_translation_ids( $id ) { return $GLOBALS['translations'][ $id ] ?? array( $id ); }
-function reviewbird_find_product( $id ) { return ! in_array( $id, $GLOBALS['deleted'] ?? array(), true ); }
+function reviewbird_find_product( $id ) {
+    $GLOBALS['product_reads'][] = $id;
+    $id = reviewbird_product_meta_id( $id );
+    return in_array( $id, $GLOBALS['deleted'] ?? array(), true ) ? false : wc_get_product( $id );
+}
 function get_post( $id ) { return (object) array( 'post_type' => 'product' ); }
 function wc_get_product( $id ) {
-    return new class( $GLOBALS['product_statuses'][ $id ] ?? 'publish' ) {
+    return new class( $id, $GLOBALS['product_statuses'][ $id ] ?? 'publish' ) {
+        private $id;
         private $status;
-        public function __construct( $status ) { $this->status = $status; }
+        public function __construct( $id, $status ) { $this->id = $id; $this->status = $status; }
+        public function get_id() { return $this->id; }
         public function get_status() { return $this->status; }
     };
 }
@@ -36,7 +42,7 @@ function reviewbird_should_disable_ssl_verify() { return false; }
 function home_url() { return 'https://store.test'; }
 class WP_Error { public function get_error_message() { return 'Offline'; } }
 function is_wp_error( $value ) { return $value instanceof WP_Error; }
-function wp_remote_get( $url, $args ) { ++$GLOBALS['http_calls']; return $GLOBALS['response']; }
+function wp_remote_get( $url, $args ) { ++$GLOBALS['http_calls']; if ( isset( $GLOBALS['during_http'] ) ) { $GLOBALS['during_http'](); } return $GLOBALS['response']; }
 function wp_remote_retrieve_body( $response ) { return $response['body']; }
 function wp_remote_retrieve_response_code( $response ) { return $response['response']['code']; }
 function wp_strip_all_tags( $value ) { return strip_tags( $value ); }
@@ -44,7 +50,7 @@ function get_transient( $key ) { return $GLOBALS['transients'][ $key ][0] ?? fal
 function set_transient( $key, $value, $ttl ) { $GLOBALS['transients'][ $key ] = array( $value, $ttl ); }
 function delete_transient( $key ) { unset( $GLOBALS['transients'][ $key ] ); }
 function delete_post_meta( $id, $key ) { unset( $GLOBALS['meta'][ $key ] ); }
-function update_post_meta( $id, $key, $value ) { $GLOBALS['meta'][ $key ] = $value; }
+function update_post_meta( $id, $key, $value ) { $GLOBALS['last_meta_write'] = $id; $GLOBALS['meta'][ $key ] = $value; }
 function as_unschedule_all_actions( $hook, $args = null ) {
     $GLOBALS['cancelled'][] = array( $GLOBALS['blog_id'] ?? 1, $hook, $args );
     if ( null === $args ) { $GLOBALS['queued'] = array(); } else { unset( $GLOBALS['queued'][ $args[0] ] ); }
@@ -53,20 +59,12 @@ function absint( $id ) { return abs( (int) $id ); }
 function get_post_meta( $id, $key, $single ) { return $GLOBALS['meta'][ $key ] ?? ''; }
 function reviewbird_enqueue_product_action( $hook, $id ) {
     if ( ! as_next_scheduled_action( $hook, array( $id ) ) ) {
-        as_enqueue_async_action( $hook, array( $id ), 'reviewbird-product-' . $id, true );
+        as_enqueue_async_action( $hook, array( $id ), 'reviewbird' );
     }
 }
-function as_next_scheduled_action( $hook, $args ) {
-    $seen = $GLOBALS['queued'][ $args[0] ] ?? false;
-    if ( $GLOBALS['interleave'] ?? false ) {
-        $GLOBALS['interleave'] = false;
-        ( new reviewbird\Integration\SchemaScheduler() )->schedule_schema_refresh( $args[0] );
-    }
-    return $seen;
-}
+function as_next_scheduled_action( $hook, $args ) { return $GLOBALS['queued'][ $args[0] ] ?? false; }
 function as_enqueue_async_action( $hook, $args, $group, $unique = false ) {
-    check( 'reviewbird-product-' . $args[0] === $group && $unique );
-    if ( $unique && isset( $GLOBALS['queued'][ $args[0] ] ) ) { return; }
+    check( 'reviewbird' === $group && ! $unique );
     $GLOBALS['queued'][ $args[0] ] = true;
     ++$GLOBALS['jobs'];
 }
@@ -117,7 +115,9 @@ delete_transient( 'reviewbird_schema_refresh_123' ); // Simulate expiry after th
 $schema->filter_woocommerce_structured_data( $original, $product );
 check( 1 === $GLOBALS['jobs'] );
 $GLOBALS['response'] = array( 'response' => array( 'code' => 200 ), 'body' => '{"reviews":[]}' );
+$GLOBALS['product_reads'] = array();
 $scheduler->refresh_schema_reviews( 123 );
+check( array( 123, 123 ) === $GLOBALS['product_reads'] );
 $GLOBALS['queued'] = array();
 check( '' === get_post_meta( 123, $key, true ) );
 check( DAY_IN_SECONDS === $GLOBALS['transients']['reviewbird_schema_refresh_123'][1] );
@@ -135,9 +135,9 @@ $GLOBALS['enabled'] = true;
 $schema->filter_woocommerce_structured_data( $original, $product );
 check( 2 === $GLOBALS['jobs'] );
 $GLOBALS['queued'] = array();
-$GLOBALS['interleave'] = true;
 $scheduler->schedule_schema_refresh( 123 );
-check( 3 === $GLOBALS['jobs'] ); // Native uniqueness rejects an overlapping enqueue.
+$scheduler->schedule_schema_refresh( 123 );
+check( 3 === $GLOBALS['jobs'] ); // An existing product action is reused.
 $GLOBALS['translations'][123] = array( 123, 124 );
 $before = count( $GLOBALS['cancelled'] );
 $scheduler->cancel_deleted_product_actions( 123, (object) array( 'post_type' => 'product' ) );
@@ -159,6 +159,16 @@ $GLOBALS['translations'][124] = array( 124, 125 );
 $GLOBALS['queued'] = array( 124 => true );
 $scheduler->cancel_deleted_product_actions( 124, (object) array( 'post_type' => 'product' ) );
 check( ! isset( $GLOBALS['queued'][124] ) && isset( $GLOBALS['queued'][120] ) );
+
+$GLOBALS['redirects'][120] = 124;
+$GLOBALS['response'] = array( 'response' => array( 'code' => 200 ), 'body' => '{"reviews":[{"rating":5,"body":"Current review"}]}' );
+$GLOBALS['during_http'] = static function () {
+    $GLOBALS['deleted'][] = 124;
+    $GLOBALS['redirects'][120] = 125;
+};
+$scheduler->refresh_schema_reviews( 120 );
+unset( $GLOBALS['during_http'] );
+check( 125 === $GLOBALS['last_meta_write'] ); // Re-resolve the stable identity after HTTP.
 
 require __DIR__ . '/../src/Integration/HealthScheduler.php';
 require __DIR__ . '/../src/Core/Deactivator.php';
