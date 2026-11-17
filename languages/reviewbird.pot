@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-17T18:21:20+00:00\n"
+"POT-Creation-Date: 2026-11-17T21:06:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: reviewbird\n"
@@ -17,8 +17,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:189
-#: src/Admin/Settings.php:190
+#: src/Admin/Settings.php:114
+#: src/Admin/Settings.php:115
 msgid "Reviewbird"
 msgstr ""
 
@@ -32,179 +32,156 @@ msgstr ""
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr ""
 
-#: src/Admin/Settings.php:99
+#: src/Admin/Settings.php:74
 msgid "Hey, there! It looks like you enjoy collecting product reviews with Reviewbird. Would you do us a favor and take a few seconds to give us a review? We’d love to hear from you."
 msgstr ""
 
-#: src/Admin/Settings.php:101
+#: src/Admin/Settings.php:76
 msgid "Ok, you deserve it"
 msgstr ""
 
-#: src/Admin/Settings.php:103
+#: src/Admin/Settings.php:78
 msgid "Nope, maybe later"
 msgstr ""
 
-#: src/Admin/Settings.php:105
+#: src/Admin/Settings.php:80
 msgid "I already did"
 msgstr ""
 
-#: src/Admin/Settings.php:156
-msgid "Reviewbird Connection Error:"
-msgstr ""
-
-#: src/Admin/Settings.php:175
-msgid "Successfully connected to Reviewbird!"
-msgstr ""
-
-#: src/Admin/Settings.php:202
-#: src/Admin/Settings.php:203
+#: src/Admin/Settings.php:127
+#: src/Admin/Settings.php:128
 msgid "Get Started"
 msgstr ""
 
-#: src/Admin/Settings.php:211
+#: src/Admin/Settings.php:136
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr ""
 
-#: src/Admin/Settings.php:212
-#: src/Core/Plugin.php:523
+#: src/Admin/Settings.php:137
+#: src/hooks.php:315
 msgid "Settings"
 msgstr ""
 
-#: src/Admin/Settings.php:436
+#: src/Admin/Settings.php:274
 msgid "Invalid security token"
 msgstr ""
 
-#: src/Admin/Settings.php:440
-#: src/Admin/Settings.php:516
+#: src/Admin/Settings.php:278
+#: src/Admin/Settings.php:346
 msgid "Insufficient permissions"
 msgstr ""
 
-#: src/Admin/Settings.php:454
+#: src/Admin/Settings.php:292
 msgid "Invalid setting"
 msgstr ""
 
-#: src/Admin/Settings.php:460
+#: src/Admin/Settings.php:298
 msgid "Invalid setting value"
 msgstr ""
 
-#: src/Admin/Settings.php:467
+#: src/Admin/Settings.php:305
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr ""
 
-#: src/Admin/Settings.php:474
+#: src/Admin/Settings.php:312
 msgid "Setting updated successfully"
 msgstr ""
 
-#: src/Admin/Settings.php:499
+#: src/Admin/Settings.php:329
 msgid "The connection status could not be refreshed. Please try again."
 msgstr ""
 
-#: src/Admin/Settings.php:506
+#: src/Admin/Settings.php:336
 msgid "Connection status refreshed"
 msgstr ""
 
+#: src/api.php:121
+msgid "Whether the Reviewbird widget is enabled."
+msgstr ""
+
 #. translators: %d: Store ID number.
-#: src/Api/ConnectionController.php:78
+#: src/api.php:171
 #, php-format
 msgid "Store ID %d has been saved successfully"
 msgstr ""
 
-#: src/Api/CouponController.php:98
-#: src/Api/ProductsController.php:84
-#: src/Api/ProductsController.php:134
-msgid "WooCommerce is not active"
+#: src/api.php:185
+msgid "Product ID is required"
 msgstr ""
 
-#: src/Api/CouponController.php:110
+#: src/api.php:188
+msgid "Invalid product ID"
+msgstr ""
+
+#: src/api.php:201
+#: src/api.php:544
+msgid "Product not found"
+msgstr ""
+
+#: src/api.php:238
+msgid "Review count must be a whole number of 0 or more"
+msgstr ""
+
+#: src/api.php:244
+msgid "Average stars must be between 0 and 5, and 0 when there are no reviews"
+msgstr ""
+
+#: src/api.php:252
+msgid "Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and must not exceed the review count."
+msgstr ""
+
+#: src/api.php:296
+msgid "Customer email is required"
+msgstr ""
+
+#: src/api.php:299
+msgid "Invalid email address"
+msgstr ""
+
+#: src/api.php:432
 msgid "Coupon code is required"
 msgstr ""
 
-#: src/Api/CouponController.php:114
+#: src/api.php:436
 msgid "Use a valid date or ISO 8601 date and time for coupon expiry."
 msgstr ""
 
-#: src/Api/CouponController.php:117
+#: src/api.php:439
 msgid "This coupon code already exists."
 msgstr ""
 
 #. translators: %s: Template coupon code.
-#: src/Api/CouponController.php:157
+#: src/api.php:448
 #, php-format
 msgid "Template coupon '%s' not found"
 msgstr ""
 
-#: src/Api/CouponController.php:195
+#: src/api.php:456
 msgid "discount_type and amount are required when not using template"
 msgstr ""
 
-#: src/Api/ProductsController.php:141
-#: src/Api/RatingsController.php:46
-msgid "Product not found"
-msgstr ""
-
-#: src/Api/RatingsController.php:32
-msgid "Product ID is required"
-msgstr ""
-
-#: src/Api/RatingsController.php:36
-msgid "Invalid product ID"
-msgstr ""
-
-#: src/Api/RatingsController.php:72
-msgid "Review count must be a whole number of 0 or more"
-msgstr ""
-
-#: src/Api/RatingsController.php:78
-msgid "Average stars must be between 0 and 5, and 0 when there are no reviews"
-msgstr ""
-
-#: src/Api/RatingsController.php:83
-msgid "Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and must not exceed the review count."
-msgstr ""
-
-#: src/Api/RatingsController.php:166
-msgid "Customer email is required"
-msgstr ""
-
-#: src/Api/RatingsController.php:170
-msgid "Invalid email address"
-msgstr ""
-
-#: src/Core/Plugin.php:529
-msgid "Documentation"
-msgstr ""
-
-#: src/functions.php:246
-#: src/functions.php:429
+#: src/functions.php:214
 msgid "API request failed"
 msgstr ""
 
-#: src/functions.php:336
-msgid "Store is not connected to Reviewbird."
-msgstr ""
-
-#: src/functions.php:346
-msgid "Unable to generate API key for authentication."
-msgstr ""
-
-#: src/functions.php:360
-msgid "Maximum of 50 product IDs allowed per request."
-msgstr ""
-
-#: src/functions.php:465
-msgid "Failed to decode API response."
-msgstr ""
-
-#: src/functions.php:940
+#: src/functions.php:665
 msgid "Anonymous"
 msgstr ""
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:961
+#: src/functions.php:686
 #, php-format
 msgid "Rated %d out of 5"
+msgstr ""
+
+#: src/hooks.php:319
+msgid "Documentation"
+msgstr ""
+
+#: src/hooks.php:518
+msgid "Leave a review"
 msgstr ""
 
 #: src/Integration/GoogleCustomerReviews.php:243
@@ -212,59 +189,51 @@ msgid "This review request is not available."
 msgstr ""
 
 #: src/Integration/GoogleCustomerReviews.php:243
-#: src/Integration/GoogleCustomerReviews.php:283
-#: src/Integration/GoogleCustomerReviews.php:284
+#: src/Integration/GoogleCustomerReviews.php:270
+#: src/Integration/GoogleCustomerReviews.php:271
 #: templates/google-customer-reviews.php:19
-#: assets/src/js/components/GoogleCustomerReviews.jsx:65
+#: assets/src/js/components/GoogleCustomerReviews.jsx:56
 msgid "Google Customer Reviews"
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:276
+#: src/Integration/GoogleCustomerReviews.php:263
 msgid "Loading Google Customer Reviews…"
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:277
+#: src/Integration/GoogleCustomerReviews.php:264
 msgid "Google Customer Reviews could not load. Please try again."
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:278
+#: src/Integration/GoogleCustomerReviews.php:265
 msgid "Try again"
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:279
+#: src/Integration/GoogleCustomerReviews.php:266
 msgid "You can close this page when you finish."
 msgstr ""
 
-#: src/Integration/GoogleCustomerReviews.php:287
+#: src/Integration/GoogleCustomerReviews.php:274
 msgid "Enable JavaScript to use Google Customer Reviews."
 msgstr ""
 
-#: src/Integration/HealthScheduler.php:177
-msgid "The connection response is invalid. Please try again."
-msgstr ""
-
-#: src/Integration/HealthScheduler.php:182
-msgid "The connection status could not be saved. Please try again."
-msgstr ""
-
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:141
+#: src/Integration/StarRatingDisplay.php:118
 #, php-format
 msgid "Rated %s out of 5"
 msgstr ""
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:144
+#: src/Integration/StarRatingDisplay.php:120
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr ""
 
-#: src/Integration/WooCommerce.php:67
-msgid "Whether the Reviewbird widget is enabled."
+#: src/scheduler.php:176
+msgid "The connection response is invalid. Please try again."
 msgstr ""
 
-#: src/Integration/WooCommerce.php:169
-msgid "Leave a review"
+#: src/scheduler.php:180
+msgid "The connection status could not be saved. Please try again."
 msgstr ""
 
 #: assets/src/js/components/ConnectionHealth.jsx:6
@@ -344,27 +313,27 @@ msgstr ""
 msgid "Open Reviewbird"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:287
-#: assets/src/js/components/GoogleCustomerReviews.jsx:48
+#: assets/src/js/components/ConnectionHealth.jsx:223
+#: assets/src/js/components/GoogleCustomerReviews.jsx:39
 msgid "The connection could not be refreshed. Please try again."
 msgstr ""
 
 #. translators: %s: time of the last connection check.
-#: assets/src/js/components/ConnectionHealth.jsx:323
+#: assets/src/js/components/ConnectionHealth.jsx:259
 #, js-format
 msgid "Last checked: %s"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:348
+#: assets/src/js/components/ConnectionHealth.jsx:284
 msgid "Refresh connection status"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:354
-#: assets/src/js/components/GoogleCustomerReviews.jsx:126
+#: assets/src/js/components/ConnectionHealth.jsx:290
+#: assets/src/js/components/GoogleCustomerReviews.jsx:117
 msgid "Refreshing…"
 msgstr ""
 
-#: assets/src/js/components/ConnectionHealth.jsx:355
+#: assets/src/js/components/ConnectionHealth.jsx:291
 msgid "Refresh"
 msgstr ""
 
@@ -380,27 +349,27 @@ msgstr ""
 msgid "Integration status is unknown."
 msgstr ""
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:44
+#: assets/src/js/components/GoogleCustomerReviews.jsx:35
 msgid "Status updated."
 msgstr ""
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:70
+#: assets/src/js/components/GoogleCustomerReviews.jsx:61
 msgid "When the integration is enabled, Google's consent window opens automatically for every order on the thank you page."
 msgstr ""
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:78
+#: assets/src/js/components/GoogleCustomerReviews.jsx:69
 msgid "Use Configure integration to enable or disable Google Customer Reviews. Then select Refresh status."
 msgstr ""
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:96
+#: assets/src/js/components/GoogleCustomerReviews.jsx:87
 msgid "Configure integration"
 msgstr ""
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:105
+#: assets/src/js/components/GoogleCustomerReviews.jsx:96
 msgid "Refresh integration status"
 msgstr ""
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:127
+#: assets/src/js/components/GoogleCustomerReviews.jsx:118
 msgid "Refresh status"
 msgstr ""
 

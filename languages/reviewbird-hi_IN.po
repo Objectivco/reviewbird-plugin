@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:189
-#: src/Admin/Settings.php:190
+#: src/Admin/Settings.php:114
+#: src/Admin/Settings.php:115
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -31,232 +31,209 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "WooCommerce के लिए स्वचालित समीक्षा संग्रह जो स्पैम को ब्लॉक करता है, शिकायतों को पकड़ता है, और आपकी सर्वश्रेष्ठ प्रतिक्रिया को प्रदर्शित करता है।"
 
-#: src/Admin/Settings.php:99
+#: src/Admin/Settings.php:74
 msgid "Hey, there! It looks like you enjoy collecting product reviews with Reviewbird. Would you do us a favor and take a few seconds to give us a review? We’d love to hear from you."
 msgstr "अरे, वहाँ! ऐसा लगता है कि आप Reviewbird के साथ उत्पाद समीक्षाएँ इकट्ठा करना पसंद करते हैं। क्या आप हमारे लिए कुछ सेकंड निकालकर हमें एक समीक्षा देंगे? हमें आपकी प्रतिक्रिया सुनना अच्छा लगेगा।"
 
-#: src/Admin/Settings.php:101
+#: src/Admin/Settings.php:76
 msgid "Ok, you deserve it"
 msgstr "ठीक है, आप इसके हकदार हैं"
 
-#: src/Admin/Settings.php:103
+#: src/Admin/Settings.php:78
 msgid "Nope, maybe later"
 msgstr "नहीं, शायद बाद में"
 
-#: src/Admin/Settings.php:105
+#: src/Admin/Settings.php:80
 msgid "I already did"
 msgstr "मैं पहले ही कर चुका हूँ"
 
-#: src/Admin/Settings.php:156
-msgid "Reviewbird Connection Error:"
-msgstr "Reviewbird कनेक्शन त्रुटि:"
-
-#: src/Admin/Settings.php:175
-msgid "Successfully connected to Reviewbird!"
-msgstr "Reviewbird से सफलतापूर्वक जुड़ा गया!"
-
-#: src/Admin/Settings.php:202
-#: src/Admin/Settings.php:203
+#: src/Admin/Settings.php:127
+#: src/Admin/Settings.php:128
 msgid "Get Started"
 msgstr "शुरू करें"
 
-#: src/Admin/Settings.php:211
+#: src/Admin/Settings.php:136
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "Reviewbird सेटिंग्स"
 
-#: src/Admin/Settings.php:212
-#: src/Core/Plugin.php:502
+#: src/Admin/Settings.php:137
+#: src/hooks.php:315
 msgid "Settings"
 msgstr "सेटिंग्स"
 
-#: src/Admin/Settings.php:436
+#: src/Admin/Settings.php:274
 msgid "Invalid security token"
 msgstr "अमान्य सुरक्षा टोकन"
 
-#: src/Admin/Settings.php:440
-#: src/Admin/Settings.php:516
+#: src/Admin/Settings.php:278
+#: src/Admin/Settings.php:346
 msgid "Insufficient permissions"
 msgstr "पर्याप्त अनुमतियाँ नहीं हैं"
 
-#: src/Admin/Settings.php:454
+#: src/Admin/Settings.php:292
 msgid "Invalid setting"
 msgstr "अमान्य सेटिंग"
 
-#: src/Admin/Settings.php:460
+#: src/Admin/Settings.php:298
 msgid "Invalid setting value"
 msgstr "अमान्य सेटिंग मान"
 
-#: src/Admin/Settings.php:467
+#: src/Admin/Settings.php:305
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr "सेटिंग सहेजी नहीं जा सकी। कृपया पुनः प्रयास करें।"
 
-#: src/Admin/Settings.php:474
+#: src/Admin/Settings.php:312
 msgid "Setting updated successfully"
 msgstr "सेटिंग सफलतापूर्वक अपडेट की गई"
 
-#: src/Admin/Settings.php:499
+#: src/Admin/Settings.php:329
 msgid "The connection status could not be refreshed. Please try again."
 msgstr "कनेक्शन स्थिति को ताज़ा नहीं किया जा सका। कृपया पुनः प्रयास करें।"
 
-#: src/Admin/Settings.php:506
+#: src/Admin/Settings.php:336
 msgid "Connection status refreshed"
 msgstr "कनेक्शन स्थिति ताज़ा की गई"
 
+#: src/api.php:121
+msgid "Whether the Reviewbird widget is enabled."
+msgstr "क्या Reviewbird विजेट सक्षम है।"
+
 #. translators: %d: Store ID number.
-#: src/Api/ConnectionController.php:74
+#: src/api.php:171
 #, php-format
 msgid "Store ID %d has been saved successfully"
 msgstr "स्टोर ID %d सफलतापूर्वक सहेजा गया है"
 
-#: src/Api/CouponController.php:79
-#: src/Api/ProductsController.php:81
-#: src/Api/ProductsController.php:131
-msgid "WooCommerce is not active"
-msgstr "WooCommerce सक्रिय नहीं है"
+#: src/api.php:185
+msgid "Product ID is required"
+msgstr "उत्पाद ID आवश्यक है"
 
-#: src/Api/CouponController.php:89
+#: src/api.php:188
+msgid "Invalid product ID"
+msgstr "अमान्य उत्पाद ID"
+
+#: src/api.php:201
+#: src/api.php:544
+msgid "Product not found"
+msgstr "उत्पाद नहीं मिला"
+
+#: src/api.php:238
+msgid "Review count must be a whole number of 0 or more"
+msgstr "समीक्षा की संख्या 0 या उससे अधिक का पूर्णांक होना चाहिए"
+
+#: src/api.php:244
+msgid "Average stars must be between 0 and 5, and 0 when there are no reviews"
+msgstr "औसत सितारे 0 से 5 के बीच होने चाहिए, और जब कोई समीक्षा नहीं होती है तो 0 होना चाहिए"
+
+#: src/api.php:252
+msgid "Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and must not exceed the review count."
+msgstr "रेटिंग गणना में 1 से 5 सितारों के लिए 0 या उससे अधिक पूर्णांक होने चाहिए और समीक्षा गणना से अधिक नहीं होना चाहिए।"
+
+#: src/api.php:296
+msgid "Customer email is required"
+msgstr "ग्राहक ईमेल आवश्यक है"
+
+#: src/api.php:299
+msgid "Invalid email address"
+msgstr "अमान्य ईमेल पता"
+
+#: src/api.php:432
 msgid "Coupon code is required"
 msgstr "कूपन कोड आवश्यक है"
 
+#: src/api.php:436
+msgid "Use a valid date or ISO 8601 date and time for coupon expiry."
+msgstr "कूपन समाप्ति के लिए एक मान्य तिथि या ISO 8601 तिथि और समय का उपयोग करें।"
+
+#: src/api.php:439
+msgid "This coupon code already exists."
+msgstr "यह कूपन कोड पहले से मौजूद है।"
+
 #. translators: %s: Template coupon code.
-#: src/Api/CouponController.php:126
+#: src/api.php:448
 #, php-format
 msgid "Template coupon '%s' not found"
 msgstr "टेम्पलेट कूपन '%s' नहीं मिला"
 
-#: src/Api/CouponController.php:160
+#: src/api.php:456
 msgid "discount_type and amount are required when not using template"
 msgstr "टेम्पलेट का उपयोग न करने पर discount_type और amount आवश्यक हैं"
 
-#: src/Api/ProductsController.php:138
-#: src/Api/RatingsController.php:46
-msgid "Product not found"
-msgstr "उत्पाद नहीं मिला"
-
-#: src/Api/RatingsController.php:32
-msgid "Product ID is required"
-msgstr "उत्पाद ID आवश्यक है"
-
-#: src/Api/RatingsController.php:36
-msgid "Invalid product ID"
-msgstr "अमान्य उत्पाद ID"
-
-#: src/Api/RatingsController.php:72
-msgid "Review count must be a whole number of 0 or more"
-msgstr "समीक्षा की संख्या 0 या उससे अधिक का पूर्णांक होना चाहिए"
-
-#: src/Api/RatingsController.php:78
-msgid "Average stars must be 0 when there are no reviews, or a number between 1 and 5"
-msgstr "जब कोई समीक्षा नहीं होती है तो औसत सितारे 0 होने चाहिए, या 1 से 5 के बीच कोई संख्या"
-
-#: src/Api/RatingsController.php:82
-msgid "Rating counts must be an array"
-msgstr "रेटिंग गणना एक सरणी होनी चाहिए"
-
-#: src/Api/RatingsController.php:170
-msgid "Customer email is required"
-msgstr "ग्राहक ईमेल आवश्यक है"
-
-#: src/Api/RatingsController.php:174
-msgid "Invalid email address"
-msgstr "अमान्य ईमेल पता"
-
-#: src/Core/Plugin.php:508
-msgid "Documentation"
-msgstr "दस्तावेज़"
-
-#: src/functions.php:245
-#: src/functions.php:428
+#: src/functions.php:214
 msgid "API request failed"
 msgstr "API अनुरोध विफल"
 
-#: src/functions.php:335
-msgid "Store is not connected to Reviewbird."
-msgstr "स्टोर Reviewbird से जुड़ा नहीं है।"
-
-#: src/functions.php:345
-msgid "Unable to generate API key for authentication."
-msgstr "प्रमाणीकरण के लिए API कुंजी उत्पन्न करने में असमर्थ।"
-
-#: src/functions.php:359
-msgid "Maximum of 50 product IDs allowed per request."
-msgstr "प्रति अनुरोध अधिकतम 50 उत्पाद ID की अनुमति है।"
-
-#: src/functions.php:464
-msgid "Failed to decode API response."
-msgstr "API प्रतिक्रिया को डिकोड करने में विफल।"
-
-#: src/functions.php:818
+#: src/functions.php:665
 msgid "Anonymous"
 msgstr "गुमनाम"
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:839
+#: src/functions.php:686
 #, php-format
 msgid "Rated %d out of 5"
 msgstr "5 में से %d रेट किया गया"
+
+#: src/hooks.php:319
+msgid "Documentation"
+msgstr "दस्तावेज़"
+
+#: src/hooks.php:518
+msgid "Leave a review"
+msgstr "समीक्षा छोड़ें"
 
 #: src/Integration/GoogleCustomerReviews.php:243
 msgid "This review request is not available."
 msgstr "यह समीक्षा अनुरोध उपलब्ध नहीं है।"
 
 #: src/Integration/GoogleCustomerReviews.php:243
-#: src/Integration/GoogleCustomerReviews.php:283
-#: src/Integration/GoogleCustomerReviews.php:284
+#: src/Integration/GoogleCustomerReviews.php:270
+#: src/Integration/GoogleCustomerReviews.php:271
 #: templates/google-customer-reviews.php:19
-#: assets/src/js/components/GoogleCustomerReviews.jsx:65
+#: assets/src/js/components/GoogleCustomerReviews.jsx:56
 msgid "Google Customer Reviews"
 msgstr "Google ग्राहक समीक्षाएँ"
 
-#: src/Integration/GoogleCustomerReviews.php:276
+#: src/Integration/GoogleCustomerReviews.php:263
 msgid "Loading Google Customer Reviews…"
 msgstr "Google ग्राहक समीक्षाएँ लोड हो रही हैं…"
 
-#: src/Integration/GoogleCustomerReviews.php:277
+#: src/Integration/GoogleCustomerReviews.php:264
 msgid "Google Customer Reviews could not load. Please try again."
 msgstr "Google ग्राहक समीक्षाएँ लोड नहीं हो सकीं। कृपया पुनः प्रयास करें।"
 
-#: src/Integration/GoogleCustomerReviews.php:278
+#: src/Integration/GoogleCustomerReviews.php:265
 msgid "Try again"
 msgstr "पुनः प्रयास करें"
 
-#: src/Integration/GoogleCustomerReviews.php:279
+#: src/Integration/GoogleCustomerReviews.php:266
 msgid "You can close this page when you finish."
 msgstr "जब आप समाप्त कर लें तो आप इस पृष्ठ को बंद कर सकते हैं।"
 
-#: src/Integration/GoogleCustomerReviews.php:287
+#: src/Integration/GoogleCustomerReviews.php:274
 msgid "Enable JavaScript to use Google Customer Reviews."
 msgstr "Google ग्राहक समीक्षाओं का उपयोग करने के लिए JavaScript सक्षम करें।"
 
-#: src/Integration/HealthScheduler.php:171
-msgid "The connection response is invalid. Please try again."
-msgstr "कनेक्शन प्रतिक्रिया अमान्य है। कृपया पुनः प्रयास करें।"
-
-#: src/Integration/HealthScheduler.php:176
-msgid "The connection status could not be saved. Please try again."
-msgstr "कनेक्शन स्थिति सहेजी नहीं जा सकी। कृपया पुनः प्रयास करें।"
-
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:122
+#: src/Integration/StarRatingDisplay.php:118
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "5 में से %s रेट किया गया"
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:125
+#: src/Integration/StarRatingDisplay.php:120
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "5 में से %s रेट किया गया, समीक्षाएँ देखने के लिए क्लिक करें"
 
-#: src/Integration/WooCommerce.php:68
-msgid "Whether the Reviewbird widget is enabled."
-msgstr "क्या Reviewbird विजेट सक्षम है।"
+#: src/scheduler.php:176
+msgid "The connection response is invalid. Please try again."
+msgstr "कनेक्शन प्रतिक्रिया अमान्य है। कृपया पुनः प्रयास करें।"
 
-#: src/Integration/WooCommerce.php:154
-msgid "Leave a review"
-msgstr "समीक्षा छोड़ें"
+#: src/scheduler.php:180
+msgid "The connection status could not be saved. Please try again."
+msgstr "कनेक्शन स्थिति सहेजी नहीं जा सकी। कृपया पुनः प्रयास करें।"
 
 #: assets/src/js/components/ConnectionHealth.jsx:6
 msgid "Connected to Reviewbird"
@@ -275,6 +252,7 @@ msgid "Reviewbird is disabled until you connect your WooCommerce store."
 msgstr "Reviewbird तब तक अक्षम है जब तक आप अपनी WooCommerce दुकान को कनेक्ट नहीं करते।"
 
 #: assets/src/js/components/ConnectionHealth.jsx:17
+#: assets/src/js/components/WelcomeScreen.jsx:177
 msgid "Connect store"
 msgstr "दुकान कनेक्ट करें"
 
@@ -334,27 +312,27 @@ msgstr "कनेक्शन जांच रहा है…"
 msgid "Open Reviewbird"
 msgstr "Reviewbird खोलें"
 
-#: assets/src/js/components/ConnectionHealth.jsx:285
-#: assets/src/js/components/GoogleCustomerReviews.jsx:48
+#: assets/src/js/components/ConnectionHealth.jsx:223
+#: assets/src/js/components/GoogleCustomerReviews.jsx:39
 msgid "The connection could not be refreshed. Please try again."
 msgstr "कनेक्शन ताज़ा नहीं किया जा सका। कृपया पुनः प्रयास करें।"
 
 #. translators: %s: time of the last connection check.
-#: assets/src/js/components/ConnectionHealth.jsx:321
+#: assets/src/js/components/ConnectionHealth.jsx:259
 #, js-format
 msgid "Last checked: %s"
 msgstr "अंतिम जांच: %s"
 
-#: assets/src/js/components/ConnectionHealth.jsx:346
+#: assets/src/js/components/ConnectionHealth.jsx:284
 msgid "Refresh connection status"
 msgstr "कनेक्शन स्थिति ताज़ा करें"
 
-#: assets/src/js/components/ConnectionHealth.jsx:352
-#: assets/src/js/components/GoogleCustomerReviews.jsx:126
+#: assets/src/js/components/ConnectionHealth.jsx:290
+#: assets/src/js/components/GoogleCustomerReviews.jsx:117
 msgid "Refreshing…"
 msgstr "ताज़ा किया जा रहा है…"
 
-#: assets/src/js/components/ConnectionHealth.jsx:353
+#: assets/src/js/components/ConnectionHealth.jsx:291
 msgid "Refresh"
 msgstr "रिफ्रेश करें"
 
@@ -370,33 +348,29 @@ msgstr "इंटीग्रेशन वर्तमान में अक्
 msgid "Integration status is unknown."
 msgstr "इंटीग्रेशन स्थिति अज्ञात है।"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:44
+#: assets/src/js/components/GoogleCustomerReviews.jsx:35
 msgid "Status updated."
 msgstr "स्थिति अपडेट की गई।"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:70
+#: assets/src/js/components/GoogleCustomerReviews.jsx:61
 msgid "When the integration is enabled, Google's consent window opens automatically for every order on the thank you page."
 msgstr "जब एकीकरण सक्षम होता है, तो धन्यवाद पृष्ठ पर हर आदेश के लिए Google की सहमति विंडो स्वचालित रूप से खुलती है।"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:78
+#: assets/src/js/components/GoogleCustomerReviews.jsx:69
 msgid "Use Configure integration to enable or disable Google Customer Reviews. Then select Refresh status."
 msgstr "Google ग्राहक समीक्षाओं को सक्षम या अक्षम करने के लिए एकीकरण कॉन्फ़िगर करें। फिर स्थिति ताज़ा करें चुनें।"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:96
+#: assets/src/js/components/GoogleCustomerReviews.jsx:87
 msgid "Configure integration"
 msgstr "एकीकरण कॉन्फ़िगर करें"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:105
+#: assets/src/js/components/GoogleCustomerReviews.jsx:96
 msgid "Refresh integration status"
 msgstr "एकीकरण स्थिति रिफ्रेश करें"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:127
+#: assets/src/js/components/GoogleCustomerReviews.jsx:118
 msgid "Refresh status"
 msgstr "स्थिति ताज़ा करें"
-
-#: assets/src/js/components/LoadingSpinner.jsx:8
-msgid "Loading..."
-msgstr "लोड हो रहा है..."
 
 #: assets/src/js/components/SettingsApp.jsx:102
 msgid "Reviewbird Widget"
@@ -493,10 +467,6 @@ msgstr "अपने ईमेल, विजेट्स, और शोकेस
 #: assets/src/js/components/WelcomeScreen.jsx:170
 msgid "Already use Reviewbird?"
 msgstr "पहले से Reviewbird का उपयोग कर रहे हैं?"
-
-#: assets/src/js/components/WelcomeScreen.jsx:177
-msgid "Sign in"
-msgstr "साइन इन करें"
 
 #: assets/src/js/components/WelcomeScreen.jsx:194
 msgid "Loading Reviewbird…"

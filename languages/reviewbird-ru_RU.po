@@ -16,8 +16,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: reviewbird-plugin.php
-#: src/Admin/Settings.php:189
-#: src/Admin/Settings.php:190
+#: src/Admin/Settings.php:114
+#: src/Admin/Settings.php:115
 msgid "Reviewbird"
 msgstr "Reviewbird"
 
@@ -31,232 +31,209 @@ msgstr "https://reviewbird.com"
 msgid "Automated review collection for WooCommerce that blocks spam, catches complaints, and showcases your best feedback."
 msgstr "Автоматический сбор отзывов для WooCommerce, который блокирует спам, выявляет жалобы и демонстрирует ваши лучшие отзывы."
 
-#: src/Admin/Settings.php:99
+#: src/Admin/Settings.php:74
 msgid "Hey, there! It looks like you enjoy collecting product reviews with Reviewbird. Would you do us a favor and take a few seconds to give us a review? We’d love to hear from you."
 msgstr "Привет! Похоже, вам нравится собирать отзывы о продуктах с помощью Reviewbird. Не могли бы вы уделить несколько секунд и оставить нам отзыв? Мы будем рады услышать ваше мнение."
 
-#: src/Admin/Settings.php:101
+#: src/Admin/Settings.php:76
 msgid "Ok, you deserve it"
 msgstr "Хорошо, вы это заслужили"
 
-#: src/Admin/Settings.php:103
+#: src/Admin/Settings.php:78
 msgid "Nope, maybe later"
 msgstr "Нет, может быть позже"
 
-#: src/Admin/Settings.php:105
+#: src/Admin/Settings.php:80
 msgid "I already did"
 msgstr "Я уже оставил"
 
-#: src/Admin/Settings.php:156
-msgid "Reviewbird Connection Error:"
-msgstr "Ошибка подключения к Reviewbird:"
-
-#: src/Admin/Settings.php:175
-msgid "Successfully connected to Reviewbird!"
-msgstr "Успешное подключение к Reviewbird!"
-
-#: src/Admin/Settings.php:202
-#: src/Admin/Settings.php:203
+#: src/Admin/Settings.php:127
+#: src/Admin/Settings.php:128
 msgid "Get Started"
 msgstr "Начать"
 
-#: src/Admin/Settings.php:211
+#: src/Admin/Settings.php:136
 #: assets/src/js/components/SettingsApp.jsx:96
 msgid "Reviewbird Settings"
 msgstr "Настройки Reviewbird"
 
-#: src/Admin/Settings.php:212
-#: src/Core/Plugin.php:502
+#: src/Admin/Settings.php:137
+#: src/hooks.php:315
 msgid "Settings"
 msgstr "Настройки"
 
-#: src/Admin/Settings.php:436
+#: src/Admin/Settings.php:274
 msgid "Invalid security token"
 msgstr "Недействительный токен безопасности"
 
-#: src/Admin/Settings.php:440
-#: src/Admin/Settings.php:516
+#: src/Admin/Settings.php:278
+#: src/Admin/Settings.php:346
 msgid "Insufficient permissions"
 msgstr "Недостаточно прав"
 
-#: src/Admin/Settings.php:454
+#: src/Admin/Settings.php:292
 msgid "Invalid setting"
 msgstr "Недопустимая настройка"
 
-#: src/Admin/Settings.php:460
+#: src/Admin/Settings.php:298
 msgid "Invalid setting value"
 msgstr "Недопустимое значение настройки"
 
-#: src/Admin/Settings.php:467
+#: src/Admin/Settings.php:305
 #: assets/src/js/components/SettingsApp.jsx:49
 msgid "The setting could not be saved. Please try again."
 msgstr "Не удалось сохранить настройку. Пожалуйста, попробуйте снова."
 
-#: src/Admin/Settings.php:474
+#: src/Admin/Settings.php:312
 msgid "Setting updated successfully"
 msgstr "Настройка успешно обновлена"
 
-#: src/Admin/Settings.php:499
+#: src/Admin/Settings.php:329
 msgid "The connection status could not be refreshed. Please try again."
 msgstr "Не удалось обновить статус подключения. Пожалуйста, попробуйте снова."
 
-#: src/Admin/Settings.php:506
+#: src/Admin/Settings.php:336
 msgid "Connection status refreshed"
 msgstr "Статус подключения обновлен"
 
+#: src/api.php:121
+msgid "Whether the Reviewbird widget is enabled."
+msgstr "Включен ли виджет Reviewbird."
+
 #. translators: %d: Store ID number.
-#: src/Api/ConnectionController.php:74
+#: src/api.php:171
 #, php-format
 msgid "Store ID %d has been saved successfully"
 msgstr "Магазин с ID %d успешно сохранён"
 
-#: src/Api/CouponController.php:79
-#: src/Api/ProductsController.php:81
-#: src/Api/ProductsController.php:131
-msgid "WooCommerce is not active"
-msgstr "WooCommerce не активен"
+#: src/api.php:185
+msgid "Product ID is required"
+msgstr "Требуется ID продукта"
 
-#: src/Api/CouponController.php:89
+#: src/api.php:188
+msgid "Invalid product ID"
+msgstr "Недопустимый ID продукта"
+
+#: src/api.php:201
+#: src/api.php:544
+msgid "Product not found"
+msgstr "Продукт не найден"
+
+#: src/api.php:238
+msgid "Review count must be a whole number of 0 or more"
+msgstr "Количество отзывов должно быть целым числом, равным 0 или больше"
+
+#: src/api.php:244
+msgid "Average stars must be between 0 and 5, and 0 when there are no reviews"
+msgstr "Среднее количество звезд должно быть от 0 до 5, и 0, если отзывов нет"
+
+#: src/api.php:252
+msgid "Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and must not exceed the review count."
+msgstr "Количество оценок должно содержать целые числа от 0 и выше для звезд от 1 до 5 и не должно превышать количество отзывов."
+
+#: src/api.php:296
+msgid "Customer email is required"
+msgstr "Требуется электронная почта клиента"
+
+#: src/api.php:299
+msgid "Invalid email address"
+msgstr "Недопустимый адрес электронной почты"
+
+#: src/api.php:432
 msgid "Coupon code is required"
 msgstr "Требуется код купона"
 
+#: src/api.php:436
+msgid "Use a valid date or ISO 8601 date and time for coupon expiry."
+msgstr "Используйте действительную дату или дату и время в формате ISO 8601 для срока действия купона."
+
+#: src/api.php:439
+msgid "This coupon code already exists."
+msgstr "Этот код купона уже существует."
+
 #. translators: %s: Template coupon code.
-#: src/Api/CouponController.php:126
+#: src/api.php:448
 #, php-format
 msgid "Template coupon '%s' not found"
 msgstr "Шаблон купона '%s' не найден"
 
-#: src/Api/CouponController.php:160
+#: src/api.php:456
 msgid "discount_type and amount are required when not using template"
 msgstr "discount_type и amount обязательны при отсутствии шаблона"
 
-#: src/Api/ProductsController.php:138
-#: src/Api/RatingsController.php:46
-msgid "Product not found"
-msgstr "Продукт не найден"
-
-#: src/Api/RatingsController.php:32
-msgid "Product ID is required"
-msgstr "Требуется ID продукта"
-
-#: src/Api/RatingsController.php:36
-msgid "Invalid product ID"
-msgstr "Недопустимый ID продукта"
-
-#: src/Api/RatingsController.php:72
-msgid "Review count must be a whole number of 0 or more"
-msgstr "Количество отзывов должно быть целым числом, равным 0 или больше"
-
-#: src/Api/RatingsController.php:78
-msgid "Average stars must be 0 when there are no reviews, or a number between 1 and 5"
-msgstr "Среднее количество звезд должно быть 0, если отзывов нет, или числом от 1 до 5"
-
-#: src/Api/RatingsController.php:82
-msgid "Rating counts must be an array"
-msgstr "Количество оценок должно быть массивом"
-
-#: src/Api/RatingsController.php:170
-msgid "Customer email is required"
-msgstr "Требуется электронная почта клиента"
-
-#: src/Api/RatingsController.php:174
-msgid "Invalid email address"
-msgstr "Недопустимый адрес электронной почты"
-
-#: src/Core/Plugin.php:508
-msgid "Documentation"
-msgstr "Документация"
-
-#: src/functions.php:245
-#: src/functions.php:428
+#: src/functions.php:214
 msgid "API request failed"
 msgstr "Ошибка запроса к API"
 
-#: src/functions.php:335
-msgid "Store is not connected to Reviewbird."
-msgstr "Магазин не подключён к Reviewbird."
-
-#: src/functions.php:345
-msgid "Unable to generate API key for authentication."
-msgstr "Не удалось сгенерировать API-ключ для аутентификации."
-
-#: src/functions.php:359
-msgid "Maximum of 50 product IDs allowed per request."
-msgstr "Максимум 50 ID продуктов разрешено на запрос."
-
-#: src/functions.php:464
-msgid "Failed to decode API response."
-msgstr "Не удалось декодировать ответ API."
-
-#: src/functions.php:818
+#: src/functions.php:665
 msgid "Anonymous"
 msgstr "Аноним"
 
 #. translators: %d: review rating, from 1 to 5.
-#: src/functions.php:839
+#: src/functions.php:686
 #, php-format
 msgid "Rated %d out of 5"
 msgstr "Оценка %d из 5"
+
+#: src/hooks.php:319
+msgid "Documentation"
+msgstr "Документация"
+
+#: src/hooks.php:518
+msgid "Leave a review"
+msgstr "Оставить отзыв"
 
 #: src/Integration/GoogleCustomerReviews.php:243
 msgid "This review request is not available."
 msgstr "Запрос на отзыв недоступен."
 
 #: src/Integration/GoogleCustomerReviews.php:243
-#: src/Integration/GoogleCustomerReviews.php:283
-#: src/Integration/GoogleCustomerReviews.php:284
+#: src/Integration/GoogleCustomerReviews.php:270
+#: src/Integration/GoogleCustomerReviews.php:271
 #: templates/google-customer-reviews.php:19
-#: assets/src/js/components/GoogleCustomerReviews.jsx:65
+#: assets/src/js/components/GoogleCustomerReviews.jsx:56
 msgid "Google Customer Reviews"
 msgstr "Google Customer Reviews"
 
-#: src/Integration/GoogleCustomerReviews.php:276
+#: src/Integration/GoogleCustomerReviews.php:263
 msgid "Loading Google Customer Reviews…"
 msgstr "Загрузка Google Customer Reviews…"
 
-#: src/Integration/GoogleCustomerReviews.php:277
+#: src/Integration/GoogleCustomerReviews.php:264
 msgid "Google Customer Reviews could not load. Please try again."
 msgstr "Не удалось загрузить Google Customer Reviews. Пожалуйста, попробуйте снова."
 
-#: src/Integration/GoogleCustomerReviews.php:278
+#: src/Integration/GoogleCustomerReviews.php:265
 msgid "Try again"
 msgstr "Попробовать снова"
 
-#: src/Integration/GoogleCustomerReviews.php:279
+#: src/Integration/GoogleCustomerReviews.php:266
 msgid "You can close this page when you finish."
 msgstr "Вы можете закрыть эту страницу после завершения."
 
-#: src/Integration/GoogleCustomerReviews.php:287
+#: src/Integration/GoogleCustomerReviews.php:274
 msgid "Enable JavaScript to use Google Customer Reviews."
 msgstr "Включите JavaScript для использования Google Customer Reviews."
 
-#: src/Integration/HealthScheduler.php:171
-msgid "The connection response is invalid. Please try again."
-msgstr "Ответ подключения недействителен. Пожалуйста, попробуйте снова."
-
-#: src/Integration/HealthScheduler.php:176
-msgid "The connection status could not be saved. Please try again."
-msgstr "Не удалось сохранить статус подключения. Пожалуйста, попробуйте снова."
-
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:122
+#: src/Integration/StarRatingDisplay.php:118
 #, php-format
 msgid "Rated %s out of 5"
 msgstr "Оценка %s из 5"
 
 #. translators: %s is the average rating.
-#: src/Integration/StarRatingDisplay.php:125
+#: src/Integration/StarRatingDisplay.php:120
 #, php-format
 msgid "Rated %s out of 5, click to view reviews"
 msgstr "Оценка %s из 5, нажмите для просмотра отзывов"
 
-#: src/Integration/WooCommerce.php:68
-msgid "Whether the Reviewbird widget is enabled."
-msgstr "Включен ли виджет Reviewbird."
+#: src/scheduler.php:176
+msgid "The connection response is invalid. Please try again."
+msgstr "Ответ подключения недействителен. Пожалуйста, попробуйте снова."
 
-#: src/Integration/WooCommerce.php:154
-msgid "Leave a review"
-msgstr "Оставить отзыв"
+#: src/scheduler.php:180
+msgid "The connection status could not be saved. Please try again."
+msgstr "Не удалось сохранить статус подключения. Пожалуйста, попробуйте снова."
 
 #: assets/src/js/components/ConnectionHealth.jsx:6
 msgid "Connected to Reviewbird"
@@ -275,6 +252,7 @@ msgid "Reviewbird is disabled until you connect your WooCommerce store."
 msgstr "Reviewbird отключен, пока вы не подключите ваш магазин WooCommerce."
 
 #: assets/src/js/components/ConnectionHealth.jsx:17
+#: assets/src/js/components/WelcomeScreen.jsx:177
 msgid "Connect store"
 msgstr "Подключить магазин"
 
@@ -334,27 +312,27 @@ msgstr "Проверка подключения…"
 msgid "Open Reviewbird"
 msgstr "Открыть Reviewbird"
 
-#: assets/src/js/components/ConnectionHealth.jsx:285
-#: assets/src/js/components/GoogleCustomerReviews.jsx:48
+#: assets/src/js/components/ConnectionHealth.jsx:223
+#: assets/src/js/components/GoogleCustomerReviews.jsx:39
 msgid "The connection could not be refreshed. Please try again."
 msgstr "Не удалось обновить подключение. Пожалуйста, попробуйте снова."
 
 #. translators: %s: time of the last connection check.
-#: assets/src/js/components/ConnectionHealth.jsx:321
+#: assets/src/js/components/ConnectionHealth.jsx:259
 #, js-format
 msgid "Last checked: %s"
 msgstr "Последняя проверка: %s"
 
-#: assets/src/js/components/ConnectionHealth.jsx:346
+#: assets/src/js/components/ConnectionHealth.jsx:284
 msgid "Refresh connection status"
 msgstr "Обновить статус подключения"
 
-#: assets/src/js/components/ConnectionHealth.jsx:352
-#: assets/src/js/components/GoogleCustomerReviews.jsx:126
+#: assets/src/js/components/ConnectionHealth.jsx:290
+#: assets/src/js/components/GoogleCustomerReviews.jsx:117
 msgid "Refreshing…"
 msgstr "Обновление…"
 
-#: assets/src/js/components/ConnectionHealth.jsx:353
+#: assets/src/js/components/ConnectionHealth.jsx:291
 msgid "Refresh"
 msgstr "Обновить"
 
@@ -370,33 +348,29 @@ msgstr "Интеграция в данный момент отключена."
 msgid "Integration status is unknown."
 msgstr "Статус интеграции неизвестен."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:44
+#: assets/src/js/components/GoogleCustomerReviews.jsx:35
 msgid "Status updated."
 msgstr "Статус обновлен."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:70
+#: assets/src/js/components/GoogleCustomerReviews.jsx:61
 msgid "When the integration is enabled, Google's consent window opens automatically for every order on the thank you page."
 msgstr "Когда интеграция включена, окно согласия Google автоматически открывается для каждого заказа на странице благодарности."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:78
+#: assets/src/js/components/GoogleCustomerReviews.jsx:69
 msgid "Use Configure integration to enable or disable Google Customer Reviews. Then select Refresh status."
 msgstr "Используйте «Настроить интеграцию», чтобы включить или отключить Google Customer Reviews. Затем выберите «Обновить статус»."
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:96
+#: assets/src/js/components/GoogleCustomerReviews.jsx:87
 msgid "Configure integration"
 msgstr "Настроить интеграцию"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:105
+#: assets/src/js/components/GoogleCustomerReviews.jsx:96
 msgid "Refresh integration status"
 msgstr "Обновить статус интеграции"
 
-#: assets/src/js/components/GoogleCustomerReviews.jsx:127
+#: assets/src/js/components/GoogleCustomerReviews.jsx:118
 msgid "Refresh status"
 msgstr "Обновить статус"
-
-#: assets/src/js/components/LoadingSpinner.jsx:8
-msgid "Loading..."
-msgstr "Загрузка..."
 
 #: assets/src/js/components/SettingsApp.jsx:102
 msgid "Reviewbird Widget"
@@ -493,10 +467,6 @@ msgstr "Настройте письма, виджеты и витрины в с�
 #: assets/src/js/components/WelcomeScreen.jsx:170
 msgid "Already use Reviewbird?"
 msgstr "Уже используете Reviewbird?"
-
-#: assets/src/js/components/WelcomeScreen.jsx:177
-msgid "Sign in"
-msgstr "Войти"
 
 #: assets/src/js/components/WelcomeScreen.jsx:194
 msgid "Loading Reviewbird…"
