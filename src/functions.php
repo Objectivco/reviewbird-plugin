@@ -210,7 +210,7 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET', int $
 	$code    = wp_remote_retrieve_response_code( $response );
 	$body    = wp_remote_retrieve_body( $response );
 	$decoded = json_decode( $body, true );
-	if ( $code >= 400 ) {
+	if ( $code < 200 || $code >= 300 ) {
 		$message = $decoded['message'] ?? __( 'API request failed', 'reviewbird' );
 		reviewbird_log_api_error(
 			'API Error',

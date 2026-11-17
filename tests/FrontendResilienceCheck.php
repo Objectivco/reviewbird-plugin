@@ -179,6 +179,14 @@ foreach ( array( '{}', '{"statistics":{"total_reviews":2,"average_rating":0}}', 
     check( '' === get_post_meta( 20 + $index, '_reviewbird_reviews_count' ), 'Malformed ratings must not become saved zeros.' );
 }
 
+$response['body'] = '{"statistics":{"total_reviews":1,"average_rating":5,"rating_distribution":{"5":1}}}';
+foreach ( array( 199, 301, 304, 400, 500 ) as $index => $code ) {
+    $response['response']['code'] = $code;
+    reviewbird_sync_product_rating( 30 + $index );
+    check( '' === get_post_meta( 30 + $index, '_reviewbird_reviews_count' ), 'Only successful HTTP responses may save ratings.' );
+}
+$response['response']['code'] = 200;
+
 $before = count( $calls );
 reviewbird_sync_product_rating( 999 );
 check( $before === count( $calls ), 'Deleted products must make no rating API request.' );

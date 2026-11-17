@@ -237,7 +237,7 @@ class ProductsController {
 					'slug' => $term->slug,
 				);
 			},
-			$terms
+			array_values( $terms )
 		) : array();
 	}
 

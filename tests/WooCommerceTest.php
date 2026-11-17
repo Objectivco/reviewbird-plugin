@@ -161,6 +161,30 @@ namespace reviewbird\Tests {
 			self::assertSame( 'boolean', $field[2]['schema']['type'] );
 		}
 
+		public function test_removes_embedded_reviews_without_parent_context(): void {
+			$integration = new WooCommerce();
+			$reviews = array( 'blockName' => 'woocommerce/product-reviews', 'innerBlocks' => array( array( 'blockName' => 'woocommerce/product-review-template' ) ) );
+			$group = array( 'blockName' => 'core/group', 'innerBlocks' => array( $reviews ), 'innerContent' => array( '<div>', null, '</div>' ) );
+			$block = array( 'blockName' => 'woocommerce/single-product', 'innerBlocks' => array(
+				array( 'blockName' => 'core/group', 'innerBlocks' => array( $group ) ),
+				array( 'blockName' => 'core/query', 'innerBlocks' => array( $reviews ) ),
+				array( 'blockName' => 'woocommerce/product-collection', 'innerBlocks' => array( $reviews ) ),
+			) );
+			$result = $integration->remove_embedded_product_reviews( $block );
+			$nested_group = $result['innerBlocks'][0]['innerBlocks'][0];
+			self::assertSame( array( $integration, 'remove_embedded_product_reviews' ), $GLOBALS['reviewbird_test_filters']['render_block_data'][0] );
+			self::assertNull( $nested_group['innerBlocks'][0]['blockName'] );
+			self::assertSame( array(), $nested_group['innerBlocks'][0]['innerBlocks'] );
+			self::assertSame( array(), $nested_group['innerBlocks'][0]['innerContent'] );
+			self::assertSame( $group['innerContent'], $nested_group['innerContent'] );
+			self::assertSame( $block['innerBlocks'][1], $result['innerBlocks'][1] );
+			self::assertSame( $block['innerBlocks'][2], $result['innerBlocks'][2] );
+			self::assertSame( $reviews, $integration->remove_embedded_product_reviews( $reviews ) );
+			self::assertSame( $group, $integration->remove_embedded_product_reviews( $group ) );
+			$GLOBALS['reviewbird_test_can_show_widget'] = false;
+			self::assertSame( $block, $integration->remove_embedded_product_reviews( $block ) );
+		}
+
 		public function test_suppresses_default_woocommerce_review_output_and_query(): void {
 			$integration  = new WooCommerce();
 			// WP_Comment_Query defaults the type vars to ''.

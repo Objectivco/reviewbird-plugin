@@ -29,6 +29,7 @@ class WooCommerce {
 
 		// Suppress WooCommerce review output and queries when Reviewbird replaces them.
 		add_filter( 'pre_render_block', array( $this, 'suppress_product_reviews_block' ), 10, 3 );
+		add_filter( 'render_block_data', array( $this, 'remove_embedded_product_reviews' ) );
 		add_filter( 'comments_pre_query', array( $this, 'suppress_product_review_queries' ), 10, 2 );
 
 		add_filter(
@@ -92,6 +93,38 @@ class WooCommerce {
 		}
 
 		return $pre_render;
+	}
+
+	/**
+	 * Remove native review blocks from an embedded product before its children render.
+	 *
+	 * WooCommerce 11.3 no longer sets singleProduct context on Group blocks.
+	 *
+	 * @param array $block          Parsed block data.
+	 * @param bool  $inside_product Whether this is a child of a Single Product block.
+	 * @return array
+	 */
+	public function remove_embedded_product_reviews( array $block, bool $inside_product = false ): array {
+		if ( ( ! $inside_product && 'woocommerce/single-product' !== $block['blockName'] ) || ! reviewbird_can_show_widget() ) {
+			return $block;
+		}
+		// A nested query renders other products without a replacement widget.
+		if ( in_array( $block['blockName'], array( 'core/query', 'woocommerce/product-collection' ), true ) ) {
+			return $block;
+		}
+		if ( 'woocommerce/product-reviews' === $block['blockName'] ) {
+			return array(
+				'blockName'    => null,
+				'attrs'        => array(),
+				'innerBlocks'  => array(),
+				'innerHTML'    => '',
+				'innerContent' => array(),
+			);
+		}
+		foreach ( $block['innerBlocks'] as $key => $child ) {
+			$block['innerBlocks'][ $key ] = $this->remove_embedded_product_reviews( $child, true );
+		}
+		return $block;
 	}
 
 	/**

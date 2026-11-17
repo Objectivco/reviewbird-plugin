@@ -155,8 +155,14 @@ $variation->save();
 $attachment_url = function ( $url, $id ) use ( $images ) { return $images[1] === $id ? false : 'https://example.test/' . $id . '.jpg'; };
 add_filter( 'wp_get_attachment_url', $attachment_url, 10, 2 );
 $products = new ProductsController();
+$filtered_tags = static function ( $terms, $id, $taxonomy ) {
+	return 'product_tag' === $taxonomy ? array( 4 => (object) array( 'term_id' => 4, 'name' => 'Filtered tag', 'slug' => 'filtered-tag' ) ) : $terms;
+};
+add_filter( 'get_the_terms', $filtered_tags, 10, 3 );
 $result = $products->get_product( request( array( 'id' => $variation->get_id() ) ) );
 $data = $result->get_data();
+remove_filter( 'get_the_terms', $filtered_tags, 10 );
+check( array( 0 ) === array_keys( $data['tags'] ), 'Filtered product tags must remain a JSON array.' );
 check( $product->get_id() === $data['id'] && $variation->get_id() === $data['variations'][0]['id'], 'Variation did not resolve to its parent.' );
 check( ( version_compare( WC_VERSION, '9.1', '>=' ) ? $product_gtin : '' ) === $data['global_unique_id'], 'Product GTIN failed on this WooCommerce version.' );
 check( ( version_compare( WC_VERSION, '9.1', '>=' ) ? $variation_gtin : '' ) === $data['variations'][0]['global_unique_id'], 'Variation GTIN failed on this WooCommerce version.' );
@@ -286,7 +292,7 @@ foreach ( array( '' => '#ffa500', '#123456' => '#123456' ) as $value => $expecte
 }
 
 // Render real blocks on a normal page, then use the native block-template fallback.
-$page_id = wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Reviewbird block check' ) );
+$page_id = wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Reviewbird block check', 'comment_status' => 'open' ) );
 $previous_query = $GLOBALS['wp_query'];
 $previous_post = $GLOBALS['post'] ?? null;
 $GLOBALS['wp_query'] = new WP_Query( array( 'page_id' => $page_id ) );
@@ -297,13 +303,10 @@ reviewbird_enqueue_star_styles();
 check( wp_style_is( 'reviewbird-stars' ), 'Product ratings on a normal page need the star stylesheet.' );
 $embedded = make_product( 'Embedded product' );
 $widget_id = 'id="reviewbird-widget-container-' . $embedded->get_id() . '"';
-$block = '<!-- wp:woocommerce/single-product {"productId":' . $embedded->get_id() . '} --><div class="wp-block-woocommerce-single-product"><!-- wp:group --><div class="wp-block-group"><!-- wp:group --><div class="wp-block-group"><!-- wp:woocommerce/product-reviews /--></div><!-- /wp:group --></div><!-- /wp:group --></div><!-- /wp:woocommerce/single-product -->';
-$suppressed = false;
-$observe_reviews = function ( $content, $parsed, $parent ) use ( &$suppressed ) {
-	if ( 'woocommerce/product-reviews' === $parsed['blockName'] ) {
-		check( ! empty( $parent->context['singleProduct'] ), 'WooCommerce must pass Single Product context through nested Groups.' );
-		$suppressed = '' === $content;
-	}
+$block = '<!-- wp:woocommerce/single-product {"productId":' . $embedded->get_id() . '} --><div class="wp-block-woocommerce-single-product"><!-- wp:group --><div class="wp-block-group"><!-- wp:group --><div class="wp-block-group"><!-- wp:paragraph --><p>Keep product content</p><!-- /wp:paragraph --><!-- wp:woocommerce/product-reviews --><div class="wp-block-woocommerce-product-reviews"><!-- wp:woocommerce/product-review-template --><!-- wp:comment-content /--><!-- /wp:woocommerce/product-review-template --></div><!-- /wp:woocommerce/product-reviews --></div><!-- /wp:group --></div><!-- /wp:group --></div><!-- /wp:woocommerce/single-product -->';
+$review_children = 0;
+$observe_reviews = function ( $content, $parsed ) use ( &$review_children ) {
+	if ( 'woocommerce/product-review-template' === $parsed['blockName'] ) { ++$review_children; }
 	return $content;
 };
 add_filter( 'pre_render_block', $observe_reviews, 99, 3 );
@@ -311,7 +314,14 @@ $html = do_blocks( $block . $block );
 remove_filter( 'pre_render_block', $observe_reviews, 99 );
 check( 1 === substr_count( $html, $widget_id ), 'Repeated Single Product blocks must render one review widget.' );
 check( false === strpos( $html, 'id="reviews"' ), 'Embedded product widgets must not claim a page-wide reviews anchor.' );
-check( $suppressed, 'Embedded product blocks must suppress native reviews before their queries run.' );
+check( 0 === $review_children && false === strpos( $html, 'wp-block-woocommerce-product-reviews' ), 'Embedded product blocks must suppress native reviews before their queries run.' );
+check( 2 === substr_count( $html, 'Keep product content' ), 'Review removal must preserve other product content.' );
+update_option( 'reviewbird_enable_widget', 'no' );
+add_filter( 'pre_render_block', $observe_reviews, 99, 2 );
+$html = do_blocks( $block );
+remove_filter( 'pre_render_block', $observe_reviews, 99 );
+check( 1 === $review_children && false !== strpos( $html, 'wp-block-woocommerce-product-reviews' ), 'A disabled widget must keep embedded native reviews.' );
+update_option( 'reviewbird_enable_widget', 'yes' );
 reviewbird_register_product_widget_hook();
 $widget_id = 'id="reviewbird-widget-container-' . $product->get_id() . '"';
 $GLOBALS['wp_query'] = new WP_Query( array( 'p' => $product->get_id(), 'post_type' => 'product' ) );
