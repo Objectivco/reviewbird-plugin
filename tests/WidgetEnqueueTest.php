@@ -72,6 +72,15 @@ namespace {
 		return array_merge( $defaults, array_intersect_key( $atts, $defaults ) );
 	}
 
+	function wc_get_product( $id ) {
+		return new class( $id ) {
+			private $id;
+			public function __construct( $id ) { $this->id = $id; }
+			public function get_id() { return $this->id; }
+			public function get_status() { return 'publish'; }
+		};
+	}
+
 	if ( ! function_exists( 'esc_attr' ) ) {
 		function esc_attr( $value ) {
 			return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' );
@@ -155,7 +164,10 @@ namespace {
 		protected function setUp(): void {
 			parent::setUp();
 
-			$GLOBALS['reviewbird_test_options']    = array();
+			$GLOBALS['reviewbird_test_options']    = array(
+				'reviewbird_enable_widget' => 'yes',
+				'reviewbird_store_status' => array( 'status' => 'healthy', 'has_active_subscription' => true ),
+			);
 			$GLOBALS['reviewbird_test_is_product'] = false;
 			$GLOBALS['reviewbird_test_has_block']  = array();
 			$GLOBALS['reviewbird_test_post_meta']   = array();
@@ -289,7 +301,7 @@ namespace {
 			self::assertSame( 4.8, $GLOBALS['reviewbird_test_post_meta'][4100]['_reviewbird_avg_stars'] );
 			self::assertSame( 259, $GLOBALS['reviewbird_test_post_meta'][4100]['_reviewbird_reviews_count'] );
 			self::assertSame(
-				array( 5 => 228, 4 => 19, 3 => 6, 2 => 3, 1 => 3 ),
+				array( 1 => 3, 2 => 3, 3 => 6, 4 => 19, 5 => 228 ),
 				$GLOBALS['reviewbird_test_post_meta'][4100]['_reviewbird_rating_counts']
 			);
 		}

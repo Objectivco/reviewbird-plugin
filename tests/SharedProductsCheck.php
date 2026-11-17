@@ -28,6 +28,7 @@ $filter_callbacks = array();
 
 class WP_Error { public function __construct( ...$args ) {} }
 class WooCommerce {}
+class WC_Countries { public function get_countries() { return array( 'FI' => 'Finland' ); } }
 class WC_Order_Item_Product {
     private $parent;
     private $variation;
@@ -35,6 +36,7 @@ class WC_Order_Item_Product {
     public function get_product_id( $context = 'view' ) { return $this->parent; }
     public function get_variation_id( $context = 'view' ) { return $this->variation; }
     public function get_name( $context = 'view' ) { return 'Finnish name'; }
+    public function get_formatted_meta_data( $hideprefix, $include_all ) { return array( (object) array( 'key' => 'size', 'display_key' => 'Size', 'display_value' => 22 === $this->variation ? 'Small' : 'Large' ), (object) array( 'key' => 'gift_message', 'display_key' => 'Gift message', 'display_value' => 'Private gift note' ) ); }
 }
 class WP_REST_Request {
     private $params;
@@ -70,11 +72,13 @@ class SharedTestProduct {
     public function get_image_id() { return $this->id; }
     public function get_gallery_image_ids() { return array(); }
     public function get_variation_attributes() { return $this->attributes; }
+    public function get_attributes( $context = 'view' ) { return $this->children ? array( 'size' => new class { public function get_variation() { return true; } } ) : array(); }
     public function exists() { return true; }
     public function __call( $name, $args ) { return 'get_attributes' === $name ? array() : ''; }
 }
 function check( $condition, string $message ): void { if ( ! $condition ) { throw new RuntimeException( $message ); } ++$GLOBALS['checks']; }
 function wc_get_product( $id ) { return $GLOBALS['products'][$id] ?? false; }
+function wc_attributes_array_filter_variation( $attribute ) { return $attribute && $attribute->get_variation(); }
 function get_post_type( $id ) { return isset( $GLOBALS['products'][$id] ) ? $GLOBALS['products'][$id]->type : false; }
 function get_post_meta( $id, $key, $single = true ) { return $GLOBALS['meta'][$id][$key] ?? ''; }
 function update_post_meta( $id, $key, $value ) { $GLOBALS['meta'][$id][$key] = $value; }
@@ -148,9 +152,10 @@ function absint( $id ) { return abs( (int) $id ); }
 function __( $text ) { return $text; }
 function is_email( $email ) { return filter_var( $email, FILTER_VALIDATE_EMAIL ); }
 function wc_customer_bought_product( $email, $user, $id ) { $GLOBALS['purchase_checks'][] = $id; return in_array( $id, $GLOBALS['purchases'], true ); }
-function wc_get_orders( $args ) { $GLOBALS['last_order_query'] = $args; return $GLOBALS['orders']; }
+function wc_get_orders( $args ) { $GLOBALS['last_order_query'] = $args; return array_slice( $GLOBALS['orders'], ( $args['page'] - 1 ) * $args['limit'], $args['limit'] ); }
 function wc_get_is_paid_statuses() { return array( 'processing', 'completed' ); }
-function wc_attribute_label( $value ) { return $value; }
+function switch_to_locale( $locale ) { return false; }
+function wp_strip_all_tags( $text ) { return strip_tags( $text ); }
 
 require dirname( __DIR__ ) . '/src/functions.php';
 require dirname( __DIR__ ) . '/src/Api/ProductsController.php';
@@ -301,6 +306,7 @@ $products[22] = new SharedTestProduct( 22, 'product_variation', 20 );
 $products[22]->attributes = array( 'attribute_size' => 'small' );
 $orders = array( new class {
     public function get_items() { return array( new WC_Order_Item_Product( 20, 22 ), new WC_Order_Item_Product( 20, 21 ) ); }
+    public function get_billing_country() { return 'FI'; }
 } );
 $purchases = array( 21 );
 $purchase_checks = array();

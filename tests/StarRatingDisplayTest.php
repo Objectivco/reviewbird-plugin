@@ -21,6 +21,8 @@ namespace {
 	define( 'REVIEWBIRD_API_URL_DEVELOPMENT', 'https://local.reviewbird.test' );
 	define( 'REVIEWBIRD_VERSION', '1.0.0-test' );
 	define( 'DAY_IN_SECONDS', 86400 );
+	if ( ! defined( 'HOUR_IN_SECONDS' ) ) { define( 'HOUR_IN_SECONDS', 3600 ); }
+	if ( ! defined( 'MINUTE_IN_SECONDS' ) ) { define( 'MINUTE_IN_SECONDS', 60 ); }
 
 	if ( ! function_exists( 'has_filter' ) ) {
 		function has_filter( $hook ) { return false; }
@@ -73,6 +75,49 @@ namespace {
 
 	function set_transient( $key, $value, $expiration ) {
 		$GLOBALS['reviewbird_test_transient'] = array( $key, $value, $expiration );
+		$GLOBALS['reviewbird_test_transients'][ $key ] = $value;
+	}
+
+	if ( ! function_exists( 'get_transient' ) ) {
+		function get_transient( $key ) { return $GLOBALS['reviewbird_test_transients'][ $key ] ?? false; }
+	}
+	if ( ! function_exists( 'get_post_meta' ) ) {
+		function get_post_meta( $id, $key, $single = true ) { return $GLOBALS['reviewbird_test_post_meta'][ $id ][ $key ] ?? ''; }
+	}
+	if ( ! function_exists( 'update_post_meta' ) ) {
+		function update_post_meta( $id, $key, $value ) { $GLOBALS['reviewbird_test_post_meta'][ $id ][ $key ] = $value; return true; }
+	}
+
+	function add_option( $key, $value, $deprecated = '', $autoload = false ) {
+		$GLOBALS['reviewbird_test_options'][ $key ] = $value;
+		return true;
+	}
+
+	$wpdb = new class {
+		public $options = 'wp_options';
+		public function prepare( $query, ...$args ) { return array( $query, $args ); }
+		public function query( $prepared ) {
+			list( $query, $args ) = $prepared;
+			if ( 0 === strpos( $query, 'INSERT IGNORE' ) ) {
+				list( $key, $expires ) = $args;
+				if ( isset( $GLOBALS['reviewbird_test_options'][ $key ] ) ) { return 0; }
+			} else {
+				list( $expires, $key, $now ) = $args;
+				if ( ! isset( $GLOBALS['reviewbird_test_options'][ $key ] ) || $GLOBALS['reviewbird_test_options'][ $key ] > $now ) { return 0; }
+			}
+			$GLOBALS['reviewbird_test_options'][ $key ] = $expires;
+			return 1;
+		}
+	};
+	function wp_cache_delete( ...$args ) {}
+
+	function update_option( $key, $value, $autoload = null ) {
+		$GLOBALS['reviewbird_test_options'][ $key ] = $value;
+		return true;
+	}
+
+	function sanitize_hex_color( $value ) {
+		return preg_match( '/^#(?:[a-f0-9]{3}|[a-f0-9]{6})$/i', $value ) ? $value : null;
 	}
 
 	require_once dirname( __DIR__ ) . '/src/functions.php';
@@ -107,6 +152,18 @@ namespace {
 				array( 'reviewbird_star_color', '#123456', DAY_IN_SECONDS ),
 				$GLOBALS['reviewbird_test_transient']
 			);
+			self::assertSame( '#123456', get_option( 'reviewbird_star_color' ) );
+		}
+
+		public function test_failed_color_refresh_retains_last_valid_color(): void {
+			$GLOBALS['reviewbird_test_options']['reviewbird_star_color'] = '#abcdef';
+			foreach ( array( '{}', '{"widget_settings":{"star_color":"red;display:none"}}', '{"widget_settings":{"star_color":[]}}' ) as $body ) {
+				$GLOBALS['reviewbird_test_response'] = $body;
+				self::assertNull( StarRatingDisplay::fetch_and_cache_star_color() );
+				self::assertSame( '#abcdef', get_option( 'reviewbird_star_color' ) );
+				self::assertSame( array( 'reviewbird_star_color', '#abcdef', HOUR_IN_SECONDS ), $GLOBALS['reviewbird_test_transient'] );
+			}
+			unset( $GLOBALS['reviewbird_test_response'] );
 		}
 	}
 }

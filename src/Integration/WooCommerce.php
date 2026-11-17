@@ -28,8 +28,8 @@ class WooCommerce {
 		add_action( 'rest_api_init', array( $this, 'register_system_status_field' ), 10, 0 );
 
 		// Suppress WooCommerce review output and queries when Reviewbird replaces them.
-		add_filter( 'pre_render_block', array( $this, 'suppress_product_reviews_block' ), 10, 2 );
-		add_filter( 'comments_pre_query', array( $this, 'suppress_product_review_queries' ) );
+		add_filter( 'pre_render_block', array( $this, 'suppress_product_reviews_block' ), 10, 3 );
+		add_filter( 'comments_pre_query', array( $this, 'suppress_product_review_queries' ), 10, 2 );
 
 		add_filter(
 			'woocommerce_rest_prepare_product_review',
@@ -43,7 +43,6 @@ class WooCommerce {
 
 		// Save locale when order is created.
 		add_action( 'woocommerce_new_order', array( $this, 'save_order_locale' ), 10, 2 );
-		add_action( 'woocommerce_checkout_order_created', array( $this, 'save_order_locale' ), 10, 1 );
 
 		// Expose locale in REST response.
 		add_filter( 'woocommerce_rest_prepare_shop_order_object', array( $this, 'add_locale_to_order_response' ), 100, 3 );
@@ -77,15 +76,16 @@ class WooCommerce {
 	/**
 	 * Stop the WooCommerce product reviews block before its child queries run.
 	 *
-	 * @param string|null $pre_render   Pre-rendered block content.
-	 * @param array       $parsed_block Parsed block data.
+	 * @param string|null    $pre_render   Pre-rendered block content.
+	 * @param array          $parsed_block Parsed block data.
+	 * @param \WP_Block|null $parent_block Parent block, if present.
 	 * @return string|null Pre-rendered block content.
 	 */
-	public function suppress_product_reviews_block( $pre_render, array $parsed_block ) {
+	public function suppress_product_reviews_block( $pre_render, array $parsed_block, $parent_block = null ) {
 		if (
 			null === $pre_render
 			&& 'woocommerce/product-reviews' === ( $parsed_block['blockName'] ?? '' )
-			&& is_product()
+			&& ( is_product() || ! empty( $parent_block->context['singleProduct'] ) )
 			&& reviewbird_can_show_widget()
 		) {
 			return '';
@@ -97,11 +97,26 @@ class WooCommerce {
 	/**
 	 * Stop product review queries when Reviewbird replaces them.
 	 *
-	 * @param array|int|null $comments Comment query result.
+	 * @param array|int|null    $comments Comment query result.
+	 * @param \WP_Comment_Query $query    Comment query.
 	 * @return array|int|null Comment query result.
 	 */
-	public function suppress_product_review_queries( $comments ) {
-		return is_product() && reviewbird_can_show_widget() ? array() : $comments;
+	public function suppress_product_review_queries( $comments, $query ) {
+		if ( null !== $comments || ! is_product() || ! reviewbird_can_show_widget() ) {
+			return $comments;
+		}
+		$args = $query->query_vars;
+		// WP_Comment_Query defaults these to '' and accepts strings or arrays; it merges type and type__in the same way.
+		$types     = array_merge( wp_parse_list( $args['type'] ), wp_parse_list( $args['type__in'] ) );
+		$is_review = ! empty( $args['post_id'] ) && get_queried_object_id() === (int) $args['post_id']
+			&& ! array_diff( $types, array( 'comment', 'review' ) )
+			&& ! wp_parse_list( $args['type__not_in'] );
+		if ( ! $is_review ) {
+			return $comments;
+		}
+		$query->found_comments = 0;
+		$query->max_num_pages  = 0;
+		return ! empty( $args['count'] ) ? 0 : array();
 	}
 
 	/**
@@ -230,22 +245,23 @@ class WooCommerce {
 	 * This captures the locale at the time of purchase, not at sync time.
 	 * Supports multilingual stores where different customers may order in different languages.
 	 *
-	 * @param int|WC_Order  $order_id Order ID or order object.
-	 * @param WC_Order|null $order Order object (optional, depends on hook).
+	 * Runs on woocommerce_new_order, which fires after the order is written, so only
+	 * the meta is saved: a full save() would re-run every order save hook. The hook
+	 * fires again when a draft becomes a real order, so the first locale wins.
+	 *
+	 * @param int           $order_id Order ID.
+	 * @param WC_Order|null $order    Order object.
 	 */
-	public function save_order_locale( $order_id, $order = null ) {
-		if ( $order_id instanceof WC_Order ) {
-			$order = $order_id;
-		} elseif ( ! $order ) {
+	public function save_order_locale( $order_id, $order = null ): void {
+		if ( ! $order instanceof WC_Order ) {
 			$order = wc_get_order( $order_id );
 		}
-
-		if ( ! $order ) {
+		if ( ! $order instanceof WC_Order || $order->get_meta( '_reviewbird_locale' ) ) {
 			return;
 		}
 
 		$order->update_meta_data( '_reviewbird_locale', get_locale() );
-		$order->save();
+		$order->save_meta_data();
 	}
 
 	/**

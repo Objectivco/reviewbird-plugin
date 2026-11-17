@@ -51,7 +51,8 @@ class SchemaMarkup {
 
 		if ( is_array( $reviews ) && ! empty( $reviews ) ) {
 			$markup['review'] = $reviews;
-		} elseif ( $aggregate_rating ) {
+		}
+		if ( $aggregate_rating ) {
 			( new SchemaScheduler() )->schedule_schema_refresh( $product_id );
 		}
 
@@ -65,17 +66,22 @@ class SchemaMarkup {
 	 * @return array|null Aggregate rating schema or null if no data.
 	 */
 	private function build_aggregate_rating( $product_id ) {
-		$avg_stars    = get_post_meta( $product_id, '_reviewbird_avg_stars', true );
-		$review_count = get_post_meta( $product_id, '_reviewbird_reviews_count', true );
+		// Use the service's average, which the visible stars also show.
+		$counts       = get_post_meta( $product_id, '_reviewbird_rating_counts', true );
+		$rating_value = (float) get_post_meta( $product_id, '_reviewbird_avg_stars', true );
+		$review_count = (int) get_post_meta( $product_id, '_reviewbird_reviews_count', true );
+		// Meta saved before rating counts were stored rated every review.
+		$rating_count = is_array( $counts ) ? array_sum( array_map( fn( $stars ) => (int) ( $counts[ $stars ] ?? 0 ), range( 1, 5 ) ) ) : $review_count;
 
-		if ( empty( $avg_stars ) || empty( $review_count ) || intval( $review_count ) <= 0 ) {
+		if ( $review_count <= 0 || $rating_count <= 0 || $rating_value < 1 ) {
 			return null;
 		}
 
 		return array(
 			'@type'       => 'AggregateRating',
-			'ratingValue' => floatval( $avg_stars ),
-			'reviewCount' => intval( $review_count ),
+			'ratingValue' => $rating_value,
+			'ratingCount' => $rating_count,
+			'reviewCount' => $review_count,
 			'bestRating'  => '5',
 			'worstRating' => '1',
 		);

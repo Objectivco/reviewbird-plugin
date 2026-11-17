@@ -54,6 +54,12 @@ namespace reviewbird\Integration {
 		return $GLOBALS['reviewbird_test_is_product'];
 	}
 
+	function get_queried_object_id() { return 21; }
+
+	function wp_parse_list( $list ) {
+		return is_array( $list ) ? $list : preg_split( '/[\s,]+/', $list, -1, PREG_SPLIT_NO_EMPTY );
+	}
+
 	function wc_get_product() {
 		return $GLOBALS['reviewbird_test_review_product'];
 	}
@@ -157,25 +163,49 @@ namespace reviewbird\Tests {
 
 		public function test_suppresses_default_woocommerce_review_output_and_query(): void {
 			$integration  = new WooCommerce();
+			// WP_Comment_Query defaults the type vars to ''.
+			$query = (object) array( 'query_vars' => array( 'post_id' => 21, 'type' => '', 'type__in' => '', 'type__not_in' => '', 'count' => false ), 'found_comments' => 8, 'max_num_pages' => 2 );
 			$reviews_block = array( 'blockName' => 'woocommerce/product-reviews' );
 			$other_block   = array( 'blockName' => 'core/paragraph' );
 			self::assertSame( array( $integration, 'suppress_product_reviews_block' ), $GLOBALS['reviewbird_test_filters']['pre_render_block'][0] );
-			self::assertSame( 2, $GLOBALS['reviewbird_test_filters']['pre_render_block'][2] );
+			self::assertSame( 3, $GLOBALS['reviewbird_test_filters']['pre_render_block'][2] );
 			self::assertSame( array( $integration, 'suppress_product_review_queries' ), $GLOBALS['reviewbird_test_filters']['comments_pre_query'][0] );
-			self::assertSame( 1, $GLOBALS['reviewbird_test_filters']['comments_pre_query'][2] );
+			self::assertSame( 2, $GLOBALS['reviewbird_test_filters']['comments_pre_query'][2] );
 			self::assertSame( '', $integration->suppress_product_reviews_block( null, $reviews_block ) );
+			$GLOBALS['reviewbird_test_is_product'] = false;
+			self::assertSame( '', $integration->suppress_product_reviews_block( null, $reviews_block, (object) array( 'context' => array( 'singleProduct' => true ) ) ) );
+			self::assertNull( $integration->suppress_product_reviews_block( null, $reviews_block ) );
+			$GLOBALS['reviewbird_test_is_product'] = true;
 			self::assertNull( $integration->suppress_product_reviews_block( null, $other_block ) );
-			self::assertSame( array(), $integration->suppress_product_review_queries( null ) );
+			self::assertSame( array(), $integration->suppress_product_review_queries( null, $query ) );
+			self::assertSame( 0, $query->found_comments );
+			$query->query_vars['count'] = true;
+			self::assertSame( 0, $integration->suppress_product_review_queries( null, $query ) );
+			self::assertSame( 9, $integration->suppress_product_review_queries( 9, $query ) );
+			$query->query_vars['type'] = 'note';
+			self::assertNull( $integration->suppress_product_review_queries( null, $query ) );
+			$query->query_vars['type'] = 'review';
+			$query->query_vars['post_id'] = 99;
+			self::assertNull( $integration->suppress_product_review_queries( null, $query ) );
+			$query->query_vars['post_id'] = 21;
+			$query->query_vars['type__in'] = array( 'review' );
+			self::assertSame( 0, $integration->suppress_product_review_queries( null, $query ) );
+			$query->query_vars['type__in'] = 'review,note';
+			self::assertNull( $integration->suppress_product_review_queries( null, $query ) );
+			$query->query_vars['type__in'] = '';
+			$query->query_vars['type__not_in'] = 'pings';
+			self::assertNull( $integration->suppress_product_review_queries( null, $query ) );
+			$query->query_vars['type__not_in'] = '';
 
 			$GLOBALS['reviewbird_test_can_show_widget'] = false;
 
 			self::assertNull( $integration->suppress_product_reviews_block( null, $reviews_block ) );
-			self::assertNull( $integration->suppress_product_review_queries( null ) );
+			self::assertNull( $integration->suppress_product_review_queries( null, $query ) );
 
 			$GLOBALS['reviewbird_test_can_show_widget'] = true;
 			$GLOBALS['reviewbird_test_is_product']      = false;
 
-			self::assertNull( $integration->suppress_product_review_queries( null ) );
+			self::assertNull( $integration->suppress_product_review_queries( null, $query ) );
 		}
 
 		public function test_adds_account_order_review_link(): void {

@@ -34,12 +34,15 @@ class ProductsController {
 				'permission_callback' => array( $this, 'permission_callback' ),
 				'args'                => array(
 					'per_page'       => array(
-						'default'           => 100,
-						'sanitize_callback' => 'absint',
+						'type'    => 'integer',
+						'default' => 100,
+						'minimum' => 1,
+						'maximum' => 100,
 					),
 					'page'           => array(
-						'default'           => 1,
-						'sanitize_callback' => 'absint',
+						'type'    => 'integer',
+						'default' => 1,
+						'minimum' => 1,
 					),
 					'status'         => array(
 						'default'           => 'publish',
@@ -204,7 +207,7 @@ class ProductsController {
 			'brand'               => $this->get_product_brand( $product ),
 			'price'               => $product->get_price(),
 			'image'               => wp_get_attachment_url( $product->get_image_id() ),
-			'images'              => array_filter( array_map( 'wp_get_attachment_url', $product->get_gallery_image_ids() ) ),
+			'images'              => array_values( array_filter( array_map( 'wp_get_attachment_url', $product->get_gallery_image_ids() ) ) ),
 			'stock_status'        => $product->get_stock_status(),
 			'in_stock'            => $product->is_in_stock(),
 			'tags'                => $this->get_product_tags( $product ),
@@ -293,13 +296,13 @@ class ProductsController {
 	 * @return string|null Brand name or null if not found.
 	 */
 	private function get_product_brand( $product ): ?string {
-		// Try taxonomy first (product_brand)
+		// Try the product_brand taxonomy first.
 		$brands = wp_get_post_terms( $product->get_id(), 'product_brand', array( 'fields' => 'names' ) );
 		if ( ! is_wp_error( $brands ) && ! empty( $brands ) ) {
 			return $brands[0];
 		}
 
-		// Fallback to meta
+		// Use metadata if there is no taxonomy value.
 		$meta_brand = $product->get_meta( '_brand' );
 		return $meta_brand ? $meta_brand : null;
 	}
@@ -354,9 +357,10 @@ class ProductsController {
 	 * Check permission for API requests.
 	 * Uses WooCommerce authentication (consumer key/secret) via wc_rest_check_post_permissions.
 	 *
+	 * @param WP_REST_Request $request The REST API request.
 	 * @return bool Whether the request has permission.
 	 */
-	public function permission_callback( WP_REST_Request $request ): bool {
+	public function permission_callback( WP_REST_Request $request ): bool { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Keep the REST permission callback signature.
 		return wc_rest_check_post_permissions( 'product', 'read', 0 );
 	}
 }

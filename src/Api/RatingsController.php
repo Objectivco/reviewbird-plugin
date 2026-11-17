@@ -74,22 +74,24 @@ class RatingsController {
 		$review_count = (int) $review_count;
 
 		if ( ! is_numeric( $avg_stars ) || ! is_finite( (float) $avg_stars )
-			|| ( 0 === $review_count ? 0.0 !== (float) $avg_stars : ( $avg_stars < 1 || $avg_stars > 5 ) ) ) {
-			return new WP_Error( 'invalid_rating', __( 'Average stars must be 0 when there are no reviews, or a number between 1 and 5', 'reviewbird' ), array( 'status' => 400 ) );
+			|| ( 0 === $review_count ? 0.0 !== (float) $avg_stars : ( $avg_stars < 0 || $avg_stars > 5 ) ) ) {
+			return new WP_Error( 'invalid_rating', __( 'Average stars must be between 0 and 5, and 0 when there are no reviews', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
-		if ( ! empty( $rating_counts ) && ! is_array( $rating_counts ) ) {
-			return new WP_Error( 'invalid_rating_counts', __( 'Rating counts must be an array', 'reviewbird' ), array( 'status' => 400 ) );
+		// The service owns the average. Rating counts are optional and only validated when sent.
+		$avg_stars = (float) $avg_stars;
+		if ( 0 === $review_count || ! empty( $rating_counts ) ) {
+			$rating_counts = reviewbird_normalize_rating_counts( $rating_counts, $review_count );
+			if ( null === $rating_counts ) {
+				return new WP_Error( 'invalid_rating_counts', __( 'Rating counts must contain whole numbers of 0 or more for stars 1 to 5 and must not exceed the review count.', 'reviewbird' ), array( 'status' => 400 ) );
+			}
 		}
 
 		$shared_id  = reviewbird_product_id( $product_id );
 		$product_id = reviewbird_product_meta_id( $product_id );
-		update_post_meta( $product_id, '_reviewbird_avg_stars', floatval( $avg_stars ) );
+		update_post_meta( $product_id, '_reviewbird_avg_stars', $avg_stars );
 		update_post_meta( $product_id, '_reviewbird_reviews_count', intval( $review_count ) );
 
-		if ( 0 === $review_count ) {
-			$rating_counts = array_fill( 1, 5, 0 );
-		}
 		if ( ! empty( $rating_counts ) ) {
 			update_post_meta( $product_id, '_reviewbird_rating_counts', $rating_counts );
 		}
@@ -112,7 +114,7 @@ class RatingsController {
 			array(
 				'success'      => true,
 				'product_id'   => $shared_id,
-				'avg_stars'    => floatval( $avg_stars ),
+				'avg_stars'    => $avg_stars,
 				'review_count' => intval( $review_count ),
 			),
 			200
@@ -134,7 +136,7 @@ class RatingsController {
 		}
 
 		if ( 'product' !== get_post_type( $product_id ) ) {
-			$product = reviewbird_find_product( $product_id );
+			$product    = reviewbird_find_product( $product_id );
 			$product_id = $product->get_id();
 		}
 		return wc_rest_check_post_permissions( 'product', 'edit', $product_id );
@@ -147,7 +149,7 @@ class RatingsController {
 	 * @param WP_REST_Request $request The REST API request.
 	 * @return bool|WP_Error True if authorized, WP_Error otherwise.
 	 */
-	public static function verified_purchase_permission_callback( WP_REST_Request $request ) {
+	public static function verified_purchase_permission_callback( WP_REST_Request $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Keep the REST permission callback signature.
 		return wc_rest_check_post_permissions( 'shop_order', 'read', 0 );
 	}
 
@@ -170,7 +172,7 @@ class RatingsController {
 			return new WP_Error( 'missing_email', __( 'Customer email is required', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
-		if ( ! is_email( $customer_email ) ) {
+		if ( ! is_string( $customer_email ) || ! is_email( $customer_email ) ) {
 			return new WP_Error( 'invalid_email', __( 'Invalid email address', 'reviewbird' ), array( 'status' => 400 ) );
 		}
 
@@ -189,8 +191,9 @@ class RatingsController {
 			}
 		}
 
-		$purchased_attributes = $verified_purchase ? $this->get_purchased_attributes( $customer_email, $product_ids ) : array();
-		$location             = $this->get_customer_location( $customer_email );
+		$purchase             = $verified_purchase ? $this->get_purchase_details( $customer_email, $product_ids ) : array();
+		$purchased_attributes = $purchase['purchased_attributes'] ?? array();
+		$location             = $purchase['location'] ?? null;
 
 		if ( function_exists( 'wc_get_logger' ) ) {
 			wc_get_logger()->debug(
@@ -224,155 +227,71 @@ class RatingsController {
 	}
 
 	/**
-	 * Get customer billing location by email.
+	 * Get the saved details from the most recent matching paid order.
 	 *
-	 * @param string $customer_email Customer email address.
-	 * @return string|null English country name or null if not found.
-	 */
-	private function get_customer_location( string $customer_email ): ?string {
-		if ( ! class_exists( 'WC_Customer' ) ) {
-			return null;
-		}
-
-		$user     = get_user_by( 'email', $customer_email );
-		$customer = $user ? new \WC_Customer( $user->ID ) : new \WC_Customer( 0 );
-
-		if ( ! $user ) {
-			$customer->set_email( $customer_email );
-		}
-
-		$country_code = $customer->get_billing_country();
-
-		return ! empty( $country_code ) ? self::get_english_country_name( $country_code ) : null;
-	}
-
-	/**
-	 * Get variation attributes for a customer's purchase of a product.
-	 *
-	 * @param string $customer_email Customer email address.
+	 * @param string $customer_email Customer billing email.
 	 * @param int[]  $product_ids    Product IDs, including translations.
-	 * @return array Purchased variation attributes.
+	 * @return array Purchase details.
 	 */
-	private function get_purchased_attributes( string $customer_email, array $product_ids ): array {
-		$orders = wc_get_orders(
-			array(
-				'billing_email' => $customer_email,
-				'status'        => wc_get_is_paid_statuses(),
-				'limit'         => 10,
-				'orderby'       => 'date',
-				'order'         => 'DESC',
-				'lang'          => '',
-			)
-		);
+	private function get_purchase_details( string $customer_email, array $product_ids ): array {
+		// ponytail: Read 100 orders per query; use a product lookup if long order histories become slow.
+		$page = 1;
+		do {
+			$orders      = wc_get_orders(
+				array(
+					'billing_email' => $customer_email,
+					'status'        => wc_get_is_paid_statuses(),
+					'limit'         => 100,
+					'page'          => $page++,
+					'orderby'       => 'date',
+					'order'         => 'DESC',
+					'lang'          => '',
+				)
+			);
+			$order_count = count( $orders );
 
-		foreach ( $orders as $order ) {
-			foreach ( $order->get_items() as $item ) {
-				$item_product_id = (int) $item->get_product_id( 'edit' );
-				$variation_id    = (int) $item->get_variation_id( 'edit' );
+			foreach ( $orders as $order ) {
+				foreach ( $order->get_items() as $item ) {
+					$variation_id = (int) $item->get_variation_id( 'edit' );
+					if ( ! in_array( (int) $item->get_product_id( 'edit' ), $product_ids, true ) && ! in_array( $variation_id, $product_ids, true ) ) {
+						continue;
+					}
 
-				// Match the reviewed parent or the exact reviewed variation.
-				if ( ! $variation_id || ( ! in_array( $item_product_id, $product_ids, true ) && ! in_array( $variation_id, $product_ids, true ) ) ) {
-					continue;
-				}
+					$attributes = array();
+					if ( $variation_id ) {
+						$parent               = wc_get_product( $item->get_product_id( 'edit' ) );
+						$variation_attributes = $parent ? array_filter( $parent->get_attributes( 'edit' ), 'wc_attributes_array_filter_variation' ) : array();
+						$variation_keys       = array_map( 'rawurldecode', array_keys( $variation_attributes ) );
+						foreach ( $item->get_formatted_meta_data( '_', true ) as $meta ) {
+							if ( ! in_array( $meta->key, $variation_keys, true ) ) {
+								continue;
+							}
+							$attributes[] = array(
+								'name'  => wp_strip_all_tags( $meta->display_key ),
+								'value' => wp_strip_all_tags( $meta->display_value ),
+							);
+						}
+					}
 
-				$variation = wc_get_product( $variation_id );
-				if ( ! $variation ) {
-					continue;
-				}
-
-				$attributes = array();
-				foreach ( $variation->get_variation_attributes() as $attr_key => $attr_value ) {
-					$attr_name    = wc_attribute_label( str_replace( 'attribute_', '', $attr_key ) );
-					$attributes[] = array(
-						'name'  => ucwords( $attr_name ),
-						'value' => ucwords( $attr_value ),
+					$switched = switch_to_locale( 'en_US' );
+					try {
+						$countries = ( new \WC_Countries() )->get_countries();
+					} finally {
+						if ( $switched ) {
+							restore_previous_locale();
+						}
+					}
+					// WooCommerce labels are for its checkout dropdown: they contain HTML entities and
+					// "United States (US)"-style codes. Send plain names, keeping "Virgin Islands (US)".
+					$country = $countries[ $order->get_billing_country() ] ?? null;
+					return array(
+						'location'             => $country ? preg_replace( '/^(United (?:States|Kingdom)) \((?:US|UK)\)/', '$1', html_entity_decode( $country, ENT_QUOTES, 'UTF-8' ) ) : null,
+						'purchased_attributes' => $attributes,
 					);
 				}
-
-				// Return first match (most recent order).
-				if ( ! empty( $attributes ) ) {
-					return $attributes;
-				}
 			}
-		}
+		} while ( 100 === $order_count );
 
 		return array();
-	}
-
-	/**
-	 * Get English country name from ISO country code.
-	 *
-	 * Uses a static list to avoid WooCommerce localization returning
-	 * country names in the store's language instead of English.
-	 *
-	 * @param string $country_code Two-letter ISO country code.
-	 * @return string|null English country name or null if not found.
-	 */
-	private static function get_english_country_name( string $country_code ): ?string {
-		$countries = array(
-			'US' => 'United States',
-			'CA' => 'Canada',
-			'GB' => 'United Kingdom',
-			'AU' => 'Australia',
-			'NZ' => 'New Zealand',
-			'DE' => 'Germany',
-			'FR' => 'France',
-			'ES' => 'Spain',
-			'IT' => 'Italy',
-			'NL' => 'Netherlands',
-			'BE' => 'Belgium',
-			'SE' => 'Sweden',
-			'NO' => 'Norway',
-			'DK' => 'Denmark',
-			'FI' => 'Finland',
-			'IE' => 'Ireland',
-			'CH' => 'Switzerland',
-			'AT' => 'Austria',
-			'PL' => 'Poland',
-			'CZ' => 'Czech Republic',
-			'PT' => 'Portugal',
-			'GR' => 'Greece',
-			'HU' => 'Hungary',
-			'RO' => 'Romania',
-			'BG' => 'Bulgaria',
-			'HR' => 'Croatia',
-			'SK' => 'Slovakia',
-			'SI' => 'Slovenia',
-			'LT' => 'Lithuania',
-			'LV' => 'Latvia',
-			'EE' => 'Estonia',
-			'LU' => 'Luxembourg',
-			'MT' => 'Malta',
-			'CY' => 'Cyprus',
-			'IS' => 'Iceland',
-			'JP' => 'Japan',
-			'CN' => 'China',
-			'KR' => 'South Korea',
-			'TW' => 'Taiwan',
-			'HK' => 'Hong Kong',
-			'SG' => 'Singapore',
-			'MY' => 'Malaysia',
-			'TH' => 'Thailand',
-			'ID' => 'Indonesia',
-			'PH' => 'Philippines',
-			'VN' => 'Vietnam',
-			'IN' => 'India',
-			'MX' => 'Mexico',
-			'BR' => 'Brazil',
-			'AR' => 'Argentina',
-			'CL' => 'Chile',
-			'CO' => 'Colombia',
-			'PE' => 'Peru',
-			'ZA' => 'South Africa',
-			'AE' => 'United Arab Emirates',
-			'SA' => 'Saudi Arabia',
-			'IL' => 'Israel',
-			'TR' => 'Turkey',
-			'RU' => 'Russia',
-			'UA' => 'Ukraine',
-			'RS' => 'Serbia',
-		);
-
-		return isset( $countries[ $country_code ] ) ? $countries[ $country_code ] : null;
 	}
 }

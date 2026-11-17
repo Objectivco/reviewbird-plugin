@@ -49,7 +49,13 @@ class HealthScheduler {
 		}
 		if ( ! get_option( self::CLEANUP_OPTION ) ) {
 			wp_clear_scheduled_hook( self::CLEANUP_HOOK );
-			if ( as_get_scheduled_actions( array( 'hook' => self::ACTION_HOOK, 'per_page' => 1 ), 'ids' ) ) {
+			if ( as_get_scheduled_actions(
+				array(
+					'hook'     => self::ACTION_HOOK,
+					'per_page' => 1,
+				),
+				'ids'
+			) ) {
 				// Large queues must be canceled in the background, not on a page request.
 				if ( ! as_next_scheduled_action( self::CLEANUP_HOOK ) ) {
 					as_enqueue_async_action( self::CLEANUP_HOOK, array(), 'reviewbird', true, 0 );
@@ -101,7 +107,7 @@ class HealthScheduler {
 				update_option( self::CLEANUP_OPTION, 'pending', false );
 				$this->schedule_recurring_check();
 			}
-			$ids = as_get_scheduled_actions(
+			$ids       = as_get_scheduled_actions(
 				array(
 					'hook'     => self::ACTION_HOOK,
 					'per_page' => 1000,
@@ -176,11 +182,21 @@ class HealthScheduler {
 			return new \WP_Error( 'reviewbird_health_cache_failed', __( 'The connection status could not be saved. Please try again.', 'reviewbird' ) );
 		}
 		set_transient( 'reviewbird_admin_health_status', $response, self::REFRESH_INTERVAL );
+		if ( ! reviewbird_is_store_connected() && class_exists( '\ActionScheduler' ) && \ActionScheduler::is_initialized() ) {
+			as_unschedule_all_actions( 'reviewbird_refresh_schema_reviews' );
+			as_unschedule_all_actions( 'reviewbird_sync_product_rating' );
+		}
 
 		$store_id = absint( $response['store_id'] ?? 0 );
 
 		if ( $store_id && ! get_option( 'reviewbird_store_id' ) ) {
 			update_option( 'reviewbird_store_id', $store_id );
+		}
+		if ( 'not_connected' === $response['status'] ) {
+			delete_option( 'reviewbird_star_color' );
+			delete_transient( 'reviewbird_star_color' );
+		} elseif ( reviewbird_get_store_id() && false === get_transient( 'reviewbird_star_color' ) ) {
+			StarRatingDisplay::fetch_and_cache_star_color();
 		}
 
 		if ( function_exists( 'wc_get_logger' ) ) {

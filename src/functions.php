@@ -31,8 +31,8 @@ function reviewbird_find_product( int $product_id ) {
 			'fields'           => 'ids',
 			'orderby'          => 'ID',
 			'order'            => 'ASC',
-			'meta_key'         => '_reviewbird_product_id',
-			'meta_value'       => $product_id,
+			'meta_key'         => '_reviewbird_product_id', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- One-result fallback for a deleted shared identity.
+			'meta_value'       => $product_id, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 			'lang'             => '',
 			'suppress_filters' => true,
 		)
@@ -208,9 +208,10 @@ function reviewbird_should_disable_ssl_verify(): bool {
  * @param string $endpoint The API endpoint to call.
  * @param array  $data     Optional. Data to send with the request.
  * @param string $method   Optional. HTTP method. Default 'GET'.
+ * @param int    $timeout  Request timeout in seconds.
  * @return array|\WP_Error The API response or WP_Error on failure.
  */
-function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
+function reviewbird_api_request( $endpoint, $data = null, $method = 'GET', int $timeout = 30 ) {
 	$api_url = reviewbird_get_api_url();
 
 	$args = array(
@@ -219,7 +220,7 @@ function reviewbird_api_request( $endpoint, $data = null, $method = 'GET' ) {
 			'Origin'       => home_url(),
 			'User-Agent'   => 'reviewbird WordPress Plugin/' . REVIEWBIRD_VERSION,
 		),
-		'timeout'   => 30,
+		'timeout'   => $timeout,
 		'method'    => strtoupper( $method ),
 		'sslverify' => ! reviewbird_should_disable_ssl_verify(),
 	);
@@ -299,7 +300,7 @@ function reviewbird_get_store_id(): ?int {
 	$status   = reviewbird_get_store_status();
 	$store_id = absint( $status['store_id'] ?? 0 );
 
-	return $store_id ?: null;
+	return $store_id ? $store_id : null;
 }
 
 /**
@@ -382,8 +383,8 @@ function reviewbird_get_product_reviews( array $product_ids = array(), int $per_
 
 	// Validate and add optional rating parameter.
 	if ( isset( $args['rating'] ) ) {
-		$rating = absint( $args['rating'] );
-		$rating = max( 1, min( 5, $rating ) );
+		$rating                     = absint( $args['rating'] );
+		$rating                     = max( 1, min( 5, $rating ) );
 		$query_params['min_rating'] = $rating;
 	}
 
@@ -405,10 +406,10 @@ function reviewbird_get_product_reviews( array $product_ids = array(), int $per_
 		$url,
 		array(
 			'headers'   => array(
-				'X-Store-Hash'  => $store_hash,
-				'User-Agent' => 'reviewbird WordPress Plugin/' . REVIEWBIRD_VERSION,
+				'X-Store-Hash' => $store_hash,
+				'User-Agent'   => 'reviewbird WordPress Plugin/' . REVIEWBIRD_VERSION,
 			),
-			'timeout'   => 30,
+			'timeout'   => 3,
 			'sslverify' => ! reviewbird_should_disable_ssl_verify(),
 		)
 	);
@@ -514,7 +515,7 @@ function reviewbird_log_api_error( string $type, string $message, string $endpoi
  * @param bool $skip_cache Deprecated. Kept for backward compatibility.
  * @return array|null Status array or null if not yet populated.
  */
-function reviewbird_get_store_status( bool $skip_cache = false ): ?array {
+function reviewbird_get_store_status( bool $skip_cache = false ): ?array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Keep the deprecated public argument for existing integrations.
 	$status = get_option( 'reviewbird_store_status' );
 
 	return is_array( $status ) ? $status : null;
@@ -562,16 +563,42 @@ function reviewbird_is_store_connected(): bool {
  */
 function reviewbird_is_onboarding_preview(): bool {
 	// This token is verified by the API, not a WordPress form nonce.
-	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput -- Validate the exact token with the strict allowlist below; the API verifies its authority.
 	$token = $_GET['reviewbird_setup'] ?? '';
 	if ( ! is_string( $token ) || ! preg_match( '/\A[a-zA-Z0-9]{64}\z/', $token ) ) {
 		return false;
 	}
 
-	static $allowed = null;
-	if ( null !== $allowed ) {
-		return $allowed;
+	static $results = array();
+	if ( isset( $results[ $token ] ) ) {
+		return $results[ $token ];
 	}
+
+	$failure_key = 'reviewbird_preview_failed_' . hash( 'sha256', $token );
+	if ( get_transient( $failure_key ) ) {
+		return false;
+	}
+
+	$allowed_key = 'reviewbird_preview_allowed_' . hash( 'sha256', $token );
+	$allowed     = (bool) get_transient( $allowed_key );
+	if ( ! $allowed ) {
+		// ponytail: one new token check per site every 10 seconds; use signed local tokens if setup traffic grows.
+		if ( ! reviewbird_acquire_lock( 'reviewbird_preview_check_lock', time() + 10 ) ) {
+			// Remember the miss so later calls in this request skip the lock query.
+			$results[ $token ] = false;
+			return false;
+		}
+
+		$domain   = wp_parse_url( home_url(), PHP_URL_HOST ) ?? '';
+		$response = reviewbird_api_request( '/api/woocommerce/health?domain=' . rawurlencode( $domain ) . '&onboarding_preview=' . rawurlencode( $token ), null, 'GET', 3 );
+		$allowed  = ! is_wp_error( $response ) && true === ( $response['onboarding_preview_allowed'] ?? false );
+		if ( ! $allowed ) {
+			set_transient( $failure_key, 1, 5 * MINUTE_IN_SECONDS );
+			return false;
+		}
+		set_transient( $allowed_key, 1, 10 );
+	}
+	$results[ $token ] = true;
 
 	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 		define( 'DONOTCACHEPAGE', true );
@@ -580,10 +607,6 @@ function reviewbird_is_onboarding_preview(): bool {
 	if ( ! headers_sent() ) {
 		header( 'Referrer-Policy: no-referrer' );
 	}
-
-	$domain   = wp_parse_url( home_url(), PHP_URL_HOST ) ?? '';
-	$response = reviewbird_api_request( '/api/woocommerce/health?domain=' . rawurlencode( $domain ) . '&onboarding_preview=' . rawurlencode( $token ) );
-	$allowed  = ! is_wp_error( $response ) && true === ( $response['onboarding_preview_allowed'] ?? false );
 
 	return $allowed;
 }
@@ -627,14 +650,97 @@ function reviewbird_can_show_widget(): bool {
 }
 
 /**
+ * Acquire an expiring option lock atomically.
+ *
+ * @param string $lock_key Option name.
+ * @param int    $expires Expiration timestamp.
+ * @return bool Whether this request acquired the lock.
+ */
+function reviewbird_acquire_lock( string $lock_key, int $expires ): bool {
+	global $wpdb;
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- add_option() can overwrite a concurrently inserted option.
+	$acquired = $wpdb->query(
+		$wpdb->prepare( "INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'no')", $lock_key, (string) $expires )
+	);
+	if ( 0 === $acquired ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- The conditional update acquires an expired lock atomically.
+		$acquired = $wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND CAST(option_value AS UNSIGNED) <= %d",
+				(string) $expires,
+				$lock_key,
+				time()
+			)
+		);
+	}
+	if ( $acquired ) {
+		wp_cache_delete( $lock_key, 'options' );
+		wp_cache_delete( 'notoptions', 'options' );
+	}
+	return (bool) $acquired;
+}
+
+/**
+ * Enqueue one product action, including on older Action Scheduler versions.
+ *
+ * @param string $hook Action hook.
+ * @param int    $product_id Product ID.
+ */
+function reviewbird_enqueue_product_action( string $hook, int $product_id ): void {
+	$product_id = reviewbird_product_id( $product_id );
+	if ( ! as_next_scheduled_action( $hook, array( $product_id ) ) ) {
+		// Check arguments here: older AS versions apply $unique to the whole hook and group.
+		// ponytail: Concurrent requests can add a duplicate refresh; use native uniqueness when old AS support ends.
+		as_enqueue_async_action( $hook, array( $product_id ), 'reviewbird' );
+	}
+}
+
+/**
+ * Validate rating buckets and fill omitted zero buckets.
+ *
+ * @param mixed $counts Rating counts indexed by stars.
+ * @param int   $review_count Total review count.
+ * @return array|null Five valid buckets, or null for invalid input.
+ */
+function reviewbird_normalize_rating_counts( $counts, int $review_count ): ?array {
+	$normalized = array_fill( 1, 5, 0 );
+	if ( 0 === $review_count ) {
+		return $normalized;
+	}
+	if ( ! is_array( $counts ) || empty( $counts ) || $review_count < 0 ) {
+		return null;
+	}
+	$remaining = $review_count;
+	foreach ( $counts as $stars => $count ) {
+		if ( ! is_int( $stars ) || $stars < 1 || $stars > 5 || ( ! is_int( $count ) && ! is_string( $count ) ) ) {
+			return null;
+		}
+		$count = filter_var( $count, FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0 ) ) );
+		if ( false === $count || $count > $remaining ) {
+			return null;
+		}
+		$remaining           -= $count;
+		$normalized[ $stars ] = $count;
+	}
+	return $normalized;
+}
+
+/**
  * Fill `_reviewbird_*` rating meta from the public API when it is missing.
  *
  * @param int $product_id WooCommerce product ID.
  * @return void
  */
 function reviewbird_sync_product_rating( int $product_id ): void {
-	$shared_id  = reviewbird_product_id( $product_id );
-	$product_id = reviewbird_product_meta_id( $product_id );
+	if ( ! reviewbird_can_show_widget() ) {
+		return;
+	}
+	$shared_id = reviewbird_product_id( $product_id );
+	$product   = reviewbird_find_product( $shared_id );
+	if ( ! $product ) {
+		return;
+	}
+	$product_id    = $product->get_id();
 	static $synced = array();
 
 	if ( $product_id < 1 || isset( $synced[ $product_id ] ) ) {
@@ -657,6 +763,8 @@ function reviewbird_sync_product_rating( int $product_id ): void {
 		return;
 	}
 
+	set_transient( $lock_key, 1, HOUR_IN_SECONDS );
+
 	$response = wp_remote_get(
 		reviewbird_get_api_url() . '/api/public/' . $store_id . '/' . $shared_id . '?context=widget&page=1',
 		array(
@@ -669,27 +777,35 @@ function reviewbird_sync_product_rating( int $product_id ): void {
 		)
 	);
 
-	set_transient( $lock_key, 1, HOUR_IN_SECONDS );
-
-	if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) >= 400 ) {
+	if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) < 200 || wp_remote_retrieve_response_code( $response ) >= 300 ) {
 		return;
 	}
 
-	$data    = json_decode( wp_remote_retrieve_body( $response ), true );
-	$stats   = is_array( $data ) ? ( $data['statistics'] ?? array() ) : array();
-	$count   = absint( $stats['total_reviews'] ?? 0 );
-	$average = (float) ( $stats['average_rating'] ?? 0 );
-
-	if ( $count < 1 || $average <= 0 ) {
+	$data  = json_decode( wp_remote_retrieve_body( $response ), true );
+	$stats = is_array( $data ) ? ( $data['statistics'] ?? array() ) : array();
+	if ( ! is_array( $stats ) || ! isset( $stats['total_reviews'], $stats['average_rating'] )
+		|| ! is_numeric( $stats['total_reviews'] ) || ! is_numeric( $stats['average_rating'] ) ) {
 		return;
 	}
+	$count   = ( is_int( $stats['total_reviews'] ) || is_string( $stats['total_reviews'] ) )
+		? filter_var( $stats['total_reviews'], FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0 ) ) ) : false;
+	$average = (float) $stats['average_rating'];
+	if ( false === $count || ! is_finite( $average ) || $average < 0 || $average > 5 || ( 0 === $count && 0.0 !== $average ) ) {
+		return;
+	}
+	$counts = reviewbird_normalize_rating_counts( $stats['rating_distribution'] ?? null, $count );
+	if ( null === $counts ) {
+		return;
+	}
+	$product = reviewbird_find_product( $shared_id );
+	if ( ! $product ) {
+		return;
+	}
+	$product_id = $product->get_id();
 
 	update_post_meta( $product_id, '_reviewbird_avg_stars', $average );
 	update_post_meta( $product_id, '_reviewbird_reviews_count', $count );
-
-	if ( ! empty( $stats['rating_distribution'] ) ) {
-		update_post_meta( $product_id, '_reviewbird_rating_counts', $stats['rating_distribution'] );
-	}
+	update_post_meta( $product_id, '_reviewbird_rating_counts', $counts );
 }
 
 /**
@@ -735,7 +851,7 @@ function reviewbird_enqueue_widget_script(): void {
 		'reviewbird-widget',
 		reviewbird_get_api_url() . '/build/review-widget-v2.js',
 		array(),
-		null,
+		null, // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- The service updates this remote widget independently of plugin releases.
 		true
 	);
 
@@ -750,8 +866,8 @@ function reviewbird_enqueue_widget_script(): void {
 
 	if ( $email ) {
 		$config['prefill'] = array(
-			'firstName' => $customer->get_billing_first_name() ?: '',
-			'lastName'  => $customer->get_billing_last_name() ?: '',
+			'firstName' => $customer->get_billing_first_name(),
+			'lastName'  => $customer->get_billing_last_name(),
 			'email'     => $email,
 		);
 	}
@@ -783,9 +899,15 @@ function reviewbird_get_cached_product_reviews( int $product_id ): array {
 		return $cached;
 	}
 
+	if ( get_transient( 'reviewbird_ssr_api_failed' ) ) {
+		return array();
+	}
+
+	set_transient( $transient_key, array(), 5 * MINUTE_IN_SECONDS );
 	$response = reviewbird_get_product_reviews( array( $product_id ), 10 );
 
-	if ( is_wp_error( $response ) ) {
+	if ( is_wp_error( $response ) || ! is_array( $response['reviews'] ?? null ) ) {
+		set_transient( 'reviewbird_ssr_api_failed', 1, 5 * MINUTE_IN_SECONDS );
 		return array();
 	}
 
@@ -820,14 +942,14 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 		$body        = wp_strip_all_tags( $review['body'] ?? '' );
 
 		// Format date.
-		$datetime_attr  = '';
-		$date_display   = '';
-		$created_at     = $review['created_at'] ?? '';
+		$datetime_attr = '';
+		$date_display  = '';
+		$created_at    = $review['created_at'] ?? '';
 		if ( ! empty( $created_at ) ) {
 			$date = date_create( $created_at );
 			if ( $date ) {
 				$datetime_attr = $date->format( 'Y-m-d' );
-				$date_display  = wp_date( get_option( 'date_format' ), $date->getTimestamp() );
+				$date_display  = wp_date( get_option( 'date_format' ), $date->getTimestamp(), new \DateTimeZone( 'UTC' ) );
 			}
 		}
 
@@ -867,7 +989,7 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 		return '';
 	}
 
-	return '<div class="reviewbird-ssr-reviews" hidden style="display:none">' . $html . '</div>';
+	return '<div class="reviewbird-ssr-reviews">' . $html . '</div>';
 }
 
 /**
@@ -879,7 +1001,7 @@ function reviewbird_render_ssr_reviews( array $response ): string {
 function reviewbird_render_widget( $product_id = null ): string {
 	$product = $product_id ? wc_get_product( $product_id ) : $GLOBALS['product'] ?? null;
 
-	if ( ! $product || ! reviewbird_is_store_connected() ) {
+	if ( ! $product instanceof \WC_Product || ! reviewbird_is_store_connected() ) {
 		return '';
 	}
 
@@ -967,7 +1089,7 @@ function reviewbird_render_widget( $product_id = null ): string {
 function reviewbird_display_single_rating(): void {
 	global $product;
 
-	if ( ! $product || ! wc_review_ratings_enabled() ) {
+	if ( ! $product instanceof \WC_Product || ! wc_review_ratings_enabled() ) {
 		return;
 	}
 

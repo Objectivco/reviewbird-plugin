@@ -2,12 +2,6 @@
  * Reviewbird admin styles.
  */
 
-/* Tailwind directives are compiled by wp-scripts. */
-/* stylelint-disable scss/at-rule-no-unknown */
-@tailwind components;
-@tailwind utilities;
-/* stylelint-enable scss/at-rule-no-unknown */
-
 @font-face {
 	font-family: "Reviewbird DM Sans";
 	src: url(../fonts/DMSans-VariableFont.woff2) format("woff2");
@@ -66,6 +60,10 @@ body.reviewbird_page_reviewbird-settings .wrap {
 		BlinkMacSystemFont,
 		"Segoe UI",
 		sans-serif;
+}
+
+.reviewbird-status-health {
+	margin-top: 2rem;
 }
 
 .reviewbird-display-title {

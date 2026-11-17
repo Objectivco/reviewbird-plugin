@@ -39,7 +39,70 @@ class SchemaScheduler {
 	 */
 	public function init(): void {
 		add_action( self::ACTION_HOOK, array( $this, 'refresh_schema_reviews' ), 10, 1 );
-		add_action( 'reviewbird_rating_updated', array( $this, 'schedule_schema_refresh' ), 10, 1 );
+		add_action( 'reviewbird_rating_updated', array( $this, 'invalidate_schema_reviews' ), 10, 1 );
+		add_action( 'update_option_reviewbird_enable_schema', array( $this, 'cancel_disabled_schema_actions' ), 10, 2 );
+		add_action( 'before_delete_post', array( $this, 'cancel_deleted_product_actions' ), 10, 2 );
+		add_action( 'wp_trash_post', array( $this, 'cancel_deleted_product_actions' ), 10, 1 );
+	}
+
+	/**
+	 * Invalidate the refresh deadline, including when schema output is disabled.
+	 *
+	 * @param int $product_id Product ID.
+	 */
+	public function invalidate_schema_reviews( int $product_id ): void {
+		delete_transient( 'reviewbird_schema_refresh_' . reviewbird_product_meta_id( $product_id ) );
+		$this->schedule_schema_refresh( $product_id );
+	}
+
+	/**
+	 * Cancel pending schema actions when schema output is disabled.
+	 *
+	 * @param string $old_value Previous setting.
+	 * @param string $value Current setting.
+	 */
+	public function cancel_disabled_schema_actions( $old_value, $value ): void {
+		if ( 'yes' !== $value && class_exists( '\ActionScheduler' ) && \ActionScheduler::is_initialized() ) {
+			as_unschedule_all_actions( self::ACTION_HOOK );
+		}
+	}
+
+	/**
+	 * Remove product jobs only when no translation can use their results.
+	 *
+	 * @param int           $post_id Deleted or trashed post ID.
+	 * @param \WP_Post|null $post Post, when supplied by the deletion hook.
+	 */
+	public function cancel_deleted_product_actions( int $post_id, $post = null ): void {
+		$post = $post ?? get_post( $post_id );
+		if ( ! $post || ! in_array( $post->post_type, array( 'product', 'product_variation' ), true ) ) {
+			return;
+		}
+		$shared_id = reviewbird_product_id( $post_id );
+		$survivor  = false;
+		foreach ( array_diff( reviewbird_product_translation_ids( $post_id ), array( $post_id ) ) as $id ) {
+			$product = wc_get_product( $id );
+			if ( $product && 'trash' !== $product->get_status() ) {
+				$survivor = true;
+				break;
+			}
+		}
+		foreach ( array_unique( array( $post_id, $shared_id ) ) as $id ) {
+			if ( $survivor && $id === $shared_id ) {
+				continue;
+			}
+			delete_transient( 'reviewbird_schema_refresh_' . $id );
+			delete_transient( 'reviewbird_rating_sync_' . $id );
+			if ( class_exists( '\ActionScheduler' ) && \ActionScheduler::is_initialized() ) {
+				foreach ( array( self::ACTION_HOOK, 'reviewbird_sync_product_rating' ) as $hook ) {
+					$pending = as_next_scheduled_action( $hook, array( $id ) );
+					as_unschedule_all_actions( $hook, array( $id ) );
+					if ( $survivor && $pending ) {
+						reviewbird_enqueue_product_action( $hook, $shared_id );
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -54,14 +117,12 @@ class SchemaScheduler {
 			return;
 		}
 		$product_id = reviewbird_product_meta_id( absint( $product_id ) );
-		if ( ! $product_id || ! reviewbird_is_schema_enabled() ) {
+		if ( ! $product_id || ! reviewbird_is_schema_enabled() || ! reviewbird_is_store_connected() || ! reviewbird_find_product( $product_id )
+			|| get_transient( 'reviewbird_schema_refresh_' . $product_id ) ) {
 			return;
 		}
 
-		if ( ! as_next_scheduled_action( self::ACTION_HOOK, array( $product_id ) ) ) {
-			// Check args explicitly: older AS versions apply $unique to the whole hook and group.
-			as_enqueue_async_action( self::ACTION_HOOK, array( $product_id ), 'reviewbird' );
-		}
+		reviewbird_enqueue_product_action( self::ACTION_HOOK, $product_id );
 	}
 
 	/**
@@ -72,7 +133,7 @@ class SchemaScheduler {
 	 * @param int $product_id WooCommerce product ID.
 	 */
 	public function refresh_schema_reviews( int $product_id ): void {
-		if ( ! reviewbird_is_schema_enabled() ) {
+		if ( ! reviewbird_is_schema_enabled() || ! reviewbird_is_store_connected() ) {
 			return;
 		}
 		$store_id = reviewbird_get_store_id();
@@ -81,18 +142,30 @@ class SchemaScheduler {
 			return;
 		}
 
-		$product_id = reviewbird_product_meta_id( $product_id );
-		$reviews    = $this->fetch_reviews_from_api( $store_id, reviewbird_product_id( $product_id ) );
+		$shared_id = reviewbird_product_id( $product_id );
+		$product   = reviewbird_find_product( $shared_id );
+		if ( ! $product ) {
+			return;
+		}
+		$product_id = $product->get_id();
+		// Keep the last good data and limit retries during an API outage.
+		set_transient( 'reviewbird_schema_refresh_' . $product_id, true, 5 * MINUTE_IN_SECONDS );
+		$reviews = $this->fetch_reviews_from_api( $store_id, $shared_id );
 		if ( is_wp_error( $reviews ) ) {
 			return;
 		}
+		$product = reviewbird_find_product( $shared_id );
+		if ( ! $product ) {
+			return;
+		}
+		$product_id     = $product->get_id();
+		$review_schemas = $this->build_review_schemas( $reviews );
+		set_transient( 'reviewbird_schema_refresh_' . $product_id, true, DAY_IN_SECONDS );
 
 		if ( empty( $reviews ) ) {
 			delete_post_meta( $product_id, self::META_KEY );
 			return;
 		}
-
-		$review_schemas = $this->build_review_schemas( $reviews );
 
 		update_post_meta( $product_id, self::META_KEY, $review_schemas );
 
