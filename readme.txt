@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: woocommerce, woocommerce product reviews, woocommerce reviews, judge.me, rich snippets, review snippets, SEO
 Requires at least: 6.0
 Tested up to: 7.1
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -237,6 +237,11 @@ For development: `pnpm run dev`
 
 == Changelog ==
 
+= 1.3.3 =
+Fix - Refresh missing individual review schema in the background when a product page loads.
+Fix - Correct store connection, support, and integration links.
+Update - Clarify Trust Badge and store review information.
+
 = 1.3.2 =
 New - Ask for a WordPress.org review after 14 days of connected use. Dismiss the notice permanently for the site.
 Update - Correct the WordPress.org listing and add missing feature information.
@@ -354,6 +359,9 @@ Fix - Fix issue with min_rating parameter for API calls.
 * Compatibility updates for WordPress.org submission
 
 == Upgrade Notice ==
+
+= 1.3.3 =
+Restore missing individual review schema and correct store connection links.
 
 = 1.3.2 =
 Adds a review notice after 14 days of connected use and updates the WordPress.org listing.
