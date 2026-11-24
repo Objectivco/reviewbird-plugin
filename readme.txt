@@ -3,7 +3,7 @@ Contributors: reviewbird, clifgriffin
 Tags: woocommerce, woocommerce product reviews, woocommerce reviews, judge.me, rich snippets, review snippets, SEO
 Requires at least: 6.0
 Tested up to: 7.1
-Stable tag: 1.3.4
+Stable tag: 1.3.5
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -241,6 +241,9 @@ For development: `pnpm run dev`
 
 == Changelog ==
 
+= 1.3.5 =
+Fix - Remove the external link icon from the Documentation link on the Plugins screen.
+
 = 1.3.4 =
 Update - Improve page loading when Reviewbird is slow or unavailable.
 Fix - Correct star ratings and review counts on products and variations, including data used by search engines.
@@ -369,6 +372,9 @@ Fix - Fix issue with min_rating parameter for API calls.
 * Compatibility updates for WordPress.org submission
 
 == Upgrade Notice ==
+
+= 1.3.5 =
+Remove the external link icon from the Documentation link on the Plugins screen.
 
 = 1.3.4 =
 Improve page loading, product ratings, and review display. Includes bug fixes and performance improvements.

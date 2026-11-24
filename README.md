@@ -4,7 +4,7 @@ Powerfully simple product review collection, moderation, and management for WooC
 
 Learn more at [reviewbird.com](https://reviewbird.com).
 
-Current version: **1.3.4**. See [readme.txt](readme.txt) for release notes.
+Current version: **1.3.5**. See [readme.txt](readme.txt) for release notes.
 
 Run `composer lint`, `composer test`, `pnpm run lint:js`, `pnpm run lint:css`, `pnpm test --runInBand --watch=false`, and `pnpm run build` before release.
 
